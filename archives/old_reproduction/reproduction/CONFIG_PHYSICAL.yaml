@@ -1,0 +1,37 @@
+# Mem4ristor v2.0 - Physical Grounding (HfO2 Hardware Mapping)
+# These parameters are derived from empirical HfO2 memristor characteristics
+
+dynamics:
+  a: 0.7
+  b: 0.8
+  epsilon: 0.08
+  alpha: 0.15
+  v_cubic_divisor: 5.0
+  dt: 0.1
+
+coupling:
+  D: 0.15
+  heretic_ratio: 0.15
+
+doubt:
+  epsilon_u: 0.02   
+  k_u: 1.0
+  sigma_baseline: 0.05
+  u_clamp: [0.0, 1.0]
+
+noise:
+  sigma_v: 0.05
+
+physical_mapping:
+  device: "HfO2 RRAM"
+  conductance_range: [10e-6, 1e-3]
+  set_voltage: 1.2
+  reset_voltage: -1.3
+  filament_type: "Oxygen Vacancy"
+
+benchmark:
+  L_side: 10
+  steps: 5000
+  bias_stimulus: 1.2
+  bias_step_start: 1000
+  bias_step_end: 3000

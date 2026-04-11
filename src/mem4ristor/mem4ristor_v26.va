@@ -1,0 +1,160 @@
+// Mem4ristor v2.6 - Cognitive Dynamics Model (Verilog-A)
+// Implementation of Extended FitzHugh-Nagumo with Constitutional Doubt (u)
+// Reference: Mem4ristor Project v2.6 (Cafe Virtuel)
+//
+// This file contains two modules:
+//   1. mem4ristor_v26 : Simplified 3-terminal interface (v_node, u_node, coup_in)
+//   2. mem4ristor_cell : Full 5-terminal implementation for network simulation
+
+`include "disciplines.vams"
+`include "constants.vams"
+
+// =============================================================================
+// MODULE 1: Simplified Single-Cell Interface
+// =============================================================================
+// This module exposes v (cognitive potential) and u (doubt) as electrical nodes.
+// The recovery variable w is handled internally via an auxiliary node.
+// Coupling current is received via coup_in from the network controller.
+
+module mem4ristor_v26(v_node, u_node, coup_in);
+    inout v_node;      // Cognitive Potential (Voltage-like)
+    output u_node;     // Doubt Level (Voltage-like monitor)
+    input coup_in;     // Coupling Current Input (from Network)
+
+    electrical v_node, u_node, coup_in;
+
+    // Internal node for recovery variable w
+    electrical w_int;
+
+    // Parameters (Matched to Python core.py)
+    parameter real a = 0.7;
+    parameter real b = 0.8;
+    parameter real epsilon = 0.08;
+    parameter real alpha = 0.15;        // Tanh non-linearity strength
+    parameter real v_cubic_div = 5.0;   // Damping divisor
+
+    parameter real epsilon_u = 0.02;    // Doubt timescale
+    parameter real k_u = 1.0;           // Social sensitivity magnitude
+    parameter real sigma_baseline = 0.05;
+    parameter real tau_u = 1.0;
+
+    // Simulation parameters
+    parameter real heretic_pol = 1.0;   // Set to -1.0 for Heretic Units
+    parameter real noise_amp = 0.05;    // Thermal noise amplitude
+
+    // Soft clamping parameters for u (keeps u in [0, 1])
+    parameter real clamp_gain = 100.0;  // Steepness of soft clamp
+
+    analog begin
+        real v, w, u;
+        real social_signal, noise;
+        real dv_dt, dw_dt, du_dt;
+        real u_clamp_lo, u_clamp_hi;
+
+        v = V(v_node);
+        w = V(w_int);
+        u = V(u_node);
+
+        // Social Coupling = (1 - 2u) * i_coup
+        social_signal = (1.0 - 2.0 * u) * V(coup_in);
+
+        // Noise source (white noise approximation)
+        noise = white_noise(noise_amp * noise_amp, "thermal");
+
+        // FHN Dynamics: dv/dt
+        dv_dt = v - pow(v, 3) / v_cubic_div - w
+                + (V(coup_in) * heretic_pol) + social_signal
+                - alpha * tanh(v) + noise;
+
+        // Recovery: dw/dt
+        dw_dt = epsilon * (v + a - b * w);
+
+        // Doubt: du/dt
+        du_dt = (epsilon_u / tau_u) * (k_u * abs(V(coup_in)) + sigma_baseline - u);
+
+        // Soft clamping currents for u to keep it in [0, 1]
+        // These add a restoring current when u drifts outside bounds
+        u_clamp_lo = clamp_gain * min(0.0, u);          // Pulls u up if < 0
+        u_clamp_hi = clamp_gain * max(0.0, u - 1.0);    // Pulls u down if > 1
+
+        // Apply dynamics via current contributions (Kirchhoff convention)
+        // For a node with unit capacitance: I = C * dV/dt => I = dV/dt
+        I(v_node) <+ ddt(V(v_node)) - dv_dt;
+        I(w_int)  <+ ddt(V(w_int))  - dw_dt;
+        I(u_node) <+ ddt(V(u_node)) - du_dt + u_clamp_hi - u_clamp_lo;
+    end
+endmodule
+
+
+// =============================================================================
+// MODULE 2: Full 5-Terminal Cell for Network Integration
+// =============================================================================
+// This module exposes all three state variables (v, w, u) as separate terminals,
+// plus separate stimulus and coupling inputs. Designed for use in crossbar arrays
+// or multi-cell testbenches.
+
+module mem4ristor_cell(v_term, w_term, u_term, i_stim, i_coup);
+    inout v_term, w_term, u_term;
+    input i_stim, i_coup;
+    electrical v_term, w_term, u_term, i_stim, i_coup;
+
+    // Dynamics Parameters
+    parameter real p_a = 0.7;
+    parameter real p_b = 0.8;
+    parameter real p_eps = 0.08;
+    parameter real p_alpha = 0.15;
+    parameter real p_div = 5.0;
+
+    // Doubt Parameters
+    parameter real p_eps_u = 0.02;
+    parameter real p_ku = 1.0;
+    parameter real p_sigma_base = 0.05;
+    parameter real p_tau_u = 1.0;
+
+    // Unit Identity
+    parameter real polarity = 1.0; // 1.0 = Normal, -1.0 = Heretic
+
+    // Soft clamping for u
+    parameter real p_clamp_gain = 100.0;
+
+    analog begin
+        real v, w, u, I_total;
+        real social_signal;
+        real noise;
+        real u_restore;
+
+        v = V(v_term);
+        w = V(w_term);
+        u = V(u_term);
+
+        // Calculate effective input current
+        // Social Coupling = (1 - 2u) * i_coup
+        // (Note: i_coup here is expected to be the Laplacian term passed from outside)
+        social_signal = (1.0 - 2.0 * u) * V(i_coup);
+
+        // Total Current = Stimulus * Polarity + Social Coupling
+        I_total = (V(i_stim) * polarity) + social_signal;
+
+        // Noise source (white noise approximation)
+        noise = white_noise(0.05 * 0.05, "thermal");
+
+        // FHN Dynamics: I(v) = C * dV/dt
+        // We model the equations as currents summing to zero at the nodes (Kirchhoff)
+        // We treat the node capacitance as 1.0 for normalized units
+
+        I(v_term) <+ ddt(v) - ( v - pow(v,3)/p_div - w + I_total - p_alpha * tanh(v) + noise );
+
+        // eq 2: dw/dt = ...
+        I(w_term) <+ ddt(w) - ( p_eps * (v + p_a - p_b * w) );
+
+        // eq 3: du/dt = ...
+        // Note: We need the ABSOLUTE value of the coupling signal for 'sigma_social' in the doubt equation
+        // In core.py: sigma_social = abs(laplacian_v)
+        // Here V(i_coup) represents laplacian_v
+
+        // Soft clamping: restoring current if u leaves [0, 1]
+        u_restore = p_clamp_gain * max(0.0, u - 1.0) - p_clamp_gain * min(0.0, u);
+
+        I(u_term) <+ ddt(u) - ( (p_eps_u / p_tau_u) * (p_ku * abs(V(i_coup)) + p_sigma_base - u) ) + u_restore;
+    end
+endmodule

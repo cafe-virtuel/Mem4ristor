@@ -1,0 +1,166 @@
+* Mem4ristor v3 - 3×3 Coupled Network
+* ============================================================
+* Network: 3×3 = 9 units with 4-neighbor coupling
+* State variables per unit: v (cognitive), w (recovery), u (doubt)
+* ============================================================
+
+.title Mem4ristor v3 Coupled Network (3x3)
+
+* ── Global Parameters ──
+.param a=0.7
+.param b=0.8
+.param eps=0.08
+.param alpha_cog=0.15
+.param eps_u=0.02
+.param sigma_base=0.05
+.param D_eff=0.0477  ; D/sqrt(N) for D=0.15, N=9
+.param dt=0.05
+
+* ── Unit Time Constant (RC = 1) ──
+.param R_int=1
+.param C_int=1
+
+* ── State Variables (RC Integrators) ──
+* Unit 0
+R_v0 v0_node v0_int {R_int}
+C_v0 v0_int 0 {C_int} IC=0.0
+R_w0 w0_node w0_int {R_int}
+C_w0 w0_int 0 {C_int} IC=0.0
+R_u0 u0_node u0_int {R_int}
+C_u0 u0_int 0 {C_int} IC=0.05
+
+* Unit 1
+R_v1 v1_node v1_int {R_int}
+C_v1 v1_int 0 {C_int} IC=0.0
+R_w1 w1_node w1_int {R_int}
+C_w1 w1_int 0 {C_int} IC=0.0
+R_u1 u1_node u1_int {R_int}
+C_u1 u1_int 0 {C_int} IC=0.05
+
+* Unit 2
+R_v2 v2_node v2_int {R_int}
+C_v2 v2_int 0 {C_int} IC=0.0
+R_w2 w2_node w2_int {R_int}
+C_w2 w2_int 0 {C_int} IC=0.0
+R_u2 u2_node u2_int {R_int}
+C_u2 u2_int 0 {C_int} IC=0.05
+
+* Unit 3
+R_v3 v3_node v3_int {R_int}
+C_v3 v3_int 0 {C_int} IC=0.0
+R_w3 w3_node w3_int {R_int}
+C_w3 w3_int 0 {C_int} IC=0.0
+R_u3 u3_node u3_int {R_int}
+C_u3 u3_int 0 {C_int} IC=0.05
+
+* Unit 4
+R_v4 v4_node v4_int {R_int}
+C_v4 v4_int 0 {C_int} IC=0.0
+R_w4 w4_node w4_int {R_int}
+C_w4 w4_int 0 {C_int} IC=0.0
+R_u4 u4_node u4_int {R_int}
+C_u4 u4_int 0 {C_int} IC=0.05
+
+* Unit 5
+R_v5 v5_node v5_int {R_int}
+C_v5 v5_int 0 {C_int} IC=0.0
+R_w5 w5_node w5_int {R_int}
+C_w5 w5_int 0 {C_int} IC=0.0
+R_u5 u5_node u5_int {R_int}
+C_u5 u5_int 0 {C_int} IC=0.05
+
+* Unit 6
+R_v6 v6_node v6_int {R_int}
+C_v6 v6_int 0 {C_int} IC=0.0
+R_w6 w6_node w6_int {R_int}
+C_w6 w6_int 0 {C_int} IC=0.0
+R_u6 u6_node u6_int {R_int}
+C_u6 u6_int 0 {C_int} IC=0.05
+
+* Unit 7
+R_v7 v7_node v7_int {R_int}
+C_v7 v7_int 0 {C_int} IC=0.0
+R_w7 w7_node w7_int {R_int}
+C_w7 w7_int 0 {C_int} IC=0.0
+R_u7 u7_node u7_int {R_int}
+C_u7 u7_int 0 {C_int} IC=0.05
+
+* Unit 8
+R_v8 v8_node v8_int {R_int}
+C_v8 v8_int 0 {C_int} IC=0.0
+R_w8 w8_node w8_int {R_int}
+C_w8 w8_int 0 {C_int} IC=0.0
+R_u8 u8_node u8_int {R_int}
+C_u8 u8_int 0 {C_int} IC=0.05
+
+* ── Unit Dynamics ──
+* Unit 0: dv/dt
+B_dv0 v0_node 0 V = V(v0_int) - pow(V(v0_int),3)/5 - V(w0_int) + D_eff * tanh(3.14159*(0.5 - V(u0_int))) * ((V(v3_int) - V(v0_int)) + (V(v1_int) - V(v0_int))) - alpha_cog*tanh(V(v0_int))
+B_dw0 w0_node 0 V = eps * (V(v0_int) + a - b * V(w0_int))
+B_du0 u0_node 0 V = eps_u * (sigma_base - V(u0_int))
+
+* Unit 1: dv/dt
+B_dv1 v1_node 0 V = V(v1_int) - pow(V(v1_int),3)/5 - V(w1_int) + D_eff * tanh(3.14159*(0.5 - V(u1_int))) * ((V(v4_int) - V(v1_int)) + (V(v0_int) - V(v1_int)) + (V(v2_int) - V(v1_int))) - alpha_cog*tanh(V(v1_int))
+B_dw1 w1_node 0 V = eps * (V(v1_int) + a - b * V(w1_int))
+B_du1 u1_node 0 V = eps_u * (sigma_base - V(u1_int))
+
+* Unit 2: dv/dt
+B_dv2 v2_node 0 V = V(v2_int) - pow(V(v2_int),3)/5 - V(w2_int) + D_eff * tanh(3.14159*(0.5 - V(u2_int))) * ((V(v5_int) - V(v2_int)) + (V(v1_int) - V(v2_int))) - alpha_cog*tanh(V(v2_int))
+B_dw2 w2_node 0 V = eps * (V(v2_int) + a - b * V(w2_int))
+B_du2 u2_node 0 V = eps_u * (sigma_base - V(u2_int))
+
+* Unit 3: dv/dt
+B_dv3 v3_node 0 V = V(v3_int) - pow(V(v3_int),3)/5 - V(w3_int) + D_eff * tanh(3.14159*(0.5 - V(u3_int))) * ((V(v0_int) - V(v3_int)) + (V(v6_int) - V(v3_int)) + (V(v4_int) - V(v3_int))) - alpha_cog*tanh(V(v3_int))
+B_dw3 w3_node 0 V = eps * (V(v3_int) + a - b * V(w3_int))
+B_du3 u3_node 0 V = eps_u * (sigma_base - V(u3_int))
+
+* Unit 4: dv/dt
+B_dv4 v4_node 0 V = V(v4_int) - pow(V(v4_int),3)/5 - V(w4_int) + D_eff * tanh(3.14159*(0.5 - V(u4_int))) * ((V(v1_int) - V(v4_int)) + (V(v7_int) - V(v4_int)) + (V(v3_int) - V(v4_int)) + (V(v5_int) - V(v4_int))) - alpha_cog*tanh(V(v4_int))
+B_dw4 w4_node 0 V = eps * (V(v4_int) + a - b * V(w4_int))
+B_du4 u4_node 0 V = eps_u * (sigma_base - V(u4_int))
+
+* Unit 5: dv/dt
+B_dv5 v5_node 0 V = V(v5_int) - pow(V(v5_int),3)/5 - V(w5_int) + D_eff * tanh(3.14159*(0.5 - V(u5_int))) * ((V(v2_int) - V(v5_int)) + (V(v8_int) - V(v5_int)) + (V(v4_int) - V(v5_int))) - alpha_cog*tanh(V(v5_int))
+B_dw5 w5_node 0 V = eps * (V(v5_int) + a - b * V(w5_int))
+B_du5 u5_node 0 V = eps_u * (sigma_base - V(u5_int))
+
+* Unit 6: dv/dt
+B_dv6 v6_node 0 V = V(v6_int) - pow(V(v6_int),3)/5 - V(w6_int) + D_eff * tanh(3.14159*(0.5 - V(u6_int))) * ((V(v3_int) - V(v6_int)) + (V(v7_int) - V(v6_int))) - alpha_cog*tanh(V(v6_int))
+B_dw6 w6_node 0 V = eps * (V(v6_int) + a - b * V(w6_int))
+B_du6 u6_node 0 V = eps_u * (sigma_base - V(u6_int))
+
+* Unit 7: dv/dt
+B_dv7 v7_node 0 V = V(v7_int) - pow(V(v7_int),3)/5 - V(w7_int) + D_eff * tanh(3.14159*(0.5 - V(u7_int))) * ((V(v4_int) - V(v7_int)) + (V(v6_int) - V(v7_int)) + (V(v8_int) - V(v7_int))) - alpha_cog*tanh(V(v7_int))
+B_dw7 w7_node 0 V = eps * (V(v7_int) + a - b * V(w7_int))
+B_du7 u7_node 0 V = eps_u * (sigma_base - V(u7_int))
+
+* Unit 8: dv/dt
+B_dv8 v8_node 0 V = V(v8_int) - pow(V(v8_int),3)/5 - V(w8_int) + D_eff * tanh(3.14159*(0.5 - V(u8_int))) * ((V(v5_int) - V(v8_int)) + (V(v7_int) - V(v8_int))) - alpha_cog*tanh(V(v8_int))
+B_dw8 w8_node 0 V = eps * (V(v8_int) + a - b * V(w8_int))
+B_du8 u8_node 0 V = eps_u * (sigma_base - V(u8_int))
+
+* ── Simulation ──
+.tran 0.05 50 uic
+
+* ── Analysis ──
+.control
+run
+echo ""
+echo "========================================"
+echo "  Mem4ristor v3 - 3×3 Network"
+echo "========================================"
+
+* Sample a few units
+let v0_final = v(v0_int)[length(v(v0_int))-1]
+let v8_final = v(v8_int)[length(v(v8_int))-1]
+
+echo "Final states (sample):"
+echo "  v[0] = $&v0_final"
+echo "  v[8] = $&v8_final"
+
+echo ""
+echo "========================================"
+quit
+.endc
+
+.end

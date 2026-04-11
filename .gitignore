@@ -1,0 +1,62 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS artifacts
+Thumbs.db
+.DS_Store
+nul
+
+# LaTeX build artifacts
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.synctex.gz
+docs/*.fls
+docs/*.fdb_latexmk
+docs/*.bbl
+docs/*.blg
+
+# Keep the preprint PDF
+!docs/preprint.pdf
+
+# Reproduction outputs
+reproduction_results.png
+reproduction/results/
+sim_data.json
+sim_results.txt
+
+# Log files (failures/ has its own tracked logs)
+*.log
+
+# Large binary bundles
+mem4ristor_v2_bundle.json
+mem4ristor_v2_bundle.json.gz
+REPRODUCIBILITY_REPORT.txt
+
+# Private/Session data
+.snapshots/
+.agent/
+.claude/

@@ -1,0 +1,1341 @@
+* Mem4ristor v3 - 10x10 Coupled Network
+* Network: 10x10 = 100 units with 4-neighbor periodic coupling
+
+.title Mem4ristor v3 Coupled Network (10x10)
+
+* ── Global Parameters ──
+.param a=0.7
+.param b=0.8
+.param eps=0.08
+.param alpha_cog=0.15
+.param eps_u=0.02
+.param sigma_base=0.05
+.param D_eff=0.015000
+.param dt=0.05
+
+* ── Unit Time Constant (RC = 1) ──
+.param R_int=1
+.param C_int=1
+
+* ── State Variables (RC Integrators) ──
+* Unit 0
+R_v0 v0_node v0_int {R_int}
+C_v0 v0_int 0 {C_int} IC=-0.29
+R_w0 w0_node w0_int {R_int}
+C_w0 w0_int 0 {C_int} IC=0.0
+R_u0 u0_node u0_int {R_int}
+C_u0 u0_int 0 {C_int} IC=0.05
+
+* Unit 1
+R_v1 v1_node v1_int {R_int}
+C_v1 v1_int 0 {C_int} IC=-0.17
+R_w1 w1_node w1_int {R_int}
+C_w1 w1_int 0 {C_int} IC=0.0
+R_u1 u1_node u1_int {R_int}
+C_u1 u1_int 0 {C_int} IC=0.05
+
+* Unit 2
+R_v2 v2_node v2_int {R_int}
+C_v2 v2_int 0 {C_int} IC=0.61
+R_w2 w2_node w2_int {R_int}
+C_w2 w2_int 0 {C_int} IC=0.0
+R_u2 u2_node u2_int {R_int}
+C_u2 u2_int 0 {C_int} IC=0.05
+
+* Unit 3
+R_v3 v3_node v3_int {R_int}
+C_v3 v3_int 0 {C_int} IC=0.09
+R_w3 w3_node w3_int {R_int}
+C_w3 w3_int 0 {C_int} IC=0.0
+R_u3 u3_node u3_int {R_int}
+C_u3 u3_int 0 {C_int} IC=0.05
+
+* Unit 4
+R_v4 v4_node v4_int {R_int}
+C_v4 v4_int 0 {C_int} IC=0.01
+R_w4 w4_node w4_int {R_int}
+C_w4 w4_int 0 {C_int} IC=0.0
+R_u4 u4_node u4_int {R_int}
+C_u4 u4_int 0 {C_int} IC=0.05
+
+* Unit 5
+R_v5 v5_node v5_int {R_int}
+C_v5 v5_int 0 {C_int} IC=0.45
+R_w5 w5_node w5_int {R_int}
+C_w5 w5_int 0 {C_int} IC=0.0
+R_u5 u5_node u5_int {R_int}
+C_u5 u5_int 0 {C_int} IC=0.05
+
+* Unit 6
+R_v6 v6_node v6_int {R_int}
+C_v6 v6_int 0 {C_int} IC=-0.67
+R_w6 w6_node w6_int {R_int}
+C_w6 w6_int 0 {C_int} IC=0.0
+R_u6 u6_node u6_int {R_int}
+C_u6 u6_int 0 {C_int} IC=0.05
+
+* Unit 7
+R_v7 v7_node v7_int {R_int}
+C_v7 v7_int 0 {C_int} IC=0.65
+R_w7 w7_node w7_int {R_int}
+C_w7 w7_int 0 {C_int} IC=0.0
+R_u7 u7_node u7_int {R_int}
+C_u7 u7_int 0 {C_int} IC=0.05
+
+* Unit 8
+R_v8 v8_node v8_int {R_int}
+C_v8 v8_int 0 {C_int} IC=-0.08
+R_w8 w8_node w8_int {R_int}
+C_w8 w8_int 0 {C_int} IC=0.0
+R_u8 u8_node u8_int {R_int}
+C_u8 u8_int 0 {C_int} IC=0.05
+
+* Unit 9
+R_v9 v9_node v9_int {R_int}
+C_v9 v9_int 0 {C_int} IC=-0.63
+R_w9 w9_node w9_int {R_int}
+C_w9 w9_int 0 {C_int} IC=0.0
+R_u9 u9_node u9_int {R_int}
+C_u9 u9_int 0 {C_int} IC=0.05
+
+* Unit 10
+R_v10 v10_node v10_int {R_int}
+C_v10 v10_int 0 {C_int} IC=0.19
+R_w10 w10_node w10_int {R_int}
+C_w10 w10_int 0 {C_int} IC=0.0
+R_u10 u10_node u10_int {R_int}
+C_u10 u10_int 0 {C_int} IC=0.05
+
+* Unit 11
+R_v11 v11_node v11_int {R_int}
+C_v11 v11_int 0 {C_int} IC=-0.42
+R_w11 w11_node w11_int {R_int}
+C_w11 w11_int 0 {C_int} IC=0.0
+R_u11 u11_node u11_int {R_int}
+C_u11 u11_int 0 {C_int} IC=0.05
+
+* Unit 12
+R_v12 v12_node v12_int {R_int}
+C_v12 v12_int 0 {C_int} IC=-0.64
+R_w12 w12_node w12_int {R_int}
+C_w12 w12_int 0 {C_int} IC=0.0
+R_u12 u12_node u12_int {R_int}
+C_u12 u12_int 0 {C_int} IC=0.05
+
+* Unit 13
+R_v13 v13_node v13_int {R_int}
+C_v13 v13_int 0 {C_int} IC=-0.54
+R_w13 w13_node w13_int {R_int}
+C_w13 w13_int 0 {C_int} IC=0.0
+R_u13 u13_node u13_int {R_int}
+C_u13 u13_int 0 {C_int} IC=0.05
+
+* Unit 14
+R_v14 v14_node v14_int {R_int}
+C_v14 v14_int 0 {C_int} IC=0.07
+R_w14 w14_node w14_int {R_int}
+C_w14 w14_int 0 {C_int} IC=0.0
+R_u14 u14_node u14_int {R_int}
+C_u14 u14_int 0 {C_int} IC=0.05
+
+* Unit 15
+R_v15 v15_node v15_int {R_int}
+C_v15 v15_int 0 {C_int} IC=0.63
+R_w15 w15_node w15_int {R_int}
+C_w15 w15_int 0 {C_int} IC=0.0
+R_u15 u15_node u15_int {R_int}
+C_u15 u15_int 0 {C_int} IC=0.05
+
+* Unit 16
+R_v16 v16_node v16_int {R_int}
+C_v16 v16_int 0 {C_int} IC=0.53
+R_w16 w16_node w16_int {R_int}
+C_w16 w16_int 0 {C_int} IC=0.0
+R_u16 u16_node u16_int {R_int}
+C_u16 u16_int 0 {C_int} IC=0.05
+
+* Unit 17
+R_v17 v17_node v17_int {R_int}
+C_v17 v17_int 0 {C_int} IC=-0.24
+R_w17 w17_node w17_int {R_int}
+C_w17 w17_int 0 {C_int} IC=0.0
+R_u17 u17_node u17_int {R_int}
+C_u17 u17_int 0 {C_int} IC=0.05
+
+* Unit 18
+R_v18 v18_node v18_int {R_int}
+C_v18 v18_int 0 {C_int} IC=0.76
+R_w18 w18_node w18_int {R_int}
+C_w18 w18_int 0 {C_int} IC=0.0
+R_u18 u18_node u18_int {R_int}
+C_u18 u18_int 0 {C_int} IC=0.05
+
+* Unit 19
+R_v19 v19_node v19_int {R_int}
+C_v19 v19_int 0 {C_int} IC=-0.53
+R_w19 w19_node w19_int {R_int}
+C_w19 w19_int 0 {C_int} IC=0.0
+R_u19 u19_node u19_int {R_int}
+C_u19 u19_int 0 {C_int} IC=0.05
+
+* Unit 20
+R_v20 v20_node v20_int {R_int}
+C_v20 v20_int 0 {C_int} IC=0.65
+R_w20 w20_node w20_int {R_int}
+C_w20 w20_int 0 {C_int} IC=0.0
+R_u20 u20_node u20_int {R_int}
+C_u20 u20_int 0 {C_int} IC=0.05
+
+* Unit 21
+R_v21 v21_node v21_int {R_int}
+C_v21 v21_int 0 {C_int} IC=0.47
+R_w21 w21_node w21_int {R_int}
+C_w21 w21_int 0 {C_int} IC=0.0
+R_u21 u21_node u21_int {R_int}
+C_u21 u21_int 0 {C_int} IC=0.05
+
+* Unit 22
+R_v22 v22_node v22_int {R_int}
+C_v22 v22_int 0 {C_int} IC=-0.21
+R_w22 w22_node w22_int {R_int}
+C_w22 w22_int 0 {C_int} IC=0.0
+R_u22 u22_node u22_int {R_int}
+C_u22 u22_int 0 {C_int} IC=0.05
+
+* Unit 23
+R_v23 v23_node v23_int {R_int}
+C_v23 v23_int 0 {C_int} IC=0.45
+R_w23 w23_node w23_int {R_int}
+C_w23 w23_int 0 {C_int} IC=0.0
+R_u23 u23_node u23_int {R_int}
+C_u23 u23_int 0 {C_int} IC=0.05
+
+* Unit 24
+R_v24 v24_node v24_int {R_int}
+C_v24 v24_int 0 {C_int} IC=-0.62
+R_w24 w24_node w24_int {R_int}
+C_w24 w24_int 0 {C_int} IC=0.0
+R_u24 u24_node u24_int {R_int}
+C_u24 u24_int 0 {C_int} IC=0.05
+
+* Unit 25
+R_v25 v25_node v25_int {R_int}
+C_v25 v25_int 0 {C_int} IC=-0.28
+R_w25 w25_node w25_int {R_int}
+C_w25 w25_int 0 {C_int} IC=0.0
+R_u25 u25_node u25_int {R_int}
+C_u25 u25_int 0 {C_int} IC=0.05
+
+* Unit 26
+R_v26 v26_node v26_int {R_int}
+C_v26 v26_int 0 {C_int} IC=-0.58
+R_w26 w26_node w26_int {R_int}
+C_w26 w26_int 0 {C_int} IC=0.0
+R_u26 u26_node u26_int {R_int}
+C_u26 u26_int 0 {C_int} IC=0.05
+
+* Unit 27
+R_v27 v27_node v27_int {R_int}
+C_v27 v27_int 0 {C_int} IC=0.74
+R_w27 w27_node w27_int {R_int}
+C_w27 w27_int 0 {C_int} IC=0.0
+R_u27 u27_node u27_int {R_int}
+C_u27 u27_int 0 {C_int} IC=0.05
+
+* Unit 28
+R_v28 v28_node v28_int {R_int}
+C_v28 v28_int 0 {C_int} IC=0.91
+R_w28 w28_node w28_int {R_int}
+C_w28 w28_int 0 {C_int} IC=0.0
+R_u28 u28_node u28_int {R_int}
+C_u28 u28_int 0 {C_int} IC=0.05
+
+* Unit 29
+R_v29 v29_node v29_int {R_int}
+C_v29 v29_int 0 {C_int} IC=-0.92
+R_w29 w29_node w29_int {R_int}
+C_w29 w29_int 0 {C_int} IC=0.0
+R_u29 u29_node u29_int {R_int}
+C_u29 u29_int 0 {C_int} IC=0.05
+
+* Unit 30
+R_v30 v30_node v30_int {R_int}
+C_v30 v30_int 0 {C_int} IC=0.89
+R_w30 w30_node w30_int {R_int}
+C_w30 w30_int 0 {C_int} IC=0.0
+R_u30 u30_node u30_int {R_int}
+C_u30 u30_int 0 {C_int} IC=0.05
+
+* Unit 31
+R_v31 v31_node v31_int {R_int}
+C_v31 v31_int 0 {C_int} IC=0.43
+R_w31 w31_node w31_int {R_int}
+C_w31 w31_int 0 {C_int} IC=0.0
+R_u31 u31_node u31_int {R_int}
+C_u31 u31_int 0 {C_int} IC=0.05
+
+* Unit 32
+R_v32 v32_node v32_int {R_int}
+C_v32 v32_int 0 {C_int} IC=-0.06
+R_w32 w32_node w32_int {R_int}
+C_w32 w32_int 0 {C_int} IC=0.0
+R_u32 u32_node u32_int {R_int}
+C_u32 u32_int 0 {C_int} IC=0.05
+
+* Unit 33
+R_v33 v33_node v33_int {R_int}
+C_v33 v33_int 0 {C_int} IC=0.10
+R_w33 w33_node w33_int {R_int}
+C_w33 w33_int 0 {C_int} IC=0.0
+R_u33 u33_node u33_int {R_int}
+C_u33 u33_int 0 {C_int} IC=0.05
+
+* Unit 34
+R_v34 v34_node v34_int {R_int}
+C_v34 v34_int 0 {C_int} IC=-0.07
+R_w34 w34_node w34_int {R_int}
+C_w34 w34_int 0 {C_int} IC=0.0
+R_u34 u34_node u34_int {R_int}
+C_u34 u34_int 0 {C_int} IC=0.05
+
+* Unit 35
+R_v35 v35_node v35_int {R_int}
+C_v35 v35_int 0 {C_int} IC=-0.81
+R_w35 w35_node w35_int {R_int}
+C_w35 w35_int 0 {C_int} IC=0.0
+R_u35 u35_node u35_int {R_int}
+C_u35 u35_int 0 {C_int} IC=0.05
+
+* Unit 36
+R_v36 v36_node v36_int {R_int}
+C_v36 v36_int 0 {C_int} IC=0.76
+R_w36 w36_node w36_int {R_int}
+C_w36 w36_int 0 {C_int} IC=0.0
+R_u36 u36_node u36_int {R_int}
+C_u36 u36_int 0 {C_int} IC=0.05
+
+* Unit 37
+R_v37 v37_node v37_int {R_int}
+C_v37 v37_int 0 {C_int} IC=-0.15
+R_w37 w37_node w37_int {R_int}
+C_w37 w37_int 0 {C_int} IC=0.0
+R_u37 u37_node u37_int {R_int}
+C_u37 u37_int 0 {C_int} IC=0.05
+
+* Unit 38
+R_v38 v38_node v38_int {R_int}
+C_v38 v38_int 0 {C_int} IC=-0.85
+R_w38 w38_node w38_int {R_int}
+C_w38 w38_int 0 {C_int} IC=0.0
+R_u38 u38_node u38_int {R_int}
+C_u38 u38_int 0 {C_int} IC=0.05
+
+* Unit 39
+R_v39 v39_node v39_int {R_int}
+C_v39 v39_int 0 {C_int} IC=-0.91
+R_w39 w39_node w39_int {R_int}
+C_w39 w39_int 0 {C_int} IC=0.0
+R_u39 u39_node u39_int {R_int}
+C_u39 u39_int 0 {C_int} IC=0.05
+
+* Unit 40
+R_v40 v40_node v40_int {R_int}
+C_v40 v40_int 0 {C_int} IC=0.90
+R_w40 w40_node w40_int {R_int}
+C_w40 w40_int 0 {C_int} IC=0.0
+R_u40 u40_node u40_int {R_int}
+C_u40 u40_int 0 {C_int} IC=0.05
+
+* Unit 41
+R_v41 v41_node v41_int {R_int}
+C_v41 v41_int 0 {C_int} IC=0.41
+R_w41 w41_node w41_int {R_int}
+C_w41 w41_int 0 {C_int} IC=0.0
+R_u41 u41_node u41_int {R_int}
+C_u41 u41_int 0 {C_int} IC=0.05
+
+* Unit 42
+R_v42 v42_node v42_int {R_int}
+C_v42 v42_int 0 {C_int} IC=-0.37
+R_w42 w42_node w42_int {R_int}
+C_w42 w42_int 0 {C_int} IC=0.0
+R_u42 u42_node u42_int {R_int}
+C_u42 u42_int 0 {C_int} IC=0.05
+
+* Unit 43
+R_v43 v43_node v43_int {R_int}
+C_v43 v43_int 0 {C_int} IC=-0.17
+R_w43 w43_node w43_int {R_int}
+C_w43 w43_int 0 {C_int} IC=0.0
+R_u43 u43_node u43_int {R_int}
+C_u43 u43_int 0 {C_int} IC=0.05
+
+* Unit 44
+R_v44 v44_node v44_int {R_int}
+C_v44 v44_int 0 {C_int} IC=-0.63
+R_w44 w44_node w44_int {R_int}
+C_w44 w44_int 0 {C_int} IC=0.0
+R_u44 u44_node u44_int {R_int}
+C_u44 u44_int 0 {C_int} IC=0.05
+
+* Unit 45
+R_v45 v45_node v45_int {R_int}
+C_v45 v45_int 0 {C_int} IC=-0.83
+R_w45 w45_node w45_int {R_int}
+C_w45 w45_int 0 {C_int} IC=0.0
+R_u45 u45_node u45_int {R_int}
+C_u45 u45_int 0 {C_int} IC=0.05
+
+* Unit 46
+R_v46 v46_node v46_int {R_int}
+C_v46 v46_int 0 {C_int} IC=-0.97
+R_w46 w46_node w46_int {R_int}
+C_w46 w46_int 0 {C_int} IC=0.0
+R_u46 u46_node u46_int {R_int}
+C_u46 u46_int 0 {C_int} IC=0.05
+
+* Unit 47
+R_v47 v47_node v47_int {R_int}
+C_v47 v47_int 0 {C_int} IC=0.03
+R_w47 w47_node w47_int {R_int}
+C_w47 w47_int 0 {C_int} IC=0.0
+R_u47 u47_node u47_int {R_int}
+C_u47 u47_int 0 {C_int} IC=0.05
+
+* Unit 48
+R_v48 v48_node v48_int {R_int}
+C_v48 v48_int 0 {C_int} IC=-0.14
+R_w48 w48_node w48_int {R_int}
+C_w48 w48_int 0 {C_int} IC=0.0
+R_u48 u48_node u48_int {R_int}
+C_u48 u48_int 0 {C_int} IC=0.05
+
+* Unit 49
+R_v49 v49_node v49_int {R_int}
+C_v49 v49_int 0 {C_int} IC=0.13
+R_w49 w49_node w49_int {R_int}
+C_w49 w49_int 0 {C_int} IC=0.0
+R_u49 u49_node u49_int {R_int}
+C_u49 u49_int 0 {C_int} IC=0.05
+
+* Unit 50
+R_v50 v50_node v50_int {R_int}
+C_v50 v50_int 0 {C_int} IC=-0.70
+R_w50 w50_node w50_int {R_int}
+C_w50 w50_int 0 {C_int} IC=0.0
+R_u50 u50_node u50_int {R_int}
+C_u50 u50_int 0 {C_int} IC=0.05
+
+* Unit 51
+R_v51 v51_node v51_int {R_int}
+C_v51 v51_int 0 {C_int} IC=0.13
+R_w51 w51_node w51_int {R_int}
+C_w51 w51_int 0 {C_int} IC=0.0
+R_u51 u51_node u51_int {R_int}
+C_u51 u51_int 0 {C_int} IC=0.05
+
+* Unit 52
+R_v52 v52_node v52_int {R_int}
+C_v52 v52_int 0 {C_int} IC=-0.13
+R_w52 w52_node w52_int {R_int}
+C_w52 w52_int 0 {C_int} IC=0.0
+R_u52 u52_node u52_int {R_int}
+C_u52 u52_int 0 {C_int} IC=0.05
+
+* Unit 53
+R_v53 v53_node v53_int {R_int}
+C_v53 v53_int 0 {C_int} IC=0.32
+R_w53 w53_node w53_int {R_int}
+C_w53 w53_int 0 {C_int} IC=0.0
+R_u53 u53_node u53_int {R_int}
+C_u53 u53_int 0 {C_int} IC=0.05
+
+* Unit 54
+R_v54 v54_node v54_int {R_int}
+C_v54 v54_int 0 {C_int} IC=0.88
+R_w54 w54_node w54_int {R_int}
+C_w54 w54_int 0 {C_int} IC=0.0
+R_u54 u54_node u54_int {R_int}
+C_u54 u54_int 0 {C_int} IC=0.05
+
+* Unit 55
+R_v55 v55_node v55_int {R_int}
+C_v55 v55_int 0 {C_int} IC=-0.68
+R_w55 w55_node w55_int {R_int}
+C_w55 w55_int 0 {C_int} IC=0.0
+R_u55 u55_node u55_int {R_int}
+C_u55 u55_int 0 {C_int} IC=0.05
+
+* Unit 56
+R_v56 v56_node v56_int {R_int}
+C_v56 v56_int 0 {C_int} IC=-0.03
+R_w56 w56_node w56_int {R_int}
+C_w56 w56_int 0 {C_int} IC=0.0
+R_u56 u56_node u56_int {R_int}
+C_u56 u56_int 0 {C_int} IC=0.05
+
+* Unit 57
+R_v57 v57_node v57_int {R_int}
+C_v57 v57_int 0 {C_int} IC=0.71
+R_w57 w57_node w57_int {R_int}
+C_w57 w57_int 0 {C_int} IC=0.0
+R_u57 u57_node u57_int {R_int}
+C_u57 u57_int 0 {C_int} IC=0.05
+
+* Unit 58
+R_v58 v58_node v58_int {R_int}
+C_v58 v58_int 0 {C_int} IC=0.82
+R_w58 w58_node w58_int {R_int}
+C_w58 w58_int 0 {C_int} IC=0.0
+R_u58 u58_node u58_int {R_int}
+C_u58 u58_int 0 {C_int} IC=0.05
+
+* Unit 59
+R_v59 v59_node v59_int {R_int}
+C_v59 v59_int 0 {C_int} IC=0.12
+R_w59 w59_node w59_int {R_int}
+C_w59 w59_int 0 {C_int} IC=0.0
+R_u59 u59_node u59_int {R_int}
+C_u59 u59_int 0 {C_int} IC=0.05
+
+* Unit 60
+R_v60 v60_node v60_int {R_int}
+C_v60 v60_int 0 {C_int} IC=0.43
+R_w60 w60_node w60_int {R_int}
+C_w60 w60_int 0 {C_int} IC=0.0
+R_u60 u60_node u60_int {R_int}
+C_u60 u60_int 0 {C_int} IC=0.05
+
+* Unit 61
+R_v61 v61_node v61_int {R_int}
+C_v61 v61_int 0 {C_int} IC=0.38
+R_w61 w61_node w61_int {R_int}
+C_w61 w61_int 0 {C_int} IC=0.0
+R_u61 u61_node u61_int {R_int}
+C_u61 u61_int 0 {C_int} IC=0.05
+
+* Unit 62
+R_v62 v62_node v62_int {R_int}
+C_v62 v62_int 0 {C_int} IC=-0.76
+R_w62 w62_node w62_int {R_int}
+C_w62 w62_int 0 {C_int} IC=0.0
+R_u62 u62_node u62_int {R_int}
+C_u62 u62_int 0 {C_int} IC=0.05
+
+* Unit 63
+R_v63 v63_node v63_int {R_int}
+C_v63 v63_int 0 {C_int} IC=-0.80
+R_w63 w63_node w63_int {R_int}
+C_w63 w63_int 0 {C_int} IC=0.0
+R_u63 u63_node u63_int {R_int}
+C_u63 u63_int 0 {C_int} IC=0.05
+
+* Unit 64
+R_v64 v64_node v64_int {R_int}
+C_v64 v64_int 0 {C_int} IC=0.99
+R_w64 w64_node w64_int {R_int}
+C_w64 w64_int 0 {C_int} IC=0.0
+R_u64 u64_node u64_int {R_int}
+C_u64 u64_int 0 {C_int} IC=0.05
+
+* Unit 65
+R_v65 v65_node v65_int {R_int}
+C_v65 v65_int 0 {C_int} IC=-0.35
+R_w65 w65_node w65_int {R_int}
+C_w65 w65_int 0 {C_int} IC=0.0
+R_u65 u65_node u65_int {R_int}
+C_u65 u65_int 0 {C_int} IC=0.05
+
+* Unit 66
+R_v66 v66_node v66_int {R_int}
+C_v66 v66_int 0 {C_int} IC=0.95
+R_w66 w66_node w66_int {R_int}
+C_w66 w66_int 0 {C_int} IC=0.0
+R_u66 u66_node u66_int {R_int}
+C_u66 u66_int 0 {C_int} IC=0.05
+
+* Unit 67
+R_v67 v67_node v67_int {R_int}
+C_v67 v67_int 0 {C_int} IC=-0.83
+R_w67 w67_node w67_int {R_int}
+C_w67 w67_int 0 {C_int} IC=0.0
+R_u67 u67_node u67_int {R_int}
+C_u67 u67_int 0 {C_int} IC=0.05
+
+* Unit 68
+R_v68 v68_node v68_int {R_int}
+C_v68 v68_int 0 {C_int} IC=0.31
+R_w68 w68_node w68_int {R_int}
+C_w68 w68_int 0 {C_int} IC=0.0
+R_u68 u68_node u68_int {R_int}
+C_u68 u68_int 0 {C_int} IC=0.05
+
+* Unit 69
+R_v69 v69_node v69_int {R_int}
+C_v69 v69_int 0 {C_int} IC=0.71
+R_w69 w69_node w69_int {R_int}
+C_w69 w69_int 0 {C_int} IC=0.0
+R_u69 u69_node u69_int {R_int}
+C_u69 u69_int 0 {C_int} IC=0.05
+
+* Unit 70
+R_v70 v70_node v70_int {R_int}
+C_v70 v70_int 0 {C_int} IC=-0.38
+R_w70 w70_node w70_int {R_int}
+C_w70 w70_int 0 {C_int} IC=0.0
+R_u70 u70_node u70_int {R_int}
+C_u70 u70_int 0 {C_int} IC=0.05
+
+* Unit 71
+R_v71 v71_node v71_int {R_int}
+C_v71 v71_int 0 {C_int} IC=0.00
+R_w71 w71_node w71_int {R_int}
+C_w71 w71_int 0 {C_int} IC=0.0
+R_u71 u71_node u71_int {R_int}
+C_u71 u71_int 0 {C_int} IC=0.05
+
+* Unit 72
+R_v72 v72_node v72_int {R_int}
+C_v72 v72_int 0 {C_int} IC=0.92
+R_w72 w72_node w72_int {R_int}
+C_w72 w72_int 0 {C_int} IC=0.0
+R_u72 u72_node u72_int {R_int}
+C_u72 u72_int 0 {C_int} IC=0.05
+
+* Unit 73
+R_v73 v73_node v73_int {R_int}
+C_v73 v73_int 0 {C_int} IC=0.55
+R_w73 w73_node w73_int {R_int}
+C_w73 w73_int 0 {C_int} IC=0.0
+R_u73 u73_node u73_int {R_int}
+C_u73 u73_int 0 {C_int} IC=0.05
+
+* Unit 74
+R_v74 v74_node v74_int {R_int}
+C_v74 v74_int 0 {C_int} IC=-0.52
+R_w74 w74_node w74_int {R_int}
+C_w74 w74_int 0 {C_int} IC=0.0
+R_u74 u74_node u74_int {R_int}
+C_u74 u74_int 0 {C_int} IC=0.05
+
+* Unit 75
+R_v75 v75_node v75_int {R_int}
+C_v75 v75_int 0 {C_int} IC=-0.70
+R_w75 w75_node w75_int {R_int}
+C_w75 w75_int 0 {C_int} IC=0.0
+R_u75 u75_node u75_int {R_int}
+C_u75 u75_int 0 {C_int} IC=0.05
+
+* Unit 76
+R_v76 v76_node v76_int {R_int}
+C_v76 v76_int 0 {C_int} IC=-0.66
+R_w76 w76_node w76_int {R_int}
+C_w76 w76_int 0 {C_int} IC=0.0
+R_u76 u76_node u76_int {R_int}
+C_u76 u76_int 0 {C_int} IC=0.05
+
+* Unit 77
+R_v77 v77_node v77_int {R_int}
+C_v77 v77_int 0 {C_int} IC=-0.99
+R_w77 w77_node w77_int {R_int}
+C_w77 w77_int 0 {C_int} IC=0.0
+R_u77 u77_node u77_int {R_int}
+C_u77 u77_int 0 {C_int} IC=0.05
+
+* Unit 78
+R_v78 v78_node v78_int {R_int}
+C_v78 v78_int 0 {C_int} IC=-0.22
+R_w78 w78_node w78_int {R_int}
+C_w78 w78_int 0 {C_int} IC=0.0
+R_u78 u78_node u78_int {R_int}
+C_u78 u78_int 0 {C_int} IC=0.05
+
+* Unit 79
+R_v79 v79_node v79_int {R_int}
+C_v79 v79_int 0 {C_int} IC=0.10
+R_w79 w79_node w79_int {R_int}
+C_w79 w79_int 0 {C_int} IC=0.0
+R_u79 u79_node u79_int {R_int}
+C_u79 u79_int 0 {C_int} IC=0.05
+
+* Unit 80
+R_v80 v80_node v80_int {R_int}
+C_v80 v80_int 0 {C_int} IC=-0.01
+R_w80 w80_node w80_int {R_int}
+C_w80 w80_int 0 {C_int} IC=0.0
+R_u80 u80_node u80_int {R_int}
+C_u80 u80_int 0 {C_int} IC=0.05
+
+* Unit 81
+R_v81 v81_node v81_int {R_int}
+C_v81 v81_int 0 {C_int} IC=0.46
+R_w81 w81_node w81_int {R_int}
+C_w81 w81_int 0 {C_int} IC=0.0
+R_u81 u81_node u81_int {R_int}
+C_u81 u81_int 0 {C_int} IC=0.05
+
+* Unit 82
+R_v82 v82_node v82_int {R_int}
+C_v82 v82_int 0 {C_int} IC=0.35
+R_w82 w82_node w82_int {R_int}
+C_w82 w82_int 0 {C_int} IC=0.0
+R_u82 u82_node u82_int {R_int}
+C_u82 u82_int 0 {C_int} IC=0.05
+
+* Unit 83
+R_v83 v83_node v83_int {R_int}
+C_v83 v83_int 0 {C_int} IC=-0.90
+R_w83 w83_node w83_int {R_int}
+C_w83 w83_int 0 {C_int} IC=0.0
+R_u83 u83_node u83_int {R_int}
+C_u83 u83_int 0 {C_int} IC=0.05
+
+* Unit 84
+R_v84 v84_node v84_int {R_int}
+C_v84 v84_int 0 {C_int} IC=-0.47
+R_w84 w84_node w84_int {R_int}
+C_w84 w84_int 0 {C_int} IC=0.0
+R_u84 u84_node u84_int {R_int}
+C_u84 u84_int 0 {C_int} IC=0.05
+
+* Unit 85
+R_v85 v85_node v85_int {R_int}
+C_v85 v85_int 0 {C_int} IC=0.66
+R_w85 w85_node w85_int {R_int}
+C_w85 w85_int 0 {C_int} IC=0.0
+R_u85 u85_node u85_int {R_int}
+C_u85 u85_int 0 {C_int} IC=0.05
+
+* Unit 86
+R_v86 v86_node v86_int {R_int}
+C_v86 v86_int 0 {C_int} IC=-0.53
+R_w86 w86_node w86_int {R_int}
+C_w86 w86_int 0 {C_int} IC=0.0
+R_u86 u86_node u86_int {R_int}
+C_u86 u86_int 0 {C_int} IC=0.05
+
+* Unit 87
+R_v87 v87_node v87_int {R_int}
+C_v87 v87_int 0 {C_int} IC=-0.32
+R_w87 w87_node w87_int {R_int}
+C_w87 w87_int 0 {C_int} IC=0.0
+R_u87 u87_node u87_int {R_int}
+C_u87 u87_int 0 {C_int} IC=0.05
+
+* Unit 88
+R_v88 v88_node v88_int {R_int}
+C_v88 v88_int 0 {C_int} IC=-0.69
+R_w88 w88_node w88_int {R_int}
+C_w88 w88_int 0 {C_int} IC=0.0
+R_u88 u88_node u88_int {R_int}
+C_u88 u88_int 0 {C_int} IC=0.05
+
+* Unit 89
+R_v89 v89_node v89_int {R_int}
+C_v89 v89_int 0 {C_int} IC=0.05
+R_w89 w89_node w89_int {R_int}
+C_w89 w89_int 0 {C_int} IC=0.0
+R_u89 u89_node u89_int {R_int}
+C_u89 u89_int 0 {C_int} IC=0.05
+
+* Unit 90
+R_v90 v90_node v90_int {R_int}
+C_v90 v90_int 0 {C_int} IC=0.48
+R_w90 w90_node w90_int {R_int}
+C_w90 w90_int 0 {C_int} IC=0.0
+R_u90 u90_node u90_int {R_int}
+C_u90 u90_int 0 {C_int} IC=0.05
+
+* Unit 91
+R_v91 v91_node v91_int {R_int}
+C_v91 v91_int 0 {C_int} IC=-0.14
+R_w91 w91_node w91_int {R_int}
+C_w91 w91_int 0 {C_int} IC=0.0
+R_u91 u91_node u91_int {R_int}
+C_u91 u91_int 0 {C_int} IC=0.05
+
+* Unit 92
+R_v92 v92_node v92_int {R_int}
+C_v92 v92_int 0 {C_int} IC=-0.76
+R_w92 w92_node w92_int {R_int}
+C_w92 w92_int 0 {C_int} IC=0.0
+R_u92 u92_node u92_int {R_int}
+C_u92 u92_int 0 {C_int} IC=0.05
+
+* Unit 93
+R_v93 v93_node v93_int {R_int}
+C_v93 v93_int 0 {C_int} IC=-0.44
+R_w93 w93_node w93_int {R_int}
+C_w93 w93_int 0 {C_int} IC=0.0
+R_u93 u93_node u93_int {R_int}
+C_u93 u93_int 0 {C_int} IC=0.05
+
+* Unit 94
+R_v94 v94_node v94_int {R_int}
+C_v94 v94_int 0 {C_int} IC=-0.33
+R_w94 w94_node w94_int {R_int}
+C_w94 w94_int 0 {C_int} IC=0.0
+R_u94 u94_node u94_int {R_int}
+C_u94 u94_int 0 {C_int} IC=0.05
+
+* Unit 95
+R_v95 v95_node v95_int {R_int}
+C_v95 v95_int 0 {C_int} IC=0.22
+R_w95 w95_node w95_int {R_int}
+C_w95 w95_int 0 {C_int} IC=0.0
+R_u95 u95_node u95_int {R_int}
+C_u95 u95_int 0 {C_int} IC=0.05
+
+* Unit 96
+R_v96 v96_node v96_int {R_int}
+C_v96 v96_int 0 {C_int} IC=0.21
+R_w96 w96_node w96_int {R_int}
+C_w96 w96_int 0 {C_int} IC=0.0
+R_u96 u96_node u96_int {R_int}
+C_u96 u96_int 0 {C_int} IC=0.05
+
+* Unit 97
+R_v97 v97_node v97_int {R_int}
+C_v97 v97_int 0 {C_int} IC=0.80
+R_w97 w97_node w97_int {R_int}
+C_w97 w97_int 0 {C_int} IC=0.0
+R_u97 u97_node u97_int {R_int}
+C_u97 u97_int 0 {C_int} IC=0.05
+
+* Unit 98
+R_v98 v98_node v98_int {R_int}
+C_v98 v98_int 0 {C_int} IC=-0.72
+R_w98 w98_node w98_int {R_int}
+C_w98 w98_int 0 {C_int} IC=0.0
+R_u98 u98_node u98_int {R_int}
+C_u98 u98_int 0 {C_int} IC=0.05
+
+* Unit 99
+R_v99 v99_node v99_int {R_int}
+C_v99 v99_int 0 {C_int} IC=0.40
+R_w99 w99_node w99_int {R_int}
+C_w99 w99_int 0 {C_int} IC=0.0
+R_u99 u99_node u99_int {R_int}
+C_u99 u99_int 0 {C_int} IC=0.05
+
+* ── Unit Dynamics ──
+* Unit 0: dv/dt
+B_dv0 v0_node 0 V = V(v0_int) - pow(V(v0_int),3)/5 - V(w0_int) + D_eff * (tanh(3.14159*(0.5 - V(u0_int))) + 0.05) * ((V(v90_int) - V(v0_int)) + (V(v10_int) - V(v0_int)) + (V(v9_int) - V(v0_int)) + (V(v1_int) - V(v0_int))) - alpha_cog*tanh(V(v0_int))
+B_dw0 w0_node 0 V = eps * (V(v0_int) + a - b * V(w0_int))
+B_du0 u0_node 0 V = eps_u * (sigma_base - V(u0_int))
+
+* Unit 1: dv/dt
+B_dv1 v1_node 0 V = V(v1_int) - pow(V(v1_int),3)/5 - V(w1_int) + D_eff * (tanh(3.14159*(0.5 - V(u1_int))) + 0.05) * ((V(v91_int) - V(v1_int)) + (V(v11_int) - V(v1_int)) + (V(v0_int) - V(v1_int)) + (V(v2_int) - V(v1_int))) - alpha_cog*tanh(V(v1_int))
+B_dw1 w1_node 0 V = eps * (V(v1_int) + a - b * V(w1_int))
+B_du1 u1_node 0 V = eps_u * (sigma_base - V(u1_int))
+
+* Unit 2: dv/dt
+B_dv2 v2_node 0 V = V(v2_int) - pow(V(v2_int),3)/5 - V(w2_int) + D_eff * (tanh(3.14159*(0.5 - V(u2_int))) + 0.05) * ((V(v92_int) - V(v2_int)) + (V(v12_int) - V(v2_int)) + (V(v1_int) - V(v2_int)) + (V(v3_int) - V(v2_int))) - alpha_cog*tanh(V(v2_int))
+B_dw2 w2_node 0 V = eps * (V(v2_int) + a - b * V(w2_int))
+B_du2 u2_node 0 V = eps_u * (sigma_base - V(u2_int))
+
+* Unit 3: dv/dt
+B_dv3 v3_node 0 V = V(v3_int) - pow(V(v3_int),3)/5 - V(w3_int) + D_eff * (tanh(3.14159*(0.5 - V(u3_int))) + 0.05) * ((V(v93_int) - V(v3_int)) + (V(v13_int) - V(v3_int)) + (V(v2_int) - V(v3_int)) + (V(v4_int) - V(v3_int))) - alpha_cog*tanh(V(v3_int))
+B_dw3 w3_node 0 V = eps * (V(v3_int) + a - b * V(w3_int))
+B_du3 u3_node 0 V = eps_u * (sigma_base - V(u3_int))
+
+* Unit 4: dv/dt
+B_dv4 v4_node 0 V = V(v4_int) - pow(V(v4_int),3)/5 - V(w4_int) + D_eff * (tanh(3.14159*(0.5 - V(u4_int))) + 0.05) * ((V(v94_int) - V(v4_int)) + (V(v14_int) - V(v4_int)) + (V(v3_int) - V(v4_int)) + (V(v5_int) - V(v4_int))) - alpha_cog*tanh(V(v4_int))
+B_dw4 w4_node 0 V = eps * (V(v4_int) + a - b * V(w4_int))
+B_du4 u4_node 0 V = eps_u * (sigma_base - V(u4_int))
+
+* Unit 5: dv/dt
+B_dv5 v5_node 0 V = V(v5_int) - pow(V(v5_int),3)/5 - V(w5_int) + D_eff * (tanh(3.14159*(0.5 - V(u5_int))) + 0.05) * ((V(v95_int) - V(v5_int)) + (V(v15_int) - V(v5_int)) + (V(v4_int) - V(v5_int)) + (V(v6_int) - V(v5_int))) - alpha_cog*tanh(V(v5_int))
+B_dw5 w5_node 0 V = eps * (V(v5_int) + a - b * V(w5_int))
+B_du5 u5_node 0 V = eps_u * (sigma_base - V(u5_int))
+
+* Unit 6: dv/dt
+B_dv6 v6_node 0 V = V(v6_int) - pow(V(v6_int),3)/5 - V(w6_int) + D_eff * (tanh(3.14159*(0.5 - V(u6_int))) + 0.05) * ((V(v96_int) - V(v6_int)) + (V(v16_int) - V(v6_int)) + (V(v5_int) - V(v6_int)) + (V(v7_int) - V(v6_int))) - alpha_cog*tanh(V(v6_int))
+B_dw6 w6_node 0 V = eps * (V(v6_int) + a - b * V(w6_int))
+B_du6 u6_node 0 V = eps_u * (sigma_base - V(u6_int))
+
+* Unit 7: dv/dt
+B_dv7 v7_node 0 V = V(v7_int) - pow(V(v7_int),3)/5 - V(w7_int) + D_eff * (tanh(3.14159*(0.5 - V(u7_int))) + 0.05) * ((V(v97_int) - V(v7_int)) + (V(v17_int) - V(v7_int)) + (V(v6_int) - V(v7_int)) + (V(v8_int) - V(v7_int))) - alpha_cog*tanh(V(v7_int))
+B_dw7 w7_node 0 V = eps * (V(v7_int) + a - b * V(w7_int))
+B_du7 u7_node 0 V = eps_u * (sigma_base - V(u7_int))
+
+* Unit 8: dv/dt
+B_dv8 v8_node 0 V = V(v8_int) - pow(V(v8_int),3)/5 - V(w8_int) + D_eff * (tanh(3.14159*(0.5 - V(u8_int))) + 0.05) * ((V(v98_int) - V(v8_int)) + (V(v18_int) - V(v8_int)) + (V(v7_int) - V(v8_int)) + (V(v9_int) - V(v8_int))) - alpha_cog*tanh(V(v8_int))
+B_dw8 w8_node 0 V = eps * (V(v8_int) + a - b * V(w8_int))
+B_du8 u8_node 0 V = eps_u * (sigma_base - V(u8_int))
+
+* Unit 9: dv/dt
+B_dv9 v9_node 0 V = V(v9_int) - pow(V(v9_int),3)/5 - V(w9_int) + D_eff * (tanh(3.14159*(0.5 - V(u9_int))) + 0.05) * ((V(v99_int) - V(v9_int)) + (V(v19_int) - V(v9_int)) + (V(v8_int) - V(v9_int)) + (V(v0_int) - V(v9_int))) - alpha_cog*tanh(V(v9_int))
+B_dw9 w9_node 0 V = eps * (V(v9_int) + a - b * V(w9_int))
+B_du9 u9_node 0 V = eps_u * (sigma_base - V(u9_int))
+
+* Unit 10: dv/dt
+B_dv10 v10_node 0 V = V(v10_int) - pow(V(v10_int),3)/5 - V(w10_int) + D_eff * (tanh(3.14159*(0.5 - V(u10_int))) + 0.05) * ((V(v0_int) - V(v10_int)) + (V(v20_int) - V(v10_int)) + (V(v19_int) - V(v10_int)) + (V(v11_int) - V(v10_int))) - alpha_cog*tanh(V(v10_int))
+B_dw10 w10_node 0 V = eps * (V(v10_int) + a - b * V(w10_int))
+B_du10 u10_node 0 V = eps_u * (sigma_base - V(u10_int))
+
+* Unit 11: dv/dt
+B_dv11 v11_node 0 V = V(v11_int) - pow(V(v11_int),3)/5 - V(w11_int) + D_eff * (tanh(3.14159*(0.5 - V(u11_int))) + 0.05) * ((V(v1_int) - V(v11_int)) + (V(v21_int) - V(v11_int)) + (V(v10_int) - V(v11_int)) + (V(v12_int) - V(v11_int))) - alpha_cog*tanh(V(v11_int))
+B_dw11 w11_node 0 V = eps * (V(v11_int) + a - b * V(w11_int))
+B_du11 u11_node 0 V = eps_u * (sigma_base - V(u11_int))
+
+* Unit 12: dv/dt
+B_dv12 v12_node 0 V = V(v12_int) - pow(V(v12_int),3)/5 - V(w12_int) + D_eff * (tanh(3.14159*(0.5 - V(u12_int))) + 0.05) * ((V(v2_int) - V(v12_int)) + (V(v22_int) - V(v12_int)) + (V(v11_int) - V(v12_int)) + (V(v13_int) - V(v12_int))) - alpha_cog*tanh(V(v12_int))
+B_dw12 w12_node 0 V = eps * (V(v12_int) + a - b * V(w12_int))
+B_du12 u12_node 0 V = eps_u * (sigma_base - V(u12_int))
+
+* Unit 13: dv/dt
+B_dv13 v13_node 0 V = V(v13_int) - pow(V(v13_int),3)/5 - V(w13_int) + D_eff * (tanh(3.14159*(0.5 - V(u13_int))) + 0.05) * ((V(v3_int) - V(v13_int)) + (V(v23_int) - V(v13_int)) + (V(v12_int) - V(v13_int)) + (V(v14_int) - V(v13_int))) - alpha_cog*tanh(V(v13_int))
+B_dw13 w13_node 0 V = eps * (V(v13_int) + a - b * V(w13_int))
+B_du13 u13_node 0 V = eps_u * (sigma_base - V(u13_int))
+
+* Unit 14: dv/dt
+B_dv14 v14_node 0 V = V(v14_int) - pow(V(v14_int),3)/5 - V(w14_int) + D_eff * (tanh(3.14159*(0.5 - V(u14_int))) + 0.05) * ((V(v4_int) - V(v14_int)) + (V(v24_int) - V(v14_int)) + (V(v13_int) - V(v14_int)) + (V(v15_int) - V(v14_int))) - alpha_cog*tanh(V(v14_int))
+B_dw14 w14_node 0 V = eps * (V(v14_int) + a - b * V(w14_int))
+B_du14 u14_node 0 V = eps_u * (sigma_base - V(u14_int))
+
+* Unit 15: dv/dt
+B_dv15 v15_node 0 V = V(v15_int) - pow(V(v15_int),3)/5 - V(w15_int) + D_eff * (tanh(3.14159*(0.5 - V(u15_int))) + 0.05) * ((V(v5_int) - V(v15_int)) + (V(v25_int) - V(v15_int)) + (V(v14_int) - V(v15_int)) + (V(v16_int) - V(v15_int))) - alpha_cog*tanh(V(v15_int))
+B_dw15 w15_node 0 V = eps * (V(v15_int) + a - b * V(w15_int))
+B_du15 u15_node 0 V = eps_u * (sigma_base - V(u15_int))
+
+* Unit 16: dv/dt
+B_dv16 v16_node 0 V = V(v16_int) - pow(V(v16_int),3)/5 - V(w16_int) + D_eff * (tanh(3.14159*(0.5 - V(u16_int))) + 0.05) * ((V(v6_int) - V(v16_int)) + (V(v26_int) - V(v16_int)) + (V(v15_int) - V(v16_int)) + (V(v17_int) - V(v16_int))) - alpha_cog*tanh(V(v16_int))
+B_dw16 w16_node 0 V = eps * (V(v16_int) + a - b * V(w16_int))
+B_du16 u16_node 0 V = eps_u * (sigma_base - V(u16_int))
+
+* Unit 17: dv/dt
+B_dv17 v17_node 0 V = V(v17_int) - pow(V(v17_int),3)/5 - V(w17_int) + D_eff * (tanh(3.14159*(0.5 - V(u17_int))) + 0.05) * ((V(v7_int) - V(v17_int)) + (V(v27_int) - V(v17_int)) + (V(v16_int) - V(v17_int)) + (V(v18_int) - V(v17_int))) - alpha_cog*tanh(V(v17_int))
+B_dw17 w17_node 0 V = eps * (V(v17_int) + a - b * V(w17_int))
+B_du17 u17_node 0 V = eps_u * (sigma_base - V(u17_int))
+
+* Unit 18: dv/dt
+B_dv18 v18_node 0 V = V(v18_int) - pow(V(v18_int),3)/5 - V(w18_int) + D_eff * (tanh(3.14159*(0.5 - V(u18_int))) + 0.05) * ((V(v8_int) - V(v18_int)) + (V(v28_int) - V(v18_int)) + (V(v17_int) - V(v18_int)) + (V(v19_int) - V(v18_int))) - alpha_cog*tanh(V(v18_int))
+B_dw18 w18_node 0 V = eps * (V(v18_int) + a - b * V(w18_int))
+B_du18 u18_node 0 V = eps_u * (sigma_base - V(u18_int))
+
+* Unit 19: dv/dt
+B_dv19 v19_node 0 V = V(v19_int) - pow(V(v19_int),3)/5 - V(w19_int) + D_eff * (tanh(3.14159*(0.5 - V(u19_int))) + 0.05) * ((V(v9_int) - V(v19_int)) + (V(v29_int) - V(v19_int)) + (V(v18_int) - V(v19_int)) + (V(v10_int) - V(v19_int))) - alpha_cog*tanh(V(v19_int))
+B_dw19 w19_node 0 V = eps * (V(v19_int) + a - b * V(w19_int))
+B_du19 u19_node 0 V = eps_u * (sigma_base - V(u19_int))
+
+* Unit 20: dv/dt
+B_dv20 v20_node 0 V = V(v20_int) - pow(V(v20_int),3)/5 - V(w20_int) + D_eff * (tanh(3.14159*(0.5 - V(u20_int))) + 0.05) * ((V(v10_int) - V(v20_int)) + (V(v30_int) - V(v20_int)) + (V(v29_int) - V(v20_int)) + (V(v21_int) - V(v20_int))) - alpha_cog*tanh(V(v20_int))
+B_dw20 w20_node 0 V = eps * (V(v20_int) + a - b * V(w20_int))
+B_du20 u20_node 0 V = eps_u * (sigma_base - V(u20_int))
+
+* Unit 21: dv/dt
+B_dv21 v21_node 0 V = V(v21_int) - pow(V(v21_int),3)/5 - V(w21_int) + D_eff * (tanh(3.14159*(0.5 - V(u21_int))) + 0.05) * ((V(v11_int) - V(v21_int)) + (V(v31_int) - V(v21_int)) + (V(v20_int) - V(v21_int)) + (V(v22_int) - V(v21_int))) - alpha_cog*tanh(V(v21_int))
+B_dw21 w21_node 0 V = eps * (V(v21_int) + a - b * V(w21_int))
+B_du21 u21_node 0 V = eps_u * (sigma_base - V(u21_int))
+
+* Unit 22: dv/dt
+B_dv22 v22_node 0 V = V(v22_int) - pow(V(v22_int),3)/5 - V(w22_int) + D_eff * (tanh(3.14159*(0.5 - V(u22_int))) + 0.05) * ((V(v12_int) - V(v22_int)) + (V(v32_int) - V(v22_int)) + (V(v21_int) - V(v22_int)) + (V(v23_int) - V(v22_int))) - alpha_cog*tanh(V(v22_int))
+B_dw22 w22_node 0 V = eps * (V(v22_int) + a - b * V(w22_int))
+B_du22 u22_node 0 V = eps_u * (sigma_base - V(u22_int))
+
+* Unit 23: dv/dt
+B_dv23 v23_node 0 V = V(v23_int) - pow(V(v23_int),3)/5 - V(w23_int) + D_eff * (tanh(3.14159*(0.5 - V(u23_int))) + 0.05) * ((V(v13_int) - V(v23_int)) + (V(v33_int) - V(v23_int)) + (V(v22_int) - V(v23_int)) + (V(v24_int) - V(v23_int))) - alpha_cog*tanh(V(v23_int))
+B_dw23 w23_node 0 V = eps * (V(v23_int) + a - b * V(w23_int))
+B_du23 u23_node 0 V = eps_u * (sigma_base - V(u23_int))
+
+* Unit 24: dv/dt
+B_dv24 v24_node 0 V = V(v24_int) - pow(V(v24_int),3)/5 - V(w24_int) + D_eff * (tanh(3.14159*(0.5 - V(u24_int))) + 0.05) * ((V(v14_int) - V(v24_int)) + (V(v34_int) - V(v24_int)) + (V(v23_int) - V(v24_int)) + (V(v25_int) - V(v24_int))) - alpha_cog*tanh(V(v24_int))
+B_dw24 w24_node 0 V = eps * (V(v24_int) + a - b * V(w24_int))
+B_du24 u24_node 0 V = eps_u * (sigma_base - V(u24_int))
+
+* Unit 25: dv/dt
+B_dv25 v25_node 0 V = V(v25_int) - pow(V(v25_int),3)/5 - V(w25_int) + D_eff * (tanh(3.14159*(0.5 - V(u25_int))) + 0.05) * ((V(v15_int) - V(v25_int)) + (V(v35_int) - V(v25_int)) + (V(v24_int) - V(v25_int)) + (V(v26_int) - V(v25_int))) - alpha_cog*tanh(V(v25_int))
+B_dw25 w25_node 0 V = eps * (V(v25_int) + a - b * V(w25_int))
+B_du25 u25_node 0 V = eps_u * (sigma_base - V(u25_int))
+
+* Unit 26: dv/dt
+B_dv26 v26_node 0 V = V(v26_int) - pow(V(v26_int),3)/5 - V(w26_int) + D_eff * (tanh(3.14159*(0.5 - V(u26_int))) + 0.05) * ((V(v16_int) - V(v26_int)) + (V(v36_int) - V(v26_int)) + (V(v25_int) - V(v26_int)) + (V(v27_int) - V(v26_int))) - alpha_cog*tanh(V(v26_int))
+B_dw26 w26_node 0 V = eps * (V(v26_int) + a - b * V(w26_int))
+B_du26 u26_node 0 V = eps_u * (sigma_base - V(u26_int))
+
+* Unit 27: dv/dt
+B_dv27 v27_node 0 V = V(v27_int) - pow(V(v27_int),3)/5 - V(w27_int) + D_eff * (tanh(3.14159*(0.5 - V(u27_int))) + 0.05) * ((V(v17_int) - V(v27_int)) + (V(v37_int) - V(v27_int)) + (V(v26_int) - V(v27_int)) + (V(v28_int) - V(v27_int))) - alpha_cog*tanh(V(v27_int))
+B_dw27 w27_node 0 V = eps * (V(v27_int) + a - b * V(w27_int))
+B_du27 u27_node 0 V = eps_u * (sigma_base - V(u27_int))
+
+* Unit 28: dv/dt
+B_dv28 v28_node 0 V = V(v28_int) - pow(V(v28_int),3)/5 - V(w28_int) + D_eff * (tanh(3.14159*(0.5 - V(u28_int))) + 0.05) * ((V(v18_int) - V(v28_int)) + (V(v38_int) - V(v28_int)) + (V(v27_int) - V(v28_int)) + (V(v29_int) - V(v28_int))) - alpha_cog*tanh(V(v28_int))
+B_dw28 w28_node 0 V = eps * (V(v28_int) + a - b * V(w28_int))
+B_du28 u28_node 0 V = eps_u * (sigma_base - V(u28_int))
+
+* Unit 29: dv/dt
+B_dv29 v29_node 0 V = V(v29_int) - pow(V(v29_int),3)/5 - V(w29_int) + D_eff * (tanh(3.14159*(0.5 - V(u29_int))) + 0.05) * ((V(v19_int) - V(v29_int)) + (V(v39_int) - V(v29_int)) + (V(v28_int) - V(v29_int)) + (V(v20_int) - V(v29_int))) - alpha_cog*tanh(V(v29_int))
+B_dw29 w29_node 0 V = eps * (V(v29_int) + a - b * V(w29_int))
+B_du29 u29_node 0 V = eps_u * (sigma_base - V(u29_int))
+
+* Unit 30: dv/dt
+B_dv30 v30_node 0 V = V(v30_int) - pow(V(v30_int),3)/5 - V(w30_int) + D_eff * (tanh(3.14159*(0.5 - V(u30_int))) + 0.05) * ((V(v20_int) - V(v30_int)) + (V(v40_int) - V(v30_int)) + (V(v39_int) - V(v30_int)) + (V(v31_int) - V(v30_int))) - alpha_cog*tanh(V(v30_int))
+B_dw30 w30_node 0 V = eps * (V(v30_int) + a - b * V(w30_int))
+B_du30 u30_node 0 V = eps_u * (sigma_base - V(u30_int))
+
+* Unit 31: dv/dt
+B_dv31 v31_node 0 V = V(v31_int) - pow(V(v31_int),3)/5 - V(w31_int) + D_eff * (tanh(3.14159*(0.5 - V(u31_int))) + 0.05) * ((V(v21_int) - V(v31_int)) + (V(v41_int) - V(v31_int)) + (V(v30_int) - V(v31_int)) + (V(v32_int) - V(v31_int))) - alpha_cog*tanh(V(v31_int))
+B_dw31 w31_node 0 V = eps * (V(v31_int) + a - b * V(w31_int))
+B_du31 u31_node 0 V = eps_u * (sigma_base - V(u31_int))
+
+* Unit 32: dv/dt
+B_dv32 v32_node 0 V = V(v32_int) - pow(V(v32_int),3)/5 - V(w32_int) + D_eff * (tanh(3.14159*(0.5 - V(u32_int))) + 0.05) * ((V(v22_int) - V(v32_int)) + (V(v42_int) - V(v32_int)) + (V(v31_int) - V(v32_int)) + (V(v33_int) - V(v32_int))) - alpha_cog*tanh(V(v32_int))
+B_dw32 w32_node 0 V = eps * (V(v32_int) + a - b * V(w32_int))
+B_du32 u32_node 0 V = eps_u * (sigma_base - V(u32_int))
+
+* Unit 33: dv/dt
+B_dv33 v33_node 0 V = V(v33_int) - pow(V(v33_int),3)/5 - V(w33_int) + D_eff * (tanh(3.14159*(0.5 - V(u33_int))) + 0.05) * ((V(v23_int) - V(v33_int)) + (V(v43_int) - V(v33_int)) + (V(v32_int) - V(v33_int)) + (V(v34_int) - V(v33_int))) - alpha_cog*tanh(V(v33_int))
+B_dw33 w33_node 0 V = eps * (V(v33_int) + a - b * V(w33_int))
+B_du33 u33_node 0 V = eps_u * (sigma_base - V(u33_int))
+
+* Unit 34: dv/dt
+B_dv34 v34_node 0 V = V(v34_int) - pow(V(v34_int),3)/5 - V(w34_int) + D_eff * (tanh(3.14159*(0.5 - V(u34_int))) + 0.05) * ((V(v24_int) - V(v34_int)) + (V(v44_int) - V(v34_int)) + (V(v33_int) - V(v34_int)) + (V(v35_int) - V(v34_int))) - alpha_cog*tanh(V(v34_int))
+B_dw34 w34_node 0 V = eps * (V(v34_int) + a - b * V(w34_int))
+B_du34 u34_node 0 V = eps_u * (sigma_base - V(u34_int))
+
+* Unit 35: dv/dt
+B_dv35 v35_node 0 V = V(v35_int) - pow(V(v35_int),3)/5 - V(w35_int) + D_eff * (tanh(3.14159*(0.5 - V(u35_int))) + 0.05) * ((V(v25_int) - V(v35_int)) + (V(v45_int) - V(v35_int)) + (V(v34_int) - V(v35_int)) + (V(v36_int) - V(v35_int))) - alpha_cog*tanh(V(v35_int))
+B_dw35 w35_node 0 V = eps * (V(v35_int) + a - b * V(w35_int))
+B_du35 u35_node 0 V = eps_u * (sigma_base - V(u35_int))
+
+* Unit 36: dv/dt
+B_dv36 v36_node 0 V = V(v36_int) - pow(V(v36_int),3)/5 - V(w36_int) + D_eff * (tanh(3.14159*(0.5 - V(u36_int))) + 0.05) * ((V(v26_int) - V(v36_int)) + (V(v46_int) - V(v36_int)) + (V(v35_int) - V(v36_int)) + (V(v37_int) - V(v36_int))) - alpha_cog*tanh(V(v36_int))
+B_dw36 w36_node 0 V = eps * (V(v36_int) + a - b * V(w36_int))
+B_du36 u36_node 0 V = eps_u * (sigma_base - V(u36_int))
+
+* Unit 37: dv/dt
+B_dv37 v37_node 0 V = V(v37_int) - pow(V(v37_int),3)/5 - V(w37_int) + D_eff * (tanh(3.14159*(0.5 - V(u37_int))) + 0.05) * ((V(v27_int) - V(v37_int)) + (V(v47_int) - V(v37_int)) + (V(v36_int) - V(v37_int)) + (V(v38_int) - V(v37_int))) - alpha_cog*tanh(V(v37_int))
+B_dw37 w37_node 0 V = eps * (V(v37_int) + a - b * V(w37_int))
+B_du37 u37_node 0 V = eps_u * (sigma_base - V(u37_int))
+
+* Unit 38: dv/dt
+B_dv38 v38_node 0 V = V(v38_int) - pow(V(v38_int),3)/5 - V(w38_int) + D_eff * (tanh(3.14159*(0.5 - V(u38_int))) + 0.05) * ((V(v28_int) - V(v38_int)) + (V(v48_int) - V(v38_int)) + (V(v37_int) - V(v38_int)) + (V(v39_int) - V(v38_int))) - alpha_cog*tanh(V(v38_int))
+B_dw38 w38_node 0 V = eps * (V(v38_int) + a - b * V(w38_int))
+B_du38 u38_node 0 V = eps_u * (sigma_base - V(u38_int))
+
+* Unit 39: dv/dt
+B_dv39 v39_node 0 V = V(v39_int) - pow(V(v39_int),3)/5 - V(w39_int) + D_eff * (tanh(3.14159*(0.5 - V(u39_int))) + 0.05) * ((V(v29_int) - V(v39_int)) + (V(v49_int) - V(v39_int)) + (V(v38_int) - V(v39_int)) + (V(v30_int) - V(v39_int))) - alpha_cog*tanh(V(v39_int))
+B_dw39 w39_node 0 V = eps * (V(v39_int) + a - b * V(w39_int))
+B_du39 u39_node 0 V = eps_u * (sigma_base - V(u39_int))
+
+* Unit 40: dv/dt
+B_dv40 v40_node 0 V = V(v40_int) - pow(V(v40_int),3)/5 - V(w40_int) + D_eff * (tanh(3.14159*(0.5 - V(u40_int))) + 0.05) * ((V(v30_int) - V(v40_int)) + (V(v50_int) - V(v40_int)) + (V(v49_int) - V(v40_int)) + (V(v41_int) - V(v40_int))) - alpha_cog*tanh(V(v40_int))
+B_dw40 w40_node 0 V = eps * (V(v40_int) + a - b * V(w40_int))
+B_du40 u40_node 0 V = eps_u * (sigma_base - V(u40_int))
+
+* Unit 41: dv/dt
+B_dv41 v41_node 0 V = V(v41_int) - pow(V(v41_int),3)/5 - V(w41_int) + D_eff * (tanh(3.14159*(0.5 - V(u41_int))) + 0.05) * ((V(v31_int) - V(v41_int)) + (V(v51_int) - V(v41_int)) + (V(v40_int) - V(v41_int)) + (V(v42_int) - V(v41_int))) - alpha_cog*tanh(V(v41_int))
+B_dw41 w41_node 0 V = eps * (V(v41_int) + a - b * V(w41_int))
+B_du41 u41_node 0 V = eps_u * (sigma_base - V(u41_int))
+
+* Unit 42: dv/dt
+B_dv42 v42_node 0 V = V(v42_int) - pow(V(v42_int),3)/5 - V(w42_int) + D_eff * (tanh(3.14159*(0.5 - V(u42_int))) + 0.05) * ((V(v32_int) - V(v42_int)) + (V(v52_int) - V(v42_int)) + (V(v41_int) - V(v42_int)) + (V(v43_int) - V(v42_int))) - alpha_cog*tanh(V(v42_int))
+B_dw42 w42_node 0 V = eps * (V(v42_int) + a - b * V(w42_int))
+B_du42 u42_node 0 V = eps_u * (sigma_base - V(u42_int))
+
+* Unit 43: dv/dt
+B_dv43 v43_node 0 V = V(v43_int) - pow(V(v43_int),3)/5 - V(w43_int) + D_eff * (tanh(3.14159*(0.5 - V(u43_int))) + 0.05) * ((V(v33_int) - V(v43_int)) + (V(v53_int) - V(v43_int)) + (V(v42_int) - V(v43_int)) + (V(v44_int) - V(v43_int))) - alpha_cog*tanh(V(v43_int))
+B_dw43 w43_node 0 V = eps * (V(v43_int) + a - b * V(w43_int))
+B_du43 u43_node 0 V = eps_u * (sigma_base - V(u43_int))
+
+* Unit 44: dv/dt
+B_dv44 v44_node 0 V = V(v44_int) - pow(V(v44_int),3)/5 - V(w44_int) + D_eff * (tanh(3.14159*(0.5 - V(u44_int))) + 0.05) * ((V(v34_int) - V(v44_int)) + (V(v54_int) - V(v44_int)) + (V(v43_int) - V(v44_int)) + (V(v45_int) - V(v44_int))) - alpha_cog*tanh(V(v44_int))
+B_dw44 w44_node 0 V = eps * (V(v44_int) + a - b * V(w44_int))
+B_du44 u44_node 0 V = eps_u * (sigma_base - V(u44_int))
+
+* Unit 45: dv/dt
+B_dv45 v45_node 0 V = V(v45_int) - pow(V(v45_int),3)/5 - V(w45_int) + D_eff * (tanh(3.14159*(0.5 - V(u45_int))) + 0.05) * ((V(v35_int) - V(v45_int)) + (V(v55_int) - V(v45_int)) + (V(v44_int) - V(v45_int)) + (V(v46_int) - V(v45_int))) - alpha_cog*tanh(V(v45_int))
+B_dw45 w45_node 0 V = eps * (V(v45_int) + a - b * V(w45_int))
+B_du45 u45_node 0 V = eps_u * (sigma_base - V(u45_int))
+
+* Unit 46: dv/dt
+B_dv46 v46_node 0 V = V(v46_int) - pow(V(v46_int),3)/5 - V(w46_int) + D_eff * (tanh(3.14159*(0.5 - V(u46_int))) + 0.05) * ((V(v36_int) - V(v46_int)) + (V(v56_int) - V(v46_int)) + (V(v45_int) - V(v46_int)) + (V(v47_int) - V(v46_int))) - alpha_cog*tanh(V(v46_int))
+B_dw46 w46_node 0 V = eps * (V(v46_int) + a - b * V(w46_int))
+B_du46 u46_node 0 V = eps_u * (sigma_base - V(u46_int))
+
+* Unit 47: dv/dt
+B_dv47 v47_node 0 V = V(v47_int) - pow(V(v47_int),3)/5 - V(w47_int) + D_eff * (tanh(3.14159*(0.5 - V(u47_int))) + 0.05) * ((V(v37_int) - V(v47_int)) + (V(v57_int) - V(v47_int)) + (V(v46_int) - V(v47_int)) + (V(v48_int) - V(v47_int))) - alpha_cog*tanh(V(v47_int))
+B_dw47 w47_node 0 V = eps * (V(v47_int) + a - b * V(w47_int))
+B_du47 u47_node 0 V = eps_u * (sigma_base - V(u47_int))
+
+* Unit 48: dv/dt
+B_dv48 v48_node 0 V = V(v48_int) - pow(V(v48_int),3)/5 - V(w48_int) + D_eff * (tanh(3.14159*(0.5 - V(u48_int))) + 0.05) * ((V(v38_int) - V(v48_int)) + (V(v58_int) - V(v48_int)) + (V(v47_int) - V(v48_int)) + (V(v49_int) - V(v48_int))) - alpha_cog*tanh(V(v48_int))
+B_dw48 w48_node 0 V = eps * (V(v48_int) + a - b * V(w48_int))
+B_du48 u48_node 0 V = eps_u * (sigma_base - V(u48_int))
+
+* Unit 49: dv/dt
+B_dv49 v49_node 0 V = V(v49_int) - pow(V(v49_int),3)/5 - V(w49_int) + D_eff * (tanh(3.14159*(0.5 - V(u49_int))) + 0.05) * ((V(v39_int) - V(v49_int)) + (V(v59_int) - V(v49_int)) + (V(v48_int) - V(v49_int)) + (V(v40_int) - V(v49_int))) - alpha_cog*tanh(V(v49_int))
+B_dw49 w49_node 0 V = eps * (V(v49_int) + a - b * V(w49_int))
+B_du49 u49_node 0 V = eps_u * (sigma_base - V(u49_int))
+
+* Unit 50: dv/dt
+B_dv50 v50_node 0 V = V(v50_int) - pow(V(v50_int),3)/5 - V(w50_int) + D_eff * (tanh(3.14159*(0.5 - V(u50_int))) + 0.05) * ((V(v40_int) - V(v50_int)) + (V(v60_int) - V(v50_int)) + (V(v59_int) - V(v50_int)) + (V(v51_int) - V(v50_int))) - alpha_cog*tanh(V(v50_int))
+B_dw50 w50_node 0 V = eps * (V(v50_int) + a - b * V(w50_int))
+B_du50 u50_node 0 V = eps_u * (sigma_base - V(u50_int))
+
+* Unit 51: dv/dt
+B_dv51 v51_node 0 V = V(v51_int) - pow(V(v51_int),3)/5 - V(w51_int) + D_eff * (tanh(3.14159*(0.5 - V(u51_int))) + 0.05) * ((V(v41_int) - V(v51_int)) + (V(v61_int) - V(v51_int)) + (V(v50_int) - V(v51_int)) + (V(v52_int) - V(v51_int))) - alpha_cog*tanh(V(v51_int))
+B_dw51 w51_node 0 V = eps * (V(v51_int) + a - b * V(w51_int))
+B_du51 u51_node 0 V = eps_u * (sigma_base - V(u51_int))
+
+* Unit 52: dv/dt
+B_dv52 v52_node 0 V = V(v52_int) - pow(V(v52_int),3)/5 - V(w52_int) + D_eff * (tanh(3.14159*(0.5 - V(u52_int))) + 0.05) * ((V(v42_int) - V(v52_int)) + (V(v62_int) - V(v52_int)) + (V(v51_int) - V(v52_int)) + (V(v53_int) - V(v52_int))) - alpha_cog*tanh(V(v52_int))
+B_dw52 w52_node 0 V = eps * (V(v52_int) + a - b * V(w52_int))
+B_du52 u52_node 0 V = eps_u * (sigma_base - V(u52_int))
+
+* Unit 53: dv/dt
+B_dv53 v53_node 0 V = V(v53_int) - pow(V(v53_int),3)/5 - V(w53_int) + D_eff * (tanh(3.14159*(0.5 - V(u53_int))) + 0.05) * ((V(v43_int) - V(v53_int)) + (V(v63_int) - V(v53_int)) + (V(v52_int) - V(v53_int)) + (V(v54_int) - V(v53_int))) - alpha_cog*tanh(V(v53_int))
+B_dw53 w53_node 0 V = eps * (V(v53_int) + a - b * V(w53_int))
+B_du53 u53_node 0 V = eps_u * (sigma_base - V(u53_int))
+
+* Unit 54: dv/dt
+B_dv54 v54_node 0 V = V(v54_int) - pow(V(v54_int),3)/5 - V(w54_int) + D_eff * (tanh(3.14159*(0.5 - V(u54_int))) + 0.05) * ((V(v44_int) - V(v54_int)) + (V(v64_int) - V(v54_int)) + (V(v53_int) - V(v54_int)) + (V(v55_int) - V(v54_int))) - alpha_cog*tanh(V(v54_int))
+B_dw54 w54_node 0 V = eps * (V(v54_int) + a - b * V(w54_int))
+B_du54 u54_node 0 V = eps_u * (sigma_base - V(u54_int))
+
+* Unit 55: dv/dt
+B_dv55 v55_node 0 V = V(v55_int) - pow(V(v55_int),3)/5 - V(w55_int) + D_eff * (tanh(3.14159*(0.5 - V(u55_int))) + 0.05) * ((V(v45_int) - V(v55_int)) + (V(v65_int) - V(v55_int)) + (V(v54_int) - V(v55_int)) + (V(v56_int) - V(v55_int))) - alpha_cog*tanh(V(v55_int))
+B_dw55 w55_node 0 V = eps * (V(v55_int) + a - b * V(w55_int))
+B_du55 u55_node 0 V = eps_u * (sigma_base - V(u55_int))
+
+* Unit 56: dv/dt
+B_dv56 v56_node 0 V = V(v56_int) - pow(V(v56_int),3)/5 - V(w56_int) + D_eff * (tanh(3.14159*(0.5 - V(u56_int))) + 0.05) * ((V(v46_int) - V(v56_int)) + (V(v66_int) - V(v56_int)) + (V(v55_int) - V(v56_int)) + (V(v57_int) - V(v56_int))) - alpha_cog*tanh(V(v56_int))
+B_dw56 w56_node 0 V = eps * (V(v56_int) + a - b * V(w56_int))
+B_du56 u56_node 0 V = eps_u * (sigma_base - V(u56_int))
+
+* Unit 57: dv/dt
+B_dv57 v57_node 0 V = V(v57_int) - pow(V(v57_int),3)/5 - V(w57_int) + D_eff * (tanh(3.14159*(0.5 - V(u57_int))) + 0.05) * ((V(v47_int) - V(v57_int)) + (V(v67_int) - V(v57_int)) + (V(v56_int) - V(v57_int)) + (V(v58_int) - V(v57_int))) - alpha_cog*tanh(V(v57_int))
+B_dw57 w57_node 0 V = eps * (V(v57_int) + a - b * V(w57_int))
+B_du57 u57_node 0 V = eps_u * (sigma_base - V(u57_int))
+
+* Unit 58: dv/dt
+B_dv58 v58_node 0 V = V(v58_int) - pow(V(v58_int),3)/5 - V(w58_int) + D_eff * (tanh(3.14159*(0.5 - V(u58_int))) + 0.05) * ((V(v48_int) - V(v58_int)) + (V(v68_int) - V(v58_int)) + (V(v57_int) - V(v58_int)) + (V(v59_int) - V(v58_int))) - alpha_cog*tanh(V(v58_int))
+B_dw58 w58_node 0 V = eps * (V(v58_int) + a - b * V(w58_int))
+B_du58 u58_node 0 V = eps_u * (sigma_base - V(u58_int))
+
+* Unit 59: dv/dt
+B_dv59 v59_node 0 V = V(v59_int) - pow(V(v59_int),3)/5 - V(w59_int) + D_eff * (tanh(3.14159*(0.5 - V(u59_int))) + 0.05) * ((V(v49_int) - V(v59_int)) + (V(v69_int) - V(v59_int)) + (V(v58_int) - V(v59_int)) + (V(v50_int) - V(v59_int))) - alpha_cog*tanh(V(v59_int))
+B_dw59 w59_node 0 V = eps * (V(v59_int) + a - b * V(w59_int))
+B_du59 u59_node 0 V = eps_u * (sigma_base - V(u59_int))
+
+* Unit 60: dv/dt
+B_dv60 v60_node 0 V = V(v60_int) - pow(V(v60_int),3)/5 - V(w60_int) + D_eff * (tanh(3.14159*(0.5 - V(u60_int))) + 0.05) * ((V(v50_int) - V(v60_int)) + (V(v70_int) - V(v60_int)) + (V(v69_int) - V(v60_int)) + (V(v61_int) - V(v60_int))) - alpha_cog*tanh(V(v60_int))
+B_dw60 w60_node 0 V = eps * (V(v60_int) + a - b * V(w60_int))
+B_du60 u60_node 0 V = eps_u * (sigma_base - V(u60_int))
+
+* Unit 61: dv/dt
+B_dv61 v61_node 0 V = V(v61_int) - pow(V(v61_int),3)/5 - V(w61_int) + D_eff * (tanh(3.14159*(0.5 - V(u61_int))) + 0.05) * ((V(v51_int) - V(v61_int)) + (V(v71_int) - V(v61_int)) + (V(v60_int) - V(v61_int)) + (V(v62_int) - V(v61_int))) - alpha_cog*tanh(V(v61_int))
+B_dw61 w61_node 0 V = eps * (V(v61_int) + a - b * V(w61_int))
+B_du61 u61_node 0 V = eps_u * (sigma_base - V(u61_int))
+
+* Unit 62: dv/dt
+B_dv62 v62_node 0 V = V(v62_int) - pow(V(v62_int),3)/5 - V(w62_int) + D_eff * (tanh(3.14159*(0.5 - V(u62_int))) + 0.05) * ((V(v52_int) - V(v62_int)) + (V(v72_int) - V(v62_int)) + (V(v61_int) - V(v62_int)) + (V(v63_int) - V(v62_int))) - alpha_cog*tanh(V(v62_int))
+B_dw62 w62_node 0 V = eps * (V(v62_int) + a - b * V(w62_int))
+B_du62 u62_node 0 V = eps_u * (sigma_base - V(u62_int))
+
+* Unit 63: dv/dt
+B_dv63 v63_node 0 V = V(v63_int) - pow(V(v63_int),3)/5 - V(w63_int) + D_eff * (tanh(3.14159*(0.5 - V(u63_int))) + 0.05) * ((V(v53_int) - V(v63_int)) + (V(v73_int) - V(v63_int)) + (V(v62_int) - V(v63_int)) + (V(v64_int) - V(v63_int))) - alpha_cog*tanh(V(v63_int))
+B_dw63 w63_node 0 V = eps * (V(v63_int) + a - b * V(w63_int))
+B_du63 u63_node 0 V = eps_u * (sigma_base - V(u63_int))
+
+* Unit 64: dv/dt
+B_dv64 v64_node 0 V = V(v64_int) - pow(V(v64_int),3)/5 - V(w64_int) + D_eff * (tanh(3.14159*(0.5 - V(u64_int))) + 0.05) * ((V(v54_int) - V(v64_int)) + (V(v74_int) - V(v64_int)) + (V(v63_int) - V(v64_int)) + (V(v65_int) - V(v64_int))) - alpha_cog*tanh(V(v64_int))
+B_dw64 w64_node 0 V = eps * (V(v64_int) + a - b * V(w64_int))
+B_du64 u64_node 0 V = eps_u * (sigma_base - V(u64_int))
+
+* Unit 65: dv/dt
+B_dv65 v65_node 0 V = V(v65_int) - pow(V(v65_int),3)/5 - V(w65_int) + D_eff * (tanh(3.14159*(0.5 - V(u65_int))) + 0.05) * ((V(v55_int) - V(v65_int)) + (V(v75_int) - V(v65_int)) + (V(v64_int) - V(v65_int)) + (V(v66_int) - V(v65_int))) - alpha_cog*tanh(V(v65_int))
+B_dw65 w65_node 0 V = eps * (V(v65_int) + a - b * V(w65_int))
+B_du65 u65_node 0 V = eps_u * (sigma_base - V(u65_int))
+
+* Unit 66: dv/dt
+B_dv66 v66_node 0 V = V(v66_int) - pow(V(v66_int),3)/5 - V(w66_int) + D_eff * (tanh(3.14159*(0.5 - V(u66_int))) + 0.05) * ((V(v56_int) - V(v66_int)) + (V(v76_int) - V(v66_int)) + (V(v65_int) - V(v66_int)) + (V(v67_int) - V(v66_int))) - alpha_cog*tanh(V(v66_int))
+B_dw66 w66_node 0 V = eps * (V(v66_int) + a - b * V(w66_int))
+B_du66 u66_node 0 V = eps_u * (sigma_base - V(u66_int))
+
+* Unit 67: dv/dt
+B_dv67 v67_node 0 V = V(v67_int) - pow(V(v67_int),3)/5 - V(w67_int) + D_eff * (tanh(3.14159*(0.5 - V(u67_int))) + 0.05) * ((V(v57_int) - V(v67_int)) + (V(v77_int) - V(v67_int)) + (V(v66_int) - V(v67_int)) + (V(v68_int) - V(v67_int))) - alpha_cog*tanh(V(v67_int))
+B_dw67 w67_node 0 V = eps * (V(v67_int) + a - b * V(w67_int))
+B_du67 u67_node 0 V = eps_u * (sigma_base - V(u67_int))
+
+* Unit 68: dv/dt
+B_dv68 v68_node 0 V = V(v68_int) - pow(V(v68_int),3)/5 - V(w68_int) + D_eff * (tanh(3.14159*(0.5 - V(u68_int))) + 0.05) * ((V(v58_int) - V(v68_int)) + (V(v78_int) - V(v68_int)) + (V(v67_int) - V(v68_int)) + (V(v69_int) - V(v68_int))) - alpha_cog*tanh(V(v68_int))
+B_dw68 w68_node 0 V = eps * (V(v68_int) + a - b * V(w68_int))
+B_du68 u68_node 0 V = eps_u * (sigma_base - V(u68_int))
+
+* Unit 69: dv/dt
+B_dv69 v69_node 0 V = V(v69_int) - pow(V(v69_int),3)/5 - V(w69_int) + D_eff * (tanh(3.14159*(0.5 - V(u69_int))) + 0.05) * ((V(v59_int) - V(v69_int)) + (V(v79_int) - V(v69_int)) + (V(v68_int) - V(v69_int)) + (V(v60_int) - V(v69_int))) - alpha_cog*tanh(V(v69_int))
+B_dw69 w69_node 0 V = eps * (V(v69_int) + a - b * V(w69_int))
+B_du69 u69_node 0 V = eps_u * (sigma_base - V(u69_int))
+
+* Unit 70: dv/dt
+B_dv70 v70_node 0 V = V(v70_int) - pow(V(v70_int),3)/5 - V(w70_int) + D_eff * (tanh(3.14159*(0.5 - V(u70_int))) + 0.05) * ((V(v60_int) - V(v70_int)) + (V(v80_int) - V(v70_int)) + (V(v79_int) - V(v70_int)) + (V(v71_int) - V(v70_int))) - alpha_cog*tanh(V(v70_int))
+B_dw70 w70_node 0 V = eps * (V(v70_int) + a - b * V(w70_int))
+B_du70 u70_node 0 V = eps_u * (sigma_base - V(u70_int))
+
+* Unit 71: dv/dt
+B_dv71 v71_node 0 V = V(v71_int) - pow(V(v71_int),3)/5 - V(w71_int) + D_eff * (tanh(3.14159*(0.5 - V(u71_int))) + 0.05) * ((V(v61_int) - V(v71_int)) + (V(v81_int) - V(v71_int)) + (V(v70_int) - V(v71_int)) + (V(v72_int) - V(v71_int))) - alpha_cog*tanh(V(v71_int))
+B_dw71 w71_node 0 V = eps * (V(v71_int) + a - b * V(w71_int))
+B_du71 u71_node 0 V = eps_u * (sigma_base - V(u71_int))
+
+* Unit 72: dv/dt
+B_dv72 v72_node 0 V = V(v72_int) - pow(V(v72_int),3)/5 - V(w72_int) + D_eff * (tanh(3.14159*(0.5 - V(u72_int))) + 0.05) * ((V(v62_int) - V(v72_int)) + (V(v82_int) - V(v72_int)) + (V(v71_int) - V(v72_int)) + (V(v73_int) - V(v72_int))) - alpha_cog*tanh(V(v72_int))
+B_dw72 w72_node 0 V = eps * (V(v72_int) + a - b * V(w72_int))
+B_du72 u72_node 0 V = eps_u * (sigma_base - V(u72_int))
+
+* Unit 73: dv/dt
+B_dv73 v73_node 0 V = V(v73_int) - pow(V(v73_int),3)/5 - V(w73_int) + D_eff * (tanh(3.14159*(0.5 - V(u73_int))) + 0.05) * ((V(v63_int) - V(v73_int)) + (V(v83_int) - V(v73_int)) + (V(v72_int) - V(v73_int)) + (V(v74_int) - V(v73_int))) - alpha_cog*tanh(V(v73_int))
+B_dw73 w73_node 0 V = eps * (V(v73_int) + a - b * V(w73_int))
+B_du73 u73_node 0 V = eps_u * (sigma_base - V(u73_int))
+
+* Unit 74: dv/dt
+B_dv74 v74_node 0 V = V(v74_int) - pow(V(v74_int),3)/5 - V(w74_int) + D_eff * (tanh(3.14159*(0.5 - V(u74_int))) + 0.05) * ((V(v64_int) - V(v74_int)) + (V(v84_int) - V(v74_int)) + (V(v73_int) - V(v74_int)) + (V(v75_int) - V(v74_int))) - alpha_cog*tanh(V(v74_int))
+B_dw74 w74_node 0 V = eps * (V(v74_int) + a - b * V(w74_int))
+B_du74 u74_node 0 V = eps_u * (sigma_base - V(u74_int))
+
+* Unit 75: dv/dt
+B_dv75 v75_node 0 V = V(v75_int) - pow(V(v75_int),3)/5 - V(w75_int) + D_eff * (tanh(3.14159*(0.5 - V(u75_int))) + 0.05) * ((V(v65_int) - V(v75_int)) + (V(v85_int) - V(v75_int)) + (V(v74_int) - V(v75_int)) + (V(v76_int) - V(v75_int))) - alpha_cog*tanh(V(v75_int))
+B_dw75 w75_node 0 V = eps * (V(v75_int) + a - b * V(w75_int))
+B_du75 u75_node 0 V = eps_u * (sigma_base - V(u75_int))
+
+* Unit 76: dv/dt
+B_dv76 v76_node 0 V = V(v76_int) - pow(V(v76_int),3)/5 - V(w76_int) + D_eff * (tanh(3.14159*(0.5 - V(u76_int))) + 0.05) * ((V(v66_int) - V(v76_int)) + (V(v86_int) - V(v76_int)) + (V(v75_int) - V(v76_int)) + (V(v77_int) - V(v76_int))) - alpha_cog*tanh(V(v76_int))
+B_dw76 w76_node 0 V = eps * (V(v76_int) + a - b * V(w76_int))
+B_du76 u76_node 0 V = eps_u * (sigma_base - V(u76_int))
+
+* Unit 77: dv/dt
+B_dv77 v77_node 0 V = V(v77_int) - pow(V(v77_int),3)/5 - V(w77_int) + D_eff * (tanh(3.14159*(0.5 - V(u77_int))) + 0.05) * ((V(v67_int) - V(v77_int)) + (V(v87_int) - V(v77_int)) + (V(v76_int) - V(v77_int)) + (V(v78_int) - V(v77_int))) - alpha_cog*tanh(V(v77_int))
+B_dw77 w77_node 0 V = eps * (V(v77_int) + a - b * V(w77_int))
+B_du77 u77_node 0 V = eps_u * (sigma_base - V(u77_int))
+
+* Unit 78: dv/dt
+B_dv78 v78_node 0 V = V(v78_int) - pow(V(v78_int),3)/5 - V(w78_int) + D_eff * (tanh(3.14159*(0.5 - V(u78_int))) + 0.05) * ((V(v68_int) - V(v78_int)) + (V(v88_int) - V(v78_int)) + (V(v77_int) - V(v78_int)) + (V(v79_int) - V(v78_int))) - alpha_cog*tanh(V(v78_int))
+B_dw78 w78_node 0 V = eps * (V(v78_int) + a - b * V(w78_int))
+B_du78 u78_node 0 V = eps_u * (sigma_base - V(u78_int))
+
+* Unit 79: dv/dt
+B_dv79 v79_node 0 V = V(v79_int) - pow(V(v79_int),3)/5 - V(w79_int) + D_eff * (tanh(3.14159*(0.5 - V(u79_int))) + 0.05) * ((V(v69_int) - V(v79_int)) + (V(v89_int) - V(v79_int)) + (V(v78_int) - V(v79_int)) + (V(v70_int) - V(v79_int))) - alpha_cog*tanh(V(v79_int))
+B_dw79 w79_node 0 V = eps * (V(v79_int) + a - b * V(w79_int))
+B_du79 u79_node 0 V = eps_u * (sigma_base - V(u79_int))
+
+* Unit 80: dv/dt
+B_dv80 v80_node 0 V = V(v80_int) - pow(V(v80_int),3)/5 - V(w80_int) + D_eff * (tanh(3.14159*(0.5 - V(u80_int))) + 0.05) * ((V(v70_int) - V(v80_int)) + (V(v90_int) - V(v80_int)) + (V(v89_int) - V(v80_int)) + (V(v81_int) - V(v80_int))) - alpha_cog*tanh(V(v80_int))
+B_dw80 w80_node 0 V = eps * (V(v80_int) + a - b * V(w80_int))
+B_du80 u80_node 0 V = eps_u * (sigma_base - V(u80_int))
+
+* Unit 81: dv/dt
+B_dv81 v81_node 0 V = V(v81_int) - pow(V(v81_int),3)/5 - V(w81_int) + D_eff * (tanh(3.14159*(0.5 - V(u81_int))) + 0.05) * ((V(v71_int) - V(v81_int)) + (V(v91_int) - V(v81_int)) + (V(v80_int) - V(v81_int)) + (V(v82_int) - V(v81_int))) - alpha_cog*tanh(V(v81_int))
+B_dw81 w81_node 0 V = eps * (V(v81_int) + a - b * V(w81_int))
+B_du81 u81_node 0 V = eps_u * (sigma_base - V(u81_int))
+
+* Unit 82: dv/dt
+B_dv82 v82_node 0 V = V(v82_int) - pow(V(v82_int),3)/5 - V(w82_int) + D_eff * (tanh(3.14159*(0.5 - V(u82_int))) + 0.05) * ((V(v72_int) - V(v82_int)) + (V(v92_int) - V(v82_int)) + (V(v81_int) - V(v82_int)) + (V(v83_int) - V(v82_int))) - alpha_cog*tanh(V(v82_int))
+B_dw82 w82_node 0 V = eps * (V(v82_int) + a - b * V(w82_int))
+B_du82 u82_node 0 V = eps_u * (sigma_base - V(u82_int))
+
+* Unit 83: dv/dt
+B_dv83 v83_node 0 V = V(v83_int) - pow(V(v83_int),3)/5 - V(w83_int) + D_eff * (tanh(3.14159*(0.5 - V(u83_int))) + 0.05) * ((V(v73_int) - V(v83_int)) + (V(v93_int) - V(v83_int)) + (V(v82_int) - V(v83_int)) + (V(v84_int) - V(v83_int))) - alpha_cog*tanh(V(v83_int))
+B_dw83 w83_node 0 V = eps * (V(v83_int) + a - b * V(w83_int))
+B_du83 u83_node 0 V = eps_u * (sigma_base - V(u83_int))
+
+* Unit 84: dv/dt
+B_dv84 v84_node 0 V = V(v84_int) - pow(V(v84_int),3)/5 - V(w84_int) + D_eff * (tanh(3.14159*(0.5 - V(u84_int))) + 0.05) * ((V(v74_int) - V(v84_int)) + (V(v94_int) - V(v84_int)) + (V(v83_int) - V(v84_int)) + (V(v85_int) - V(v84_int))) - alpha_cog*tanh(V(v84_int))
+B_dw84 w84_node 0 V = eps * (V(v84_int) + a - b * V(w84_int))
+B_du84 u84_node 0 V = eps_u * (sigma_base - V(u84_int))
+
+* Unit 85: dv/dt
+B_dv85 v85_node 0 V = V(v85_int) - pow(V(v85_int),3)/5 - V(w85_int) + D_eff * (tanh(3.14159*(0.5 - V(u85_int))) + 0.05) * ((V(v75_int) - V(v85_int)) + (V(v95_int) - V(v85_int)) + (V(v84_int) - V(v85_int)) + (V(v86_int) - V(v85_int))) - alpha_cog*tanh(V(v85_int))
+B_dw85 w85_node 0 V = eps * (V(v85_int) + a - b * V(w85_int))
+B_du85 u85_node 0 V = eps_u * (sigma_base - V(u85_int))
+
+* Unit 86: dv/dt
+B_dv86 v86_node 0 V = V(v86_int) - pow(V(v86_int),3)/5 - V(w86_int) + D_eff * (tanh(3.14159*(0.5 - V(u86_int))) + 0.05) * ((V(v76_int) - V(v86_int)) + (V(v96_int) - V(v86_int)) + (V(v85_int) - V(v86_int)) + (V(v87_int) - V(v86_int))) - alpha_cog*tanh(V(v86_int))
+B_dw86 w86_node 0 V = eps * (V(v86_int) + a - b * V(w86_int))
+B_du86 u86_node 0 V = eps_u * (sigma_base - V(u86_int))
+
+* Unit 87: dv/dt
+B_dv87 v87_node 0 V = V(v87_int) - pow(V(v87_int),3)/5 - V(w87_int) + D_eff * (tanh(3.14159*(0.5 - V(u87_int))) + 0.05) * ((V(v77_int) - V(v87_int)) + (V(v97_int) - V(v87_int)) + (V(v86_int) - V(v87_int)) + (V(v88_int) - V(v87_int))) - alpha_cog*tanh(V(v87_int))
+B_dw87 w87_node 0 V = eps * (V(v87_int) + a - b * V(w87_int))
+B_du87 u87_node 0 V = eps_u * (sigma_base - V(u87_int))
+
+* Unit 88: dv/dt
+B_dv88 v88_node 0 V = V(v88_int) - pow(V(v88_int),3)/5 - V(w88_int) + D_eff * (tanh(3.14159*(0.5 - V(u88_int))) + 0.05) * ((V(v78_int) - V(v88_int)) + (V(v98_int) - V(v88_int)) + (V(v87_int) - V(v88_int)) + (V(v89_int) - V(v88_int))) - alpha_cog*tanh(V(v88_int))
+B_dw88 w88_node 0 V = eps * (V(v88_int) + a - b * V(w88_int))
+B_du88 u88_node 0 V = eps_u * (sigma_base - V(u88_int))
+
+* Unit 89: dv/dt
+B_dv89 v89_node 0 V = V(v89_int) - pow(V(v89_int),3)/5 - V(w89_int) + D_eff * (tanh(3.14159*(0.5 - V(u89_int))) + 0.05) * ((V(v79_int) - V(v89_int)) + (V(v99_int) - V(v89_int)) + (V(v88_int) - V(v89_int)) + (V(v80_int) - V(v89_int))) - alpha_cog*tanh(V(v89_int))
+B_dw89 w89_node 0 V = eps * (V(v89_int) + a - b * V(w89_int))
+B_du89 u89_node 0 V = eps_u * (sigma_base - V(u89_int))
+
+* Unit 90: dv/dt
+B_dv90 v90_node 0 V = V(v90_int) - pow(V(v90_int),3)/5 - V(w90_int) + D_eff * (tanh(3.14159*(0.5 - V(u90_int))) + 0.05) * ((V(v80_int) - V(v90_int)) + (V(v0_int) - V(v90_int)) + (V(v99_int) - V(v90_int)) + (V(v91_int) - V(v90_int))) - alpha_cog*tanh(V(v90_int))
+B_dw90 w90_node 0 V = eps * (V(v90_int) + a - b * V(w90_int))
+B_du90 u90_node 0 V = eps_u * (sigma_base - V(u90_int))
+
+* Unit 91: dv/dt
+B_dv91 v91_node 0 V = V(v91_int) - pow(V(v91_int),3)/5 - V(w91_int) + D_eff * (tanh(3.14159*(0.5 - V(u91_int))) + 0.05) * ((V(v81_int) - V(v91_int)) + (V(v1_int) - V(v91_int)) + (V(v90_int) - V(v91_int)) + (V(v92_int) - V(v91_int))) - alpha_cog*tanh(V(v91_int))
+B_dw91 w91_node 0 V = eps * (V(v91_int) + a - b * V(w91_int))
+B_du91 u91_node 0 V = eps_u * (sigma_base - V(u91_int))
+
+* Unit 92: dv/dt
+B_dv92 v92_node 0 V = V(v92_int) - pow(V(v92_int),3)/5 - V(w92_int) + D_eff * (tanh(3.14159*(0.5 - V(u92_int))) + 0.05) * ((V(v82_int) - V(v92_int)) + (V(v2_int) - V(v92_int)) + (V(v91_int) - V(v92_int)) + (V(v93_int) - V(v92_int))) - alpha_cog*tanh(V(v92_int))
+B_dw92 w92_node 0 V = eps * (V(v92_int) + a - b * V(w92_int))
+B_du92 u92_node 0 V = eps_u * (sigma_base - V(u92_int))
+
+* Unit 93: dv/dt
+B_dv93 v93_node 0 V = V(v93_int) - pow(V(v93_int),3)/5 - V(w93_int) + D_eff * (tanh(3.14159*(0.5 - V(u93_int))) + 0.05) * ((V(v83_int) - V(v93_int)) + (V(v3_int) - V(v93_int)) + (V(v92_int) - V(v93_int)) + (V(v94_int) - V(v93_int))) - alpha_cog*tanh(V(v93_int))
+B_dw93 w93_node 0 V = eps * (V(v93_int) + a - b * V(w93_int))
+B_du93 u93_node 0 V = eps_u * (sigma_base - V(u93_int))
+
+* Unit 94: dv/dt
+B_dv94 v94_node 0 V = V(v94_int) - pow(V(v94_int),3)/5 - V(w94_int) + D_eff * (tanh(3.14159*(0.5 - V(u94_int))) + 0.05) * ((V(v84_int) - V(v94_int)) + (V(v4_int) - V(v94_int)) + (V(v93_int) - V(v94_int)) + (V(v95_int) - V(v94_int))) - alpha_cog*tanh(V(v94_int))
+B_dw94 w94_node 0 V = eps * (V(v94_int) + a - b * V(w94_int))
+B_du94 u94_node 0 V = eps_u * (sigma_base - V(u94_int))
+
+* Unit 95: dv/dt
+B_dv95 v95_node 0 V = V(v95_int) - pow(V(v95_int),3)/5 - V(w95_int) + D_eff * (tanh(3.14159*(0.5 - V(u95_int))) + 0.05) * ((V(v85_int) - V(v95_int)) + (V(v5_int) - V(v95_int)) + (V(v94_int) - V(v95_int)) + (V(v96_int) - V(v95_int))) - alpha_cog*tanh(V(v95_int))
+B_dw95 w95_node 0 V = eps * (V(v95_int) + a - b * V(w95_int))
+B_du95 u95_node 0 V = eps_u * (sigma_base - V(u95_int))
+
+* Unit 96: dv/dt
+B_dv96 v96_node 0 V = V(v96_int) - pow(V(v96_int),3)/5 - V(w96_int) + D_eff * (tanh(3.14159*(0.5 - V(u96_int))) + 0.05) * ((V(v86_int) - V(v96_int)) + (V(v6_int) - V(v96_int)) + (V(v95_int) - V(v96_int)) + (V(v97_int) - V(v96_int))) - alpha_cog*tanh(V(v96_int))
+B_dw96 w96_node 0 V = eps * (V(v96_int) + a - b * V(w96_int))
+B_du96 u96_node 0 V = eps_u * (sigma_base - V(u96_int))
+
+* Unit 97: dv/dt
+B_dv97 v97_node 0 V = V(v97_int) - pow(V(v97_int),3)/5 - V(w97_int) + D_eff * (tanh(3.14159*(0.5 - V(u97_int))) + 0.05) * ((V(v87_int) - V(v97_int)) + (V(v7_int) - V(v97_int)) + (V(v96_int) - V(v97_int)) + (V(v98_int) - V(v97_int))) - alpha_cog*tanh(V(v97_int))
+B_dw97 w97_node 0 V = eps * (V(v97_int) + a - b * V(w97_int))
+B_du97 u97_node 0 V = eps_u * (sigma_base - V(u97_int))
+
+* Unit 98: dv/dt
+B_dv98 v98_node 0 V = V(v98_int) - pow(V(v98_int),3)/5 - V(w98_int) + D_eff * (tanh(3.14159*(0.5 - V(u98_int))) + 0.05) * ((V(v88_int) - V(v98_int)) + (V(v8_int) - V(v98_int)) + (V(v97_int) - V(v98_int)) + (V(v99_int) - V(v98_int))) - alpha_cog*tanh(V(v98_int))
+B_dw98 w98_node 0 V = eps * (V(v98_int) + a - b * V(w98_int))
+B_du98 u98_node 0 V = eps_u * (sigma_base - V(u98_int))
+
+* Unit 99: dv/dt
+B_dv99 v99_node 0 V = V(v99_int) - pow(V(v99_int),3)/5 - V(w99_int) + D_eff * (tanh(3.14159*(0.5 - V(u99_int))) + 0.05) * ((V(v89_int) - V(v99_int)) + (V(v9_int) - V(v99_int)) + (V(v98_int) - V(v99_int)) + (V(v90_int) - V(v99_int))) - alpha_cog*tanh(V(v99_int))
+B_dw99 w99_node 0 V = eps * (V(v99_int) + a - b * V(w99_int))
+B_du99 u99_node 0 V = eps_u * (sigma_base - V(u99_int))
+
+* ── Simulation ──
+.tran 0.1 50 uic
+
+* ── Analysis ──
+.control
+run
+echo "========================================"
+echo "  Mem4ristor v3 - 10x10 Network"
+echo "========================================"
+
+let v0_final = v(v0_int)[length(v(v0_int))-1]
+let v_half = v(v50_int)[length(v(v50_int))-1]
+
+echo "Final states (sample):"
+echo "  v[0] = $&v0_final"
+echo "  v[50] = $&v_half"
+quit
+.endc
+
+.end

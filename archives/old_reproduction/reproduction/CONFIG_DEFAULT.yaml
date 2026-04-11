@@ -1,0 +1,46 @@
+# Mem4ristor v2.0 - Default Configuration for Industrial Transmission
+# Standard parameters for reproducing the results in the preprint.
+
+dynamics:
+  a: 0.7
+  b: 0.8
+  epsilon: 0.08
+  alpha: 0.15
+  epsilon_u: 0.02
+  k_u: 1.0
+  sigma_baseline: 0.05
+  u_clamp: [0.0, 1.0]
+  v_cubic_divisor: 5.0
+  dt: 0.1
+
+
+coupling:
+  D: 0.15
+
+  heretic_ratio: 0.15
+  topology: "square_lattice"  # Options: square_lattice, all_to_all
+  scaling: "1/sqrt(N)"
+
+doubt:
+  epsilon_u: 0.02
+  k_u: 1.0
+  sigma_baseline: 0.05
+  u_clamp: [0.0, 1.0]
+  tau_u: 1.0
+
+noise:
+  sigma_v: 0.05
+
+benchmark:
+  L_side: 10
+  steps: 3000
+  bias_stimulus: 1.1
+  bias_step_start: 800
+  bias_step_end: 1800
+
+states:
+  oracle: [-99.0, -1.5]
+  intuition: [-1.5, -0.8]
+  uncertain: [-0.8, 0.8]
+  probable: [0.8, 1.5]
+  certitude: [1.5, 99.0]

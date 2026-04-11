@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Chauvin"
+  given-names: "Julien"
+  orcid: "https://orcid.org/0009-0006-9285-2308"
+title: "Mem4ristor: Constitutional Doubt for Attractor Diversity Stabilization"
+version: 3.0.0
+doi: "10.5281/zenodo.18620597"
+date-released: 2026-02-16
+url: "https://github.com/Jusyl236/mem4ristor-v2"
+repository: "https://zenodo.org/records/18620597"
+keywords:
+  - neuromorphic computing
+  - memristor
+  - FitzHugh-Nagumo
+  - frustrated synchronization
+  - cognitive diversity
+license: MIT

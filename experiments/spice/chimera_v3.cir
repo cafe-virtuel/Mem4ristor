@@ -1,0 +1,103 @@
+* Mem4ristor V3 "Chimera" - Behavioral SPICE Model
+* ================================================
+* Demonstrates the feasibility of implementing the "Chimera" architecture
+* in an analog circuit simulation.
+*
+* Key Features Implemented in Analog Domain:
+* 1. FHN Neuron (The Body)
+* 2. Doubt Integrator 'u' (The Democracy)
+* 3. Hysteresis Schmitt Trigger (The Guardian/V5)
+* 4. Metacognitive Feedback Loop (The King/Phase 3)
+*
+* ================================================
+
+.title Mem4ristor V3 Chimera
+
+* ── Global Parameters ──
+.param pa=0.7
+.param pb=0.8
+.param palpha=0.1
+.param psigma=0.05
+.param peps_base=0.08
+
+* ── Hysteresis Thresholds (V5) ──
+.param theta_low=0.35
+.param theta_high=0.65
+
+* ── Circuit Nodes ──
+* v_node: Potential (Voltage)
+* w_node: Recovery (Voltage)
+* u_node: Doubt (Voltage)
+* mode_node: Hysteresis State (0=Sage, 1=Fou) -> Digital-like signal
+* eps_node: Dynamic Time Constant (Metacognition)
+
+* ── 1. The Body (FHN Neuron) ──
+* Standard FitzHugh-Nagumo oscillator with Voltage-Controlled Time Constant
+* dV/dt = V - V^3/5 - W ...
+* Note: We use the dynamic 'eps_node' voltage to scale the speed if needed, 
+* or just for the 'w' dynamics as in the Python code.
+
+C_v v_node 0 1.0 IC=0.1
+R_v v_node 0 100Meg ; Leakage dummy
+
+* Behavioral Current Source for dV/dt
+* V_dot = V - V^3/5 - W - alpha*tanh(V)
+B_dv v_node 0 I = V(v_node) - (pow(V(v_node),3)/5.0) - V(w_node) - {palpha}*tanh(V(v_node))
+
+* ── 2. The Recovery (W) with Metacognitive Speed Control ──
+* dW/dt = epsilon(t) * (V + a - b*W)
+* Here 'epsilon' is NOT a constant, but the voltage V(eps_node)
+C_w w_node 0 1.0 IC=0.0
+B_dw w_node 0 I = V(eps_node) * (V(v_node) + {pa} - {pb}*V(w_node))
+
+* ── 3. The Doubt (U) Integrator ──
+* dU/dt = ... (Simplified for single node: just decays or grows with "Social Stress")
+* For this demo, we simulate 'Social Stress' as a localized variance or external input.
+* Let's drive U with a sinusoidal "Stress" source to test Hysteresis.
+V_stress stress_node 0 SIN(0.5 0.4 0.05) ; Stress oscillates between 0.1 and 0.9
+C_u u_node 0 1.0 IC=0.5
+R_u u_node stress_node 10 ; U follows stress with some lag (RC filter)
+
+* ── 4. The Guardian (V5 Hysteresis / Schmitt Trigger) ──
+* Logic:
+* If U > theta_high, Mode -> 1 (Fou)
+* If U < theta_low,  Mode -> 0 (Sage)
+* Else, keep previous Mode.
+*
+* Analog Implementation: A High-Gain Differential Amplifier with Positive Feedback
+* V_mode = Sigmoid( Gain * (U - Threshold(V_mode)) )
+* Threshold shifts based on current state V_mode.
+
+* Mode Node (Digital-ish: 0V or 1V)
+C_mode mode_node 0 1n ; Small cap for stability
+* Behavioral Logic for Schmitt Trigger:
+* Reduced gain from 100 to 10 for convergence.
+B_mode mode_node 0 V = 1.0 / (1.0 + exp(-10 * (V(u_node) - (0.5 + 0.15 * (2*V(mode_node)-1))) ))
+
+* ── 5. The King (Phase 3 Metacognition) ──
+* Logic: If Entropy is low (Boredom), Increase Epsilon.
+* Proxy for Entropy here: Variance of V.
+* Since calculating variance over time in pure analog is hard, we use "Activity Level".
+* Activity = Low-Pass(|dV/dt|). If Activity is low, Boredom is High.
+
+* Activity Integrator
+C_act act_node 0 1.0
+R_act act_node 0 10 ; Leaky integrator
+B_act act_node 0 I = abs(V(v_node)) ; Simple activity proxy
+
+* Boredom Calculation (Inverse of Activity)
+* Boredom = 1 / (1 + Activity)
+* Dynamic Epsilon = Base_Eps * (1 + Gain * Boredom)
+B_eps eps_node 0 V = {peps_base} * (1.0 + 2.0 * (1.0/(1.0 + 5.0*V(act_node))))
+
+* ── Simulation ──
+.options method=gear
+.tran 0.1 200 uic
+
+.control
+run
+* Batch mode requires print, not plot
+print V(v_node) V(u_node) V(mode_node) V(eps_node) > results/spice_output.txt
+.endc
+
+.end

@@ -1,0 +1,106 @@
+* Mem4ristor v2.9.3 — SPICE Behavioral Simulation
+* ================================================
+* Simulates a single Mem4ristor unit using behavioral sources (B-elements)
+* implementing the FHN + Doubt equations directly in ngspice.
+*
+* Equations:
+*   dv/dt = v - v^3/5 - w + I_ext - alpha*tanh(v)
+*   dw/dt = eps*(v + a - b*w)
+*   du/dt = eps_u*(sigma_base - u)   [isolated, no coupling]
+*
+* Usage:
+*   ngspice_con.exe -b experiments/spice/spice_test.cir
+* ================================================
+
+.title Mem4ristor v2.9.3 Behavioral Simulation
+
+* ── Parameters ──
+.param a=0.7
+.param b=0.8
+.param eps=0.08
+.param alpha_cog=0.1
+.param eps_u=0.02
+.param sigma_base=0.05
+
+* ── State Variables via RC Integration ──
+* Using R=1 Ohm, C=1 F => tau = 1s (unit time)
+
+* V node (cognitive potential)
+R_v v_node v_int 1
+C_v v_int 0 1 IC=0.5
+
+* W node (recovery variable)
+R_w w_node w_int 1
+C_w w_int 0 1 IC=0.1
+
+* U node (doubt variable) — with soft clamping built into B source
+R_u u_node u_int 1
+C_u u_int 0 1 IC=0.05
+
+* ── Dynamics (Behavioral Voltage Sources driving RC) ──
+
+* dv/dt = v - v^3/5 - w - alpha*tanh(v)
+B_dv v_node 0 V = V(v_int) - pow(V(v_int),3)/5 - V(w_int) - alpha_cog*tanh(V(v_int))
+
+* dw/dt = eps*(v + a - b*w)
+B_dw w_node 0 V = eps * (V(v_int) + a - b * V(w_int))
+
+* du/dt = eps_u*(sigma_base - u), with soft clamping via min/max
+* Keeps u in [0, 1] without needing diodes
+B_du u_node 0 V = eps_u * (sigma_base - min(max(V(u_int), 0), 1))
+
+* ── Simulation ──
+.tran 0.01 100 uic
+
+* ── Analysis and Output ──
+.control
+run
+
+echo ""
+echo "========================================"
+echo "  Mem4ristor v2.9.3 SPICE Verification"
+echo "========================================"
+echo ""
+
+* Final values
+let v_final = v(v_int)[length(v(v_int))-1]
+let w_final = v(w_int)[length(v(w_int))-1]
+let u_final = v(u_int)[length(v(u_int))-1]
+
+echo "Final state at t=100:"
+echo "  v = $&v_final"
+echo "  w = $&w_final"
+echo "  u = $&u_final"
+
+* Statistics
+let v_max = maximum(v(v_int))
+let v_min = minimum(v(v_int))
+let w_max = maximum(v(w_int))
+let w_min = minimum(v(w_int))
+
+echo ""
+echo "Ranges:"
+echo "  v in [$&v_min, $&v_max]"
+echo "  w in [$&w_min, $&w_max]"
+
+* Stability check
+echo ""
+if abs(v_max) < 10 & abs(v_min) < 10
+  echo "PASS: v bounded (no divergence)"
+else
+  echo "FAIL: v diverged!"
+end
+
+if abs(w_max) < 10 & abs(w_min) < 10
+  echo "PASS: w bounded (no divergence)"
+else
+  echo "FAIL: w diverged!"
+end
+
+echo ""
+echo "========================================"
+
+quit
+.endc
+
+.end

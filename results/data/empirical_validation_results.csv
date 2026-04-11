@@ -1,0 +1,4 @@
+Scenario,Real Yes %,Pred Yes %,Entropy
+Obligation d'affichage Carbone,98.0,85.0,0.6098403047164004
+Limitation 110 km/h sur autoroute,60.0,31.0,1.8734788805839533
+Semaine de 28h (Projet),35.0,8.0,0.626090653034748

@@ -1,0 +1,34 @@
+# Mem4ristor V3.0.0 Default Configuration
+# Standard Dynamics Parameters
+dynamics:
+  a: 0.7
+  b: 0.8
+  epsilon: 0.08
+  alpha: 0.15
+  v_cubic_divisor: 5.0
+  dt: 0.05
+  # V3: Inhibition Plasticity Parameters
+  lambda_learn: 0.05       # Plasticity learning rate
+  tau_plasticity: 1000     # Forgetting time constant (steps)
+  w_saturation: 2.0        # Maximum plasticity range
+
+# Coupling Parameters
+coupling:
+  D: 0.15
+  heretic_ratio: 0.15
+  uniform_placement: true
+
+# Doubt Dynamics (Constitutional Doubt)
+doubt:
+  epsilon_u: 0.02
+  k_u: 1.0
+  sigma_baseline: 0.05
+  u_clamp: [0.0, 1.0]
+  tau_u: 1.0
+
+# Noise Parameters
+noise:
+  sigma_v: 0.05
+  use_rtn: false
+  rtn_amplitude: 0.1
+  rtn_p_flip: 0.01
