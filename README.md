@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18620597.svg)](https://doi.org/10.5281/zenodo.18620597)
-[![Tests](https://github.com/Jusyl236/mem4ristor-v2/actions/workflows/test.yml/badge.svg)](https://github.com/Jusyl236/mem4ristor-v2/actions/workflows/test.yml)
+[![Tests](https://github.com/cafe-virtuel/mem4ristor-v2/actions/workflows/test.yml/badge.svg)](https://github.com/cafe-virtuel/mem4ristor-v2/actions/workflows/test.yml)
 
 **Mem4ristor V3** is a computational implementation of extended FitzHugh-Nagumo dynamics designed to investigate emergent critical states in neuromorphic networks. This research code focuses on the role of "Constitutional Doubt" ($u$) and "Structural Heretics" in preventing consensus collapse in scale-free and lattice networks.
 
@@ -23,7 +23,7 @@
 ## 🚀 Installation
 
 ```bash
-git clone https://github.com/Jusyl236/mem4ristor-v2.git
+git clone https://github.com/cafe-virtuel/mem4ristor-v2.git
 cd mem4ristor-v2
 pip install -e .
 ```
@@ -40,9 +40,9 @@ from mem4ristor.core import Mem4Network
 # Initialize a lattice network (N=100, 15% Heretics)
 net = Mem4Network(size=10, heretic_ratio=0.15, seed=42)
 
-# Run simulation for 1000 steps
+# Run simulation for 1000 steps (Cold Start: no external stimulus)
 for step in range(1000):
-    net.step(I_stimulus=0.5)
+    net.step(I_stimulus=0.0)
 
 # Calculate final entropy (measure of diversity)
 print(f"Final System Entropy: {net.calculate_entropy():.4f}")
@@ -64,7 +64,7 @@ net = Mem4Network(adjacency_matrix=adj, heretic_ratio=0.15,
                   coupling_norm='degree_linear', seed=42)
 
 for step in range(3000):
-    net.step(I_stimulus=0.5)
+    net.step(I_stimulus=0.0)
 
 print(f"Scale-Free Entropy: {net.calculate_entropy():.4f}")
 # Expected: H_stable ≈ 0.83 ± 0.07 (86% recovery of lattice performance)
