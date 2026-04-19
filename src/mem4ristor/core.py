@@ -631,6 +631,10 @@ class Mem4Network:
           - 'degree_linear': D_eff(i) = D / deg(i) (best for BA m<=3)
           - 'degree_log': D_eff(i) = D / log(1+deg(i))
           - 'degree_power': D_eff(i) = D / deg(i)^alpha (configurable via degree_power_alpha)
+          - 'spectral': D_eff(i) = D / c_i^eigen, where c_i^eigen is the
+                eigenvector centrality of node i (top eigenvector of A). Targets
+                the high-lambda2 dead zone (BA m>=5) by penalizing global
+                cross-graph influence rather than local degree.
 
         All modes normalized so mean(node_weights) = 1/sqrt(N).
         """
@@ -649,6 +653,8 @@ class Mem4Network:
             elif self.coupling_norm == 'degree_power':
                 alpha = getattr(self, 'degree_power_alpha', 0.5)
                 raw_weights = 1.0 / np.power(degrees, alpha)
+            elif self.coupling_norm == 'spectral':
+                raw_weights = 1.0 / self._eigenvector_centrality()
             else:
                 raw_weights = np.ones(self.N)
 
@@ -658,6 +664,39 @@ class Mem4Network:
             self.node_weights = np.ones(self.N) / np.sqrt(self.N)
 
         self._weights_dirty = False
+
+    def _eigenvector_centrality(self, max_iter: int = 200, tol: float = 1e-8) -> np.ndarray:
+        """Power-iteration eigenvector centrality of the adjacency matrix.
+
+        Returns a strictly positive vector c with mean(c) = 1, so weights
+        D / c_i give an order-of-magnitude reduction at hubs (high c_i) and
+        boost peripheral nodes. Uses adjacency directly (not the Laplacian)
+        because we want centrality, not Fiedler structure.
+        """
+        A = self.adjacency_matrix
+        c = np.ones(self.N) / np.sqrt(self.N)
+        for _ in range(max_iter):
+            if self._is_sparse:
+                c_new = A @ c
+            else:
+                c_new = A @ c
+            norm = np.linalg.norm(c_new)
+            if norm < 1e-15:
+                # Disconnected / null adjacency — degenerate fallback to degree
+                deg = np.array(A.sum(axis=1)).flatten() if self._is_sparse else A.sum(axis=1)
+                c_new = np.maximum(deg, 1.0)
+                norm = np.linalg.norm(c_new)
+            c_new = c_new / norm
+            if np.linalg.norm(c_new - c) < tol:
+                c = c_new
+                break
+            c = c_new
+        # Make strictly positive (Perron-Frobenius gives non-negative; flip sign if needed)
+        if np.mean(c) < 0:
+            c = -c
+        # Re-scale to mean=1 so 1/c sits in a familiar range
+        c = c * (self.N / max(c.sum(), 1e-12))
+        return np.maximum(c, 1e-6)
 
     def _doubt_driven_rewire(self):
         """

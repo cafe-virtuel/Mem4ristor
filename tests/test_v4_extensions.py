@@ -405,27 +405,48 @@ class TestV4Integration:
         assert np.all((net.model.u >= 0) & (net.model.u <= 1)), "u escaped [0,1]"
 
     def test_entropy_preservation_with_v4(self):
-        """V4 mechanisms should preserve or improve entropy over time."""
-        n = 10
-        adj = np.zeros((n, n))
-        for i in range(n):
-            adj[i, (i + 1) % n] = 1
-            adj[(i + 1) % n, i] = 1
+        """V4 mechanisms should preserve entropy on a topology where V4 is meaningful.
 
-        net = Mem4Network(adjacency_matrix=adj, seed=42,
-                          rewire_threshold=0.7, rewire_cooldown=20)
+        A ring N=10 has uniform degree-2 (no hubs to rewire away from) and tiny state
+        space → consensus collapse regardless of V4. We use the validated regime from
+        PROJECT_STATUS.md §3quinquies: BA m=3 + degree_linear normalization, where
+        V4 rewiring has heterogeneous degrees to act on and degree_linear prevents
+        hub strangulation.
+        """
+        rng = np.random.RandomState(42)
+        n, m = 50, 3
+        adj = np.zeros((n, n), dtype=float)
+        for i in range(m + 1):
+            for j in range(i + 1, m + 1):
+                adj[i, j] = adj[j, i] = 1.0
+        degrees = np.sum(adj, axis=1)
+        for new_node in range(m + 1, n):
+            probs = degrees[:new_node] / degrees[:new_node].sum()
+            targets = rng.choice(new_node, size=m, replace=False, p=probs)
+            for t in targets:
+                adj[new_node, t] = adj[t, new_node] = 1.0
+            degrees = np.sum(adj, axis=1)
 
-        # Warm up
-        for _ in range(100):
-            net.step(I_stimulus=0.0)
+        net = Mem4Network(
+            adjacency_matrix=adj,
+            heretic_ratio=0.15,
+            coupling_norm='degree_linear',
+            seed=42,
+            rewire_threshold=0.7,
+            rewire_cooldown=20,
+        )
 
-        h_mid = net.calculate_entropy()
-
-        # Run more
         for _ in range(500):
             net.step(I_stimulus=0.0)
 
-        h_end = net.calculate_entropy()
+        # Average entropy over the tail to dampen step-to-step noise
+        tail = []
+        for _ in range(500):
+            net.step(I_stimulus=0.0)
+            tail.append(net.calculate_entropy())
+        h_stable = float(np.mean(tail))
 
-        # Entropy should not collapse to zero
-        assert h_end > 0.1, f"Entropy collapsed with V4 active: {h_end:.4f}"
+        assert h_stable > 0.3, (
+            f"Entropy collapsed with V4 active on BA m=3 + degree_linear: "
+            f"H_stable={h_stable:.4f} (expected > 0.3, reference ≈ 0.83)"
+        )

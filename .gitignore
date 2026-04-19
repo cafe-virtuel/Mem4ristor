@@ -60,3 +60,10 @@ REPRODUCIBILITY_REPORT.txt
 .snapshots/
 .agent/
 .claude/
+
+# Graphify knowledge graph outputs (generated, not source)
+graphify-out/
+
+# SPICE raw simulation traces (large binary data, reproducible from scripts)
+experiments/spice/results/*.dat
+experiments/spice/results/*.cir
