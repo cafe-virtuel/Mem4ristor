@@ -1,0 +1,249 @@
+import os
+import numpy as np
+import yaml
+from typing import Dict, Optional
+from scipy.integrate import solve_ivp
+from mem4ristor.metrics import calculate_cognitive_entropy, calculate_continuous_entropy, get_cognitive_states
+
+# MKL Determinism Fix (v2.9.1)
+os.environ['NUMPY_MKL_CBWR'] = 'COMPATIBLE'
+
+class Mem4ristorV3:
+    """
+    Canonical Implementation of Mem4ristor v3.0.0 (with v4 adaptive extensions).
+    Refactored to separate Dynamics from Topology and Metrics.
+    """
+    def __init__(self, config: Optional[Dict] = None, seed: int = 42):
+        default_cfg = {
+            'dynamics': {
+                'a': 0.7, 'b': 0.8, 'epsilon': 0.08, 'alpha': 0.15,
+                'v_cubic_divisor': 5.0, 'dt': 0.05,
+                'lambda_learn': 0.05, 'tau_plasticity': 1000, 'w_saturation': 2.0
+            },
+            'coupling': {'D': 0.15, 'heretic_ratio': 0.15, 'uniform_placement': True},
+            'doubt': {'epsilon_u': 0.02, 'k_u': 1.0, 'sigma_baseline': 0.05, 'u_clamp': [0.0, 1.0], 'tau_u': 10.0,
+                      'alpha_surprise': 2.0, 'surprise_cap': 5.0},
+            'noise': {'sigma_v': 0.05, 'use_rtn': False, 'rtn_amplitude': 0.1, 'rtn_p_flip': 0.01},
+            'hysteresis': {'enabled': True, 'theta_low': 0.35, 'theta_high': 0.65,
+                           'fatigue_rate': 0.0, 'base_hysteresis': 0.15}
+        }
+
+        if config is None:
+            try:
+                cfg_path = os.path.join(os.path.dirname(__file__), "config.yaml")
+                with open(cfg_path, 'r') as f:
+                    file_cfg = yaml.safe_load(f)
+                    self.cfg = self._deep_merge(default_cfg, file_cfg)
+            except (FileNotFoundError, yaml.YAMLError):
+                self.cfg = default_cfg
+        else:
+            self.cfg = self._deep_merge(default_cfg, config)
+
+        self.rng = np.random.RandomState(seed)
+        self.dt = self.cfg['dynamics']['dt']
+
+        self._validate_config()
+
+        self.lambda_learn = self.cfg['dynamics'].get('lambda_learn', 0.05)
+        self.tau_plasticity = self.cfg['dynamics'].get('tau_plasticity', 1000)
+        self.w_saturation = self.cfg['dynamics'].get('w_saturation', 2.0)
+
+        self.sigmoid_steepness = np.pi
+        # KIMI FIX: social_leakage matched to paper
+        self.social_leakage = 0.01
+
+        self.N = 100
+        self._initialize_params()
+
+    def _deep_merge(self, base: Dict, update: Dict) -> Dict:
+        result = base.copy()
+        for key, value in update.items():
+            if key in result:
+                if isinstance(result[key], dict):
+                    if not isinstance(value, dict):
+                        raise TypeError(f"Config key '{key}' expects dict, got {type(value).__name__}")
+                    result[key] = self._deep_merge(result[key], value)
+                else:
+                    result[key] = value
+            else:
+                result[key] = value
+        return result
+
+    def _validate_config(self):
+        if self.cfg['dynamics']['v_cubic_divisor'] <= 1e-9:
+            raise ValueError("Configuration Error: 'v_cubic_divisor' must be > 0.")
+        if self.cfg['doubt']['tau_u'] <= 1e-9:
+            raise ValueError("Configuration Error: 'tau_u' must be > 0.")
+        if self.dt <= 0:
+            raise ValueError("Configuration Error: 'dt' must be positive.")
+        D = self.cfg['coupling'].get('D', 0.15)
+        if not np.isfinite(D):
+            raise ValueError("Configuration Error: 'D' must be finite.")
+        hr = self.cfg['coupling'].get('heretic_ratio', 0.15)
+        if not (0.0 <= hr <= 1.0):
+            raise ValueError(f"Configuration Error: 'heretic_ratio' must be in [0, 1], got {hr}")
+
+    def _initialize_params(self, N=100, cold_start=False):
+        if N <= 0 or N > 10_000_000:
+            raise ValueError(f"Network size N={N} invalid.")
+        self.N = N
+        if cold_start:
+            self.v = np.zeros(self.N)
+            self.w = np.zeros(self.N)
+        else:
+            self.v = self.rng.uniform(-1.5, 1.5, self.N)
+            self.w = self.rng.uniform(0.0, 1.0, self.N)
+
+        self.u = np.full(self.N, self.cfg['doubt']['sigma_baseline'])
+
+        hr = self.cfg['coupling'].get('heretic_ratio', 0.15)
+        if hr <= 0:
+            self.heretic_mask = np.zeros(self.N, dtype=bool)
+        elif self.cfg['coupling'].get('uniform_placement', True):
+            step = max(int(1.0 / hr), 1)
+            heretic_ids = []
+            for i in range(0, self.N, step):
+                if len(heretic_ids) < int(self.N * hr):
+                    block_end = min(i + step, self.N)
+                    heretic_ids.append(self.rng.randint(i, block_end))
+            self.heretic_mask = np.zeros(self.N, dtype=bool)
+            self.heretic_mask[heretic_ids] = True
+        else:
+            self.heretic_mask = self.rng.rand(self.N) < hr
+
+        self.D_eff = self.cfg['coupling']['D'] / np.sqrt(self.N)
+        self.mode_state = np.zeros(self.N, dtype=bool)
+        self.time_in_state = np.zeros(self.N, dtype=float)
+
+    def _update_hysteresis(self):
+        hyst = self.cfg['hysteresis']
+        if not hyst.get('enabled', False):
+            self.mode_state = self.u > 0.5
+            return
+        fatigue_shift = hyst.get('fatigue_rate', 0.0) * self.time_in_state
+        eff_theta_low = np.minimum(hyst['theta_low'] + fatigue_shift, 0.5)
+        eff_theta_high = np.maximum(hyst['theta_high'] - fatigue_shift, 0.5)
+        switch_to_fou = (~self.mode_state) & (self.u >= eff_theta_high)
+        switch_to_sage = self.mode_state & (self.u < eff_theta_low)
+        switched = switch_to_fou | switch_to_sage
+        self.mode_state[switch_to_fou] = True
+        self.mode_state[switch_to_sage] = False
+        self.time_in_state[switched] = 0.0
+        self.time_in_state[~switched] += self.dt
+
+    def step(self, I_stimulus: float = 0.0, coupling_input: Optional[np.ndarray] = None) -> None:
+        if hasattr(I_stimulus, '__float__') and not isinstance(I_stimulus, (int, float, np.number, np.ndarray)):
+            raise TypeError("Stimulus must be a numeric constant.")
+
+        if np.any(~np.isfinite(self.v)): self.v = np.nan_to_num(self.v, nan=0.0)
+        if np.any(~np.isfinite(self.w)): self.w = np.nan_to_num(self.w, nan=0.0)
+        if np.any(~np.isfinite(self.u)): self.u = np.nan_to_num(self.u, nan=0.5)
+
+        if coupling_input is None:
+            laplacian_v = np.zeros(self.N)
+        elif coupling_input.ndim == 2:
+            laplacian_v = coupling_input @ self.v - self.v
+        else:
+            laplacian_v = np.array(coupling_input, dtype=float)
+
+        if np.any(~np.isfinite(laplacian_v)):
+            laplacian_v = np.nan_to_num(laplacian_v, nan=0.0)
+
+        sigma_social = np.abs(laplacian_v)
+        eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N)
+
+        if self.cfg['noise'].get('use_rtn', False):
+            rtn_amp = self.cfg['noise'].get('rtn_amplitude', 0.1)
+            p_flip = self.cfg['noise'].get('rtn_p_flip', 0.01)
+            eta += (self.rng.rand(self.N) < p_flip).astype(float) * rtn_amp * self.rng.choice([-1, 1], size=self.N)
+
+        u_filter = np.tanh(self.sigmoid_steepness * (0.5 - self.u)) + self.social_leakage
+        I_coup = self.D_eff * u_filter * laplacian_v
+
+        stim_arr = np.array(I_stimulus, dtype=float)
+        I_eff = np.full(self.N, float(stim_arr)) if stim_arr.ndim == 0 else np.nan_to_num(stim_arr.flatten())
+        I_eff = np.clip(I_eff, -100.0, 100.0)
+        I_eff[self.heretic_mask] *= -1.0
+        I_ext = I_eff + I_coup
+
+        if self.cfg.get('hysteresis', {}).get('enabled', False):
+            self._update_hysteresis()
+            innovation_mask = self.mode_state.astype(float)
+        else:
+            innovation_mask = (self.u > 0.5).astype(float)
+
+        plasticity_drive = self.lambda_learn * sigma_social * innovation_mask
+        w_ratio = self.w / self.w_saturation
+        saturation_factor = np.clip(1.0 - (w_ratio**2), 0.0, 1.0)
+        dw_learning = (plasticity_drive * saturation_factor) - (self.w / self.tau_plasticity)
+
+        dv = (self.v - (self.v**3) / self.cfg['dynamics']['v_cubic_divisor'] - self.w + I_ext -
+              self.cfg['dynamics']['alpha'] * np.tanh(self.v) + eta)
+        dw = self.cfg['dynamics']['epsilon'] * (self.v + self.cfg['dynamics']['a'] - self.cfg['dynamics']['b'] * self.w)
+
+        sigma_social_safe = np.clip(sigma_social, 0.0, 100.0)
+        alpha_s = self.cfg['doubt'].get('alpha_surprise', 2.0)
+        epsilon_u_adaptive = self.cfg['doubt']['epsilon_u'] * np.clip(
+            1.0 + alpha_s * sigma_social_safe, 1.0, self.cfg['doubt'].get('surprise_cap', 5.0)
+        )
+        du = (epsilon_u_adaptive * (self.cfg['doubt']['k_u'] * sigma_social +
+              self.cfg['doubt']['sigma_baseline'] - self.u)) / self.cfg['doubt']['tau_u']
+
+        self.v += dv * self.dt
+        self.w += (dw + dw_learning) * self.dt
+        self.u += du * self.dt
+
+        self.v = np.clip(self.v, -100.0, 100.0)
+        self.w = np.clip(self.w, -100.0, 100.0)
+        self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
+
+    def solve_rk45(self, t_span, I_stimulus=0.0, adj_matrix=None):
+        duration = t_span[1] - t_span[0]
+        max_step = min(0.1, duration / 10.0) if duration > 0 else 0.1
+
+        def combined_dynamics(t, y):
+            v, w, u = y[:self.N], y[self.N:2*self.N], y[2*self.N:]
+            laplacian_v = np.zeros(self.N) if adj_matrix is None else adj_matrix @ v - v
+            sigma_social = np.abs(laplacian_v)
+            u_filter = np.tanh(self.sigmoid_steepness * (0.5 - u)) + self.social_leakage
+            
+            I_eff = np.full(self.N, float(I_stimulus))
+            I_eff[self.heretic_mask] *= -1.0
+            I_ext = I_eff + self.D_eff * u_filter * laplacian_v
+            
+            eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N)
+            dv = v - (v**3)/self.cfg['dynamics']['v_cubic_divisor'] - w + I_ext - self.cfg['dynamics']['alpha']*np.tanh(v) + eta
+            dw_fhn = self.cfg['dynamics']['epsilon'] * (v + self.cfg['dynamics']['a'] - self.cfg['dynamics']['b'] * w)
+            
+            p_drive = self.lambda_learn * sigma_social * (u > 0.5).astype(float)
+            w_ratio = w / self.w_saturation
+            sat_fact = np.clip(1.0 - (w_ratio**2), 0.0, 1.0)
+            dw_learn = (p_drive * sat_fact) - (w / self.tau_plasticity)
+            dw = dw_fhn + dw_learn
+            
+            e_adapt = self.cfg['doubt']['epsilon_u'] * np.clip(1.0 + self.cfg['doubt'].get('alpha_surprise', 2.0)*sigma_social, 1.0, 5.0)
+            du = (e_adapt * (self.cfg['doubt']['k_u']*sigma_social + self.cfg['doubt']['sigma_baseline'] - u)) / self.cfg['doubt']['tau_u']
+            return np.concatenate([dv, dw, du])
+
+        y0 = np.concatenate([self.v, self.w, self.u])
+        sol = solve_ivp(combined_dynamics, t_span, y0, method='RK45', rtol=1e-6, max_step=max_step)
+        y_final = sol.y[:, -1]
+        self.v = y_final[:self.N]
+        self.w = y_final[self.N:2*self.N]
+        self.u = np.clip(y_final[2*self.N:], *self.cfg['doubt']['u_clamp'])
+        return sol
+
+    # API bindings to metrics.py to avoid breaking existing scripts
+    def get_states(self) -> np.ndarray:
+        return get_cognitive_states(self.v)
+
+    def calculate_entropy(self, bins=None, use_cognitive_bins=False) -> float:
+        """
+        By default uses the new Continuous Entropy.
+        If use_cognitive_bins=True is forced, it will fall back to exact paper ±0.4/1.2 boundaries.
+        """
+        if use_cognitive_bins:
+            return calculate_cognitive_entropy(self.v)
+        return calculate_continuous_entropy(self.v, bins=bins or 100)
+
+Mem4ristorV2 = Mem4ristorV3

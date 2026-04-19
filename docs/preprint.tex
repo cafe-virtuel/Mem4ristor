@@ -149,14 +149,15 @@ Reference parameters: $a = 0.7$, $b = 0.8$, $\varepsilon = 0.08$, $D = 0.15$, $\
 
 \subsection{Existence of Limit Cycles}
 
-For a single decoupled unit ($D = 0$) with $u$ treated as a quasi-static parameter ($\varepsilon_u \ll 1$), the $(v, w)$ subsystem reduces to a modified FHN oscillator. By the Poincar\'e--Bendixson theorem:
+For a single \textbf{decoupled} unit ($D = 0$, $N = 1$) with $u$ treated as a quasi-static parameter ($\varepsilon_u \ll 1$), the $(v, w)$ subsystem reduces to a 2-dimensional modified FHN oscillator. By the Poincar\'e--Bendixson theorem, which applies strictly to planar ($\mathbb{R}^2$) autonomous systems:
 \begin{enumerate}
-\item The self-inhibition term $-\alpha_{\text{self}} \tanh(v)$ ensures boundedness of $|v|$, and $b > 0$ ensures stability of $w$. A compact positively invariant set $\Omega$ exists.
-\item The unique equilibrium is unstable for the standard parameter range (verified numerically).
-\item By Poincar\'e--Bendixson, the absence of a stable equilibrium in $\Omega$ guarantees the existence of a limit cycle.
+\item The self-inhibition term $-\alpha_{\text{self}} \tanh(v)$ ensures boundedness of $|v|$, and $b > 0$ ensures stability of $w$. A compact positively invariant set $\Omega \subset \mathbb{R}^2$ exists.
+\item The unique equilibrium is unstable for the standard parameter range (verified numerically by computing that the Jacobian eigenvalues have positive real parts).
+\item By Poincar\'e--Bendixson, the absence of a stable equilibrium within $\Omega$ guarantees the existence of a limit cycle for the \emph{isolated unit}.
 \end{enumerate}
 
-For the coupled system, the Floquet multipliers of the linearized dynamics around the synchronized manifold satisfy $|\mu_k| \gg 1$ for all transverse modes $k > 0$ under numerical evaluation (Section~\ref{sec:comp_analysis}), indicating that the synchronized state is unstable.
+\textbf{Important scope note.} The Poincar\'e--Bendixson theorem does \emph{not} extend to the coupled $3N$-dimensional system. For the full network, stability arguments rely on numerical means: the Floquet multipliers of the linearized dynamics around the synchronized manifold satisfy $|\mu_k| \gg 1$ for all transverse modes $k > 0$ (Section~\ref{sec:comp_analysis}), indicating that the synchronized state is unstable. The observed sustained diversity is therefore an empirical result confirmed by Floquet analysis, not analytically derived from Poincar\'e--Bendixson.
+
 
 \subsection{Heretic Percolation Threshold}
 

@@ -322,6 +322,64 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Insight (Paper B)** : La non-linéarité memristive seule ne remplace pas le désordre ! Si le système est déterministe, les memristors saturent vers un état corrélé et le réseau fige. Cela vient valider une fois de plus, "par l'absurde", que c'est bien la synergie **(Bruit + Mismatch paramétrique / quenched disorder)** (P4.19bis/ter) qui génère l'échappement, pas uniquement la nature memristive en elle-même.
 
+### 3quaterdecies. Phase 5 : Refactoring KIMI (2026-04-19) — CORRECTIONS CRITIQUES
+
+**Contexte** : Audit adversarial par KIMI (LLM externe) identifiant 5 axes de problèmes :
+(a) incohérences code/papier sur `tau_u` et `delta`, (b) entropie à 5 bins artificielle,
+(c) erreur mathématique Poincaré-Bendixson en dimension 3N, (d) O(N²) dans rewiring,
+(e) God Object monolithique.
+
+**Corrections appliquées** :
+
+| Type | Avant | Après | Impact |
+|:-----|:------|:------|:-------|
+| `tau_u` | 1.0 | **10.0** | Correspondance Annexe B preprint |
+| `social_leakage` (δ) | 0.05 | **0.01** | Correspondance Eq. 5 preprint |
+| Seuils entropie | ±0.8/1.5 | **±0.4/1.2** | Correspondance Table 1 preprint |
+| Métrique entropie | 5 bins discrets (max log₂5=2.32 bits) | **100 bins uniformes continus** (max ~6.5 bits) | Entropie différentielle justifiable |
+| Rewiring sparse | `.tolil()` + `.tocsr()` dans la boucle (O(N²)) | **Hors boucle O(N)** | ~100× speedup sur N=1000 |
+| Poincaré-Bendixson | Appliqué au système couplé 3N dimensions | **Strictement limité au cas 2D découplé** | Rigueur mathématique |
+| Architecture | `core.py` God Object 872 lignes | **Facade + `dynamics.py` + `topology.py` + `metrics.py`** | Maintenabilité |
+
+**Nouveaux fichiers** :
+- `src/mem4ristor/dynamics.py` — Mem4ristorV3 engine (FHN, RK45, plasticité)
+- `src/mem4ristor/topology.py` — Mem4Network (Laplacian, rewiring O(N), spectral gap)
+- `src/mem4ristor/metrics.py` — Entropie continue + états cognitifs avec seuils corrects
+
+**Validation** : Tous les imports et smoketests passent. `preprint.pdf` recompilé (11 pages).
+**Git** : commit `c8d9bde`.
+
+⚠️ **Conséquence** : Les courbes de phase P4.19 doivent être régénérées avec la nouvelle métrique (100 bins). Le τ_u=10.0 ralentit la dynamique de doute — à vérifier sur les expériences existantes.
+
+### 3quindecies. P4.19 régénération avec métrique continue — VALIDATION KIMI (2026-04-19)
+
+**Question** : Le « complete escape » à (η=0.5, σ_C=0.5) rapporté en P4.19bis est-il un artefact du plafond log₂(5)=2.32 bits de la métrique 5-bin, ou survit-il sous l'entropie continue 100-bin préférée par l'audit KIMI ?
+
+**Méthode** : `experiments/spice_mismatch_reanalyze.py`. Rechargement des 45 fichiers `.dat` ngspice déjà cachés (aucun re-run, ~2s d'analyse), puis H_stable recalculé avec **trois métriques en parallèle** :
+1. `calculate_continuous_entropy` (100 bins uniformes sur [-3, 3], KIMI-preferred)
+2. `calculate_cognitive_entropy` (5 bins, seuils corrigés ±0.4/1.2)
+3. `cognitive_entropy` legacy (5 bins, anciens seuils ±0.8/1.5)
+
+**Résultat — pic maintenu sous toutes les métriques** :
+
+| Cellule | Continuous 100-bin | KIMI 5-bin (±0.4/1.2) | Legacy 5-bin (±0.8/1.5) |
+|:---|---:|---:|---:|
+| (η=0.1, σ=0.0) dead zone | **1.40** | 0.09 | 0.00 |
+| (η=0.3, σ=0.5) stochastic res. | **4.14** | 1.24 | 1.33 |
+| (η=0.5, σ=0.5) complete escape | **4.58** | 1.39 | 1.61 |
+
+**Findings** :
+1. **Pic identique** : argmax = (η=0.5, σ_C=0.5) sous les 3 métriques → le signal d'échappement est **robuste au choix d'estimateur**.
+2. **Plafond démontré** : H_continuous atteint **4.58 bits** (au-dessus de log₂(5)=2.32), confirmant que la métrique 5-bin compressait effectivement le signal dans le régime diversifié.
+3. **Finding émergent** : La « dead zone » (η=0.1, σ=0) n'est **pas vraiment morte** — H_continuous=1.40 bits indique une variabilité sub-cognitive (oscillations intra-bin) masquée par le plafond. Insight pour Paper B : la consensus-like phase a une structure fine détectable par métrique continue.
+
+**Figures** :
+- `figures/spice_mismatch_sweep_continuous.png` — heatmap + courbes d'échappement (primary, 100-bin)
+- `figures/spice_mismatch_sweep_metric_compare.png` — 3 heatmaps côte-à-côte
+- `figures/spice_mismatch_sweep_continuous.csv` — données brutes avec 3 colonnes H
+
+**Conséquence** : Réponse directe à la critique #1 KIMI (plafond artificiel du 5-bin). Le résultat Paper B `complete escape at (η=0.5, σ_C=0.5)` est validé sous la métrique la plus défendable. Aucun re-run ngspice nécessaire.
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
