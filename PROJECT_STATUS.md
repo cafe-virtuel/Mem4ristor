@@ -322,6 +322,37 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Insight (Paper B)** : La non-linéarité memristive seule ne remplace pas le désordre ! Si le système est déterministe, les memristors saturent vers un état corrélé et le réseau fige. Cela vient valider une fois de plus, "par l'absurde", que c'est bien la synergie **(Bruit + Mismatch paramétrique / quenched disorder)** (P4.19bis/ter) qui génère l'échappement, pas uniquement la nature memristive en elle-même.
 
+### 3quaterdecies. Phase 5 : Refactoring KIMI (2026-04-19) — CORRECTIONS CRITIQUES
+
+**Contexte** : Audit adversarial par KIMI (LLM externe) identifiant 5 axes de problèmes :
+(a) incohérences code/papier sur `tau_u` et `delta`, (b) entropie à 5 bins artificielle,
+(c) erreur mathématique Poincaré-Bendixson en dimension 3N, (d) O(N²) dans rewiring,
+(e) God Object monolithique.
+
+**Corrections appliquées** :
+
+| Type | Avant | Après | Impact |
+|:-----|:------|:------|:-------|
+| `tau_u` | 1.0 | **10.0** | Correspondance Annexe B preprint |
+| `social_leakage` (δ) | 0.05 | **0.01** | Correspondance Eq. 5 preprint |
+| Seuils entropie | ±0.8/1.5 | **±0.4/1.2** | Correspondance Table 1 preprint |
+| Métrique entropie | 5 bins discrets (max log₂5=2.32 bits) | **100 bins uniformes continus** (max ~6.5 bits) | Entropie différentielle justifiable |
+| Rewiring sparse | `.tolil()` + `.tocsr()` dans la boucle (O(N²)) | **Hors boucle O(N)** | ~100× speedup sur N=1000 |
+| Poincaré-Bendixson | Appliqué au système couplé 3N dimensions | **Strictement limité au cas 2D découplé** | Rigueur mathématique |
+| Architecture | `core.py` God Object 872 lignes | **Facade + `dynamics.py` + `topology.py` + `metrics.py`** | Maintenabilité |
+
+**Nouveaux fichiers** :
+- `src/mem4ristor/dynamics.py` — Mem4ristorV3 engine (FHN, RK45, plasticité)
+- `src/mem4ristor/topology.py` — Mem4Network (Laplacian, rewiring O(N), spectral gap)
+- `src/mem4ristor/metrics.py` — Entropie continue + états cognitifs avec seuils corrects
+
+**Validation** : Tous les imports et smoketests passent. `preprint.pdf` recompilé (11 pages).
+**Git** : commit `c8d9bde`.
+
+⚠️ **Conséquence** : Les courbes de phase P4.19 doivent être régénérées avec la nouvelle métrique (100 bins). Le τ_u=10.0 ralentit la dynamique de doute — à vérifier sur les expériences existantes.
+
+
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
