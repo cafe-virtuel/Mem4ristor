@@ -309,6 +309,19 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Reproduction** : `experiments/spice_19ter_robustness.py`. Figures : `p4_19ter_multigraph.png`, `p4_19ter_dichotomy.png`, `p4_19ter_er_replication.png`. CSV : `figures/p4_19ter_results.csv`.
 
+### 3tredecies. P4.20 : Modèle Compact HfO₂ Déterministe — RÉSULTAT NÉGATIF (2026-04-19)
+
+**Question** : Un modèle compact de memristor HfO₂ (modèle Yakopcic fluide, déterministe) modulant soit le seuil d'excitabilité neuronal (A) soit la force synaptique (B) peut-il briser la dead zone de façon autonome, sans bruit thermique ?
+
+**Méthode** : `experiments/spice_p420_hfo2_memristor.py`. Implémentation du modèle de Yakopcic (`Ron=100`, `Roff=16k`). 
+- **(A)** Modèle appliqué au neurone (capacité d'intégration) sur lattice 4x4.
+- **(B)** Modèle appliqué aux synapses sur BA m=5 N=64. L'idée était d'exploiter un effet anti-Hebb.
+- **(A+B)** Combinaison des deux sur m=5 N=16.
+
+**Résultat** : Toutes les expériences (A, B, A+B) finissent avec l'entropie **H = 0.000**, et une convergence rapide vers un point fixe d'environ `v ≈ -1.27` avec une `std < 0.001` entre les noeuds. La dead zone est même renforcée dans ces conditions purement déterministes.
+
+**Insight (Paper B)** : La non-linéarité memristive seule ne remplace pas le désordre ! Si le système est déterministe, les memristors saturent vers un état corrélé et le réseau fige. Cela vient valider une fois de plus, "par l'absurde", que c'est bien la synergie **(Bruit + Mismatch paramétrique / quenched disorder)** (P4.19bis/ter) qui génère l'échappement, pas uniquement la nature memristive en elle-même.
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
@@ -628,7 +641,7 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 19. **~~SPICE + bruit thermique / mismatch~~** → **FAIT (2026-04-19, soir)**. `experiments/spice_noise_resonance.py`. Réponse : escape partiel (H~0.16) sous bruit fort (η=0.30) + mismatch capacitif 5%. Pas une rescue complète mais synergie réelle. Voir §3decies.
 19bis. **~~Sweep σ_mismatch + multi-seed~~** → **FAIT (2026-04-19, soir)**. `experiments/spice_mismatch_sweep.py` : 45 runs, H_max=1.61 (escape complet), 3 régimes caractérisés. Voir §3undecies.
 19ter. **~~Étendre la caractérisation~~** → **FAIT (2026-04-19)**. `experiments/spice_19ter_robustness.py` : (a) multi-graphe H=1.688±0.076 sur 5 seeds BA m=5 — robustesse confirmée ; (b) dichotomie σ_c(η=0.1)=0.43 / σ_c(η=0.3)=0.23 / σ_c(η=0.5)≈0 — frontière de phase publiable ; (c) ER p=0.12 H_max=1.758 — mécanisme topology-agnostic confirmé. Voir §3duodecies.
-20. **Modèle de memristor HfO₂ réaliste** — Remplacer la capacité 1F idéale par un modèle compact memristor (Stanford-PKU, etc.). Mesurer comment l'imperfection hardware module la dynamique.
+20. **~~Modèle de memristor HfO₂ réaliste~~** → **TESTÉ — RÉSULTAT NÉGATIF (2026-04-19)**. `experiments/spice_p420_hfo2_memristor.py` avec modèle compact Yakopcic (Ron=100, Roff=16k). Testé sur neurone (A), synapse (B), et A+B combiné. Tous convergent vers un consensus parfait v≈-1.27 (H=0.000). Le memristeur déterministe ne suffit pas sans l'ajout du bruit thermique. Piste "changer les poids statiques" définitivement close au profit de la stochastic resonance étudiée en P4.19bis/ter. Voir §3tredecies.
 21. **Paper B dédié** au hardware mapping — la validation sub-1% RMS + la confirmation hardware de la dead zone sont déjà 2 résultats publiables.
 
 ### P5 — Intégrations (exploratoire)

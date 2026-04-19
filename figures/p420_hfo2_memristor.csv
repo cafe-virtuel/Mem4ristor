@@ -1,0 +1,4 @@
+experiment,topology,N,H_stable
+A_neuron,lattice_4x4,16,0.0000
+B_synapse,BAm5,64,0.0000
+AB_combined,BAm5,16,0.0000
