@@ -267,6 +267,48 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Reproduction** : `experiments/spectral_normalization_test.py`. Mode disponible : `Mem4Network(..., coupling_norm='spectral')`.
 
+### 3duodecies. P4.19ter : Robustesse, Frontière de Phase, Réplication ER (2026-04-19)
+
+**Question** : L'escape noise+mismatch est-il robuste (multi-graphe) ? Où se trouve la frontière critique σ_c(η) ? Le mécanisme est-il topology-agnostic (ER) ?
+
+**Méthode** : `experiments/spice_19ter_robustness.py` — 3 sous-expériences en séquence. Total ~100 runs ngspice.
+
+**(a) Robustesse multi-graphe** — Cellule optimale (η=0.50, σ=0.50) sur 5 seeds BA m=5 différents :
+
+| graph_seed | H_stable |
+|:---:|:---:|
+| 0 | 1.661 |
+| 7 | 1.824 |
+| 13 | 1.688 |
+| 42 | 1.593 |
+| 99 | 1.670 |
+| **mean ± std** | **1.688 ± 0.076** |
+
+**Verdict** : H ~73% du max théorique (log₂(5)=2.32) reproductible sur toutes les instances. L'escape n'est pas un artefact de seed.
+
+**(b) Frontière de phase σ_c(η) par dichotomie binaire** (BISECT_ROUNDS=6, précision ≈ 0.008) :
+
+| η | σ_c (H crosses 0.50) |
+|:---:|:---:|
+| 0.10 | **0.433** |
+| 0.30 | **0.230** |
+| 0.50 | **≈ 0** (escape sans mismatch) |
+
+**Insight** : La frontière η ↔ σ_c est monotone décroissante : plus le bruit est fort, moins de mismatch est nécessaire. À η=0.50, le système s'échappe même sans désordre figé. **Figure publishable directement** : `figures/p4_19ter_dichotomy.png`.
+
+**(c) Réplication ER p=0.12** — Même sweep (η ∈ {0.1, 0.3, 0.5} × σ ∈ {0, 0.05, 0.1, 0.2, 0.5}, 3 seeds) :
+
+- H_max = **1.758** à η=0.50, σ=0.50
+- Comportement identique au BA m=5 : même trois régimes, même seuil critique
+- **Verdict : TOPOLOGY-AGNOSTIC CONFIRMÉ** — le mécanisme n'est pas spécifique aux graphes scale-free
+
+**Conséquences Paper B** :
+1. L'escape noise+mismatch est **robuste** (multi-instance) → résultat publiable solide.
+2. La frontière σ_c(η) est **une courbe de phase** analogue au diagramme de phase spin-glass → argument théorique fort.
+3. La **topology-agnosticism** ouvre le résultat à tous les substrats memristifs, pas seulement les réseaux scale-free.
+
+**Reproduction** : `experiments/spice_19ter_robustness.py`. Figures : `p4_19ter_multigraph.png`, `p4_19ter_dichotomy.png`, `p4_19ter_er_replication.png`. CSV : `figures/p4_19ter_results.csv`.
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
@@ -585,7 +627,7 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 18. **~~Scaling SPICE topologie hétérogène~~** → **FAIT (2026-04-19, soir)**. `experiments/spice_dead_zone_test.py` : BA m=5 N=64, dead zone confirmée en analogique sur 3 normalisations. Voir §3nonies.
 19. **~~SPICE + bruit thermique / mismatch~~** → **FAIT (2026-04-19, soir)**. `experiments/spice_noise_resonance.py`. Réponse : escape partiel (H~0.16) sous bruit fort (η=0.30) + mismatch capacitif 5%. Pas une rescue complète mais synergie réelle. Voir §3decies.
 19bis. **~~Sweep σ_mismatch + multi-seed~~** → **FAIT (2026-04-19, soir)**. `experiments/spice_mismatch_sweep.py` : 45 runs, H_max=1.61 (escape complet), 3 régimes caractérisés. Voir §3undecies.
-19ter. **Étendre la caractérisation** — (a) multi-graphe (5 BA m=5 seeds différents) pour confirmer la robustesse, (b) seuil critique σ_c(η) précis par dichotomie, (c) répliquer sur ER p=0.12 (autre dead zone) pour vérifier que le mécanisme est topology-agnostic.
+19ter. **~~Étendre la caractérisation~~** → **FAIT (2026-04-19)**. `experiments/spice_19ter_robustness.py` : (a) multi-graphe H=1.688±0.076 sur 5 seeds BA m=5 — robustesse confirmée ; (b) dichotomie σ_c(η=0.1)=0.43 / σ_c(η=0.3)=0.23 / σ_c(η=0.5)≈0 — frontière de phase publiable ; (c) ER p=0.12 H_max=1.758 — mécanisme topology-agnostic confirmé. Voir §3duodecies.
 20. **Modèle de memristor HfO₂ réaliste** — Remplacer la capacité 1F idéale par un modèle compact memristor (Stanford-PKU, etc.). Mesurer comment l'imperfection hardware module la dynamique.
 21. **Paper B dédié** au hardware mapping — la validation sub-1% RMS + la confirmation hardware de la dead zone sont déjà 2 résultats publiables.
 
