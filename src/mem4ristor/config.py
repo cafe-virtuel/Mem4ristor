@@ -60,7 +60,7 @@ class DoubtConfig:
     k_u: float = 1.0
     sigma_baseline: float = 0.05
     u_clamp: List[float] = field(default_factory=lambda: [0.0, 1.0])
-    tau_u: float = 1.0
+    tau_u: float = 10.0
     alpha_surprise: float = 2.0
     surprise_cap: float = 5.0
 

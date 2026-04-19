@@ -24,7 +24,7 @@ doubt:
   k_u: 1.0
   sigma_baseline: 0.05
   u_clamp: [0.0, 1.0]
-  tau_u: 1.0
+  tau_u: 10.0
 
 # Noise Parameters
 noise:
