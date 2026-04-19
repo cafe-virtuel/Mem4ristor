@@ -380,6 +380,73 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Conséquence** : Réponse directe à la critique #1 KIMI (plafond artificiel du 5-bin). Le résultat Paper B `complete escape at (η=0.5, σ_C=0.5)` est validé sous la métrique la plus défendable. Aucun re-run ngspice nécessaire.
 
+**Note τ_u (invariance SPICE)** : Le sanity-check Phase 5 `τ_u=1 → τ_u=10` est **trivial côté SPICE P4.19** car le netlist simplifié utilise `du/dt = eps_u*(sigma_base - u)` avec `u_init = sigma_base`, donc `du/dt ≡ 0` et u reste figé à sigma_base=0.05 pour tout t. Le noyau Levitating Sigmoid devient une constante ≈ 0.94. Le couplage `k_u*sigma_social` actif dans le Python complet ([dynamics.py:225](src/mem4ristor/dynamics.py:225)) est omis du netlist. Tous les résultats P4.19bis/ter sont donc τ_u-invariants par construction. Valider τ_u=10 sur la dynamique de doute complète est une expérience à part entière (notée pour Paper B, pas un sanity check).
+
+### 3sexdecies. P4.19 CMOS-réaliste σ_C ∈ [0, 0.15] — VALIDATION KIMI #2 (2026-04-19)
+
+**Question** : KIMI critiquait que σ_C=0.50 testé en P4.19bis était physiquement irréaliste pour des capacités CMOS (mismatch typique 3-10%, max 15% en analog agressif). L'échappement survit-il dans la plage réaliste ?
+
+**Méthode** : `experiments/spice_mismatch_cmos_realistic.py`. Sweep η ∈ {0.10, 0.30, 0.50} × σ_C ∈ {0, 0.02, 0.05, 0.08, 0.10, 0.15} × 3 seeds = 54 ngspice runs. Métrique primaire = 100-bin continuous entropy (Phase 5).
+
+**Résultat — pic à σ=0.15 (plafond CMOS)** :
+
+| Régime | H_continuous | H_5bin KIMI |
+|:---|---:|---:|
+| Dead zone (η=0.1, σ=0) | 1.36 | 0.07 |
+| Stochastic resonance (η=0.3, σ=0.15) | 2.92 | 0.74 |
+| **Noise-dominated (η=0.5, σ=0.15)** | **4.53** | **1.49** |
+
+**Findings majeurs pour Paper B** :
+
+1. **Escape à η=0.5 quasi-indépendant de σ_C dans [0, 0.15]** : Hc varie seulement 4.30 → 4.53 bits. Le régime "noise-dominated" n'a pas besoin de mismatch CMOS pour échapper la dead zone.
+2. **Synergie bruit+mismatch absente du régime CMOS** : à η=0.3, Hc stagne autour de 2.8-2.9 bits pour σ ∈ [0, 0.15]. Le "big jump" Hc=1.24 → 4.14 à σ=0.5 observé en P4.19bis **nécessite σ_C bien au-delà du CMOS** (régime spin-glass / memristor stochastique).
+3. **Narrative Paper B à ajuster** : le mécanisme physiologiquement pertinent pour CMOS est **stochastic noise seul** (η≥0.3), pas synergie noise+mismatch. La synergie reste une prédiction théorique pour substrats plus désordonnés.
+
+**Figure** : `figures/spice_mismatch_cmos.png` (heatmap + courbes, 100-bin + 5-bin superposés). CSV : `figures/spice_mismatch_cmos.csv`.
+
+**Conséquence** : KIMI critique #2 **battue sur un axe** (escape ∈ CMOS range) mais **confirmée sur un autre** (synergie avait σ_C irréaliste). Paper B doit clarifier les deux régimes : CMOS→noise-only, spin-glass→synergie.
+
+### 3septdecies. P4.19 validation statistique 50-seed Monte Carlo — KIMI #3 (2026-04-19)
+
+**Question** : Les claims P4.19bis/ter/bis-bis reposent sur 3 seeds par cellule. KIMI exigeait 100+ seeds pour crédibilité statistique. La séparation dead zone ↔ escape survit-elle sous scrutin statistique sérieux ? L'effet "mismatch" est-il réellement distinct du bruit pur ?
+
+**Méthode** : `experiments/spice_mismatch_50seeds.py`. 50 seeds indépendants × 3 points critiques = 150 ngspice runs (~20 min). Points choisis pour tester deux hypothèses distinctes :
+- **A**: Dead zone baseline (η=0.10, σ=0)
+- **B**: Noise-only escape (η=0.50, σ=0) — teste H₁ : "le bruit seul échappe"
+- **C**: Noise + CMOS mismatch (η=0.50, σ=0.10) — teste H₂ : "le mismatch ajoute quelque chose"
+
+**Résultats (100-bin continuous entropy)** :
+
+| Point | N | Mean | Std | 95% CI | Min | Max |
+|:---|---:|---:|---:|---:|---:|---:|
+| A dead zone | 50 | **1.377** | 0.043 | ±0.012 | 1.266 | 1.497 |
+| B noise-only | 50 | **4.298** | 0.194 | ±0.054 | 3.865 | 4.680 |
+| C noise+CMOS | 50 | **4.333** | 0.167 | ±0.046 | 3.985 | 4.647 |
+
+**Tests de Welch** :
+
+| Comparaison | t | p | Cohen's d | Verdict |
+|:---|---:|---:|---:|:---|
+| A vs B (noise alone escapes) | −103.9 | 1.2e-63 | **20.78** | Galactique |
+| B vs C (CMOS adds vs noise-only) | −0.95 | 0.347 | 0.19 | **Non-significatif** |
+
+**Findings majeurs** :
+
+1. **L'escape via bruit seul est établi au-delà de tout doute** (p=1.2e-63, Cohen's d=20.78 dépasse largement le seuil "huge effect"=0.8). Les distributions A et B sont littéralement disjointes : max(A)=1.497 < min(B)=3.865.
+
+2. **Le mismatch CMOS n'ajoute RIEN statistiquement** par-dessus le bruit (p=0.35, d=0.19). La différence de moyenne B vs C (4.298 vs 4.333) est dans le bruit d'échantillonnage. **Paper B doit abandonner l'hypothèse "synergy"** dans le régime CMOS-réaliste.
+
+3. **Variance A << variance B** (σ_A=0.043 vs σ_B=0.194) : la dead zone est un attracteur très stable, tandis que le régime noise-dominated a une variabilité inter-seeds ~4× plus grande — signature d'une exploration stochastique de l'espace de phase.
+
+**Narrative Paper B révisée** :
+- **Titre candidat** : "Thermal noise alone escapes the consensus dead zone in coupled memristive networks"
+- Le mismatch CMOS-réaliste est **neutre** (ni aide ni nuit)
+- La "synergie noise+mismatch" reste une prédiction pour substrats à forte disorder (spin-glass, memristors stochastiques, σ_C >> 0.15)
+
+**Figures** : `figures/spice_50seeds_validation.png` (violin + CI + tests), `figures/spice_50seeds_validation.csv` (150 lignes raw).
+
+**Conséquence** : KIMI critique #3 **résolue définitivement**. L'intervalle de confiance 95% sur B est ±0.054 bits — précision publication-grade. Le pivot narratif (noise-only plutôt que synergy) renforce la clarté mécaniste de Paper B.
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
