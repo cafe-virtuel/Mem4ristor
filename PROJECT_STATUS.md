@@ -447,6 +447,45 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Conséquence** : KIMI critique #3 **résolue définitivement**. L'intervalle de confiance 95% sur B est ±0.054 bits — précision publication-grade. Le pivot narratif (noise-only plutôt que synergy) renforce la clarté mécaniste de Paper B.
 
+### 3octdecies. Étude de minimalité (ablations) — KIMI #4 (2026-04-20)
+
+**Question** : KIMI reprochait au preprint de ne pas démontrer que chacun des trois ingrédients du noyau Mem4ristor (heretic flip, Levitating Sigmoid, dynamique de doute `u`) est *individuellement* nécessaire. On pouvait craindre qu'un seul d'entre eux suffise.
+
+**Méthode** : `experiments/ablation_minimality.py`. Quatre configurations — `FULL`, `NO_HERETIC` (masque hérétique forcé à zéro), `NO_SIGMOID` (sigmoid remplacé par kernel attractif constant : `sigmoid_steepness=0`, `social_leakage=1` ⇒ `u_filter≡1`, coupling FHN classique), `FROZEN_U` (`epsilon_u=0`, `tau_u=1e12`, `u_i ≡ sigma_baseline`). Testées sur BA m=3 N=100 + `degree_linear`, 3000 pas, 10 seeds, sous **deux protocoles** :
+- **ENDOGENOUS** : `I_stim = 0.0` (référence §3quinquies)
+- **FORCED** : `I_stim = 0.5` (référence lattice de `test_scientific_regression.py`)
+
+**Pourquoi deux protocoles** : le flip hérétique s'écrit `I_eff[mask] *= -1`. Il est *mathématiquement inactif* quand `I_stim = 0`. Un seul protocole aurait été auto-tautologique pour NO_HERETIC.
+
+**Résultats (mean ± sem, n=10)** :
+
+| Régime / Métrique | FULL | NO_HERETIC | NO_SIGMOID | FROZEN_U |
+|:---|---:|---:|---:|---:|
+| ENDOGENOUS / H₁₀₀ | **3.215 ± 0.114** | 3.215 ± 0.114 (d=0, ns) | 3.378 ± 0.084 (d=−0.51, ns) | **0.711 ± 0.012 (d=+9.75, p=3e-9)** |
+| ENDOGENOUS / H_cog5 | 0.0005 | 0.0005 | 0.0000 | 0.0000 |
+| FORCED / H₁₀₀ | 3.010 ± 0.029 | 3.441 ± 0.015 (d=−5.94, p=4e-9) | 2.976 ± 0.018 (ns) | 4.320 ± 0.047 (d=−10.69, p=2e-13) |
+| FORCED / H_cog5 | **0.015 ± 0.004** | 0.408 ± 0.013 (d=−13.15) | 0.013 ± 0.006 (ns) | 1.041 ± 0.027 (d=−17.03) |
+
+**Findings — trois messages non-triviaux** :
+
+1. **Seul `FROZEN_U` collapse systématiquement H endogène** (H₁₀₀ : 3.22 → 0.71, d=+9.75). La dynamique de doute `u` est *individuellement nécessaire* au régime endogène — c'est le seul résultat qui confirme l'intuition « minimalité » à la lettre.
+
+2. **Sous `I_stim=0`, retirer le flip hérétique est un no-op exact** : résultats bit-pour-bit identiques à FULL (d=0, p=1.0). C'est mathématiquement attendu (`I_eff[mask] *= -1` sur un vecteur nul) et exhibe un point important pour la critique KIMI : **l'hérétique est un mécanisme de *réponse au stimulus*, pas un générateur de diversité endogène**. Il doit être évalué sous forçage.
+
+3. **Sous `I_stim=0.5`, retirer l'hérétique ou geler `u` AUGMENTE l'entropie** (H₁₀₀ : +0.43, +1.31 ; H_cog5 : +0.39, +1.03). Contre-intuitif au premier abord, mais éclairant : le Mem4ristor `FULL` sur BA m=3 forcé converge vers un régime à **polarité cognitive cohérente** où les unités traversent les mêmes bacs cognitifs de manière synchronisée (H_cog5 ≈ 0.015 bit ≈ *consensus cognitif*) tout en gardant une dispersion continue intra-bac (H₁₀₀ = 3.01). Les ablations cassent cette cohérence : chaque unité explore librement son propre bac, ce qui augmente H *spatial-instantané* mais détruit précisément la structure que le noyau était conçu à imposer.
+
+4. **Levitating Sigmoid statistiquement neutre sur l'entropie** dans les deux régimes (|d| ≤ 0.51, p > 0.14). Remplacée par un kernel attractif constant, elle laisse H₁₀₀ et H_cog5 quasi-inchangés. **Interprétation** : le rôle du Sigmoid Lévitant n'est pas *quantitatif sur l'entropie* mais *qualitatif sur la topologie dynamique* (basculement attractif↔répulsif autour de `u=0.5`). Le valider proprement demande un protocole spécifique — par ex. suivre l'occurrence d'événements répulsifs corrélés à des pics de `u`, ce que l'entropie agrégée ne capture pas.
+
+**Conséquences scientifiques** :
+
+- La claim « minimalité » du preprint doit être reformulée : **`u` est individuellement nécessaire (grand effet)** ; **l'hérétique est stimulus-contingent (trivial sans forçage, mais cohérent sous forçage)** ; **le Sigmoid Lévitant est un mécanisme de commutation qualitatif, pas un générateur d'entropie quantitatif**.
+- Cette étude **révèle une limite des métriques d'entropie actuelles** (100-bin comme 5-bin) : calculées comme diversité *spatiale instantanée* moyennée sur la queue, elles confondent « désordre aléatoire » et « diversité cognitive structurée ». Une métrique plus fine (Lempel-Ziv, information mutuelle inter-nœuds, cohérence de phase) serait nécessaire pour capturer la « cognition structurée » que Mem4ristor revendique. **À ajouter au backlog P1.**
+- Le résultat « retirer `u` augmente H sous forçage » n'est *pas* une réfutation : il montre que `u` sert à *coordonner* la diversité plutôt qu'à la *maximiser*. Les métriques ne mesurent pas la coordination.
+
+**Figures** : `figures/ablation_minimality.png` (4 panneaux : 2 régimes × 2 métriques), `figures/ablation_minimality.csv` (80 lignes raw).
+
+**Verdict KIMI #4** : **partiellement résolue**. La minimalité stricte (« chaque ingrédient réduit H ») n'est établie que pour `u`. Les deux autres ingrédients demandent des protocoles ou métriques dédiés. Honnêteté scientifique préservée : on documente le résultat tel qu'il est, pas tel qu'on l'espérait.
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
@@ -722,6 +761,26 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 - 3 régimes identifiés : bruit faible (besoin σ≥0.50, états métastables), bruit moyen (résonance stochastique pure), bruit fort (escape même sans mismatch).
 - Argument Paper B affiné : mismatch capacitif **réduit le seuil de bruit** d'escape — la variabilité memristor est une *fonctionnalité*.
 
+### Session 2026-04-20 (Claude Opus 4.7, réponse KIMI suite & fin)
+
+**Contexte** : retour KIMI/Manus sur le repo après le push P4.19. Trois chantiers en séquence : A (✅ fait par Julien) — régénération figures continuous 100-bin, B — pivot narratif Paper B, C — étude de minimalité (ablations).
+
+**B — Paper B narrative pivot** :
+- Lecture `docs/paper_B/paper_B.tex` (86 lignes, narrative "synergy noise+mismatch" obsolète post-P4.19bis/ter).
+- Abstract réécrit : noise alone escape (d=20.78), CMOS mismatch neutre (d=0.19), spin-glass en extrapolation σ_C >> 0.15.
+- Section 4 subdivisée : §4.1 spectral entropy (100-bin vs 5-bin), §4.2 MC 50-seeds avec Table + Cohen's d, §4.3 CMOS sweep 0-15%, §4.4 topology-agnostic.
+- Section 5 (Phase Boundary) reframée comme prédiction extrapolative pour substrats à forte disorder.
+- Conclusion mise à jour : thermal noise = primary engine, quenched disorder = frontière architecturale.
+- 3 nouvelles figures copiées dans `docs/paper_B/figures/` : `spice_mismatch_sweep_continuous.png`, `spice_50seeds_validation.png`, `spice_mismatch_cmos.png`.
+- PDF recompilé : 7 pages, 0 warnings, 0 undefined refs.
+
+**C — Étude de minimalité / ablations** : voir §3octdecies.
+- `experiments/ablation_minimality.py` : 4 ablations (FULL, NO_HERETIC, NO_SIGMOID, FROZEN_U) × 2 protocoles (I_stim=0.0 et 0.5) × 2 métriques (H₁₀₀, H_cog5) × 10 seeds = 80 runs (~60s).
+- Résultat 1 : `u` est individuellement nécessaire (d=+9.75, p=3e-9 en ENDOGENOUS).
+- Résultat 2 : `heretic flip` est *stimulus-contingent* : no-op exact sous I_stim=0, cohérent sous forçage (d=−5.94 à −13.15, mais réduisant H cohérente plutôt que dispersée).
+- Résultat 3 : `Levitating Sigmoid` est statistiquement neutre sur H : rôle qualitatif (basculement), pas quantitatif.
+- **Méta-finding** : les métriques entropiques actuelles confondent « diversité cognitive structurée » et « désordre aléatoire ». Backlog P1 : ajouter une métrique complémentaire (Lempel-Ziv, MI inter-nœuds, cohérence de phase) pour capturer la coordination.
+
 ---
 
 ## 10. PROCHAINES ÉTAPES (par priorité)
@@ -734,6 +793,7 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 ### P1 — Bugs pré-existants à fixer
 4. **~~`test_swarm_synchronization`~~** → **FAIT (2026-04-19)**. Test était écrit pour mean-field symétrique mais l'implémentation est MAX FIELD asymétrique (intentionnel : vétéran préservé). Test corrigé.
 5. **~~`test_entropy_preservation_with_v4`~~** → **FAIT (2026-04-19)**. Ring N=10 sans hubs → remplacé par BA m=3 N=50 + `coupling_norm='degree_linear'`. H ≈ 0.83.
+5bis. **Métrique de diversité cognitive coordonnée** → **À faire (identifié 2026-04-20 via §3octdecies)**. H₁₀₀ et H_cog5 sont des mesures de dispersion *spatiale instantanée* ; elles confondent désordre aléatoire et diversité structurée. Ajouter une métrique complémentaire capturant la coordination (Lempel-Ziv, information mutuelle pairwise, cohérence de phase inter-hubs, ou entropie de transition entre états cognitifs). Sans cela, on ne peut pas défendre la claim « cognition structurée » du preprint contre des ablations qui *augmentent* H en *détruisant* la structure.
 
 ### P2 — Paper 2 : "Breaking the Topological Diversity Boundary" (pistes Grok + Antigravity, 2026-04-11)
 
