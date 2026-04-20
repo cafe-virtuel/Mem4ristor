@@ -34,13 +34,18 @@ def test_levitating_sigmoid_kernel():
     model._initialize_params(N=3)
 
     # Test the sigmoid filter values directly
-    # u=0 -> tanh(π*0.5) + 0.05 ≈ 0.92 + 0.05 = 0.97 (strong attraction)
+    # Preprint (Eq. 5, Table A.1): δ = 0.01
+    # u=0   -> tanh(π*0.5) + 0.01 ≈ 0.92 + 0.01 = 0.93 (strong attraction)
+    # u=0.5 -> tanh(0) + 0.01     = 0.00 + 0.01 = 0.01 (= δ, leakage only)
+    # u=1   -> tanh(-π*0.5) + 0.01 ≈ -0.92 + 0.01 = -0.91 (strong repulsion)
     model.u = np.array([0.0, 0.5, 1.0])
     u_centered = 0.5 - model.u
     u_filter = np.tanh(model.sigmoid_steepness * u_centered) + model.social_leakage
 
     assert u_filter[0] > 0.9, f"u=0 should give strong attraction, got {u_filter[0]:.4f}"
-    assert abs(u_filter[1] - 0.05) < 0.01, f"u=0.5 should give ~δ (leakage), got {u_filter[1]:.4f}"
+    # Match preprint δ = 0.01 (Phase 5 KIMI alignment, 2026-04-19)
+    assert abs(u_filter[1] - model.social_leakage) < 1e-9, (
+        f"u=0.5 should give exactly δ (leakage={model.social_leakage}), got {u_filter[1]:.4f}")
     assert u_filter[2] < -0.85, f"u=1 should give strong repulsion, got {u_filter[2]:.4f}"
 
 

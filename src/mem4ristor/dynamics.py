@@ -82,6 +82,11 @@ class Mem4ristorV3:
         hr = self.cfg['coupling'].get('heretic_ratio', 0.15)
         if not (0.0 <= hr <= 1.0):
             raise ValueError(f"Configuration Error: 'heretic_ratio' must be in [0, 1], got {hr}")
+        # Guard restored from core_backup_pre_v5.py (Manus audit 2026-04-19)
+        if self.cfg['noise'].get('use_rtn', False):
+            p_flip = self.cfg['noise'].get('rtn_p_flip', 0.01)
+            if not (0.0 <= p_flip <= 1.0):
+                raise ValueError(f"Configuration Error: 'rtn_p_flip' must be in [0, 1], got {p_flip}")
 
     def _initialize_params(self, N=100, cold_start=False):
         if N <= 0 or N > 10_000_000:
@@ -132,22 +137,37 @@ class Mem4ristorV3:
         self.time_in_state[~switched] += self.dt
 
     def step(self, I_stimulus: float = 0.0, coupling_input: Optional[np.ndarray] = None) -> None:
+        # GUARD: Deterministic Input (restored from core_backup_pre_v5.py)
         if hasattr(I_stimulus, '__float__') and not isinstance(I_stimulus, (int, float, np.number, np.ndarray)):
             raise TypeError("Stimulus must be a numeric constant.")
+        if isinstance(I_stimulus, (dict, set, list, tuple, str)):
+            # Reject container types explicitly (list/tuple could match np.number in future)
+            if not isinstance(I_stimulus, (list, tuple)):
+                raise TypeError(f"Stimulus type {type(I_stimulus).__name__} not supported.")
 
-        if np.any(~np.isfinite(self.v)): self.v = np.nan_to_num(self.v, nan=0.0)
-        if np.any(~np.isfinite(self.w)): self.w = np.nan_to_num(self.w, nan=0.0)
-        if np.any(~np.isfinite(self.u)): self.u = np.nan_to_num(self.u, nan=0.5)
+        if np.any(~np.isfinite(self.v)): self.v = np.nan_to_num(self.v, nan=0.0, posinf=0.0, neginf=0.0)
+        if np.any(~np.isfinite(self.w)): self.w = np.nan_to_num(self.w, nan=0.0, posinf=0.0, neginf=0.0)
+        if np.any(~np.isfinite(self.u)): self.u = np.nan_to_num(self.u, nan=0.5, posinf=0.5, neginf=0.5)
+
+        # GUARD: Coupling Input Sanitization (restored from core_backup_pre_v5.py)
+        if coupling_input is not None:
+            try:
+                coupling_input = np.array(coupling_input, dtype=float)
+            except (ValueError, TypeError, AttributeError):
+                raise ValueError(f"Invalid coupling input: {coupling_input!r}. Must be numeric.")
 
         if coupling_input is None:
             laplacian_v = np.zeros(self.N)
         elif coupling_input.ndim == 2:
             laplacian_v = coupling_input @ self.v - self.v
+        elif coupling_input.ndim == 1:
+            laplacian_v = coupling_input
         else:
-            laplacian_v = np.array(coupling_input, dtype=float)
+            # 0-d scalar coupling input — treat as uniform scalar on zero Laplacian
+            laplacian_v = np.full(self.N, float(coupling_input))
 
         if np.any(~np.isfinite(laplacian_v)):
-            laplacian_v = np.nan_to_num(laplacian_v, nan=0.0)
+            laplacian_v = np.nan_to_num(laplacian_v, nan=0.0, posinf=1.0, neginf=-1.0)
 
         sigma_social = np.abs(laplacian_v)
         eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N)
@@ -160,8 +180,20 @@ class Mem4ristorV3:
         u_filter = np.tanh(self.sigmoid_steepness * (0.5 - self.u)) + self.social_leakage
         I_coup = self.D_eff * u_filter * laplacian_v
 
-        stim_arr = np.array(I_stimulus, dtype=float)
-        I_eff = np.full(self.N, float(stim_arr)) if stim_arr.ndim == 0 else np.nan_to_num(stim_arr.flatten())
+        # GUARD: Stimulus Sanitization + Size Validation (restored from core_backup_pre_v5.py)
+        try:
+            stim_arr = np.array(I_stimulus, dtype=float)
+        except (ValueError, TypeError, AttributeError):
+            raise ValueError(f"Invalid stimulus input: {I_stimulus!r}. Must be numeric.")
+        if stim_arr.ndim == 0:
+            I_eff = np.full(self.N, float(stim_arr))
+        else:
+            I_eff = stim_arr.flatten()
+            if I_eff.size != self.N:
+                raise ValueError(
+                    f"Stimulus vector size {I_eff.size} must match network size {self.N}")
+        if np.any(~np.isfinite(I_eff)):
+            I_eff = np.nan_to_num(I_eff, nan=0.0, posinf=100.0, neginf=-100.0)
         I_eff = np.clip(I_eff, -100.0, 100.0)
         I_eff[self.heretic_mask] *= -1.0
         I_ext = I_eff + I_coup
