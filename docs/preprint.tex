@@ -232,6 +232,28 @@ No coupling ($D = 0$) & $0.38 \pm 0.08$ & No (isolated oscillators) \\
 
 The heretic mechanism is \textbf{necessary}: removing it causes consensus collapse under Cold Start. The doubt variable is \textbf{enhancing}: without it, coupling is always attractive, and diversity is sustained only by noise-driven fluctuations ($H_{\text{stable}} \approx 0.41$).
 
+\subsection{Trajectory-Based Minimality: Coordination Phase Space}
+\label{sec:traj_minimality}
+
+Snapshot entropy ($H_{100}$, $H_{\text{cog5}}$) measures spatial diversity at a single instant. It conflates \emph{structured diversity} (nodes follow distinct but predictable trajectories) with \emph{random disorder} (nodes explore independently and chaotically). To resolve this ambiguity, we introduce two complementary trajectory metrics computed on the full $v(t)$ history:
+\begin{itemize}
+  \item \textbf{Pairwise synchrony} $\bar{r}$: mean Pearson cross-correlation of $v(t)$ traces between all node pairs (subsampled). $\bar{r} \approx +1$: globally locked; $\bar{r} \approx 0$: independent; $\bar{r} \approx -1$: anti-phase.
+  \item \textbf{LZ76 complexity} $C_{\text{LZ}}$: normalised Lempel--Ziv complexity of per-node state sequences ($\approx 0$: structured/predictable; $\approx 1$: random walk).
+\end{itemize}
+
+Figure~\ref{fig:phase_space} plots all 80 runs of the ablation study (4 conditions $\times$ 2 protocols $\times$ 10 seeds) in the $(\bar{r}, C_{\text{LZ}})$ plane. The four quadrants define interpretable dynamical regimes.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.82\textwidth]{../figures/coordination_phase_space.png}
+\caption{Coordination phase space $(\bar{r}, C_{\text{LZ}})$ for four ablation conditions under two protocols (BA $m=3$, $N=100$, \texttt{degree\_linear}, 10 seeds each). Each point is one run; filled markers are centroids $\pm$ std. Quadrant boundaries: $\bar{r}=0.15$, $C_{\text{LZ}}=1.6$. \textbf{FULL} is the only condition that occupies the structured half-plane ($C_{\text{LZ}} < 1.6$) in both protocols. FROZEN\_U migrates to the chaotic quadrant (high sync, high LZ) under forcing---a signature of \emph{coherent chaos}. Ablating $u$ (FROZEN\_U) produces strongly seed-dependent trajectories with high LZ regardless of protocol.}
+\label{fig:phase_space}
+\end{figure}
+
+The key claim is that \textbf{only the full model} consistently occupies the structured ($C_{\text{LZ}} < 1.6$) half-plane across both endogenous and forced protocols, while all ablations either drift toward chaotic ($C_{\text{LZ}} \approx 2.0$) or fail to achieve structured trajectories. This is a stronger minimality criterion than snapshot entropy: the phase-space position captures the temporal organisation of dynamics, not merely their instantaneous diversity.
+
+\textbf{Complementary evidence from forcing sweep.} To demonstrate that $u$ acts specifically as an \emph{anti-synchronisation filter}, we swept $I_{\text{stim}} \in [0, 1]$ for FULL vs FROZEN\_U (BA $m=3$, $N=100$, 7 seeds, 3000 steps). FULL maintains $\bar{r} \approx 0.025$--$0.035$ across all $I_{\text{stim}} \in [0.1, 1.0]$ (flat, near-zero synchrony). FROZEN\_U shows a sharp transition at $I_{\text{stim}} \approx 0.2$ from $\bar{r} = 0.006$ (endogenous) to $\bar{r} = 0.830$ (plateau), with Cohen's $d = 13.21$ ($p = 9.7 \times 10^{-10}$) separating the two conditions at $I_{\text{stim}} = 0.5$. This confirms that $u$ absorbs the common forcing signal and prevents stimulus-induced phase locking---a \emph{dynamic buffering} function that snapshot metrics cannot detect.
+
 \subsection{Topological Normalization Regimes}
 \label{sec:topo_regimes}
 
