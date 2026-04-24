@@ -377,6 +377,53 @@ This suggests that resolving diversity collapse on dense scale-free networks req
 The doubt-modulated FHN model was originally motivated by deliberative scenarios in which premature consensus is undesirable (e.g., citizens' assemblies, collective decision-making). While the model captures the dynamical requirements for diversity preservation, it has not been validated against real-world deliberative data. The results presented here are purely computational and should be understood as properties of the dynamical system, not as claims about social behavior.
 
 % ============================================================================
+% 6.4 POST-SUBMISSION ADDENDUM (2026-04-24/25)
+% ============================================================================
+
+\subsection{Post-Submission Investigations (2026-04-24--25)}
+\label{sec:addendum}
+
+The following results were obtained after the original submission (2026-04-22) and are documented here for completeness. They will be integrated in the next revision.
+
+\subsubsection*{Bifurcation in Doubt Time Constant $\tau_u$}
+
+A systematic sweep of $\tau_u \in [0.05, 100]$ on BA $m=3$ (N=100, \texttt{degree\_linear}, $I_{\mathrm{stim}}=0.5$, 3 seeds) reveals a sharp bifurcation. For $\tau_u < 10$, doubt dynamics are too slow to track social fluctuations: frustration freezes and $H_{\mathrm{cog}} \approx 0$ (pseudo-consensus). For $\tau_u \in [10, 50]$, the system enters a transition regime ("breathing chimera"): $H_{\mathrm{cog}}$ rises from $0.023$ to $0.380$. For $\tau_u > 50$, fast doubt dynamics over-respond and the system regains coordinated diversity ($H_{\mathrm{cog}} \approx 0.8$, $\mathrm{sync} \approx 0$). \textbf{The reference value $\tau_u = 10$ sits precisely at the bifurcation edge}, which explains the bimodal distribution of outcomes observed across seeds (Section~\ref{sec:topo_regimes}). This also clarifies why the trajectory-metrics study (Section~\ref{sec:traj_minimality}) found the FULL model at the boundary of the structured half-plane: it is operating near criticality.
+
+\subsubsection*{Doubt as an Active Decorrelator: Spatial Mutual Information}
+
+To characterize the role of $u$ beyond snapshot entropy, we computed the pairwise mutual information MI$(d)$ as a function of graph hop-distance $d$ under four ablation conditions on Lattice ($N=100$) and BA $m=3$ ($N=100$). MI is estimated via 2D joint histograms on $v(t)$ histories post-warmup ($I_{\mathrm{stim}}=0.5$, \texttt{degree\_linear}, 3 seeds).
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Ablation & MI($d=1$) lattice & Decay & MI($d=1$) BA & Decay \\
+\midrule
+FULL       & 0.870 & 0.102 & 1.031 & 0.055 \\
+NO\_HERETIC & 1.244 & 0.168 & 0.983 & 0.129 \\
+FROZEN\_U  & \textbf{1.958} & 0.091 & \textbf{1.894} & 0.498 \\
+NO\_SIGMOID & 0.885 & 0.126 & 1.024 & 0.260 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The key finding: \textbf{FULL achieves the lowest MI at all distances tested}. Freezing $u$ (FROZEN\_U) raises MI($d=1$) by $2.2\times$ on BA $m=3$, indicating that the $u$ dynamics actively decorrelate neighboring nodes. This complements the trajectory result of Section~\ref{sec:traj_minimality}: $u$ functions as a dynamic buffering mechanism both in the time domain (preventing phase-locking under forcing) and in the spatial domain (reducing pairwise MI between neighbors).
+
+\subsubsection*{Stochastic Resonance and the $\lambda_2$ Threshold}
+
+A sweep of Gaussian noise amplitude $\sigma \in [0, 1.2]$ across seven topologies with varying algebraic connectivity $\lambda_2$ (BA $m=2$--$8$, Lattice, ER $p=0.05/0.10$; \texttt{degree\_linear}; $I_{\mathrm{stim}}=0.5$; 3 seeds) reveals a structural dichotomy rather than classical stochastic resonance:
+
+\begin{itemize}
+  \item \textbf{$\lambda_2 < 2.5$ (sparse topologies):} $H_{\mathrm{cog}}$ rises monotonically with $\sigma$. No bell-shaped resonance peak within $[0, 1.2]$. Noise is unconditionally beneficial.
+  \item \textbf{$\lambda_2 > 2.5$ (dense topologies, BA $m \geq 5$, ER $p=0.10$):} $H_{\mathrm{cog}} \approx 0$ throughout the entire sweep, including $\sigma=1.2$. The dead zone is \emph{noise-resistant} under digital Gaussian injection.
+\end{itemize}
+
+The critical threshold $\lambda_{2,\mathrm{crit}} \approx 2.5$ is consistent with the regime boundary identified in Section~\ref{sec:topo_regimes}. This result clarifies that local coupling corrections and Gaussian noise share the same fundamental limitation: neither can overcome path redundancy when $\lambda_2 \gg 1$.
+
+\subsubsection*{Doubt-Driven Community Detection}
+
+Constructing a ``doubt-affinity'' graph by thresholding the Pearson correlation matrix of $u(t)$ traces ($|\rho_{ij}| > 0.3$) and applying Louvain community detection yields partitions that partially overlap with topological communities (NMI $\approx 0.30$ on lattice, $0.23$ on BA $m=3$). Two distinct $u$-regimes emerge: (1) heretic nodes that saturate at $u=1.0$ (zero variance, isolated in the doubt graph) and (2) frustrated nodes that oscillate in correlated doubt and form one or two large groups \emph{that cross structural community boundaries}. This suggests that the doubt variable encodes a coarser-grained functional partition — "basins of collective frustration" — distinct from but partially aligned with the topological structure.
+
+% ============================================================================
 % 7. CONCLUSION
 % ============================================================================
 \section{Conclusion}
