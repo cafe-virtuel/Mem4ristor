@@ -136,7 +136,8 @@ class Mem4ristorV3:
         self.time_in_state[switched] = 0.0
         self.time_in_state[~switched] += self.dt
 
-    def step(self, I_stimulus: float = 0.0, coupling_input: Optional[np.ndarray] = None) -> None:
+    def step(self, I_stimulus: float = 0.0, coupling_input: Optional[np.ndarray] = None,
+             sigma_v_vec: Optional[np.ndarray] = None) -> None:
         # GUARD: Deterministic Input (restored from core_backup_pre_v5.py)
         if hasattr(I_stimulus, '__float__') and not isinstance(I_stimulus, (int, float, np.number, np.ndarray)):
             raise TypeError("Stimulus must be a numeric constant.")
@@ -170,7 +171,10 @@ class Mem4ristorV3:
             laplacian_v = np.nan_to_num(laplacian_v, nan=0.0, posinf=1.0, neginf=-1.0)
 
         sigma_social = np.abs(laplacian_v)
-        eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N)
+        if sigma_v_vec is not None:
+            eta = self.rng.normal(0, 1, self.N) * sigma_v_vec
+        else:
+            eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N)
 
         if self.cfg['noise'].get('use_rtn', False):
             rtn_amp = self.cfg['noise'].get('rtn_amplitude', 0.1)

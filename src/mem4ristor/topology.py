@@ -230,7 +230,7 @@ class Mem4Network:
             raise ValueError(f"Unknown boundary condition '{self.boundary}'. Use 'periodic' or 'neumann'.")
         return output.flatten()
 
-    def step(self, I_stimulus: float = 0.0):
+    def step(self, I_stimulus: float = 0.0, sigma_v_vec=None):
         self._doubt_driven_rewire()
         if self._weights_dirty:
             self._rebuild_laplacian()
@@ -244,7 +244,7 @@ class Mem4Network:
             uniform_D_eff = D / np.sqrt(self.N)
             scale_factors = (self.node_weights * D) / uniform_D_eff
             l_v = l_v * scale_factors
-        self.model.step(I_stimulus, l_v)
+        self.model.step(I_stimulus, l_v, sigma_v_vec=sigma_v_vec)
 
     @property
     def v(self): return self.model.v

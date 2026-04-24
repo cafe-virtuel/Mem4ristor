@@ -1388,10 +1388,207 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 
 ---
 
+### Session 2026-04-24 — Audit Externe + Corrections (Claude Sonnet 4.6)
+
+**Contexte** : Audit scientifique externe reçu (`.Audit/Audit Scientifique du Projet Mem4ristor-v2.md`). Trois corrections appliquées suite à l'analyse croisée audit vs PROJECT_STATUS.
+
+**Correction 1 — `experiments/limit02_alpha_sweep.py`** :
+- Ajout import `calculate_cognitive_entropy` depuis `metrics.py`.
+- Rapport des deux métriques en parallèle : H_cont (100-bin, nouvelle métrique continue) et H_cog (5-bin, seuils KIMI ±0.4/1.2).
+- Note explicite `I_STIM = 0.0 → heretics inactive (no-op)` dans le code.
+- Conséquence : les résultats γ*(m) sont maintenant qualifiés par les deux métriques. H_cog attendu ≈ 0 dans le régime endogène (confirmant FLAW 6).
+
+**Correction 2 — `tests/test_scientific_regression.py`** (10 tests, 10 PASS) :
+- `TestHereticEndogenousNoOp` : documente que heretics ratio=0 vs 0.15 produisent des résultats indistinguables à I_stim=0. Guard contre toute "correction" silencieuse de ce comportement sans mise à jour narrative.
+- `TestDeadZoneTopologicalPredictor` (2 sous-tests) : vérifie que BA m=5 + uniform → dead zone (H_cog < 0.5), et BA m=3 + degree_linear → survit (H_cont > 1.0). Ancre l'observable λ₂ dans les tests.
+- `TestFullModelCoordinatedDiversity` : intégration — FULL model sous forçage I_stim=0.5 doit avoir synchrony < 0.3. Guard contre la dégradation du mécanisme u-dynamics.
+
+**Statut preprint** : Julien a soumis le 22/04/2026. Les corrections narratives (dead zone = artefact normalisation, bimodalité endogène à intégrer) sont documentées ici pour la prochaine révision.
+
+### 3septvigies. Piste A5 — Sweep delta (Levitating Sigmoid) : RESULTAT NEGATIF / ROBUSTESSE (2026-04-24)
+
+**Question** : delta=0.01 (fix technique LIMIT-01) est-il en realite un parametre de controle de la symetrie sociale avec un delta_crit qui maximise la complexite LZ ?
+
+**Methode** : `experiments/p2_delta_sweep.py`. Sweep delta in [-0.10, -0.05, -0.02, -0.01, 0.0, 0.01, 0.02, 0.05, 0.10] sur Lattice 10x10 et BA m=3 N=100. I_stim=0.5, coupling_norm='degree_linear', 3000 steps, warm_up=750, 3 seeds. `net.model.social_leakage = delta` apres instanciation. Metriques : H_cont, H_cog, LZ, sync.
+
+**Resultats** :
+
+| delta | LZ (lattice) | LZ (BA m=3) | H_cog (lattice) |
+|------:|:------------:|:-----------:|:---------------:|
+| -0.10 | 0.723 | 0.767 | 0.425 |
+| 0.00 | 0.743 | 0.761 | 0.422 |
+| **0.01** (defaut) | 0.744 | 0.763 | 0.432 |
+| 0.10 | 0.754 | 0.787 | 0.431 |
+
+**Findings** :
+
+1. **Hypothese infirmee** : pas de delta_crit identifiable. La variation totale de LZ sur tout le sweep est ±0.025 (lattice) et ±0.040 (BA m=3) — inferieure a la variance inter-seeds estimee.
+
+2. **Le modele est robuste a delta ∈ [-0.1, 0.1]** : toutes les metriques (H_cog, LZ, sync, H_cont) restent stables. C'est un resultat de robustesse positif.
+
+3. **delta < 0 (repulsion faible)** ne produit pas plus de diversite que delta > 0 (attraction faible). La brisure de symetrie au point u=0.5 est trop faible pour modifier le regime dynamique.
+
+4. **Confirmation du role technique de delta** : introduit pour eviter le couplage nul a u=0.5, il remplit exactement ce role sans agir comme parametre de controle. Le choix delta=0.01 est valide.
+
+**Consequence** : pas de modification du modele recommandee. La section LIMIT-01 reste documentee comme correcte.
+
+**Figures** : `figures/p2_delta_sweep.png` (4 panneaux : H_cog, LZ, sync, H_cont vs delta, 2 topos). CSV : `figures/p2_delta_sweep.csv`.
+
+**Duree** : 37s (54 runs : 9 deltas × 2 topos × 3 seeds).
+
+---
+
+### 3sexvigies. Piste A4 — Information Mutuelle Spatio-Temporelle : RESULTAT POSITIF (2026-04-24)
+
+**Question** : La MI entre noeuds voisins vs distants revele-t-elle une longueur de correlation caracteristique du regime FULL ?
+
+**Methode** : `experiments/p2_spatial_mutual_information.py`. Nouvelle fonction `calculate_spatial_mutual_information(v_history, adjacency_matrix)` ajoutee a `src/mem4ristor/metrics.py`. Histogrammes 2D (n_bins=20) sur traces z-scorees. Distances graphe via `scipy.sparse.csgraph.shortest_path`. 4 ablations (FULL, NO_HERETIC, FROZEN_U, NO_SIGMOID), 2 topos (Lattice 10x10, BA m=3 N=100), I_stim=0.5, 3 seeds, max 150 paires par distance. Duree : 18s.
+
+**Resultats** :
+
+| Ablation | MI(d=1) lattice | Decay lattice | MI(d=1) BA m=3 | Decay BA m=3 |
+|:---------|:---------------:|:-------------:|:--------------:|:------------:|
+| FULL | 0.870 | 0.102 | 1.031 | **0.055** |
+| NO_HERETIC | 1.244 | 0.168 | 0.983 | 0.129 |
+| FROZEN_U | **1.958** | 0.091 | **1.894** | **0.498** |
+| NO_SIGMOID | 0.885 | 0.126 | 1.024 | 0.260 |
+
+**Findings** :
+
+1. **La prediction initiale etait inversee** : on attendait FULL avec MI haute localement et decroissante. En realite, FULL a la MI la plus BASSE a toutes les distances (sur lattice). Ce renversement est scientifiquement plus riche.
+
+2. **u = decorrelateur actif** : FROZEN_U a MI~1.9 (synchronisation elevee), FULL a MI~0.87. La dynamique de doute reduit activement la correlation entre noeuds voisins. Sans u, le reseau oscille en synchronisation globale (FHN couple classique). Avec u, chaque noeud suit sa propre trajectoire independante.
+
+3. **FROZEN_U sur BA m=3 : decay massif (0.498)** — MI(d=1)=1.89 vs MI(d=5)=1.40. Signature d'un etat chimere locale : voisins tres correles, noeuds distants moins. C'est de la synchronisation locale, pas globale. Coherent avec le spectre Fourier de §3quatervigies.
+
+4. **FULL sur BA m=3 : decay minimal (0.055)** — MI plate et basse a toutes distances. Les noeuds sont uniformement decorreles. Signature de la "diversite vraiement independante" : chaque noeud explore sa propre dynamique sans etre tire par ses voisins.
+
+5. **Combinaison MI basse + LZ basse + sync basse (FULL)** = diversite independante et structuree. Pas du desordre (qui aurait LZ haute). La MI confirme que le quadrant "bas-LZ / bas-sync" de §3vigies-bis correspond bien a une diversite d'attracteurs locaux independants.
+
+6. **NO_HERETIC a la MI la plus haute sur lattice (1.244)** : sans heretiques, le systeme tend vers un etat de forte correlation (semi-consensus) mais pas synchrone. L'absence d'heretiques reduit la diversite des attracteurs locaux → les trajectoires se ressemblent plus entre voisins.
+
+**Consequence pour Paper 2** : la MI est une metrique complementaire ORTHOGONALE a LZ et sync. Elle revele le role mecanistique de u (decorrelateur) que les metriques precedentes ne capturaient pas directement. Figure candidate pour le preprint revise : "MI(d) profile distinguishes cognitive diversity (FULL) from synchronized chimera (FROZEN_U)."
+
+**Figures** : `figures/p2_spatial_mutual_information.png` (2 panneaux : MI vs distance pour lattice et BA m=3). CSV : `figures/p2_spatial_mutual_information.csv`.
+
+**Duree** : 18s (24 runs : 4 ablations × 2 topos × 3 seeds).
+
+---
+
+### 3quinquevigies. Piste A3 — Couplage Asymetrique / Graphes Diriges : HYPOTHESE FALSIFIEE (2026-04-24)
+
+**Question** : Un reseau dirige ou les hubs "parlent mais n'ecoutent pas" (HUB_BCAST) ou "ecoutent mais ne parlent pas" (HUB_LISTEN) peut-il eliminer la dead zone sans normalisation ad-hoc ?
+
+**Methode** : `experiments/p2_directed_coupling.py`. N=100, BA m in {3, 5}, I_stim=0.0, 3000 steps, 3 seeds. 3 types de graphes : SYMM (BA non-dirige, baseline), HUB_BCAST (A[peripherique, hub]=1), HUB_LISTEN (A[hub, peripherique]=1). Chaque type x 2 norms (uniform, degree_linear). Metriques : H_cont, H_cog, pairwise_synchrony.
+
+**Resultats BA m=5 (dead zone)** :
+
+| Mode | H_cog | sync | Verdict |
+|:-----|:-----:|:----:|:--------|
+| SYMM + uniform | 0.027 | 0.042 | Dead zone standard |
+| HUB_BCAST + uniform | 0.008 | **0.642** | Pire : hub synchronise tout |
+| HUB_BCAST + degree_linear | 0.009 | 0.341 | Idem attenue |
+| HUB_LISTEN + uniform | 0.029 | 0.212 | Peripherie isolee (d_in=0 → FP) |
+| HUB_LISTEN + degree_linear | 0.023 | 0.061 | Idem |
+
+**Findings** :
+
+1. **HUB_BCAST cree la plus forte synchronie de toutes les configs testees** (sync=0.642 sur BA m=5). En faisant diffuser les hubs vers tous les noeuds peripheriques, on tire l'ensemble du reseau vers un etat commun. C'est l'effet inverse de ce qu'on cherchait — les hubs deviennent des "metronomes collectifs".
+
+2. **HUB_LISTEN isole la peripherie** : A[hub, new_node]=1 implique d_in(peripherique)=0, donc l_v[peripherique]=0 (pas d'entree de couplage). Chaque noeud peripherique evolue comme un FHN isole et converge vers son point fixe v*≈-1.29. H_cont s'effondre a 1.11 bits sous degree_linear.
+
+3. **Contrainte structurelle** : dans un BA dirige, on ne peut pas avoir a la fois (a) une peripherie couplée et (b) des hubs non-dominants. La preference d'attachement preferentiel (PA) implique que les hubs sont au centre de tous les chemins — ils dominent quel que soit le sens des aretes.
+
+4. **Conclusion** : la strangulation par les hubs n'est pas un probleme de symetrie du couplage. C'est une propriete de la topologie (haute connectivite, λ₂ grand) qui subsiste quelle que soit la direction des aretes. Renforce §3octies (spectral) et §3duovigies (finite-size) : seule la normalisation `degree_linear` resout le probleme sans changer la topologie.
+
+**Statut** : CLOTURE — RESULTAT NEGATIF. La piste "graphes diriges comme escape mechanism" est fermee. Le resultat HUB_BCAST (sync=0.64) est publiable comme contre-exemple : la directionnalite peut aggraver la synchronisation.
+
+**Figures** : `figures/p2_directed_coupling.png` (2 panneaux : H_cog par mode × norm pour m=3 et m=5). CSV : `figures/p2_directed_coupling.csv`.
+
+**Duree** : 27s (36 runs : 3 modes × 2 norms × 2 m × 3 seeds).
+
+---
+
+### 3quatervigies. Piste A2 — Bifurcation tau_u : HYPOTHESE CONFIRMEE (2026-04-24)
+
+**Question** : tau_u controle-t-il une bifurcation entre regime de frustration figee (noeuds bloques) et chimere respirante (clusters dynamiques) ? Un pic de frequence doit emerger au tau_u critique.
+
+**Methode** : `experiments/p2_tau_u_bifurcation.py`. Sweep tau_u in [0.05, 100.0] (10 valeurs log-espacees), 2 topologies (Lattice 10x10, BA m=3 N=100), I_stim=0.5 (heretiques actifs), coupling_norm='degree_linear', 4000 steps, warm_up=1000, 3 seeds. Metriques : H_cont, H_cog, pairwise_synchrony, frequence dominante FFT sur v_mean(t), puissance spectrale au pic.
+
+**Resultats BA m=3** :
+
+| tau_u | H_cog | Sync | Pic spectral | Regime |
+|------:|:-----:|:----:|:------------:|:-------|
+| 0.05–5 | 0.006–0.065 | ~0.10 | **0.49–0.55** | Frustration figee + oscillations coherentes |
+| 10 | 0.023 | 0.11 | 0.55 | Zone de transition |
+| 50 | 0.380 | 0.07 | 0.23 | Chimere respirante (diversite emergente) |
+| 100 | 1.059 | 0.24 | 0.41 | Diversite haute + re-synchronisation par blocs |
+
+**Resultats Lattice 10x10** : pas de collapse — H_cog reste positif sur tout le sweep. Minimum a tau_u=2 (H_cog=0.32), maximum a tau_u=100 (H_cog=1.18). Comportement qualitatif different de BA.
+
+**Findings** :
+
+1. **Bifurcation confirmee sur BA m=3** : transition abrupte entre tau_u=10 (H_cog=0.023) et tau_u=50 (H_cog=0.380). C'est le passage de "frustration figee" a "chimere respirante".
+
+2. **tau_u* (valeur par defaut du modele) = 10 est au bord de la bifurcation**. Cela explique directement la bimodalite de §3vigies-ter : certains seeds convergent vers le regime bas-diversite, d'autres vers le regime haut-diversite selon les proprietes spectrales de leur graphe BA genere aleatoirement.
+
+3. **Pic spectral fort en regime tau_u petit** (puissance 0.50–0.55 pour BA m=3) : u se met a jour rapidement → la dynamique de doute genere des oscillations coherentes de tout le reseau a basse frequence (~0.01 Hz simulation). Ces oscillations ne produisent pas de diversite cognitive — c'est une synchronisation oscillante, pas une chimere.
+
+4. **Le regime tau_u=100 re-synchronise** (sync=0.24 vs sync=0.07 a tau_u=50) : a tres grande echelle de temps, u ne se met plus a jour assez vite pour maintenir les conflits locaux → les clusters s'alignent globalement mais en etats differents (H_cog=1.06 = diversite entre groupes, sync elevee = groupes coherents).
+
+5. **Lattice robuste** : la geometrie 2D permet toujours une diversite locale meme avec u rapide (tau_u=0.05). La frustration geometrique du lattice est plus forte que sur BA.
+
+**Consequence pour Paper 2** : tau_u est un **parametre de controle de la diversite**, aussi important que la topologie ou la normalisation. La valeur par defaut tau_u=10 est "accidentellement" au point de bifurcation pour BA m=3, ce qui explique la variance inter-seeds observee. Recommandation : ajouter tau_u comme variable independante dans les figures du preprint revise.
+
+**Figures** : `figures/p2_tau_u_bifurcation.png` (4 panneaux : H_cog, sync, f_dom, peak_power vs tau_u, 2 topologies). CSV : `figures/p2_tau_u_bifurcation.csv`.
+
+**Duree** : 62s (60 runs : 10 tau_u × 2 topos × 3 seeds).
+
+---
+
+### 3tervigies. Piste A1 — Resonance Stochastique Dirigee : HYPOTHESE FALSIFIEE (2026-04-24)
+
+**Question** : Un bruit thermique dirige (sur les hubs ou les heretiques) peut-il induire une resonance stochastique qui fait sortir BA m=5 de la dead zone, contrairement au bruit homogene ?
+
+**Methode** : `experiments/p2_stochastic_resonance_directed.py`. N=100, BA m=5, coupling_norm='uniform' (dead zone confirmee), I_stim=0.0 (regime endogene), 3000 steps, 3 seeds. 4 modes : ZERO (controle, sigma_vec=0), UNIFORM (sigma identique tous noeuds), HUB (sigma_i proportionnel a sqrt(deg(i))), HERETIC (sigma uniquement sur les heretiques, amplitude rescalee pour energie totale egale). Sweep sigma in [0, 0.50]. Metriques : H_cont (100-bin), H_cog (5-bin KIMI), complexite LZ temporelle. Nouveau parametre `sigma_v_vec` ajoute a `dynamics.py:step()` et `topology.py:step()`.
+
+**Resultats** :
+
+| Mode | H_cog (sigma=0) | H_cog (sigma=0.50) | Verdict |
+|:-----|:---------------:|:------------------:|:--------|
+| ZERO | 0.027 | 0.027 | Baseline deterministe |
+| UNIFORM | 0.027 | 0.027 | Aucun gain cognitif |
+| HUB | 0.027 | **0.000** | Pire que UNIFORM |
+| HERETIC | 0.027 | 0.028 | Gain negligeable |
+
+H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dead zone est **resistante au bruit dirige dans le regime endogene (I_stim=0)**.
+
+**Findings** :
+
+1. **Hypothese falsifiee** : le bruit heterogene ne procure aucun avantage sur le bruit homogene pour echapper a la dead zone cognitive (H_cog reste ~0).
+
+2. **H_cont augmente avec sigma** (3.0 → 3.3 bits a sigma=0.50 pour UNIFORM) mais c'est du desordre sub-cognitif : les noeuds restent tous dans l'Etat 1. Bruit != diversite cognitive.
+
+3. **HUB degrade la diversite cognitive a sigma=0.50** (H_cog=0.000). Interpretation : le hub sur-bruite entraine les noeuds peripheriques par couplage, renforçant le consensus plutot que le brisant.
+
+4. **La dead zone est robuste au bruit dirige** dans le regime endogene. Ce resultat est coherent avec §3octies (normalisation spectrale) et §3undecies (SPICE : escape seulement a sigma >= 0.50 avec I_stim implicite dans le bruit thermique). Le bruit seul ne suffit pas sans forçage.
+
+5. **Distinction H_cont / H_cog confirmee** : H_cont ~ 2.9 meme dans la dead zone (diversite de tension sub-cognitive). H_cog ~ 0 (tous les noeuds en Etat 1). La dead zone ne signifie pas "tous les noeuds au meme voltage" mais "tous dans le meme etat cognitif".
+
+**Statut Piste A1** : CLOTURE — RESULTAT NEGATIF. La piste "bruit dirige comme escape mechanism" est fermee pour le regime endogene. A tester avec I_stim > 0 (forced regime) si pertinent pour Paper 2.
+
+**Code** : `sigma_v_vec` ajoute a `dynamics.py:step()` et `topology.py:step()` — feature utile pour futures experiences de bruit heterogene.
+
+**Figures** : `figures/p2_stochastic_resonance_directed.png` (3 panneaux : H_cont, H_cog, LZ vs sigma × mode). CSV : `figures/p2_stochastic_resonance_directed.csv`.
+
+**Duree** : 74s (108 runs : 4 modes × 9 sigmas × 3 seeds).
+
+---
+
 ## 10. PROCHAINES ÉTAPES (par priorité)
 
 ### P0 — Soumission
-1. **Relecture finale** du PDF par Julien → soumission arXiv ou journal
+1. **~~Relecture finale~~** → **SOUMIS 2026-04-22** par Julien.
 2. **Upload Zenodo** avec la v3.2.0 (DOI existant à mettre à jour)
 3. **Commit + push GitHub** avec tous les changements de cette session
 
@@ -1427,6 +1624,50 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 10. **Stochastic resonance** — Sweep σ_noise × λ₂ : le bruit optimal dépend-il de la topologie ? Analogie avec spin glasses biologiques.
 11. **Adaptive heretics** — η dynamique : nœuds deviennent hérétiques si u_i > 0.8 pendant >100 pas. Auto-régulation. Pourrait supprimer la dead zone sans changer la topologie. ⚠️ Change le modèle fondamentalement → v4.0.
 12. **Doubt-driven community detection** — Matrice de doute u(i) comme signal pour détecter des communautés fonctionnelles. Spéculatif mais original.
+
+---
+
+### P2-AUDIT — Pistes issues de l'Audit Externe (2026-04-24)
+
+> Ces 5 pistes ont été proposées par l'auditeur externe dans `.Audit/Audit Scientifique du Projet Mem4ristor-v2.md`. Toutes seront testées. Elles constituent le cœur de Paper 2 / Paper 3.
+
+**Piste A1 — Résonance Stochastique Dirigée** *(Impact : Fort, Effort : Faible)*
+
+- **Hypothèse** : La dead zone est un état métastable, pas un attracteur absolu. Un bruit thermique ciblé uniquement sur les nœuds hérétiques (ou les hubs) peut induire une résonance stochastique suffisante pour en faire sortir le réseau, sans noyer le signal global.
+- **Différence avec ce qui existe** : Les expériences SPICE (`spice_noise_resonance.py`, `spice_mismatch_sweep.py`) appliquent un bruit **global homogène**. Ici le bruit est **hétérogène et dirigé** par la topologie.
+- **Méthode** : Modifier `core.py` pour appliquer σ_v de manière hétérogène (`σ_{v,i} ∝ deg(i)` ou `σ_{v,i} > 0` uniquement si `heretic_mask[i]`). Script : `experiments/p2_stochastic_resonance_directed.py`.
+- **Métriques** : H_cont (100-bin) + H_cog (5-bin) + complexité LZ temporelle. Sweep amplitude bruit hétérogène sur BA m=5.
+- **Statut** : ✅ CLOTURE — RESULTAT NEGATIF (2026-04-24). H_cog ~ 0 pour tous modes et toutes amplitudes. Dead zone resistante au bruit dirige en regime endogene. Voir §3tervigies.
+
+**Piste A2 — Bifurcation tau_u (Dynamique Temporelle du Doute)** *(Impact : Fort, Effort : Moyen)* *(Impact : Fort, Effort : Moyen)*
+
+- **Hypothèse** : La constante de temps du doute τ_u contrôle une bifurcation entre "frustration figée" (nœuds bloqués en opposition) et "chimère respirante" (clusters qui se font et défont dynamiquement). Un pic de fréquence caractéristique devrait émerger à τ_u critique.
+- **Justification** : τ_u est le seul paramètre temporel central jamais sweepé. Les paramètres de couplage (D, normalisation) et la topologie ont été explorés exhaustivement ; τ_u est l'angle manquant.
+- **Méthode** : Sweep τ_u ∈ [0.1, 100.0] sur Lattice 10×10 et BA m=3 N=100. Script : `experiments/p2_tau_u_bifurcation.py`.
+- **Métriques** : `calculate_pairwise_synchrony` + spectre de Fourier moyen des séries v(t). Chercher un pic de fréquence à τ_u critique.
+- **Statut** : ✅ CONFIRME — BIFURCATION REELLE (2026-04-24). tau_u* entre 10 et 50 sur BA m=3. Voir §3quatervigies.
+
+**Piste A3 — Couplage Asymétrique et Graphes Dirigés** *(Impact : Très Fort, Effort : Moyen)*
+
+- **Hypothèse** : La strangulation par les hubs est exacerbée par la symétrie du couplage. Un réseau dirigé où les hubs "parlent plus qu'ils n'écoutent" (ou l'inverse) éliminera la dead zone sans normalisation ad-hoc.
+- **Justification** : Toutes les topologies testées jusqu'ici sont non-dirigées. Dans les systèmes neuromorphiques réels, les synapses sont directionnelles. C'est le changement structurel le plus fondamental possible.
+- **Méthode** : Générer des graphes BA dirigés. Modifier `Mem4Network` pour accepter des matrices d'adjacence asymétriques (le couplage `L @ v` devient `A_directed @ v`). Script : `experiments/p2_directed_coupling.py`.
+- **Métriques** : H_stable + λ₂ calculé sur le Laplacien dirigé. Comparer avec `limit02_topology_sweep.py`.
+- **Statut** : ✅ CLOTURE — RESULTAT NEGATIF (2026-04-24). HUB_BCAST cree sync=0.64 (pire). HUB_LISTEN isole la peripherie (d_in=0 → point fixe). Voir §3quinquevigies.
+
+**Piste A4 — Information Mutuelle Spatio-Temporelle** *(Impact : Moyen, Effort : Moyen)*
+
+- **Hypothèse** : H_stable (entropie marginale spatiale) ne distingue pas désordre et diversité structurée. L'Information Mutuelle (MI) entre nœuds voisins vs distants révélera une longueur de corrélation caractéristique du régime Mem4ristor.
+- **Méthode** : Implémenter `calculate_spatial_mutual_information(v_history, adjacency_matrix)` dans `src/mem4ristor/metrics.py`. Évaluer sur les 4 ablations de `ablation_coordination.py`. Script : `experiments/p2_spatial_mutual_information.py`.
+- **Métriques** : Décroissance de MI en fonction de la distance sur le graphe.
+- **Statut** : ✅ CONFIRME — RESULTAT POSITIF (2026-04-24). u = decorrelateur actif. MI(FULL) < MI(FROZEN_U) a toutes distances. Voir §3sexvigies.
+
+**Piste A5 — Sweep δ de la Levitating Sigmoid** *(Impact : Faible, Effort : Faible)*
+
+- **Hypothèse** : Le paramètre δ=0.01 dans `w_i(u_i) = tanh(π(0.5−u_i)) + δ` brise la symétrie parfaite au point de doute maximal (u=0.5). δ a été introduit comme fix technique (LIMIT-01), mais il est en réalité un **paramètre de contrôle de la symétrie sociale** non quantifié. Il existe un δ_crit qui maximise la complexité LZ.
+- **Méthode** : Sweep δ ∈ [−0.1, 0.1] sur Lattice 10×10. Script : `experiments/p2_delta_sweep.py`.
+- **Métriques** : `calculate_temporal_lz_complexity` + H_cont.
+- **Statut** : ✅ CLOTURE — RESULTAT NEGATIF / ROBUSTESSE (2026-04-24). delta sans effet significatif (variation LZ < bruit inter-seeds). delta = parametre technique, pas de controle. Voir §3septvigies.
 
 ### P3 — Qualité du code
 13. **~~`sensory.py` : convolution lente~~** → **FAIT (antérieur)**. `scipy.signal.correlate2d` déjà en place (ligne 3+55). PROJECT_STATUS était désynchronisé.

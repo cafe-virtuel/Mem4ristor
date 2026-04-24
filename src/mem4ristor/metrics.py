@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Dict, Tuple
 
 
 # ---------------------------------------------------------------------------
@@ -144,3 +145,83 @@ def calculate_pairwise_synchrony(v_history: np.ndarray) -> float:
     # Pearson r for each pair = dot product of z-scores / T
     corrs = np.einsum('ti,tj->ij', z, z)[i_idx, j_idx] / T
     return float(corrs.mean())
+
+
+# ---------------------------------------------------------------------------
+# Spatial Mutual Information (spatio-temporal structure)
+# Requires v_history (T, N) + adjacency matrix.
+# ---------------------------------------------------------------------------
+
+def _pairwise_mi(vi: np.ndarray, vj: np.ndarray, n_bins: int = 20) -> float:
+    """
+    Mutual Information between two scalar time series via joint histogram.
+    Returns MI in bits.
+    """
+    v_min = min(vi.min(), vj.min()) - 1e-9
+    v_max = max(vi.max(), vj.max()) + 1e-9
+    joint, _, _ = np.histogram2d(vi, vj, bins=n_bins,
+                                  range=[[v_min, v_max], [v_min, v_max]])
+    total = joint.sum()
+    if total == 0:
+        return 0.0
+    joint = joint / total
+    pi = joint.sum(axis=1, keepdims=True)   # marginal i
+    pj = joint.sum(axis=0, keepdims=True)   # marginal j
+    denom = pi * pj
+    mask = (joint > 0) & (denom > 0)
+    mi = float(np.sum(joint[mask] * np.log2(joint[mask] / denom[mask])))
+    return max(mi, 0.0)
+
+
+def calculate_spatial_mutual_information(
+    v_history: np.ndarray,
+    adjacency_matrix: np.ndarray,
+    n_bins: int = 20,
+    max_pairs_per_dist: int = 200,
+    max_dist: int = 10,
+    seed: int = 0,
+) -> Dict[int, Tuple[float, float]]:
+    """
+    Compute mean MI between node pairs grouped by graph hop-distance.
+
+    Returns a dict  {distance: (mean_MI, std_MI)}  for distances 1..max_dist
+    that have at least one pair.
+
+    v_history      : (T, N) — T timesteps, N nodes.
+    adjacency_matrix: (N, N) — used to compute shortest-path distances.
+    n_bins         : histogram bins for MI estimation.
+    max_pairs_per_dist : cap on pairs sampled per distance bucket (speed).
+    max_dist       : maximum graph distance to compute.
+    """
+    from scipy.sparse.csgraph import shortest_path
+    from scipy.sparse import csr_matrix
+
+    T, N = v_history.shape
+    if T < 10 or N < 2:
+        return {}
+
+    rng = np.random.RandomState(seed)
+
+    # Shortest-path distances (unweighted)
+    A_bin = (adjacency_matrix > 0).astype(float)
+    dist_matrix = shortest_path(csr_matrix(A_bin), method='D',
+                                 directed=False, unweighted=True)
+
+    # z-score node traces for MI stability
+    mu  = v_history.mean(axis=0)
+    std = v_history.std(axis=0)
+    std = np.where(std < 1e-12, 1.0, std)
+    vz  = (v_history - mu) / std   # (T, N)
+
+    results: Dict[int, list] = {}
+    for d in range(1, max_dist + 1):
+        ii, jj = np.where((dist_matrix == d) & (np.arange(N)[:, None] < np.arange(N)[None, :]))
+        if len(ii) == 0:
+            continue
+        if len(ii) > max_pairs_per_dist:
+            idx = rng.choice(len(ii), max_pairs_per_dist, replace=False)
+            ii, jj = ii[idx], jj[idx]
+        mis = [_pairwise_mi(vz[:, i], vz[:, j], n_bins) for i, j in zip(ii, jj)]
+        results[d] = mis
+
+    return {d: (float(np.mean(v)), float(np.std(v))) for d, v in results.items()}
