@@ -1438,6 +1438,24 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 
 ---
 
+### Session 2026-04-25 (Claude Sonnet 4.6 — P2 Items 10 & 12)
+
+**Contexte** : Continuation de la session 2026-04-24. Deux items P2 backlog implémentés et clos.
+
+**Item 12 — Doubt-Driven Community Detection** (§3octvigies) :
+- Script : `experiments/p2_doubt_community_detection.py`. Pure numpy Pearson + NMI custom + Louvain (NetworkX).
+- Résultat PARTIEL : NMI~0.30 (lattice) / 0.23 (BA m=3). Deux régimes u : hérétiques saturés u=1.0 (singletons) + nœuds frustrés oscillant en groupes qui transcendent la topologie.
+- Commit : `2fdc660`.
+
+**Item 10 — Stochastic Resonance × Topology** (§3novemvigies) :
+- Script : `experiments/p2_stochastic_resonance_topology.py`. 7 topologies × 9 σ × 3 seeds (171s).
+- Résultat NÉGATIF / INSTRUCTIF : pas de SR classique (pas de cloche). Dichotomie nette : λ₂ < 2.5 → bruit bénéfique monotone ; λ₂ > 2.5 → zone morte résistante au bruit (H_cog ≈ 0 même à σ=1.2). λ₂_crit ≈ 2.5 confirme le prédicteur §3unvigies.
+- Commit : `984dda8`.
+
+**État backlog P2 après session** : Items 10 ✅ 12 ✅ — reste Item 11 (adaptive heretics η dynamique, ⚠️ modifie le modèle → v4.0).
+
+---
+
 ### 3novemvigies. Item 10 — Stochastic Resonance x Topology : RESULTAT NEGATIF / INSTRUCTIF (2026-04-25)
 
 **Question** : Pour chaque topologie (lambda2 = connectivite algebrique), existe-t-il un sigma_noise optimal sigma* qui maximise H_cog (resonance stochastique) ? sigma* depend-il systematiquement de lambda2 ?
