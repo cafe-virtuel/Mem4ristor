@@ -1,84 +1,141 @@
-// Mem4ristor v2.6 - Cognitive Dynamics Model (Verilog-A)
-// Implementation of Extended FitzHugh-Nagumo with Constitutional Doubt (u)
-// Reference: Mem4ristor Project v2.6 (Cafe Virtuel)
+// Mem4ristor v3.2 — Cognitive Dynamics Model (Verilog-A)
+// Synchronized with dynamics.py v3.2.0 (2026-04-22)
 //
-// This file contains two modules:
-//   1. mem4ristor_v26 : Simplified 3-terminal interface (v_node, u_node, coup_in)
-//   2. mem4ristor_cell : Full 5-terminal implementation for network simulation
+// Corrections applied over v2.6 prototype:
+//   1. Coupling kernel: tanh(π(0.5−u)) + δ  (Levitating Sigmoid, δ=0.01)
+//      Was: (1 − 2u) · V(coup_in)  [linear kernel, wrong sign geometry]
+//   2. tau_u = 10.0  (KIMI correction; was 1.0 — 10× too fast)
+//   3. Adaptive ε_u: ε_u_eff = ε_u · clamp(1 + α_s · σ, 1, C_cap)
+//      Was: fixed ε_u/tau_u
+//   4. Plasticity term: dw_plast = λ · σ · mask · sat − w/τ_plast
+//      The always-active decay −w/τ_plast was absent in v2.6
+//   5. Heretic polarity applies to I_stimulus ONLY, not to I_coupling
+//      v2.6 had V(coup_in)·heretic_pol + social_signal (double-counted coupling)
+//   6. Module 1 gains a separate stim_in port to allow clean polarity inversion
+//
+// Two modules:
+//   mem4ristor_v32       : Simplified 4-terminal (v, u, stim_in, coup_in)
+//   mem4ristor_cell_v32  : Full 5-terminal for network crossbar simulation
+//
+// Backwards-compatible aliases at end of file:
+//   mem4ristor_v26  → mem4ristor_v32 (with stim_in tied to 0)
+//   mem4ristor_cell → mem4ristor_cell_v32
 
 `include "disciplines.vams"
 `include "constants.vams"
 
 // =============================================================================
-// MODULE 1: Simplified Single-Cell Interface
+// MODULE 1: Simplified 4-terminal interface
 // =============================================================================
-// This module exposes v (cognitive potential) and u (doubt) as electrical nodes.
-// The recovery variable w is handled internally via an auxiliary node.
-// Coupling current is received via coup_in from the network controller.
+// Ports:
+//   v_node  : Cognitive potential (inout)
+//   u_node  : Doubt level (output monitor)
+//   stim_in : External stimulus voltage (input) — scalar per node
+//   coup_in : Laplacian coupling term V = Σ_j (v_j − v_i) for neighbors j
+//             computed externally by the network controller
+//
+// Heretic nodes: set heretic_pol = -1.0 (inverts stim_in only, not coupling)
 
-module mem4ristor_v26(v_node, u_node, coup_in);
-    inout v_node;      // Cognitive Potential (Voltage-like)
-    output u_node;     // Doubt Level (Voltage-like monitor)
-    input coup_in;     // Coupling Current Input (from Network)
+module mem4ristor_v32(v_node, u_node, stim_in, coup_in);
+    inout  v_node;      // Cognitive Potential
+    output u_node;      // Doubt Level (monitor)
+    input  stim_in;     // External Stimulus Input
+    input  coup_in;     // Laplacian Coupling Term
 
-    electrical v_node, u_node, coup_in;
+    electrical v_node, u_node, stim_in, coup_in;
+    electrical w_int;   // Recovery variable (internal node)
 
-    // Internal node for recovery variable w
-    electrical w_int;
+    // ── FHN parameters ───────────────────────────────────────────────────────
+    parameter real a            = 0.7;
+    parameter real b            = 0.8;
+    parameter real epsilon      = 0.08;
+    parameter real alpha        = 0.15;
+    parameter real v_cubic_div  = 5.0;
 
-    // Parameters (Matched to Python core.py)
-    parameter real a = 0.7;
-    parameter real b = 0.8;
-    parameter real epsilon = 0.08;
-    parameter real alpha = 0.15;        // Tanh non-linearity strength
-    parameter real v_cubic_div = 5.0;   // Damping divisor
+    // ── Doubt parameters (KIMI-corrected) ────────────────────────────────────
+    parameter real epsilon_u     = 0.02;
+    parameter real k_u           = 1.0;
+    parameter real sigma_baseline= 0.05;
+    parameter real tau_u         = 10.0;    // KIMI fix: was 1.0
 
-    parameter real epsilon_u = 0.02;    // Doubt timescale
-    parameter real k_u = 1.0;           // Social sensitivity magnitude
-    parameter real sigma_baseline = 0.05;
-    parameter real tau_u = 1.0;
+    // ── Meta-doubt (adaptive epsilon_u, Eq. 11) ──────────────────────────────
+    parameter real alpha_surprise = 2.0;
+    parameter real surprise_cap   = 5.0;
 
-    // Simulation parameters
-    parameter real heretic_pol = 1.0;   // Set to -1.0 for Heretic Units
-    parameter real noise_amp = 0.05;    // Thermal noise amplitude
+    // ── Plasticity ───────────────────────────────────────────────────────────
+    parameter real lambda_learn  = 0.05;
+    parameter real tau_plast     = 1000.0;
+    parameter real w_saturation  = 2.0;
 
-    // Soft clamping parameters for u (keeps u in [0, 1])
-    parameter real clamp_gain = 100.0;  // Steepness of soft clamp
+    // ── Network coupling ─────────────────────────────────────────────────────
+    parameter real D_eff  = 0.015;  // D/sqrt(N), D=0.15, N=100
+    parameter real delta  = 0.01;   // Levitating Sigmoid offset (KIMI: was 0.05)
+
+    // ── Node identity ─────────────────────────────────────────────────────────
+    parameter real heretic_pol = 1.0;  // Normal=+1.0 / Heretic=−1.0
+
+    // ── Noise ────────────────────────────────────────────────────────────────
+    parameter real noise_amp    = 0.05;
+
+    // ── Soft clamp for u ∈ [0, 1] ────────────────────────────────────────────
+    parameter real clamp_gain   = 100.0;
 
     analog begin
         real v, w, u;
-        real social_signal, noise;
-        real dv_dt, dw_dt, du_dt;
+        real sigma_social, u_filter, I_coup, I_stim_eff, I_ext;
+        real epsilon_u_eff;
+        real innovation_mask, w_ratio, sat_factor;
+        real dv_dt, dw_fhn, dw_plast, dw_dt, du_dt;
+        real noise;
         real u_clamp_lo, u_clamp_hi;
 
         v = V(v_node);
         w = V(w_int);
         u = V(u_node);
 
-        // Social Coupling = (1 - 2u) * i_coup
-        social_signal = (1.0 - 2.0 * u) * V(coup_in);
+        // Social disagreement magnitude (|Laplacian v|)
+        sigma_social = abs(V(coup_in));
 
-        // Noise source (white noise approximation)
+        // ── Levitating Sigmoid coupling kernel (Eq. 5) ───────────────────────
+        // f(u) = tanh(π(0.5 − u)) + δ
+        // u < 0.5 → f > 0: attractive  |  u > 0.5 → f < 0: repulsive
+        u_filter = tanh(3.14159265358979 * (0.5 - u)) + delta;
+        I_coup   = D_eff * u_filter * V(coup_in);
+
+        // ── Heretic polarity on stimulus only (not coupling) ─────────────────
+        I_stim_eff = V(stim_in) * heretic_pol;
+        I_ext      = I_stim_eff + I_coup;
+
+        // Thermal noise
         noise = white_noise(noise_amp * noise_amp, "thermal");
 
-        // FHN Dynamics: dv/dt
-        dv_dt = v - pow(v, 3) / v_cubic_div - w
-                + (V(coup_in) * heretic_pol) + social_signal
+        // ── FHN: dv/dt (Eq. 1) ───────────────────────────────────────────────
+        dv_dt = v - pow(v, 3) / v_cubic_div - w + I_ext
                 - alpha * tanh(v) + noise;
 
-        // Recovery: dw/dt
-        dw_dt = epsilon * (v + a - b * w);
+        // ── FHN: dw/dt base (Eq. 2a) ─────────────────────────────────────────
+        dw_fhn = epsilon * (v + a - b * w);
 
-        // Doubt: du/dt
-        du_dt = (epsilon_u / tau_u) * (k_u * abs(V(coup_in)) + sigma_baseline - u);
+        // ── Plasticity: innovation-gated growth + always-active decay (Eq. 2b)
+        innovation_mask = (u > 0.5) ? 1.0 : 0.0;
+        w_ratio    = w / w_saturation;
+        sat_factor = max(0.0, 1.0 - w_ratio * w_ratio);
+        dw_plast   = lambda_learn * sigma_social * innovation_mask * sat_factor
+                     - w / tau_plast;   // decay always active
 
-        // Soft clamping currents for u to keep it in [0, 1]
-        // These add a restoring current when u drifts outside bounds
-        u_clamp_lo = clamp_gain * min(0.0, u);          // Pulls u up if < 0
-        u_clamp_hi = clamp_gain * max(0.0, u - 1.0);    // Pulls u down if > 1
+        dw_dt = dw_fhn + dw_plast;
 
-        // Apply dynamics via current contributions (Kirchhoff convention)
-        // For a node with unit capacitance: I = C * dV/dt => I = dV/dt
+        // ── Doubt: adaptive epsilon_u (Eq. 3 + Eq. 11) ──────────────────────
+        epsilon_u_eff = epsilon_u
+                        * min(1.0 + alpha_surprise * sigma_social, surprise_cap);
+        du_dt = (epsilon_u_eff
+                 * (k_u * sigma_social + sigma_baseline - u)) / tau_u;
+
+        // ── Soft clamp: restoring current to keep u ∈ [0, 1] ─────────────────
+        u_clamp_lo = clamp_gain * min(0.0, u);
+        u_clamp_hi = clamp_gain * max(0.0, u - 1.0);
+
+        // ── State update via KCL (unit capacitance) ───────────────────────────
         I(v_node) <+ ddt(V(v_node)) - dv_dt;
         I(w_int)  <+ ddt(V(w_int))  - dw_dt;
         I(u_node) <+ ddt(V(u_node)) - du_dt + u_clamp_hi - u_clamp_lo;
@@ -87,74 +144,153 @@ endmodule
 
 
 // =============================================================================
-// MODULE 2: Full 5-Terminal Cell for Network Integration
+// MODULE 2: Full 5-terminal for network crossbar simulation
 // =============================================================================
-// This module exposes all three state variables (v, w, u) as separate terminals,
-// plus separate stimulus and coupling inputs. Designed for use in crossbar arrays
-// or multi-cell testbenches.
+// Ports:
+//   v_term  : Cognitive potential (inout)
+//   w_term  : Recovery variable (inout)
+//   u_term  : Doubt level (inout)
+//   i_stim  : Stimulus input voltage (input)
+//   i_coup  : Laplacian coupling term V = Σ_j (v_j − v_i) (input)
 
-module mem4ristor_cell(v_term, w_term, u_term, i_stim, i_coup);
-    inout v_term, w_term, u_term;
-    input i_stim, i_coup;
+module mem4ristor_cell_v32(v_term, w_term, u_term, i_stim, i_coup);
+    inout  v_term, w_term, u_term;
+    input  i_stim, i_coup;
     electrical v_term, w_term, u_term, i_stim, i_coup;
 
-    // Dynamics Parameters
-    parameter real p_a = 0.7;
-    parameter real p_b = 0.8;
-    parameter real p_eps = 0.08;
-    parameter real p_alpha = 0.15;
-    parameter real p_div = 5.0;
+    // ── FHN parameters ───────────────────────────────────────────────────────
+    parameter real p_a           = 0.7;
+    parameter real p_b           = 0.8;
+    parameter real p_eps         = 0.08;
+    parameter real p_alpha       = 0.15;
+    parameter real p_div         = 5.0;
 
-    // Doubt Parameters
-    parameter real p_eps_u = 0.02;
-    parameter real p_ku = 1.0;
-    parameter real p_sigma_base = 0.05;
-    parameter real p_tau_u = 1.0;
+    // ── Doubt parameters (KIMI-corrected) ────────────────────────────────────
+    parameter real p_eps_u       = 0.02;
+    parameter real p_ku          = 1.0;
+    parameter real p_sigma_base  = 0.05;
+    parameter real p_tau_u       = 10.0;    // KIMI fix: was 1.0
 
-    // Unit Identity
-    parameter real polarity = 1.0; // 1.0 = Normal, -1.0 = Heretic
+    // ── Meta-doubt ───────────────────────────────────────────────────────────
+    parameter real p_alpha_s     = 2.0;
+    parameter real p_surprise_cap= 5.0;
 
-    // Soft clamping for u
-    parameter real p_clamp_gain = 100.0;
+    // ── Plasticity ───────────────────────────────────────────────────────────
+    parameter real p_lambda      = 0.05;
+    parameter real p_tau_plast   = 1000.0;
+    parameter real p_w_sat       = 2.0;
+
+    // ── Network coupling ─────────────────────────────────────────────────────
+    parameter real p_D_eff = 0.015;
+    parameter real p_delta = 0.01;
+
+    // ── Node identity ─────────────────────────────────────────────────────────
+    parameter real polarity = 1.0;  // Normal=+1.0 / Heretic=−1.0
+
+    // ── Noise ────────────────────────────────────────────────────────────────
+    parameter real p_noise_amp   = 0.05;
+
+    // ── Soft clamp ────────────────────────────────────────────────────────────
+    parameter real p_clamp_gain  = 100.0;
 
     analog begin
-        real v, w, u, I_total;
-        real social_signal;
-        real noise;
+        real v, w, u;
+        real sigma_social, u_filter, I_coup, I_ext;
+        real eps_u_eff;
+        real inn_mask, w_ratio, sat_fact;
+        real dv, dw_fhn, dw_plast, dw, du;
         real u_restore;
+        real noise;
 
         v = V(v_term);
         w = V(w_term);
         u = V(u_term);
 
-        // Calculate effective input current
-        // Social Coupling = (1 - 2u) * i_coup
-        // (Note: i_coup here is expected to be the Laplacian term passed from outside)
-        social_signal = (1.0 - 2.0 * u) * V(i_coup);
+        // Social disagreement magnitude (|Laplacian v|)
+        sigma_social = abs(V(i_coup));
 
-        // Total Current = Stimulus * Polarity + Social Coupling
-        I_total = (V(i_stim) * polarity) + social_signal;
+        // ── Levitating Sigmoid coupling kernel ───────────────────────────────
+        u_filter = tanh(3.14159265358979 * (0.5 - u)) + p_delta;
+        I_coup   = p_D_eff * u_filter * V(i_coup);
 
-        // Noise source (white noise approximation)
-        noise = white_noise(0.05 * 0.05, "thermal");
+        // Heretic polarity on stimulus only
+        I_ext = V(i_stim) * polarity + I_coup;
 
-        // FHN Dynamics: I(v) = C * dV/dt
-        // We model the equations as currents summing to zero at the nodes (Kirchhoff)
-        // We treat the node capacitance as 1.0 for normalized units
+        // Thermal noise
+        noise = white_noise(p_noise_amp * p_noise_amp, "thermal");
 
-        I(v_term) <+ ddt(v) - ( v - pow(v,3)/p_div - w + I_total - p_alpha * tanh(v) + noise );
+        // ── dv/dt ─────────────────────────────────────────────────────────────
+        dv = v - pow(v, 3) / p_div - w + I_ext
+             - p_alpha * tanh(v) + noise;
 
-        // eq 2: dw/dt = ...
-        I(w_term) <+ ddt(w) - ( p_eps * (v + p_a - p_b * w) );
+        // ── dw/dt ─────────────────────────────────────────────────────────────
+        dw_fhn = p_eps * (v + p_a - p_b * w);
 
-        // eq 3: du/dt = ...
-        // Note: We need the ABSOLUTE value of the coupling signal for 'sigma_social' in the doubt equation
-        // In core.py: sigma_social = abs(laplacian_v)
-        // Here V(i_coup) represents laplacian_v
+        inn_mask  = (u > 0.5) ? 1.0 : 0.0;
+        w_ratio   = w / p_w_sat;
+        sat_fact  = max(0.0, 1.0 - w_ratio * w_ratio);
+        dw_plast  = p_lambda * sigma_social * inn_mask * sat_fact
+                    - w / p_tau_plast;
 
-        // Soft clamping: restoring current if u leaves [0, 1]
-        u_restore = p_clamp_gain * max(0.0, u - 1.0) - p_clamp_gain * min(0.0, u);
+        dw = dw_fhn + dw_plast;
 
-        I(u_term) <+ ddt(u) - ( (p_eps_u / p_tau_u) * (p_ku * abs(V(i_coup)) + p_sigma_base - u) ) + u_restore;
+        // ── du/dt (adaptive epsilon_u) ────────────────────────────────────────
+        eps_u_eff = p_eps_u
+                    * min(1.0 + p_alpha_s * sigma_social, p_surprise_cap);
+        du = (eps_u_eff * (p_ku * sigma_social + p_sigma_base - u)) / p_tau_u;
+
+        // Soft clamp for u ∈ [0, 1]
+        u_restore = p_clamp_gain * max(0.0, u - 1.0)
+                    - p_clamp_gain * min(0.0, u);
+
+        // ── KCL state update ──────────────────────────────────────────────────
+        I(v_term) <+ ddt(v) - dv;
+        I(w_term) <+ ddt(w) - dw;
+        I(u_term) <+ ddt(u) - du + u_restore;
     end
+endmodule
+
+
+// =============================================================================
+// BACKWARDS-COMPATIBILITY ALIASES
+// =============================================================================
+// mem4ristor_v26 : maps to v32 with stim_in grounded (I_stim = 0).
+//   Use mem4ristor_v32 directly for testbenches that drive a stimulus.
+// mem4ristor_cell: maps to mem4ristor_cell_v32 (port names unchanged).
+
+module mem4ristor_v26(v_node, u_node, coup_in);
+    inout  v_node;
+    output u_node;
+    input  coup_in;
+    electrical v_node, u_node, coup_in;
+    electrical stim_gnd;   // Tied to ground (stim_in = 0)
+
+    parameter real heretic_pol = 1.0;
+
+    mem4ristor_v32 #(.heretic_pol(heretic_pol)) cell(
+        .v_node(v_node),
+        .u_node(u_node),
+        .stim_in(stim_gnd),
+        .coup_in(coup_in)
+    );
+
+    // Ground the stimulus node
+    V(stim_gnd) <+ 0.0;
+endmodule
+
+
+module mem4ristor_cell(v_term, w_term, u_term, i_stim, i_coup);
+    inout  v_term, w_term, u_term;
+    input  i_stim, i_coup;
+    electrical v_term, w_term, u_term, i_stim, i_coup;
+
+    parameter real polarity = 1.0;
+
+    mem4ristor_cell_v32 #(.polarity(polarity)) cell(
+        .v_term(v_term),
+        .w_term(w_term),
+        .u_term(u_term),
+        .i_stim(i_stim),
+        .i_coup(i_coup)
+    );
 endmodule

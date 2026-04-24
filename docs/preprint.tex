@@ -62,7 +62,7 @@ Each node $i$ in a network of $N$ units evolves according to a modified FitzHugh
 \frac{dw_i}{dt} &= \varepsilon(v_i + a - bw_i) + dw_{\text{plasticity},i}, \label{eq:dw} \\
 \frac{du_i}{dt} &= \frac{\varepsilon_u}{\tau_u}\bigl(k_u \sigma_{\text{local},i} + \sigma_{\text{baseline}} - u_i\bigr), \label{eq:du}
 \end{align}
-where $v_i$ is the activation potential, $w_i$ is the recovery variable, $u_i \in [0, 1]$ is the doubt variable (clamped), $\eta_v(t) \sim \mathcal{N}(0, \sigma_{\text{noise}}^2)$ is Gaussian noise, $\alpha_{\text{self}}$ is the self-inhibition gain, and $\bar{v}_{\mathcal{N}(i)} = |\mathcal{N}(i)|^{-1} \sum_{j \in \mathcal{N}(i)} v_j$ is the mean activation of neighbors of node~$i$. The local disagreement $\sigma_{\text{local},i} = |\bar{v}_{\mathcal{N}(i)} - v_i|$ measures the mismatch between a node's state and its neighborhood mean. The plasticity term $dw_{\text{plasticity},i} = \varepsilon_{\text{plast}} \cdot \sigma_{\text{local},i} \cdot (w_{\text{target}} - w_i)$ provides activity-dependent inhibition (a novel element of this model, not present in standard FHN formulations).
+where $v_i$ is the activation potential, $w_i$ is the recovery variable, $u_i \in [0, 1]$ is the doubt variable (clamped), $\eta_v(t) \sim \mathcal{N}(0, \sigma_{\text{noise}}^2)$ is Gaussian noise, $\alpha_{\text{self}}$ is the self-inhibition gain, and $\bar{v}_{\mathcal{N}(i)} = |\mathcal{N}(i)|^{-1} \sum_{j \in \mathcal{N}(i)} v_j$ is the mean activation of neighbors of node~$i$. The local disagreement $\sigma_{\text{local},i} = |\bar{v}_{\mathcal{N}(i)} - v_i|$ measures the mismatch between a node's state and its neighborhood mean. The plasticity term has two components: $dw_{\text{plasticity},i} = \lambda_{\text{learn}} \cdot \sigma_{\text{local},i} \cdot \mathbf{1}[u_i > 0.5] \cdot (1 - (w_i/w_{\text{sat}})^2) - w_i/\tau_{\text{plast}}$. The first term is activity-dependent growth gated by local disagreement and the innovation mask ($u_i > 0.5$); the second is an always-active exponential decay that drives $w$ toward zero in the absence of social drive (a novel element of this model, not present in standard FHN formulations). Note: the decay $-w_i/\tau_{\text{plast}}$ is active even when $\sigma_{\text{local}} = 0$ or $u_i \leq 0.5$.
 
 The doubt dynamics admit an adaptive extension where the effective learning rate $\varepsilon_{u,\text{eff}}(i)$ replaces the fixed $\varepsilon_u$ (Section~\ref{sec:adaptive}).
 
@@ -149,10 +149,14 @@ Reference parameters: $a = 0.7$, $b = 0.8$, $\varepsilon = 0.08$, $D = 0.15$, $\
 
 \subsection{Existence of Limit Cycles}
 
-For a single \textbf{decoupled} unit ($D = 0$, $N = 1$) with $u$ treated as a quasi-static parameter ($\varepsilon_u \ll 1$), the $(v, w)$ subsystem reduces to a 2-dimensional modified FHN oscillator. By the Poincar\'e--Bendixson theorem, which applies strictly to planar ($\mathbb{R}^2$) autonomous systems:
+For a single \textbf{decoupled} unit ($D = 0$, $N = 1$) with $u$ treated as a quasi-static parameter ($\varepsilon_u \ll 1$), the $(v, w)$ subsystem reduces to a 2-dimensional modified FHN oscillator.
+
+\textbf{Correction (audit 2026-04-22).} At the reference parameters $\alpha_{\text{self}} = 0.15$, $a = 0.7$, $b = 0.8$, $\varepsilon = 0.08$, the isolated unit is \emph{not} in a limit-cycle regime. Numerical fixed-point analysis locates the unique equilibrium at $v^* \approx -1.294$, $w^* \approx -0.732$ with Jacobian eigenvalues $\lambda \approx -0.055 \pm 0.283i$: a \textit{stable spiral}. Independently confirmed numerically: a single decoupled node ($D = 0$, $\sigma_v = 0$) initialized from a random state converges to $v^*$ within 5000 steps with $\mathrm{std} < 10^{-5}$. The Hopf bifurcation occurs at $\alpha_{\text{crit}} \approx 0.296$; at $\alpha = 0.15$ the system is in the \textit{excitable (sub-Hopf) regime}, not oscillatory. The Poincar\'e--Bendixson argument below therefore does \emph{not} apply to the reference parameterization. It holds for $\alpha > \alpha_{\text{crit}} \approx 0.296$, and we retain it here for that parameter regime only.
+
+By the Poincar\'e--Bendixson theorem, which applies strictly to planar ($\mathbb{R}^2$) autonomous systems (and only for $\alpha > \alpha_{\text{crit}}$):
 \begin{enumerate}
 \item The self-inhibition term $-\alpha_{\text{self}} \tanh(v)$ ensures boundedness of $|v|$, and $b > 0$ ensures stability of $w$. A compact positively invariant set $\Omega \subset \mathbb{R}^2$ exists.
-\item The unique equilibrium is unstable for the standard parameter range (verified numerically by computing that the Jacobian eigenvalues have positive real parts).
+\item For $\alpha > \alpha_{\text{crit}} \approx 0.296$, the unique equilibrium is unstable (Jacobian eigenvalues have positive real parts).
 \item By Poincar\'e--Bendixson, the absence of a stable equilibrium within $\Omega$ guarantees the existence of a limit cycle for the \emph{isolated unit}.
 \end{enumerate}
 
@@ -167,12 +171,14 @@ An analogy with the random-field Ising model~\cite{nattermann1998} suggests that
 
 \subsection{Entropy Lower Bound}
 
-We sketch a proof that $H > 0$ whenever $\eta > 0$. Suppose the system reaches consensus ($v_i = v^*$ for all $i$). Then the Laplacian coupling vanishes. Normal nodes receive $+I_{\text{stimulus}}$ while heretics receive $-I_{\text{stimulus}}$, driving them toward different equilibria. This contradicts the consensus assumption, so consensus is not an attractor when $\eta > 0$. A quantitative lower bound via mean-field analysis yields:
+We sketch a proof that $H > 0$ whenever $\eta > 0$ \textbf{and $I_{\text{stimulus}} \neq 0$}. Suppose the system reaches consensus ($v_i = v^*$ for all $i$). Then the Laplacian coupling vanishes. Normal nodes receive $+I_{\text{stimulus}}$ while heretics receive $-I_{\text{stimulus}}$, driving them toward different equilibria. This contradicts the consensus assumption, so consensus is not an attractor when $\eta > 0$ and $I_{\text{stimulus}} \neq 0$. A quantitative lower bound via mean-field analysis yields:
 \begin{equation}
 H \geq -\eta \log_2 \eta - (1 - \eta) \log_2(1 - \eta) \approx 0.61 \text{ bits for } \eta = 0.15,
 \label{eq:entropy_bound}
 \end{equation}
-representing the mixing entropy of the two subpopulations. The observed $H_{\text{stable}} \approx 0.92$ exceeds this bound, consistent with intra-group diversity contributing additional entropy.
+representing the mixing entropy of the two subpopulations.
+
+\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$, which is the default for all lattice experiments (Section~\ref{sec:results_lattice}). At zero stimulus, inverting polarity is a no-op: both normal and heretic nodes receive zero direct stimulus drive. Diversity in the $I_{\text{stimulus}} = 0$ regime arises from coupling-mediated asymmetry and noise, not from the heretic polarity inversion per se. The lower bound of Eq.~\ref{eq:entropy_bound} and the claim $H_{\text{stable}} \approx 0.92$ should be read as applying to the $I_{\text{stimulus}} \neq 0$ operating regime only.
 
 % ============================================================================
 % 4. RESULTS
@@ -187,7 +193,7 @@ Table~\ref{tab:scaling} reports the sustained attractor entropy across network s
 
 \begin{table}[ht]
 \centering
-\caption{Scaling performance on 2D periodic lattices (Cold Start, $\eta = 0.15$, 7 seeds per configuration).}
+\caption{Scaling performance on 2D periodic lattices (Cold Start, $\eta = 0.15$, 7 seeds per configuration). \textbf{\textcolor{red}{⚠ Pre-KIMI bins}} — these $H_{\text{stable}}$ values were computed with the pre-KIMI thresholds ($\pm 0.8$, $\pm 1.5$), not the current thresholds ($\pm 0.4$, $\pm 1.2$, Table~\ref{tab:states}). With current thresholds and $I_{\text{stimulus}} = 0$, the system converges to a single bin and $H_{\text{stable}} \approx 0$ (audit 2026-04-22).}
 \label{tab:scaling}
 \begin{tabular}{lccc}
 \toprule
@@ -209,7 +215,7 @@ Table~\ref{tab:ablations} quantifies the contribution of each mechanism to diver
 
 \begin{table}[ht]
 \centering
-\caption{Ablation study ($10 \times 10$ lattice, Cold Start, 3000 steps, 5 seeds). $H_{\text{stable}}$ is the mean over the last 25\% of each run.}
+\caption{Ablation study ($10 \times 10$ lattice, Cold Start, 3000 steps, 5 seeds). $H_{\text{stable}}$ is the mean over the last 25\% of each run. \textbf{\textcolor{red}{⚠ Pre-KIMI bins}} — values computed with obsolete thresholds ($\pm 0.8$, $\pm 1.5$); see Table~\ref{tab:scaling} caption for details (audit 2026-04-22).}
 \label{tab:ablations}
 \begin{tabular}{lcc}
 \toprule
@@ -226,6 +232,28 @@ No coupling ($D = 0$) & $0.38 \pm 0.08$ & No (isolated oscillators) \\
 
 The heretic mechanism is \textbf{necessary}: removing it causes consensus collapse under Cold Start. The doubt variable is \textbf{enhancing}: without it, coupling is always attractive, and diversity is sustained only by noise-driven fluctuations ($H_{\text{stable}} \approx 0.41$).
 
+\subsection{Trajectory-Based Minimality: Coordination Phase Space}
+\label{sec:traj_minimality}
+
+Snapshot entropy ($H_{100}$, $H_{\text{cog5}}$) measures spatial diversity at a single instant. It conflates \emph{structured diversity} (nodes follow distinct but predictable trajectories) with \emph{random disorder} (nodes explore independently and chaotically). To resolve this ambiguity, we introduce two complementary trajectory metrics computed on the full $v(t)$ history:
+\begin{itemize}
+  \item \textbf{Pairwise synchrony} $\bar{r}$: mean Pearson cross-correlation of $v(t)$ traces between all node pairs (subsampled). $\bar{r} \approx +1$: globally locked; $\bar{r} \approx 0$: independent; $\bar{r} \approx -1$: anti-phase.
+  \item \textbf{LZ76 complexity} $C_{\text{LZ}}$: normalised Lempel--Ziv complexity of per-node state sequences ($\approx 0$: structured/predictable; $\approx 1$: random walk).
+\end{itemize}
+
+Figure~\ref{fig:phase_space} plots all 80 runs of the ablation study (4 conditions $\times$ 2 protocols $\times$ 10 seeds) in the $(\bar{r}, C_{\text{LZ}})$ plane. The four quadrants define interpretable dynamical regimes.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.82\textwidth]{../figures/coordination_phase_space.png}
+\caption{Coordination phase space $(\bar{r}, C_{\text{LZ}})$ for four ablation conditions under two protocols (BA $m=3$, $N=100$, \texttt{degree\_linear}, 10 seeds each). Each point is one run; filled markers are centroids $\pm$ std. Quadrant boundaries: $\bar{r}=0.15$, $C_{\text{LZ}}=1.6$. \textbf{FULL} is the only condition that occupies the structured half-plane ($C_{\text{LZ}} < 1.6$) in both protocols. FROZEN\_U migrates to the chaotic quadrant (high sync, high LZ) under forcing---a signature of \emph{coherent chaos}. Ablating $u$ (FROZEN\_U) produces strongly seed-dependent trajectories with high LZ regardless of protocol.}
+\label{fig:phase_space}
+\end{figure}
+
+The key claim is that \textbf{only the full model} consistently occupies the structured ($C_{\text{LZ}} < 1.6$) half-plane across both endogenous and forced protocols, while all ablations either drift toward chaotic ($C_{\text{LZ}} \approx 2.0$) or fail to achieve structured trajectories. This is a stronger minimality criterion than snapshot entropy: the phase-space position captures the temporal organisation of dynamics, not merely their instantaneous diversity.
+
+\textbf{Complementary evidence from forcing sweep.} To demonstrate that $u$ acts specifically as an \emph{anti-synchronisation filter}, we swept $I_{\text{stim}} \in [0, 1]$ for FULL vs FROZEN\_U (BA $m=3$, $N=100$, 7 seeds, 3000 steps). FULL maintains $\bar{r} \approx 0.025$--$0.035$ across all $I_{\text{stim}} \in [0.1, 1.0]$ (flat, near-zero synchrony). FROZEN\_U shows a sharp transition at $I_{\text{stim}} \approx 0.2$ from $\bar{r} = 0.006$ (endogenous) to $\bar{r} = 0.830$ (plateau), with Cohen's $d = 13.21$ ($p = 9.7 \times 10^{-10}$) separating the two conditions at $I_{\text{stim}} = 0.5$. This confirms that $u$ absorbs the common forcing signal and prevents stimulus-induced phase locking---a \emph{dynamic buffering} function that snapshot metrics cannot detect.
+
 \subsection{Topological Normalization Regimes}
 \label{sec:topo_regimes}
 
@@ -233,7 +261,7 @@ We systematically sweep the Barab\'asi--Albert attachment parameter $m \in \{1, 
 
 \begin{table}[ht]
 \centering
-\caption{Sustained entropy $H_{\text{stable}}$ by BA attachment parameter $m$ and coupling normalization. ``$\star$'' denotes $H > 0.5$.}
+\caption{Sustained entropy $H_{\text{stable}}$ by BA attachment parameter $m$ and coupling normalization. ``$\star$'' denotes $H > 0.5$. \textbf{\textcolor{red}{⚠ Pre-KIMI bins}} — see Table~\ref{tab:scaling} caption (audit 2026-04-22).}
 \label{tab:ba_m_sweep}
 \begin{tabular}{rrrrl}
 \toprule

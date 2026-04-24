@@ -6,20 +6,35 @@
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Hardware Mapping Methodology}{1}{section.2}\protected@file@percent }
 \newlabel{sec:methods}{{2}{1}{Hardware Mapping Methodology}{section.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}The Pathological Consensus: A Structural Trap}{1}{section.3}\protected@file@percent }
-\newlabel{sec:pathology}{{3}{1}{The Pathological Consensus: A Structural Trap}{section.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces SPICE analog integration accurately captures the Mem4ristor deterministic dynamics observed in discrete software simulations on stable topologies.}}{2}{figure.1}\protected@file@percent }
 \newlabel{fig:spice_validation}{{1}{2}{SPICE analog integration accurately captures the Mem4ristor deterministic dynamics observed in discrete software simulations on stable topologies}{figure.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}The Pathological Consensus: A Structural Trap}{2}{section.3}\protected@file@percent }
+\newlabel{sec:pathology}{{3}{2}{The Pathological Consensus: A Structural Trap}{section.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Deterministic implementations of memristive dynamics (Neuron, Synapse, and Combined) fail autonomously to break the dead zone without thermal noise.}}{2}{figure.2}\protected@file@percent }
 \newlabel{fig:negative_hfo2}{{2}{2}{Deterministic implementations of memristive dynamics (Neuron, Synapse, and Combined) fail autonomously to break the dead zone without thermal noise}{figure.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}The Thermodynamics of Disordered Escape}{3}{section.4}\protected@file@percent }
 \newlabel{sec:escape}{{4}{3}{The Thermodynamics of Disordered Escape}{section.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Demonstration of robust entropy restoration leveraging combined thermal noise and physical mismatch.}}{3}{figure.3}\protected@file@percent }
-\newlabel{fig:thermodynamic_escape}{{3}{3}{Demonstration of robust entropy restoration leveraging combined thermal noise and physical mismatch}{figure.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Phase Boundary: The Spin-Glass Analogy}{4}{section.5}\protected@file@percent }
-\newlabel{sec:phase}{{5}{4}{Phase Boundary: The Spin-Glass Analogy}{section.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces The critical phase boundary $\sigma _c(\eta )$ required to escape the BA consensus trap. Higher thermal noise significantly reduces the amount of structural mismatch necessary.}}{4}{figure.4}\protected@file@percent }
-\newlabel{fig:phase_boundary}{{4}{4}{The critical phase boundary $\sigma _c(\eta )$ required to escape the BA consensus trap. Higher thermal noise significantly reduces the amount of structural mismatch necessary}{figure.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{4}{section.6}\protected@file@percent }
-\newlabel{sec:conclusion}{{6}{4}{Conclusion}{section.6}{}}
-\gdef \@abspage@last{4}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Spectral entropy: beyond a cognitive ceiling}{3}{subsection.4.1}\protected@file@percent }
+\newlabel{subsec:continuous_H}{{4.1}{3}{Spectral entropy: beyond a cognitive ceiling}{subsection.4.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Continuous ($100$-bin) spectral entropy over the $(\eta , \sigma _C)$ grid. The escape signature is identical to that obtained under the $5$-bin cognitive metric, but the informational content is $\sim 2.8\times $ larger, revealing sub-cognitive modulations hidden by physiological binning.}}{3}{figure.3}\protected@file@percent }
+\newlabel{fig:continuous_sweep}{{3}{3}{Continuous ($100$-bin) spectral entropy over the $(\eta , \sigma _C)$ grid. The escape signature is identical to that obtained under the $5$-bin cognitive metric, but the informational content is $\sim 2.8\times $ larger, revealing sub-cognitive modulations hidden by physiological binning}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Monte Carlo validation: noise alone escapes}{3}{subsection.4.2}\protected@file@percent }
+\newlabel{subsec:mc_50seeds}{{4.2}{3}{Monte Carlo validation: noise alone escapes}{subsection.4.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Fifty-seed Monte Carlo validation of the escape (SPICE, $100$-bin spectral entropy).}}{3}{table.1}\protected@file@percent }
+\newlabel{tab:mc_50seeds}{{1}{3}{Fifty-seed Monte Carlo validation of the escape (SPICE, $100$-bin spectral entropy)}{table.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Violin distributions of $H_{100}$ across $50$ independent ngspice seeds. A $\to $ B transition (dead zone $\to $ thermal escape) is a clean phase jump ($d = 20.78$). B $\to $ C (addition of CMOS mismatch over thermal noise) is statistically indistinguishable ($d = 0.19$, $p = 0.35$).}}{4}{figure.4}\protected@file@percent }
+\newlabel{fig:mc_50seeds}{{4}{4}{Violin distributions of $H_{100}$ across $50$ independent ngspice seeds. A $\to $ B transition (dead zone $\to $ thermal escape) is a clean phase jump ($d = 20.78$). B $\to $ C (addition of CMOS mismatch over thermal noise) is statistically indistinguishable ($d = 0.19$, $p = 0.35$)}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}CMOS-realistic mismatch sweep}{4}{subsection.4.3}\protected@file@percent }
+\newlabel{subsec:cmos_sweep}{{4.3}{4}{CMOS-realistic mismatch sweep}{subsection.4.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Entropy vs.\ $\sigma _C$ in the CMOS-realistic band ($0$--$15\%$) for three thermal noise levels. Escape is driven by $\eta $; $\sigma _C$ is neutral at physically realizable amplitudes.}}{4}{figure.5}\protected@file@percent }
+\newlabel{fig:cmos_sweep}{{5}{4}{Entropy vs.\ $\sigma _C$ in the CMOS-realistic band ($0$--$15\%$) for three thermal noise levels. Escape is driven by $\eta $; $\sigma _C$ is neutral at physically realizable amplitudes}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Topology-agnostic robustness}{4}{subsection.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Entropy restoration is stable across graph instances and topology families.}}{5}{figure.6}\protected@file@percent }
+\newlabel{fig:thermodynamic_escape}{{6}{5}{Entropy restoration is stable across graph instances and topology families}{figure.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Phase Boundary: Extrapolation to a Spin-Glass Regime}{6}{section.5}\protected@file@percent }
+\newlabel{sec:phase}{{5}{6}{Phase Boundary: Extrapolation to a Spin-Glass Regime}{section.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Critical phase boundary $\sigma _c(\eta )$ required to escape the BA consensus trap in the aggressive-disorder regime ($\sigma _C$ extended well beyond CMOS tolerances). The boundary is monotonically decreasing: higher thermal noise reduces the \emph  {theoretical} disorder threshold, but the CMOS-realistic band ($\sigma _C \leq 0.15$, cf.\ Fig.~\ref {fig:cmos_sweep}) is statistically neutral --- this diagram therefore characterizes a future spin-glass substrate rather than present-day silicon.}}{6}{figure.7}\protected@file@percent }
+\newlabel{fig:phase_boundary}{{7}{6}{Critical phase boundary $\sigma _c(\eta )$ required to escape the BA consensus trap in the aggressive-disorder regime ($\sigma _C$ extended well beyond CMOS tolerances). The boundary is monotonically decreasing: higher thermal noise reduces the \emph {theoretical} disorder threshold, but the CMOS-realistic band ($\sigma _C \leq 0.15$, cf.\ Fig.~\ref {fig:cmos_sweep}) is statistically neutral --- this diagram therefore characterizes a future spin-glass substrate rather than present-day silicon}{figure.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{6}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{6}{Conclusion}{section.6}{}}
+\gdef \@abspage@last{7}

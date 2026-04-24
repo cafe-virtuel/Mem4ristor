@@ -230,6 +230,12 @@ class Mem4ristorV3:
         self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
 
     def solve_rk45(self, t_span, I_stimulus=0.0, adj_matrix=None):
+        # WARNING (audit 2026-04-22): the combined_dynamics closure below calls
+        # self.rng.normal() on every ODE evaluation. solve_ivp (RK45) evaluates
+        # the RHS multiple times per step with different (t, y) pairs, so each
+        # call draws a fresh noise sample, violating the deterministic contract
+        # required by adaptive integrators. Results with sigma_v > 0 are
+        # non-reproducible and numerically incorrect. Use sigma_v=0 only.
         duration = t_span[1] - t_span[0]
         max_step = min(0.1, duration / 10.0) if duration > 0 else 0.1
 

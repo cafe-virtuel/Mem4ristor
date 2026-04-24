@@ -10,14 +10,14 @@
 
 \title{Harnessing Hardware Imperfections:\\Analog Escape from Topological Dead Zones\\in Neuromorphic Oscillators}
 \author{Julien Chauvin \and Claude Opus 4.7 \and Antigravity \and Grok 3}
-\date{April 19, 2026}
+\date{April 20, 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-In distributed neural networks governed by coupled FitzHugh-Nagumo (FHN) oscillators, highly centralized topologies such as Barabási-Albert networks inevitably cause a fatal collapse of diversity, known as the ``Topological Dead Zone''. While theoretical modifications to coupling weights fail to counter this structural degeneracy, we demonstrate a profound \textit{Stochastic Resonance} phenomenon upon transposing the model to analog hardware simulation (SPICE). We show that ideal, deterministic non-linear memristors strictly reinforce the system's lock-in. However, the conjunction of inherent hardware heterogeneity (quenched mismatch) and thermal (Johnson-Nyquist) noise grants the network an intrinsic ability to \textit{escape} the dead zone. Far from degrading computational capacity, physical implementation imperfections act as the essential thermodynamic engine breaking lethal topological symmetries, thereby paving the way toward functional Neuromorphic Spin-Glass Computing.
+In distributed neural networks governed by coupled FitzHugh-Nagumo (FHN) oscillators, highly centralized topologies such as Barabási-Albert networks inevitably cause a fatal collapse of diversity, known as the ``Topological Dead Zone''. While theoretical modifications to coupling weights fail to counter this structural degeneracy, we demonstrate a profound \textit{Stochastic Resonance} phenomenon upon transposing the model to analog hardware simulation (SPICE). We show that ideal, deterministic non-linear memristors strictly reinforce the system's lock-in. However, thermal (Johnson-Nyquist) noise alone grants the network an intrinsic ability to \textit{escape} the dead zone: measured over 50 independent Monte Carlo seeds, continuous spectral entropy jumps from $H = 1.38 \pm 0.01$ bits (quiescent sub-cognitive variability) to $H = 4.30 \pm 0.05$ bits under moderate thermal noise ($\eta = 0.5$), with a Cohen's $d = 20.78$ effect size ($p < 10^{-60}$, Welch). Quenched capacitor mismatch $\sigma_C$ in the realistic CMOS range ($0$--$15\%$), by contrast, is statistically neutral once thermal noise is present ($d = 0.19$, $p = 0.35$), indicating that physical fabrication variability constitutes an \emph{accessory} rather than a \emph{necessary} ingredient at experimentally plausible amplitudes. A true quenched-disorder regime (Neuromorphic Spin-Glass Computing) is nevertheless recovered \emph{in extrapolation} at aggressive $\sigma_C \gg 0.15$, outside present-day CMOS tolerances. Far from degrading computational capacity, thermal physical imperfections act as the essential thermodynamic engine breaking lethal topological symmetries.
 \end{abstract}
 
 \section{Introduction}
@@ -51,36 +51,89 @@ A common assumption in neuromorphic engineering is that introducing non-linear m
 
 \section{The Thermodynamics of Disordered Escape}
 \label{sec:escape}
-If deterministic non-linearity fails, the solution lies in thermodynamics. We injected a combination of thermal noise ($\eta$) mimicking Johnson-Nyquist properties, and quenched capacitor mismatch ($\sigma_C$) reflecting standard CMOS or memristor fabrication variations (typically Monte Carlo with $\sigma = \pm 5\%$). By explicitly modeling hardware defects, we observe a dramatic phase transition: the stable cognitive entropy $H$ jumps from 0 to approximately 1.69. Neither noise nor mismatch achieves a complete escape on its own; they exhibit a synergistic resonance. 
+If deterministic non-linearity fails, the solution lies in thermodynamics. We injected a combination of thermal noise ($\eta$) mimicking Johnson-Nyquist fluctuations and quenched capacitor mismatch ($\sigma_C$) reflecting standard CMOS or memristor fabrication variations. By explicitly modeling hardware defects we observed a dramatic phase transition in the entropy of the network's voltage trajectories.
 
-This escape mechanism is moreover \textit{topology-agnostic}. Applying the exact same thermal and mismatch parameters to an Erdős-Rényi dead zone network yields an identical restoration of entropic diversity.
+\subsection{Spectral entropy: beyond a cognitive ceiling}
+\label{subsec:continuous_H}
+Early analyses of this escape relied on a $5$-bin \textit{cognitive} entropy clipped to physiological thresholds $\pm 0.4$ and $\pm 1.2$ (strong/weak polarity + quiescence). This metric saturates rapidly at $H_{\max}^{(5)} = \log_2 5 \approx 2.32$ bits and compressed the true dynamical diversity of the escape. We therefore re-analyzed the $3 \times 15$ ngspice point cache under a $100$-bin \textit{continuous} spectral entropy (uniform grid on $v \in [-3, 3]$). The escape peak is confirmed and \emph{much} larger than previously reported: $H_{\max}^{(100)} = 4.58$ bits at $(\eta=0.5,\ \sigma_C=0.5)$, vs. the $1.61$ bits ceiling observed under the $5$-bin metric. Crucially, the argmax location is identical across metrics --- the $5$-bin readout was not misidentifying the operating point, only underestimating its informational content.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/spice_mismatch_sweep_continuous.png}
+    \caption{Continuous ($100$-bin) spectral entropy over the $(\eta, \sigma_C)$ grid. The escape signature is identical to that obtained under the $5$-bin cognitive metric, but the informational content is $\sim 2.8\times$ larger, revealing sub-cognitive modulations hidden by physiological binning.}
+    \label{fig:continuous_sweep}
+\end{figure}
+
+\subsection{Monte Carlo validation: noise alone escapes}
+\label{subsec:mc_50seeds}
+To settle the question of whether thermal noise and quenched mismatch are both \emph{individually necessary}, we ran a $50$-seed Monte Carlo campaign over three operating points: (A) the dead zone $(\eta, \sigma_C) = (0.1, 0.0)$; (B) noise-only $(0.5, 0.0)$; (C) noise + realistic CMOS mismatch $(0.5, 0.10)$. Results (mean $\pm$ s.e.m., $n = 50$) are summarised in Table~\ref{tab:mc_50seeds} and Figure~\ref{fig:mc_50seeds}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\hline
+Point & $\eta$ & $\sigma_C$ & $H_{100}$ (bits) & Interpretation \\
+\hline
+A & 0.10 & 0.00 & $1.377 \pm 0.012$ & dead zone (sub-cognitive) \\
+B & 0.50 & 0.00 & $4.298 \pm 0.054$ & \textbf{thermal-only escape} \\
+C & 0.50 & 0.10 & $4.333 \pm 0.046$ & noise + CMOS mismatch \\
+\hline
+\end{tabular}
+\caption{Fifty-seed Monte Carlo validation of the escape (SPICE, $100$-bin spectral entropy).}
+\label{tab:mc_50seeds}
+\end{table}
+
+A Welch $t$-test yields an effect size of \textbf{Cohen's $d = 20.78$ between A and B} ($p < 1.2 \times 10^{-63}$): moderate thermal noise alone is sufficient to escape the BA dead zone with overwhelming statistical significance. Adding a realistic $10\%$ CMOS capacitor mismatch on top of noise yields \textbf{Cohen's $d = 0.19$ between B and C} ($p = 0.35$, not significant): at experimentally plausible mismatch amplitudes, quenched disorder is statistically neutral relative to thermal fluctuations.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/spice_50seeds_validation.png}
+    \caption{Violin distributions of $H_{100}$ across $50$ independent ngspice seeds. A $\to$ B transition (dead zone $\to$ thermal escape) is a clean phase jump ($d = 20.78$). B $\to$ C (addition of CMOS mismatch over thermal noise) is statistically indistinguishable ($d = 0.19$, $p = 0.35$).}
+    \label{fig:mc_50seeds}
+\end{figure}
+
+\subsection{CMOS-realistic mismatch sweep}
+\label{subsec:cmos_sweep}
+To rule out that our null result on $\sigma_C$ was a fluke of the single $10\%$ operating point, we additionally swept $\sigma_C \in \{0, 2, 5, 8, 10, 15\}\%$ (bracketing typical CMOS fabrication tolerances) across three noise levels $\eta \in \{0.1, 0.3, 0.5\}$ with three seeds each ($54$ ngspice runs). The escape transition is controlled almost entirely by $\eta$; within the CMOS-realistic band $\sigma_C$ is a second-order perturbation (Figure~\ref{fig:cmos_sweep}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/spice_mismatch_cmos.png}
+    \caption{Entropy vs.\ $\sigma_C$ in the CMOS-realistic band ($0$--$15\%$) for three thermal noise levels. Escape is driven by $\eta$; $\sigma_C$ is neutral at physically realizable amplitudes.}
+    \label{fig:cmos_sweep}
+\end{figure}
+
+\subsection{Topology-agnostic robustness}
+This escape mechanism is moreover \textit{topology-agnostic}. Applying the same thermal parameters to an Erdős-Rényi dead zone network yields an identical restoration of entropic diversity, and the effect is stable across independently drawn BA graph instances.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/p4_19ter_multigraph.png}
     (a) Robustness across multiple structural instances.
-    \vspace{0.5cm} \\ 
+    \vspace{0.5cm} \\
     \includegraphics[width=0.8\textwidth]{figures/p4_19ter_er_replication.png}
     (b) Agnosticism across Erdős-Rényi topologies.
-    \caption{Demonstration of robust entropy restoration leveraging combined thermal noise and physical mismatch.}
+    \caption{Entropy restoration is stable across graph instances and topology families.}
     \label{fig:thermodynamic_escape}
 \end{figure}
 
-\section{Phase Boundary: The Spin-Glass Analogy}
+\section{Phase Boundary: Extrapolation to a Spin-Glass Regime}
 \label{sec:phase}
-Analogous to spin-glass models where frustration and quenched disorder determine the energy landscape, the neuromorphic network operates on a critical boundary. Through binary search iterations, we traced the threshold of necessary structural mismatch $\sigma_c$ as a function of thermal noise $\eta$.
+The CMOS-realistic analysis of Section~\ref{sec:escape} establishes that at physically realizable mismatch amplitudes ($\sigma_C \lesssim 0.15$), thermal noise alone drives the escape and quenched disorder is statistically neutral. However, the question of whether a \emph{pure} quenched-disorder escape (i.e. an escape obtained with $\eta = 0$ and only structural heterogeneity) is \emph{in principle} possible remains theoretically interesting, and speaks directly to a spin-glass analogy.
+
+To probe this regime, we explored aggressive structural mismatch $\sigma_C \in [0, 0.6]$ --- far outside present-day CMOS tolerances, but accessible in memristor fabrication or in future neuromorphic substrates designed around controlled disorder. Through a binary-search dichotomy we traced the threshold $\sigma_c(\eta)$ below which the BA consensus trap persists.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/p4_19ter_dichotomy.png}
-    \caption{The critical phase boundary $\sigma_c(\eta)$ required to escape the BA consensus trap. Higher thermal noise significantly reduces the amount of structural mismatch necessary.}
+    \caption{Critical phase boundary $\sigma_c(\eta)$ required to escape the BA consensus trap in the aggressive-disorder regime ($\sigma_C$ extended well beyond CMOS tolerances). The boundary is monotonically decreasing: higher thermal noise reduces the \emph{theoretical} disorder threshold, but the CMOS-realistic band ($\sigma_C \leq 0.15$, cf.\ Fig.~\ref{fig:cmos_sweep}) is statistically neutral --- this diagram therefore characterizes a future spin-glass substrate rather than present-day silicon.}
     \label{fig:phase_boundary}
 \end{figure}
 
-The relationship reveals a monotonously decreasing boundary: higher thermal noise drastically reduces the requirement for physical disorder. This explicitly proves that neuromorphic hardware variability is not a defect to be calibrated away, but rather the essential thermodynamic backbone of its distributed computational capacity.
+The relationship reveals a monotonously decreasing boundary, which supports a spin-glass interpretation of the underlying energy landscape: in a regime of aggressive quenched disorder, structural frustration can by itself lift the consensus attractor. Under present-day CMOS tolerances this effect remains subdominant to Johnson-Nyquist noise (the statistical null from Section~\ref{subsec:mc_50seeds}, Cohen's $d = 0.19$). We therefore position this section as an \emph{extrapolative prediction} pointing toward a future class of neuromorphic substrates --- dedicated spin-glass oscillator arrays --- where heterogeneity could be engineered at amplitudes $\sigma_C \gg 0.15$ and then exploited as the sole thermodynamic escape mechanism. In such substrates, hardware variability stops being a defect to calibrate away and becomes the essential computational resource.
 
 \section{Conclusion}
 \label{sec:conclusion}
-Transposing the algorithmic Mem4ristor concept onto physical analog hardware radically redefines our understanding of network consensus traps. While software integration paths strictly follow topological constraints toward structural death, the inevitable imperfections of physical hardware---specifically thermal noise and quenched capacitive disorder---naturally frustrate the dead zone attractor. By acknowledging and harnessing these flaws, we unlock an inherent escape mechanism, reframing physical analog imperfections from engineering challenges into vital computational resources.
+Transposing the algorithmic Mem4ristor concept onto physical analog hardware redefines our understanding of network consensus traps. While software integration paths strictly follow topological constraints toward structural death, thermal noise inherent to physical analog substrates naturally frustrates the dead zone attractor. Our $50$-seed Monte Carlo campaign establishes this escape as a Cohen's-$d = 20.78$ effect ($p < 10^{-63}$), while showing that --- contrary to an earlier working hypothesis --- quenched CMOS capacitor mismatch in the realistic range $\sigma_C \leq 0.15$ contributes no detectable additional entropy over thermal noise alone ($d = 0.19$). The dead zone is therefore \emph{primarily a stochastic-resonance problem} rather than a quenched-disorder problem, at least at today's silicon tolerances. The spin-glass picture, appealing as it is, is recovered only \emph{in extrapolation} toward aggressive disorder regimes that would require custom-engineered neuromorphic substrates. By acknowledging this hierarchy --- thermal fluctuations as the primary escape engine, engineered quenched disorder as a longer-term architectural frontier --- we reframe physical analog imperfections from engineering challenges into vital computational resources, and chart a concrete path toward spin-glass neuromorphic hardware.
 
 \end{document}

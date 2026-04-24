@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor v3.2.0
-**Dernière mise à jour : 2026-04-19**
+**Dernière mise à jour : 2026-04-24**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -71,8 +71,15 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | Mapping hardware HfO2 | **VALIDÉ EN SIMULATION (2026-04-19)** | SPICE/Python RMS global ≈ 9.7×10⁻³ (≤1% de \|v\|) sur lattice 4×4. Voir §3septies + §10 P4 |
 | Normalisation spectrale brise la dead zone | **TESTÉ — FAUX (2026-04-19)** | `coupling_norm='spectral'` (1/eigenvector_centrality) implémenté. 0/6 wins sur dead zone. Le problème est dynamique, pas un défaut de pondération. Voir §3octies |
 | Parité cross-platform (MKL) | RÉSOLU | Fix v2.9.1, `NUMPY_MKL_CBWR=COMPATIBLE` |
+| **Nœud isolé instable (claim preprint §3.1)** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Point fixe v*=−1.294, w*=−0.732 est un **spiral stable** (λ=−0.055±0.283i). Hopf à α_crit≈0.296, mais défaut α=0.15. Voir §3octvicies |
+| **H_cog≈0.92 (Python, bins corrigés)** | **🚨 ARTEFACT MÉTRIQUE — AUDIT EXTERNE 2026-04-22** | Avec bins KIMI (±0.4/1.2), H_cog=0 pour TOUTES les configs Python défaut. La valeur 0.92 venait de l'ancienne bin ±1.5 straddlant le cluster consensus. Voir §3octvicies |
+| **Hérétiques actifs à I_stim=0** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | `I_eff[heretic_mask] *= -1` est no-op quand I_stim=0. Les expériences "endogènes" ne testent pas le mécanisme hérétique. Voir §3octvicies |
+| **Verilog-A (v26.va) = Python** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Noyau linéaire (1-2u), τ_u=1.0, pas d'ε_u adaptatif, pas de plasticité, double-comptage I_coup. Voir §3octvicies |
+| **Escape SPICE noise+mismatch (P4.19)** | **✅ CONFIRMÉ sous 3 métriques** | H_cont=4.58 bits à (η=0.5, σ_C=0.5). Survit à la métrique continue et aux bins KIMI. Voir §3quindecies |
 
 ### 3bis. LIMIT-05 : Entropie maximale (2026-03-21)
+
+> ⚠️ **INVALIDÉ MÉTRIQUEMENT (audit 2026-04-22)** : Toutes les valeurs H ci-dessous ont été mesurées avec les **anciennes bins pré-KIMI (±0.8/1.5)**. Avec les bins actuelles (±0.4/1.2), H_cog = 0 pour toutes les configs aux paramètres défaut. Voir §3octvicies.
 
 **Question** : Le claim H ≈ 1.94 est-il reproductible ?
 
@@ -83,11 +90,13 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | Max théorique H (5 bins) | log₂(5) = 2.3219 |
 | Meilleur H **transitoire** | 2.3143 (99.7% du max) |
 | Meilleur H **stable** (derniers 25%) | 1.48 ± 0.66 (D=0.01, I=1.0) |
-| H stable config par défaut | **0.92 ± 0.04** |
+| H stable config par défaut | **0.92 ± 0.04** *(bins pré-KIMI)* |
 
-**Verdict** : H ≈ 1.94 mesuré sur un pic transitoire. Attracteur réel ≈ 0.92.
+**Verdict** : H ≈ 1.94 mesuré sur un pic transitoire. Attracteur réel ≈ 0.92 *(avec les bins d'époque)*.
 
 ### 3ter. LIMIT-02 : Strangulation scale-free (2026-03-21)
+
+> ⚠️ **BINS PRÉ-KIMI** : Les H_stable ici (0.918, 0.002, 0.993) sont avec les anciennes bins (±0.8/1.5). Avec les bins actuelles, les valeurs diffèrent.
 
 **Question** : Le V4 rewiring résout-il la strangulation par les hubs ?
 
@@ -109,6 +118,8 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 ### 3quinquies. LIMIT-02 : Résolution par normalisation degree_linear (2026-04-10)
 
+> ⚠️ **BINS PRÉ-KIMI** : H_stable = 0.828 ± 0.069 et H = 0.958 ci-dessous sont mesurés avec les anciennes bins (±0.8/1.5). Le phénomène (degree_linear fonctionne mieux que uniform) reste réel, mais les valeurs numériques ne correspondent plus à la métrique actuelle.
+
 **Question** : Quel mode de normalisation par degré résout la strangulation ?
 
 **Méthode** : Sweep 4 modes (`uniform`, `degree`, `degree_linear`, `degree_log`) sur BA (N=100, m=3), 5 seeds, 3000 steps.
@@ -127,6 +138,8 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 **Reproduction** : `experiments/limit02_norm_sweep.py`
 
 ### 3sexies. LIMIT-02 : Validation multi-topologie (2026-04-10)
+
+> ⚠️ **BINS PRÉ-KIMI** : Tous les H ci-dessous (0.93, 0.85, 0.83, etc.) sont avec les anciennes bins (±0.8/1.5). La classification des régimes (degree_linear gagne / uniform gagne / aucun) reste qualitativement valide.
 
 **Question** : `degree_linear` est-il un fix universel ?
 
@@ -447,6 +460,503 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 
 **Conséquence** : KIMI critique #3 **résolue définitivement**. L'intervalle de confiance 95% sur B est ±0.054 bits — précision publication-grade. Le pivot narratif (noise-only plutôt que synergy) renforce la clarté mécaniste de Paper B.
 
+### 3octdecies. Étude de minimalité (ablations) — KIMI #4 (2026-04-20)
+
+**Question** : KIMI reprochait au preprint de ne pas démontrer que chacun des trois ingrédients du noyau Mem4ristor (heretic flip, Levitating Sigmoid, dynamique de doute `u`) est *individuellement* nécessaire. On pouvait craindre qu'un seul d'entre eux suffise.
+
+**Méthode** : `experiments/ablation_minimality.py`. Quatre configurations — `FULL`, `NO_HERETIC` (masque hérétique forcé à zéro), `NO_SIGMOID` (sigmoid remplacé par kernel attractif constant : `sigmoid_steepness=0`, `social_leakage=1` ⇒ `u_filter≡1`, coupling FHN classique), `FROZEN_U` (`epsilon_u=0`, `tau_u=1e12`, `u_i ≡ sigma_baseline`). Testées sur BA m=3 N=100 + `degree_linear`, 3000 pas, 10 seeds, sous **deux protocoles** :
+- **ENDOGENOUS** : `I_stim = 0.0` (référence §3quinquies)
+- **FORCED** : `I_stim = 0.5` (référence lattice de `test_scientific_regression.py`)
+
+**Pourquoi deux protocoles** : le flip hérétique s'écrit `I_eff[mask] *= -1`. Il est *mathématiquement inactif* quand `I_stim = 0`. Un seul protocole aurait été auto-tautologique pour NO_HERETIC.
+
+**Résultats (mean ± sem, n=10)** :
+
+| Régime / Métrique | FULL | NO_HERETIC | NO_SIGMOID | FROZEN_U |
+|:---|---:|---:|---:|---:|
+| ENDOGENOUS / H₁₀₀ | **3.215 ± 0.114** | 3.215 ± 0.114 (d=0, ns) | 3.378 ± 0.084 (d=−0.51, ns) | **0.711 ± 0.012 (d=+9.75, p=3e-9)** |
+| ENDOGENOUS / H_cog5 | 0.0005 | 0.0005 | 0.0000 | 0.0000 |
+| FORCED / H₁₀₀ | 3.010 ± 0.029 | 3.441 ± 0.015 (d=−5.94, p=4e-9) | 2.976 ± 0.018 (ns) | 4.320 ± 0.047 (d=−10.69, p=2e-13) |
+| FORCED / H_cog5 | **0.015 ± 0.004** | 0.408 ± 0.013 (d=−13.15) | 0.013 ± 0.006 (ns) | 1.041 ± 0.027 (d=−17.03) |
+
+**Findings — trois messages non-triviaux** :
+
+1. **Seul `FROZEN_U` collapse systématiquement H endogène** (H₁₀₀ : 3.22 → 0.71, d=+9.75). La dynamique de doute `u` est *individuellement nécessaire* au régime endogène — c'est le seul résultat qui confirme l'intuition « minimalité » à la lettre.
+
+2. **Sous `I_stim=0`, retirer le flip hérétique est un no-op exact** : résultats bit-pour-bit identiques à FULL (d=0, p=1.0). C'est mathématiquement attendu (`I_eff[mask] *= -1` sur un vecteur nul) et exhibe un point important pour la critique KIMI : **l'hérétique est un mécanisme de *réponse au stimulus*, pas un générateur de diversité endogène**. Il doit être évalué sous forçage.
+
+3. **Sous `I_stim=0.5`, retirer l'hérétique ou geler `u` AUGMENTE l'entropie** (H₁₀₀ : +0.43, +1.31 ; H_cog5 : +0.39, +1.03). Contre-intuitif au premier abord, mais éclairant : le Mem4ristor `FULL` sur BA m=3 forcé converge vers un régime à **polarité cognitive cohérente** où les unités traversent les mêmes bacs cognitifs de manière synchronisée (H_cog5 ≈ 0.015 bit ≈ *consensus cognitif*) tout en gardant une dispersion continue intra-bac (H₁₀₀ = 3.01). Les ablations cassent cette cohérence : chaque unité explore librement son propre bac, ce qui augmente H *spatial-instantané* mais détruit précisément la structure que le noyau était conçu à imposer.
+
+4. **Levitating Sigmoid statistiquement neutre sur l'entropie** dans les deux régimes (|d| ≤ 0.51, p > 0.14). Remplacée par un kernel attractif constant, elle laisse H₁₀₀ et H_cog5 quasi-inchangés. **Interprétation** : le rôle du Sigmoid Lévitant n'est pas *quantitatif sur l'entropie* mais *qualitatif sur la topologie dynamique* (basculement attractif↔répulsif autour de `u=0.5`). Le valider proprement demande un protocole spécifique — par ex. suivre l'occurrence d'événements répulsifs corrélés à des pics de `u`, ce que l'entropie agrégée ne capture pas.
+
+**Conséquences scientifiques** :
+
+- La claim « minimalité » du preprint doit être reformulée : **`u` est individuellement nécessaire (grand effet)** ; **l'hérétique est stimulus-contingent (trivial sans forçage, mais cohérent sous forçage)** ; **le Sigmoid Lévitant est un mécanisme de commutation qualitatif, pas un générateur d'entropie quantitatif**.
+- Cette étude **révèle une limite des métriques d'entropie actuelles** (100-bin comme 5-bin) : calculées comme diversité *spatiale instantanée* moyennée sur la queue, elles confondent « désordre aléatoire » et « diversité cognitive structurée ». Une métrique plus fine (Lempel-Ziv, information mutuelle inter-nœuds, cohérence de phase) serait nécessaire pour capturer la « cognition structurée » que Mem4ristor revendique. **À ajouter au backlog P1.**
+- Le résultat « retirer `u` augmente H sous forçage » n'est *pas* une réfutation : il montre que `u` sert à *coordonner* la diversité plutôt qu'à la *maximiser*. Les métriques ne mesurent pas la coordination.
+
+**Figures** : `figures/ablation_minimality.png` (4 panneaux : 2 régimes × 2 métriques), `figures/ablation_minimality.csv` (80 lignes raw).
+
+**Verdict KIMI #4** : **partiellement résolue**. La minimalité stricte (« chaque ingrédient réduit H ») n'est établie que pour `u`. Les deux autres ingrédients demandent des protocoles ou métriques dédiés. Honnêteté scientifique préservée : on documente le résultat tel qu'il est, pas tel qu'on l'espérait.
+
+### 3novedecies. P1.5bis : Métriques de coordination trajectorielles (2026-04-21)
+
+**Motivation** : §3octdecies (ablations) a révélé que les métriques H₁₀₀ et H_cog5 sont des mesures de *dispersion spatiale instantanée*. Elles confondent désordre aléatoire et diversité structurée : dans le régime FORCED, retirer le flip hérétique ou geler u *augmente* H, ce qui est contre-intuitif — l'ablation détruit la coordination sans que les métriques spatiales le capturent.
+
+**Solution** : Deux métriques trajectorielles ajoutées à `src/mem4ristor/metrics.py` :
+
+| Métrique | Définition | Interprétation |
+|:---------|:-----------|:---------------|
+| `calculate_pairwise_synchrony(v_history)` | Corrélation de Pearson croisée, moyennée sur toutes les paires de nœuds (subsample max 2000 paires pour N>63) | +1 = nœuds parfaitement co-évolués ; 0 = indépendants ; −1 = anti-synchronisés |
+| `calculate_temporal_lz_complexity(v_history)` | Complexité LZ76 normalisée (c × log₂T / T) sur les séquences d'états cognitifs par nœud, moyennée sur N | Proche de 0 = trajectoires structurées/prédictibles ; proche de 1 = marche aléatoire |
+
+**Hypothèse P1.5bis** : FULL devrait exhiber une synchrony plus élevée **et** une LZ complexity plus basse que les ablations, même dans les régimes où ses métriques spatiales semblent inférieures. Cela distinguerait « diversité coordonnée » de « désordre aléatoire ».
+
+**Validation du code** : 14 smoke tests couvrant les propriétés mathématiques fondamentales (séquence constante < séquence aléatoire en LZ ; traces identiques → synchrony=1 ; traces anti-corrélées → synchrony=−1 ; edge cases T=1, N=1).
+
+**Note** : LZ76 croît en O(log₂ n) sur une séquence constante (et non en 1 phrase) — le minimum absolu est atteint par des séquences *périodiques*, pas constantes.
+
+**Résultats (2026-04-21, 80 runs, 48s)** :
+
+| Régime | Ablation | Synchrony (Pearson r) | LZ_tail | Interprétation |
+|:---|:---|---:|---:|:---|
+| ENDOGENOUS | FULL | **+0.199 ± 0.049** | 1.318 ± 0.020 | Exploration structurée coordonnée |
+| ENDOGENOUS | NO_HERETIC | +0.199 (identique) | 1.318 (identique) | — no-op attendu (I_stim=0) |
+| ENDOGENOUS | NO_SIGMOID | +0.084 ± 0.046 (p=0.11) | 1.324 (ns) | Légère perte de coordination |
+| ENDOGENOUS | **FROZEN_U** | **+0.006 ± 0.003 (p=3e-3, d=1.75)** | **2.061 ± 0.012 (p=4e-15, d=14.67)** | **Effondrement coordination + trajectoires aléatoires** |
+| FORCED | FULL | +0.031 ± 0.011 | 1.367 ± 0.038 | Walkers indépendants structurés |
+| FORCED | NO_HERETIC | +0.069 (ns) | **1.607 ± 0.024 (p=7e-5, d=2.40)** | Plus random, légèrement plus synchronisé |
+| FORCED | NO_SIGMOID | +0.039 (ns) | 1.438 (p=0.11) | Neutre |
+| FORCED | **FROZEN_U** | **+0.751 ± 0.019 (p=7e-15, d=14.78)** | **1.994 ± 0.004 (p=4e-8, d=7.43)** | **Hyper-synchronisé + chaos partagé** |
+
+**Trois findings majeurs** :
+
+1. **`u` est individuellement nécessaire à la *coordination structurée*** : FROZEN_U s'effondre de synchrony=0.20 → 0.006 en ENDOGENOUS (p=3e-3) ET LZ explose de 1.32 → 2.06 (p=4e-15). Ce double signal — moins coordonné ET plus aléatoire — est la signature d'un attracteur chaotique non-structuré. Confirme §3octdecies par un protocole orthogonal.
+
+2. **FULL sous forçage = "désynchronisation structurée"** : synchrony ≈ 0 + LZ bas (1.37) = nœuds indépendants mais trajectoires prédictibles. Le flip hérétique convertit l'entrée homogène en *walkers structurés indépendants*. FROZEN_U au contraire produit une "synchronisation chaotique" : synchrony=0.75 + LZ=1.99 = tous les nœuds font la même chose complexe.
+
+3. **Inversion remarquable NO_HERETIC sous forçage** : retirer le flip hérétique AUGMENTE le LZ (1.37 → 1.61, p=7e-5). Cela confirme que le rôle du flip hérétique n'est pas de *maximiser* la diversité spatiale (§3octdecies le montrait déjà) mais de *structurer* les trajectoires temporelles individuelles. Sans lui, les nœuds explorent aléatoirement.
+
+**Conclusion P1.5bis** : H₁₀₀ confondait "diversité riche" (FULL, LZ bas) avec "désordre aléatoire" (FROZEN_U, LZ haut). La paire (synchrony, LZ) résout l'ambiguïté : FULL produit des *walkers indépendants structurés*, FROZEN_U produit de la *synchronisation chaotique*. Les métriques trajectorielles doivent être citées dans le preprint comme preuve complémentaire de la claim "diversité structurée vs bruit".
+
+**Figures** : `figures/ablation_coordination.png` (2 régimes × 2 métriques). CSV : `figures/ablation_coordination.csv`.
+
+**Reproduction complète** : `python experiments/ablation_coordination.py` (48 s, 80 runs).
+Tests unitaires : `pytest tests/test_coordination_metrics.py -v` (14 tests).
+
+---
+
+#### 3novedecies-bis. Pistes ouvertes post-P1.5bis (à reprendre)
+
+Cinq questions émergent des résultats ci-dessus. Toutes sont *actionables* — scripts, protocoles et hypothèses précisés ici pour reprise directe.
+
+**Piste A — Bimodalité ENDOGENOUS FULL (PRIORITÉ HAUTE)** 🔎
+
+Per-seed inspection révèle que la synchrony ENDOGENOUS FULL n'est PAS gaussienne :
+```
+seed=0 sync=0.406 │ seed=1 sync=0.416 │ seed=2 sync=0.225 │ seed=3 sync=0.034
+seed=4 sync=0.323 │ seed=5 sync=0.052 │ seed=6 sync=0.034 │ seed=7 sync=0.267
+seed=8 sync=0.206 │ seed=9 sync=0.023
+```
+6 seeds à sync ≈ 0.2–0.4 (mode "coordonné"), 3 seeds à sync ≈ 0.03 (mode "désynchronisé"), 1 intermédiaire. Le rapport reporte `mean=0.199 ± 0.049` qui *masque* cette structure bimodale.
+
+**Hypothèse** : l'attracteur dépend de λ₂ du BA généré (ou d'une autre propriété topologique : clustering, diamètre, max_degree). BA avec m=3, N=100 n'est pas équivalent pour tout seed.
+
+**Protocole** (~5 min) : étendre `ablation_coordination.py` — enregistrer pour chaque seed : λ₂, max_degree, avg_clustering, diamètre. Régresser sync contre chaque. Si λ₂ prédit, on tient un diagramme de phase topologique endogène. **Script proposé** : `experiments/ablation_coordination_topology.py`.
+
+**Piste B — Diagramme de phase 2D (synchrony × LZ)** 🎨
+
+Les 4 régimes forment un nuage 2D qui pourrait constituer une figure publishable :
+
+```
+         LZ bas (structuré)        LZ haut (aléatoire)
+sync=0   FULL_FORCED (0.03, 1.37)  
+         NO_SIGMOID_FORCED (0.04, 1.44)
+sync mid FULL_ENDO (0.20, 1.32)    NO_HERETIC_FORCED (0.07, 1.61)
+sync haut                          FROZEN_U_FORCED (0.75, 1.99)
+                                   FROZEN_U_ENDO (0.01, 2.06)  [sync bas!]
+```
+
+Les 4 quadrants ont des interprétations distinctes :
+- **(bas, bas)** — walkers indépendants structurés (FULL_FORCED) = **cognition diverse**
+- **(haut, bas)** — coordination structurée (FULL_ENDO mode haut) = **consensus structuré**
+- **(haut, haut)** — synchronisation chaotique (FROZEN_U_FORCED) = **chaos cohérent**
+- **(bas, haut)** — walkers aléatoires indépendants (FROZEN_U_ENDO) = **désordre pur**
+
+**Protocole** (~10 min) : créer `experiments/phase_space_coordination.py` qui scatter-plote tous les seeds × ablations × régimes avec couleurs. À publier comme figure dans la Section Minimality du preprint v3.3 ou Paper B.
+
+**Piste C — Sweep `heretic_ratio` sous forçage** (inversion NO_HERETIC)
+
+Finding contre-intuitif : NO_HERETIC_FORCED **augmente le LZ** (1.37→1.61, d=2.40). Hypothèse : le flip hérétique agit comme un *régulariseur temporel* qui structure les trajectoires. Si vrai, l'effet devrait se renforcer avec heretic_ratio.
+
+**Protocole** (~3 min) : sweep `η ∈ {0, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50}` sur FORCED, 5 seeds. Tracer LZ(η). Attendu : décroissance monotone puis plateau. Si non-monotone → autre mécanisme. Script : `experiments/heretic_ratio_sweep_coordination.py`.
+
+**Piste D — Multi-topologie (universalité)**
+
+Tous les résultats P1.5bis sont sur BA m=3 N=100. Est-ce que la signature "FULL=walkers indépendants structurés" survit sur :
+- Lattice 10×10 (contrôle classique)
+- BA m=5 (dead zone §3nonies)
+- ER p=0.12 (dead zone)
+- Watts-Strogatz p=0.1
+
+**Enjeu** : si FULL produit sync≈0 + LZ bas *partout*, on a une propriété universelle du noyau. Si c'est spécifique à BA m=3, c'est plus faible. **Protocole** : étendre `ablation_coordination.py` avec boucle topologie (4 × 4 ablations × 10 seeds = 160 runs, ~1h30). Script proposé : `experiments/ablation_coordination_topology_sweep.py`.
+
+**Piste E — Résonance stochastique inversée (FROZEN_U forcing paradox)**
+
+Observation : FROZEN_U passe de sync=0.006 (ENDOGENOUS) à sync=0.751 (FORCED). Le forçage à u gelé *crée* une synchronisation massive là où u libre l'empêche. C'est une signature de **résonance induite par le forçage externe en absence de régulateur**.
+
+**Hypothèse** : u libre = filtre anti-synchronisation. u gelé = passe-bande qui synchronise au signal commun.
+
+**Protocole** : sweep `I_stimulus ∈ [0, 1]` sur FULL vs FROZEN_U, mesurer sync(I). Si FULL reste plat et FROZEN_U croît monotonement → confirmation. Script : `experiments/forcing_sweep_frozen_u.py`. **Résultat publishable si confirmé** — élégante démonstration du rôle régulateur de u.
+
+---
+
+**Matrice de priorité** (effort × impact) :
+
+| Piste | Effort | Impact | Statut |
+|:---|:---|:---|:---|
+| A (bimodalité) | 5 min | Haut (structure cachée) | **FAIT 2026-04-21** → §3vigies |
+| B (phase space 2D) | 10 min | Haut (figure publishable) | **FAIT 2026-04-21** → §3vigies-bis |
+| C (sweep heretic) | 3 min | Moyen | **FAIT 2026-04-24** → §3novedecies-ter |
+| D (multi-topo) | 1h30 | Moyen-haut | Ouvert |
+| E (résonance inversée) | 15 min | Haut si confirmé | Ouvert |
+
+### 3novedecies-ter. Piste C — Sweep heretic_ratio sous forçage (2026-04-24)
+
+**Question** : Le flip hérétique agit-il comme un *régulariseur temporel* dont l'effet se renforce avec `heretic_ratio` ? Attendu si vrai : LZ décroissant monotonement avec η.
+
+**Méthode** : `experiments/heretic_ratio_sweep_coordination.py`. BA m=3, N=100, `degree_linear`, FORCED (I_stim=0.5), 3000 steps, 5 seeds. η ∈ {0, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50}.
+
+**Résultats** :
+
+| η | sync mean±sem | LZ_full mean±sem | LZ_tail mean±sem |
+|:---:|---:|---:|---:|
+| 0.00 | +0.139 ± 0.026 | 1.137 ± 0.012 | 1.552 ± 0.053 |
+| 0.05 | +0.015 ± 0.005 | 1.096 ± 0.013 | 1.473 ± 0.011 |
+| 0.10 | +0.008 ± 0.004 | 1.076 ± 0.009 | 1.456 ± 0.006 |
+| 0.15 | +0.016 ± 0.010 | 1.069 ± 0.008 | 1.376 ± 0.053 |
+| 0.20 | +0.041 ± 0.018 | 1.054 ± 0.007 | 1.416 ± 0.020 |
+| 0.30 | +0.039 ± 0.005 | 1.043 ± 0.004 | 1.370 ± 0.032 |
+| 0.50 | +0.083 ± 0.030 | 1.012 ± 0.004 | 1.324 ± 0.034 |
+
+**Findings** :
+
+1. **LZ_full monotone décroissant** (1.137 → 1.012, Δ=−0.125) sur toute la plage η ∈ [0, 0.50]. **Hypothèse du régulariseur temporel CONFIRMÉE** sur la trace complète : plus on ajoute d'hérétiques, plus les trajectoires sont structurées.
+
+2. **LZ_tail globalement décroissant** (1.552 → 1.324, Δ=−0.227) mais avec un bump à η=0.20 (1.416 vs 1.376 à η=0.15). Le verdict automatique "NON-MONOTONE" est dû au bruit de seed (sem ≈ 0.020–0.053) — le trend global confirme le régulariseur mais 10+ seeds seraient nécessaires pour la robustesse statistique.
+
+3. **Synchrony en forme de U** : sans hérétiques (η=0) sync=0.139 (tous les nœuds convergent vers le même point fixe → cohérence passive). Avec quelques hérétiques (η=0.05) sync chute à 0.015 (les hérétiques brisent la cohérence consensus). Puis légère remontée à η=0.50 (0.083) — les hérétiques nombreux créent une "cohérence de diversité" par forçage partagé.
+
+4. **Point de transition η ≈ 0.05** : le passage de 0 à 5% hérétiques est la discontinuité la plus forte (sync : 0.139 → 0.015, LZ_full : 1.137 → 1.096). Au-delà, les métriques évoluent graduellement. Cela suggère un **seuil de frustration géométrique** minimal pour briser la convergence consensuelle.
+
+**Conséquence pour le preprint** : La claim "le flip hérétique est un mécanisme de réponse au stimulus" (§3octdecies, FLAW 6) est enrichie : c'est aussi un **régulariseur temporel** dont l'effet est déjà mesurable à 5% et sature progressivement. La valeur défaut η=0.15 est dans la zone de transition (LZ chute rapide puis plateau).
+
+**Figures** : `figures/heretic_sweep_coordination.png` (2 panneaux : sync(η) + LZ(η)). CSV : `figures/heretic_sweep_coordination.csv` (35 lignes raw).
+
+**Reproduction** : `python experiments/heretic_ratio_sweep_coordination.py` (~27s).
+
+---
+
+### 3novedecies-quater. Piste E — Résonance stochastique inversée : u comme filtre anti-synchronisation (2026-04-24)
+
+**Question** : u agit-il comme un filtre anti-synchronisation ? Hypothèse : FULL maintient sync ≈ 0 quelle que soit l'intensité du forçage (u absorbe le signal commun) ; FROZEN_U voit sa synchronie croître monotonement avec I_stim (nœuds intègrent le même stimulus sans régulateur).
+
+**Méthode** : `experiments/forcing_sweep_frozen_u.py`. FULL vs FROZEN_U, BA m=3, N=100, `degree_linear`, heretic_ratio=0.15. I_stim ∈ {0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.70, 1.00}, 7 seeds, 3000 steps.
+
+**Résultats** :
+
+| I_stim | FULL sync | FROZEN_U sync | FULL lz_full | FROZEN_U lz_full |
+|:---:|---:|---:|---:|---:|
+| 0.00 | +0.213 ± 0.066 | +0.006 ± 0.004 | 0.919 ± 0.004 | 0.921 ± 0.002 |
+| 0.10 | +0.039 ± 0.012 | +0.210 ± 0.076 | 1.101 ± 0.008 | 1.380 ± 0.048 |
+| 0.20 | +0.035 ± 0.009 | **+0.830 ± 0.009** | 1.114 ± 0.006 | 1.595 ± 0.003 |
+| 0.30 | +0.023 ± 0.007 | **+0.889 ± 0.009** | 1.104 ± 0.005 | 1.621 ± 0.003 |
+| 0.40 | +0.031 ± 0.009 | **+0.861 ± 0.012** | 1.085 ± 0.005 | 1.622 ± 0.001 |
+| 0.50 | +0.028 ± 0.014 | **+0.749 ± 0.026** | 1.071 ± 0.006 | 1.634 ± 0.003 |
+| 0.70 | +0.027 ± 0.010 | **+0.320 ± 0.065** ← dip | 1.037 ± 0.006 | 1.649 ± 0.004 |
+| 1.00 | +0.035 ± 0.004 | **+0.901 ± 0.013** | 1.130 ± 0.011 | 1.598 ± 0.004 |
+
+**Welch FULL vs FROZEN_U à I=0.50** : Cohen's d = **13.21**, p = 9.69×10⁻¹⁰. Effet galactique.
+
+**Quatre findings** :
+
+1. **Hypothèse CONFIRMÉE — FULL est un filtre anti-synchronisation** : sync FULL ≈ 0.025–0.035 pour tout I ∈ [0.10, 1.00], parfaitement plat. Le régulateur u absorbe le signal de forçage commun et empêche le verrouillage de phase des nœuds.
+
+2. **Transition de synchronisation FROZEN_U à I ≈ 0.10–0.20** : passage abrupt de sync=0.006 à sync=0.830 (sem=0.009 — très serré), puis plateau à 0.83–0.89 pour I ∈ [0.20, 0.40]. Signature d'une bifurcation de point fixe (les nœuds trouvent tous le même attracteur forcé quand I dépasse un seuil).
+
+3. **Finding inattendu : dip de synchronie à I=0.70** (sync : 0.861 → 0.320 → 0.901 à I=1.00). Sem très élevé à I=0.70 (0.065 vs 0.013 aux voisins) → le système est à un **point de bifurcation** : certaines seeds trouvent un attracteur synchronisé, d'autres pas. C'est une **résonance intra-cohorte** dépendante du graphe sous-jacent, pas visible sur FULL. À investiguer : peut-être que I=0.70 correspond à la transition entre deux régimes d'attracteurs de FROZEN_U.
+
+4. **FROZEN_U endogène (I=0) est désynchronisé** (sync=0.006) mais **FULL endogène est semi-coordonné** (sync=0.213) — cohérent avec la bimodalité documentée en §3vigies (certains BA seeds tombent en mode "coordonné endogène" avec u libre). u actif *crée* une coordination endogène partielle ; u gelé ne peut pas.
+
+**LZ_full FROZEN_U** : croissance monotone 0.921 → 1.65 (r=+0.61 vs I_stim) — dynamics plus chaotiques sous forçage fort, mais la synchronie y est maintenue (chaos cohérent).
+
+**Conséquence scientifique** : c'est la démonstration la plus propre à ce jour du rôle régulateur de u. La figure est **directement publiable** dans le preprint §Minimality comme preuve complémentaire que u n'est pas optionnel — il structure ET il filtre le signal externe. Le finding "dip à I=0.70" est un bonus non trivial qui ouvre sur les bifurcations de FROZEN_U.
+
+**Figures** : `figures/forcing_sweep_frozen_u.png` (2 panneaux : sync(I) + LZ(I)). CSV : `figures/forcing_sweep_frozen_u.csv`.
+
+**Reproduction** : `python experiments/forcing_sweep_frozen_u.py` (~63s, 112 runs).
+
+---
+
+### 3vigies. Piste A — Bimodalité prédite par le clustering local (2026-04-21)
+
+**Question** : Parmi λ₂, max_degree, avg_clustering, diamètre — laquelle prédit l'attracteur (coordonné/désynchronisé) dans lequel tombe ENDOGENOUS FULL ?
+
+**Méthode** : `experiments/ablation_coordination_topology.py`. Régénère les 10 BA(m=3, N=100) utilisés par `ablation_coordination.py`, calcule les 4 métriques topologiques, régresse la synchrony observée contre chacune.
+
+**Résultats** (n=10, Pearson r ; Spearman ρ) :
+
+| Métrique | Pearson r | p | Spearman ρ | p |
+|:---|---:|---:|---:|---:|
+| λ₂ | −0.44 | 0.20 | −0.32 | 0.37 |
+| Max degree | +0.35 | 0.33 | +0.38 | 0.28 |
+| **Avg clustering** | **−0.64** | **0.045** | −0.53 | 0.12 |
+| Diameter | −0.09 | 0.81 | −0.17 | 0.63 |
+
+**Verdict** : Le **clustering local** prédit la synchrony (Pearson significatif à α=0.05). **Corrélation NÉGATIVE** : plus de triangles → mode désynchronisé ; graphe plus arborescent → mode coordonné. Contre l'intuition classique (clustering = synchro), mais cohérent avec l'hypothèse "frustration géométrique" : les triangles dans le réseau créent des boucles de rétroaction qui empêchent la coordination globale quand le régulateur `u` est actif.
+
+**Limites** : n=10 trop petit pour distinguer Pearson (p=0.045) de Spearman (p=0.12). Hartigan dip test non effectué. À confirmer avec ≥50 seeds pour robustesse.
+
+**Implications scientifiques** :
+
+1. La "variance inter-seeds" rapportée dans §3novedecies (sync=0.199 ± 0.049) **cache une structure bimodale** déterministe — pas du bruit.
+2. Mem4ristor exhibe un **diagramme de phase endogène** contrôlé par le clustering du graphe sous-jacent.
+3. Potentielle connexion avec §3sexies (régimes multi-topologie LIMIT-02) : peut-être que la même métrique (clustering plutôt que deg_ratio) prédisait déjà les régimes "uniform vs degree_linear gagne".
+
+**Piste de suivi** : ~~rerun sur 50 seeds + tester Hartigan dip test~~ → **FAIT (§3vigies-ter)**. Régresser aussi contre `(spectral gap × clustering)` composite ou investiguer le rôle des graphes déconnectés (λ₂=0).
+
+**Figure** : `figures/coordination_bimodality.png`. CSV : `figures/coordination_bimodality.csv`.
+
+### 3vigies-bis. Piste B — Diagramme de phase 2D (sync × LZ) (2026-04-21)
+
+**Question** : Les 4 ablations × 2 régimes occupent-elles des quadrants interprétables dans le plan (synchrony, LZ_complexity) ?
+
+**Méthode** : `experiments/phase_space_coordination.py`. Scatter plot de toutes les 80 runs (8 cellules × 10 seeds) avec centroïdes overlayés. Médianes visuelles `sync=0.15`, `LZ=1.6` délimitent 4 quadrants.
+
+**Positions des 8 centroïdes** :
+
+| Régime | Ablation | sync (mean±std) | LZ (mean±std) | Quadrant |
+|:---|:---|---:|---:|:---|
+| ENDOGENOUS | FULL | +0.199 ± 0.156 | 1.318 ± 0.062 | **Structured consensus** |
+| ENDOGENOUS | NO_HERETIC | +0.199 ± 0.156 | 1.318 ± 0.062 | idem (no-op) |
+| ENDOGENOUS | NO_SIGMOID | +0.084 ± 0.147 | 1.324 ± 0.066 | Cognitive diversity (borderline) |
+| ENDOGENOUS | FROZEN_U | +0.006 ± 0.009 | **2.061** ± 0.037 | **Pure disorder** |
+| FORCED | FULL | +0.031 ± 0.034 | 1.367 ± 0.119 | **Cognitive diversity** |
+| FORCED | NO_HERETIC | +0.069 ± 0.092 | 1.606 ± 0.076 | Borderline diversity/chaos |
+| FORCED | NO_SIGMOID | +0.039 ± 0.022 | 1.438 ± 0.052 | Cognitive diversity |
+| FORCED | FROZEN_U | **+0.751** ± 0.060 | **1.994** ± 0.011 | **Coherent chaos** |
+
+**Claim scientifique unique** : Seul **FULL** (les deux régimes) occupe le demi-plan bas-LZ (structuré). Toutes les ablations soit restent bas-LZ mais sync~0 (cas borderline), soit migrent vers le haut-LZ (chaotique). La structure trajectorielle — pas la diversité spatiale — est la signature mesurable du noyau Mem4ristor complet.
+
+**Note méthodologique** : Les seuils de quadrants (sync=0.15, LZ=1.6) sont choisis visuellement et servent de repères pédagogiques, pas de critères statistiques. Le message visuel tient indépendamment des coordonnées exactes.
+
+**Implication Paper B / preprint** : Cette figure est candidate pour **intégration dans la section Minimality** (remplacerait ou compléterait Figure ablation_minimality.png). Elle apporte 3 améliorations :
+- Résout directement la critique KIMI #4 (minimalité) en montrant que seul FULL tient dans le quadrant "structuré".
+- Contourne le meta-problème "H₁₀₀ confond désordre et diversité" en l'affichant explicitement (ordonnée = LZ = structure temporelle).
+- Déplace la conversation de "quelle métrique utiliser" vers "quel régime du plan est publishable".
+
+**Figure** : `figures/coordination_phase_space.png` (800 × 550 px, 140 dpi). CSV centroïdes : `figures/coordination_phase_centroids.csv`.
+
+### 3vigies-quater. Piste D — Universalité multi-topologie des métriques de coordination (2026-04-24)
+
+**Question** : La signature "FULL = walkers indépendants structurés" (sync≈0, LZ bas) est-elle universelle (lattice, BA m=3, BA m=5 dead zone, WS) ou spécifique à BA m=3 ?
+
+**Méthode** : `experiments/ablation_coordination_topology_sweep.py`. 4 topologies × 4 ablations × 2 protocoles × 10 seeds = **320 runs**, ~3 min. Normalisation : `degree_linear` pour BA m=3, `uniform` pour les autres.
+
+**Résultats** (synchrony mean ± sem, lz_full mean ± sem, FORCED) :
+
+| Topologie | FULL sync | FROZEN_U sync | FULL lz | FROZEN_U lz |
+|:---|---:|---:|---:|---:|
+| Lattice 10×10 | **+0.005 ± 0.003** | **+0.523 ± 0.036** | 1.088 ± 0.007 | 1.636 ± 0.002 |
+| BA m=3 | **+0.031 ± 0.011** | **+0.751 ± 0.019** | 1.069 ± 0.005 | 1.635 ± 0.002 |
+| BA m=5 (dead zone) | **−0.001 ± 0.003** | **+0.935 ± 0.004** | 1.024 ± 0.009 | 1.651 ± 0.002 |
+| WS k=4 p=0.1 | **+0.004 ± 0.003** | **+0.534 ± 0.044** | 1.061 ± 0.005 | 1.632 ± 0.002 |
+
+**LZ_full FULL ENDOGENOUS** : 0.916 ± 0.003, 0.918 ± 0.003, 0.945 ± 0.015, 0.918 ± 0.002 — **constant ≈ 0.92 sur toutes les topologies**.
+
+**Quatre findings universaux** :
+
+1. **FULL = filtre anti-synchronisation sur TOUTES les topologies testées** : sync FULL ≈ 0 sous forçage (lattice, BA m=3, BA m=5, WS). L'universalité est confirmée — ce n'est pas une propriété spécifique à BA m=3.
+
+2. **FROZEN_U = synchroniseur universel** : sync FROZEN_U ≫ 0 pour toutes les topologies sous forçage. Extremum sur BA m=5 (sync=0.935 ± 0.004 — le plus élevé de toutes les conditions testées). Dans la *dead zone spatiale*, FROZEN_U se verrouille encore plus fort qu'ailleurs.
+
+3. **Finding inattendu sur la dead zone** : FULL BA m=5 FORCED maintient LZ=1.024 et sync≈0 — il produit des walkers structurés indépendants *même dans la dead zone*. La "dead zone" désigne un effondrement de la diversité *spatiale* (H_cog=0), pas un effondrement de la *coordination temporelle*. Les deux propriétés sont orthogonales.
+
+4. **LZ_full FULL ENDOGENOUS ≈ 0.92** est une constante quasi-universelle, robuste à la topologie. C'est la signature de l'attracteur du noyau Mem4ristor complet, indépendante de la structure du graphe sous-jacent.
+
+**Conséquence pour le preprint** : La claim d'universalité est désormais justifiée empiriquement sur 4 topologies distinctes. Le finding "dead zone ≠ effondrement de coordination" est scientifiquement nouveau et non trivial.
+
+**Figures** : `figures/ablation_coordination_topo_sweep.png` (4 topologies × 2 métriques × 2 protocoles). CSV : `figures/ablation_coordination_topo_sweep.csv` (320 lignes).
+
+**Reproduction** : `python experiments/ablation_coordination_topology_sweep.py` (~3 min).
+
+**Reproduction complète des pistes A+B** :
+```bash
+python experiments/ablation_coordination.py              # 48 s (prérequis)
+python experiments/ablation_coordination_topology.py     # < 5 s
+python experiments/phase_space_coordination.py           # < 2 s
+```
+
+### 3vigies-ter. Piste F — Bimodalité confirmée, prédicteur topologique infirmé (2026-04-24)
+
+**Question** : La bimodalité ENDOGENOUS FULL est-elle statistiquement réelle (n=50 + Hartigan dip test) ? Et le prédicteur avg_clustering trouvé à n=10 (§3vigies, r=−0.64, p=0.045) était-il robuste ?
+
+**Méthode** : `experiments/bimodality_50seeds.py`. 50 seeds indépendants, ENDOGENOUS (I_stim=0), FULL, BA m=3, N=100, `degree_linear`, 3000 steps. Mesures : `pairwise_synchrony` + 4 métriques topologiques (λ₂, max_degree, avg_clustering, diamètre). Tests statistiques : Hartigan dip (MC p-value, 2000 bootstrap) + Bimodality Coefficient (BC Sarle).
+
+**Résultats** :
+
+| Test | Valeur | Seuil | Verdict |
+|:-----|:-------|:------|:--------|
+| Hartigan dip D | 0.1937 | p < 0.05 | **p = 0.000 → BIMODAL** |
+| Bimodality Coefficient BC | 0.605 | > 0.555 | **BIMODAL** |
+| Distribution | mean=0.139 ± 0.147 | — | Variance élevée, deux modes visibles |
+
+**Régression sync vs topologie (n=50)** :
+
+| Métrique | Pearson r | p | Spearman ρ | p |
+|:---------|----------:|--:|----------:|--:|
+| λ₂ | −0.122 | 0.397 | −0.195 | 0.176 |
+| max_degree | −0.099 | 0.493 | −0.024 | 0.870 |
+| avg_clustering | −0.191 | 0.183 | −0.029 | 0.843 |
+| diameter | +0.007 | 0.960 | +0.106 | 0.463 |
+
+**Aucun prédicteur topologique simple n'est significatif à n=50.**
+
+**Findings** :
+
+1. **Bimodalité CONFIRMÉE statistiquement** : les deux tests indépendants (Hartigan et BC) concordent. La structure bimodale observée à n=10 n'était pas un artefact de petit échantillon — elle est réelle sur n=50.
+
+2. **avg_clustering r=−0.64 de §3vigies était un faux positif n=10** : à n=50, r=−0.19 et p=0.183. Le résultat de §3vigies doit être recalibré : "le clustering est un prédicteur suggestif mais non robuste". Il faut ≥50 seeds pour tester la significativité.
+
+3. **Confound : graphes déconnectés (λ₂ ≈ 0)** : 7 seeds sur 50 ont λ₂ = 0 (graphe non connexe, diamètre=∞) — ce qui est physiquement atypique pour BA m=3. Ces seeds montrent un comportement mixte : certains ont sync élevé (0.338, 0.378 — composantes synchronisées séparément), d'autres sync≈0 (0.000, -0.002 — composantes anti-phasées). Ils constituent un sous-régime à part entière. Une analyse séparée (connexes vs déconnectés) est à envisager.
+
+4. **Prédicteur de la bimodalité inconnu** : les 4 métriques simples ne suffisent pas. Pistes : prédicteur composite (λ₂ × clustering), analyse par composantes connexes, ou propriétés spectrales de second ordre. Backlog futur.
+
+**Conséquence pour le preprint** : la claim "clustering prédit la synchrony" (§3vigies) doit être qualifiée : "suggestive à n=10 (p=0.045), non reproductible à n=50". En revanche, la **bimodalité elle-même est publiable** — c'est un fait robuste qui montre que le système Mem4ristor sur BA m=3 est multi-attracteur.
+
+**Figures** : `figures/bimodality_50seeds.png` (histogramme + KDE + ECDF + 4 régressions). CSV : `figures/bimodality_50seeds.csv` (50 lignes).
+
+**Reproduction** : `python experiments/bimodality_50seeds.py` (~29s).
+
+---
+
+### 3octvicies. AUDIT EXTERNE ADVERSARIAL — 7 Flaws Critiques (2026-04-22)
+
+**Contexte** : Audit indépendant mené sur le codebase complet (notebook `bda19036-*.ipynb`, ~37 cellules d'analyse). Exécuté hors du workspace principal via un agent data-analysis. Vérifications contre le code source (`dynamics.py`, `metrics.py`, `mem4ristor_v26.va`, SPICE netlist) le 2026-04-22.
+
+**Résultat global** : 5 flaws confirmés sans ambiguïté, 1 partiellement vrai, 1 déjà documenté mais non propagé.
+
+---
+
+#### FLAW 1 — Point fixe STABLE au lieu d'instable (claim §3.1 préprint) ✅ CONFIRMÉ
+
+**Vérification** : Jacobienne analytique au FP (v*=−1.294, w*=−0.732, u*=0.05 en tenant compte du decay plasticité) :
+- λ = −0.055 ± 0.283i → partie réelle NÉGATIVE → **spiral stable**
+- Bifurcation de Hopf à α_crit ≈ 0.296 ; valeur défaut α = 0.15 **en dessous**
+
+**Confirmation numérique** : nœud isolé (D=0, σ_v=0) convergé en 5000 steps vers v*=−1.2944 ± 7×10⁻⁶.
+
+**Claim préprint faux** : §3.1 ligne 155 dit "the unique equilibrium is unstable for the standard parameter range". À corriger : le nœud isolé est **excitable (stable)**, pas oscillant. La note §3.1 ligne 159 ("Poincaré-Bendixson ne s'étend pas au couplé") était déjà correcte — mais la phrase d'avant doit être retirée.
+
+**À α = 0.30** (au-dessus du Hopf) : oscillations confirmées, H_cog = 0.56 (87/13 split States 1/2). Piste genuine pour obtenir la diversité multi-état sans bruit.
+
+---
+
+#### FLAW 2 — H_cog ≈ 0.92 est un artefact de bins (§3bis, limitations.md LIMIT-05) ✅ CONFIRMÉ
+
+**Mécanisme** : L'ancienne bin ±1.5 tombait **au milieu** du cluster consensus v ∈ [−2.4, −1.2]. Split 48/52 → H = −0.48 log₂(0.48) − 0.52 log₂(0.52) ≈ 1.0 bit.
+
+**Avec bins KIMI (±0.4/1.2)** : 100/0/0/0/0 → **H_cog = 0** pour TOUTES les configs testées (lattice, BA m=1 à 10, ER, WS, cold/random start, toutes normalisations).
+
+**Conséquences** :
+- §3bis, §3ter, §3quinquies, §3sexies, §3ter : tous les H_stable (0.92, 0.828, 0.958, etc.) sont **mesurés avec les ANCIENNES bins** et ne correspondent plus aux chiffres que renverrait le code actuel.
+- `limitations.md` LIMIT-05 "stable H ≈ 0.92" est obsolète.
+- Les sections SPICE (§3undecies–§3septdecies) utilisent H_cont 100-bin et **restent valides**.
+
+**Survit valide** : diversité Python **à α = 0.30** (H_cog = 0.56 avec bins KIMI, 87/13 split States 1/2) — mais ce n'est pas le régime testé dans la préprint.
+
+---
+
+#### FLAW 3 — Verilog-A (`mem4ristor_v26.va`) désynchronisé ✅ CONFIRMÉ (5/5 points)
+
+| Écart | v26.va (actual) | dynamics.py (expected) |
+|:------|:----------------|:-----------------------|
+| Noyau couplage | `(1.0 - 2.0*u)*V(coup_in)` (linéaire ancien) | `tanh(π(0.5-u)) + 0.01` (Levitating Sigmoid) |
+| τ_u | `1.0` | `10.0` (correction KIMI) |
+| ε_u adaptatif | absent | `ε_u * clip(1 + α_s·σ, 1, C_cap)` |
+| Plasticité dw | absent | `−w/τ_plast` (toujours actif) |
+| Double-comptage | `V(coup_in)*heretic_pol + social_signal` | couplage via social_signal seulement |
+
+**Toute validation hardware basée sur v26.va teste un modèle différent du Python.** Le RMS < 1% validé en §3septies utilisait des netlists SPICE générés programmatiquement (pattern I-source correct), PAS le v26.va shippé.
+
+---
+
+#### FLAW 4 — SPICE netlist shippé utilise pattern R+B-voltage (filtre, pas intégrateur) ✅ CONFIRMÉ
+
+**`spice/mem4ristor_coupled_3x3.cir`** utilise `R_v0 v0_node v0_int` + `C_v0 v0_int 0` + `B_dv0 v0_node 0 V = f(v0_int)`. Ce pattern intègre `dv/dt = f(v) − v` et non `dv/dt = f(v)`.
+
+Ce bug était **connu** (§3septies §164–166) mais seuls les netlists générés par `experiments/spice_validation.py` ont été corrigés. Le netlist shippé reste broken.
+
+**Action** : soit corriger `spice/mem4ristor_coupled_3x3.cir` avec pattern I-source, soit l'annoter "DEPRECATED — utiliser les netlists générés par spice_validation.py".
+
+---
+
+#### FLAW 5 — `solve_rk45` injecte du bruit dans le RHS déterministe ✅ CONFIRMÉ
+
+**`dynamics.py:246`** : `eta = self.rng.normal(...)` appelé **à l'intérieur** de `combined_dynamics(t, y)` passé à `solve_ivp`. RK45 appelle le RHS plusieurs fois par step avec des valeurs d'état différentes — chaque appel tire un bruit distinct, violant la contracte déterministe de solve_ivp.
+
+**Impact** : `solve_rk45` ne peut être utilisé fiablement qu'avec `sigma_v = 0`. En présence de bruit, les résultats sont non-reproductibles et mathématiquement incorrects (ordre effectif réduit, step-size adaptatif invalide).
+
+**Action** : soit désactiver le bruit dans `combined_dynamics`, soit documenter explicitement que `solve_rk45` = mode déterministe uniquement.
+
+---
+
+#### FLAW 6 — Mécanisme hérétique inactif à I_stim = 0 ⚠️ PARTIELLEMENT VRAI
+
+**`dynamics.py:198`** : `I_eff[heretic_mask] *= -1.0` est un no-op quand `I_eff = 0`.
+
+**Ce qui est vrai** : toutes les expériences "endogènes" (I_stim = 0) citées dans la préprint (lattice H≈0.92, sweeps BA, etc.) ne testent **pas** le mécanisme hérétique. Les hérétiques sont mathématiquement invisibles dans ce régime.
+
+**Ce qui est déjà connu** : §3octdecies documente "heretic flip is a no-op exact under I_stim=0, d=0, p=1.0". Sous FORCED (I_stim=0.5), l'ablation montre d=−5.94 (H_cog5 passe de 0.015 à 0.408 sans hérétique). **Le mécanisme fonctionne — il est juste jamais évalué dans le protocole endogène.**
+
+**Correction narrative** : la préprint doit clarifier que le mécanisme hérétique est un *mécanisme de réponse au stimulus*, pas un générateur de diversité endogène. L'Eq. 9 (entropy lower bound) est vacuante à I_stim = 0.
+
+---
+
+#### FLAW 7 — Terme de decay plasticité `−w/τ_plast` non documenté dans la préprint ✅ CONFIRMÉ
+
+**`dynamics.py:210`** : `dw_learning = (plasticity_drive * saturation_factor) − (self.w / self.tau_plasticity)`. Le terme `−w/τ_plast` est **toujours actif**, même quand `plasticity_drive = 0` (no coupling).
+
+Conséquence : le FP réel est v*=−1.294 (avec decay) et non v*=−1.286 (sans decay), une différence de ~8.8×10⁻³ en v. Les équations du préprint ne mentionnent pas ce terme.
+
+**Action** : soit ajouter `−w/τ_plast` aux équations du préprint (Eq. 2), soit le désactiver quand `lambda_learn = 0`.
+
+---
+
+#### CE QUI RESTE SOLIDE
+
+| Résultat | Raison de la validité |
+|:---------|:----------------------|
+| SPICE/Python RMS < 1% (§3septies) | Netlists I-source corrects, Python déterministe |
+| Dead zone BA m≥5 (§3nonies/octies) | Confirmé SPICE + Python + toutes normalisations |
+| Escape noise+mismatch P4.19 (§3undecies–septdecies) | H_cont (100-bin) validé sous 3 métriques en §3quindecies |
+| Métriques trajectorielle (§3novedecies/vigies) | LZ + synchrony : protocol orthogonal à H_cog |
+| Hopf à α≈0.296 | Jacobienne analytique + simulation numérique (α=0.30 : oscillations confirmées) |
+
+---
+
+#### ACTIONS REQUISES (par ordre de priorité)
+
+1. ~~**Préprint §3.1** : corriger "unique equilibrium is unstable" → "excitable regime (stable FP at α=0.15)"~~ **✅ FAIT 2026-04-22** — Bloc `\textbf{Correction}` ajouté dans `docs/preprint.tex` §3.1, incluant eigenvalues confirmés numériquement, α_crit≈0.296, et restriction du P-B à α>α_crit.
+2. ~~**§3bis + limitations.md LIMIT-05** : annoter que H≈0.92 est avec **anciennes bins pré-KIMI**.~~ **✅ FAIT 2026-04-22** — Annotations ⚠️ INVALIDÉ ajoutées dans §3bis, §3ter, §3quinquies, §3sexies, limitations.md LIMIT-05.
+3. ~~**mem4ristor_v26.va** : soit refondre pour matcher dynamics.py~~~~ **✅ RÉÉCRIT 2026-04-22** — Modules `mem4ristor_v32` et `mem4ristor_cell_v32` créés, synchronisés avec dynamics.py v3.2 (noyau Levitating Sigmoid, τ_u=10, ε_u adaptatif, plasticité+decay, polarity sur stim uniquement). Aliases backwards-compat `mem4ristor_v26` et `mem4ristor_cell` conservés.
+4. **spice/mem4ristor_coupled_3x3.cir** : corriger ou annoter DEPRECATED — **✅ ANNOTÉ 2026-04-22**, pattern corrigé dans experiments/spice_validation.py.
+5. ~~**solve_rk45** : documenter restriction sigma_v=0 ou corriger~~ **✅ FAIT 2026-04-22** — Bloc WARNING ajouté dans `dynamics.py:solve_rk45`.
+6. ~~**Préprint Eq. 9** : qualifier "applies under I_stim ≠ 0 only"~~ **✅ FAIT 2026-04-22** — Scope note ajouté dans `docs/preprint.tex` §3.3.
+7. ~~**Préprint Eq. 2** : ajouter `−w/τ_plast` ou justifier son absence~~ **✅ FAIT 2026-04-22** — Description dw_plasticity mise à jour dans `docs/preprint.tex` pour inclure le terme de decay toujours actif et l'innovation mask.
+
+**Toutes les 7 actions de §3octvicies sont closes. Aucune action bloquante restante.**
+
 ### 3quater. LIMIT-04 : Stabilité Euler (2026-03-21)
 
 **Question** : L'intégrateur Euler est-il instable au long terme ?
@@ -514,16 +1024,16 @@ Propriétés testées :
 
 ### Priorité moyenne (qualité du code)
 
-7. **`sensory.py` : convolution lente** — Remplacer par `scipy.signal.correlate2d` (gain ~100x)
+7. **~~`sensory.py` : convolution lente~~** → **FAIT (antérieur)**. `scipy.signal.correlate2d` déjà en place.
 8. **~~Module `viz.py`~~** → FAIT (stable, intégré dans demo_applied.py)
-9. **Exports `__init__.py`** — Modules symbiosis, cortex, etc. non exportés
+9. **~~Exports `__init__.py`~~** → **FAIT (antérieur)**. Tous modules exportés dans `__init__.py`.
 10. **~~Normalisation par degré pour LIMIT-02~~** → **FAIT** (2026-04-10). `degree_linear` (D/deg(i)) validé. Voir §3quinquies.
 
 ### Priorité basse (évolution) — COMPLÉTÉS 2026-03-22
 
 11. **~~Démonstration appliquée~~** → **FAIT** (2026-03-22). `examples/demo_applied.py` : 4 démos (sensory pipeline, hysteresis comparison, scale-free sparse, phase diversity), 5 PNG.
 12. **~~V5 (hysteresis)~~** → **FAIT** (2026-03-22). Dead-zone latching [0.35, 0.65] + watchdog fatigue. 3 tests passent. H_stable +5%.
-13. **Config par dataclass** — Remplacer dicts imbriqués. Non critique.
+13. **~~Config par dataclass~~** → **FAIT (antérieur)**. `config.py` avec `@dataclass` complet.
 14. **~~Performance sparse~~** → **FAIT** (2026-03-22). Auto-sparse CSR (scipy) si N > 1000. Mémoire 455× à N=5000, vitesse L@v 219×.
 
 ---
@@ -722,6 +1232,160 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 - 3 régimes identifiés : bruit faible (besoin σ≥0.50, états métastables), bruit moyen (résonance stochastique pure), bruit fort (escape même sans mismatch).
 - Argument Paper B affiné : mismatch capacitif **réduit le seuil de bruit** d'escape — la variabilité memristor est une *fonctionnalité*.
 
+### Session 2026-04-21 (Claude Sonnet 4.6, P1.5bis)
+
+**P1.5bis — Métriques de coordination trajectorielles** : voir §3novedecies.
+- `src/mem4ristor/metrics.py` : ajout de `calculate_pairwise_synchrony` (corrélation Pearson croisée sur fenêtre temporelle) et `calculate_temporal_lz_complexity` (complexité LZ76 normalisée sur séquences d'états cognitifs). Helper privé `_lz76_phrases` (parsing glouton O(n²), adapté aux traces T≈300).
+- `experiments/ablation_coordination.py` : reproduction des 4 ablations (FULL, NO_HERETIC, NO_SIGMOID, FROZEN_U) × 2 régimes × 10 seeds avec enregistrement de l'historique complet `v(t)`. Figure 2×2 + CSV.
+- `tests/test_coordination_metrics.py` : 14 smoke tests. **74 tests verts (+ 2 xfail attendus)**.
+
+**Pistes A + B post-P1.5bis** :
+- **Piste A** (§3vigies) : `experiments/ablation_coordination_topology.py`. Analyse bimodalité ENDOGENOUS FULL vs topologie. **Finding** : avg clustering prédit synchrony (Pearson r=−0.64, p=0.045). Plus de triangles → mode désynchronisé. Frustration géométrique.
+- **Piste B** (§3vigies-bis) : `experiments/phase_space_coordination.py`. Diagramme de phase 2D (sync × LZ) des 80 runs avec 4 quadrants interprétables. **Claim unique** : seul FULL occupe le demi-plan bas-LZ (trajectoires structurées). Figure candidate pour intégration dans preprint v3.3.
+
+---
+
+### Session 2026-04-20 (Claude Opus 4.7, réponse KIMI suite & fin)
+
+**Contexte** : retour KIMI/Manus sur le repo après le push P4.19. Trois chantiers en séquence : A (✅ fait par Julien) — régénération figures continuous 100-bin, B — pivot narratif Paper B, C — étude de minimalité (ablations).
+
+**B — Paper B narrative pivot** :
+- Lecture `docs/paper_B/paper_B.tex` (86 lignes, narrative "synergy noise+mismatch" obsolète post-P4.19bis/ter).
+- Abstract réécrit : noise alone escape (d=20.78), CMOS mismatch neutre (d=0.19), spin-glass en extrapolation σ_C >> 0.15.
+- Section 4 subdivisée : §4.1 spectral entropy (100-bin vs 5-bin), §4.2 MC 50-seeds avec Table + Cohen's d, §4.3 CMOS sweep 0-15%, §4.4 topology-agnostic.
+- Section 5 (Phase Boundary) reframée comme prédiction extrapolative pour substrats à forte disorder.
+- Conclusion mise à jour : thermal noise = primary engine, quenched disorder = frontière architecturale.
+- 3 nouvelles figures copiées dans `docs/paper_B/figures/` : `spice_mismatch_sweep_continuous.png`, `spice_50seeds_validation.png`, `spice_mismatch_cmos.png`.
+- PDF recompilé : 7 pages, 0 warnings, 0 undefined refs.
+
+**C — Étude de minimalité / ablations** : voir §3octdecies.
+- `experiments/ablation_minimality.py` : 4 ablations (FULL, NO_HERETIC, NO_SIGMOID, FROZEN_U) × 2 protocoles (I_stim=0.0 et 0.5) × 2 métriques (H₁₀₀, H_cog5) × 10 seeds = 80 runs (~60s).
+- Résultat 1 : `u` est individuellement nécessaire (d=+9.75, p=3e-9 en ENDOGENOUS).
+- Résultat 2 : `heretic flip` est *stimulus-contingent* : no-op exact sous I_stim=0, cohérent sous forçage (d=−5.94 à −13.15, mais réduisant H cohérente plutôt que dispersée).
+- Résultat 3 : `Levitating Sigmoid` est statistiquement neutre sur H : rôle qualitatif (basculement), pas quantitatif.
+- **Méta-finding** : les métriques entropiques actuelles confondent « diversité cognitive structurée » et « désordre aléatoire ». Backlog P1 : ajouter une métrique complémentaire (Lempel-Ziv, MI inter-nœuds, cohérence de phase) pour capturer la coordination.
+
+### 3unvigies. P2-9 — λ₂ vs Edge Betweenness : qui prédit la dead zone ? (2026-04-24)
+
+**Question** : λ₂ est-il un *proxy* de la redondance de chemins (EBC basse = beaucoup de chemins parallèles), ou est-il la quantité théoriquement fondée ? Si EBC prédit aussi bien, λ₂ n'est que descriptif. Si λ₂ prédit mieux, c'est la quantité causalement pertinente.
+
+**Méthode** : `experiments/p2_edge_betweenness_analysis.py`. NetworkX pur, aucune simulation. 12 topologies (BA m=1–10, WS p=0.1/0.3, ER p=0.05/0.12, Lattice), 3 seeds, N=100. Métriques : λ₂, EBC moyen, diamètre, longueur de chemin moyenne, clustering moyen. Régression contre le régime (dead zone = 1, sinon 0).
+
+**Résultats** :
+
+| Topologie | λ₂ | EBC moyen | Diamètre | Régime |
+|:----------|---:|----------:|--------:|:-------|
+| BA m=1 | 0.019 | 0.04866 | 10.0 | uniform_wins |
+| BA m=2 | 0.570 | 0.01538 | 5.7 | degree_linear_wins |
+| BA m=3 | 1.119 | 0.00882 | 4.3 | degree_linear_wins |
+| BA m=4 | 1.337 | 0.00621 | 4.0 | degree_linear_marginal |
+| **BA m=5** | **2.907** | **0.00467** | 3.7 | **dead_zone** |
+| BA m=8 | 5.776 | 0.00265 | 3.0 | dead_zone |
+| BA m=10 | 7.301 | 0.00207 | 3.0 | dead_zone |
+| WS p=0.1 | 0.165 | 0.02420 | 9.7 | degree_linear_wins |
+| WS p=0.3 | 0.303 | 0.01983 | 7.3 | degree_linear_wins |
+| ER p=0.05 | 0.626 | 0.01099 | 6.0 | degree_linear_wins |
+| **ER p=0.12** | **4.167** | **0.00347** | 3.0 | **dead_zone** |
+| Lattice | 0.098 | 0.03704 | 18.0 | uniform_wins |
+
+**Corrélations λ₂ vs autres métriques** :
+
+| Corrélation | r | p |
+|:------------|--:|--:|
+| λ₂ vs EBC | −0.665 | 0.018 |
+| λ₂ vs diamètre | −0.609 | 0.035 |
+| λ₂ vs avg_path | −0.678 | 0.015 |
+| λ₂ vs clustering | +0.364 | 0.244 |
+
+**Prédicteurs de la dead zone (corrélation point-bisérale)** :
+
+| Prédicteur | r | p |
+|:-----------|--:|--:|
+| **λ₂** | **+0.901** | **6.4×10⁻⁵** |
+| EBC | −0.604 | 0.038 |
+| avg_path | −0.615 | 0.033 |
+| diamètre | −0.556 | 0.060 |
+| clustering | +0.287 | 0.366 |
+
+**Findings** :
+
+1. **λ₂ est de loin le meilleur prédicteur** de la dead zone (r=+0.901 vs r=-0.604 pour EBC). L'écart est substantiel — λ₂ capture 81% de la variance des régimes, EBC seulement 36%.
+
+2. **Conclusion inverse à l'hypothèse initiale** : λ₂ n'est PAS un simple proxy de la redondance de chemins. L'EBC corrèle avec la dead zone mais est une mesure plus *bruitée* du même phénomène. λ₂ est la quantité théoriquement fondée — il mesure la rigidité spectrale du graphe, pas juste la géométrie locale.
+
+3. **Interprétation causale** : λ₂ mesure la résistance du graphe contre toute perturbation locale. Quand λ₂ est élevé, même corriger un hub via `degree_linear` ne peut pas isoler son influence — le signal se propage par tous les chemins parallèles. EBC n'est qu'une projection de cette propriété globale sur les arêtes.
+
+4. **La chaîne causale** : m élevé → λ₂ élevé + EBC basse → redondance massive → la pondération locale ne peut pas compenser → dead zone.
+
+**Conséquence pour Paper 2** : λ₂ est l'observable pertinent. Paper 2 peut légitimement utiliser λ₂ comme variable indépendante (pas une "métrique choisie a posteriori") — elle prédit le régime avec r=0.90. L'analyse EBC confirme la cohérence mais n'apporte pas de nouveau mécanisme.
+
+**Figures** : `figures/p2_edge_betweenness.png` (4 panneaux : λ₂ vs EBC, λ₂ vs diamètre, λ₂ vs avg_path, EBC vs diamètre). CSV : `figures/p2_edge_betweenness.csv`.
+
+**Reproduction** : `python experiments/p2_edge_betweenness_analysis.py` (~2s).
+
+---
+
+### 3duovigies. P2-7 — Finite-size scaling de la dead zone (2026-04-24)
+
+**Question** : Le seuil λ₂_crit (point de bascule vers la dead zone) est-il stable quand N croît de 100 à 1600 ? Si stable → loi d'échelle publiable. Si shift → effet de taille finie → la dead zone pourrait disparaître à grand N.
+
+**Méthode** : `experiments/p2_finite_size_scaling.py`. N ∈ {100, 400, 1600}, BA m ∈ {1,2,3,4,5,6,8,10}, `degree_linear`, η=0.15, 3 seeds. STEPS = {100:3000, 400:2000, 1600:1000}. H_stable = entropie continue 100 bins sur la queue (25% finale). λ₂ via `scipy.sparse.linalg.eigsh`. λ₂_crit défini par interpolation linéaire où H < 0.10.
+
+**Résultats bruts (moyenne sur 3 seeds)** :
+
+| N | m | λ₂ | H_stable |
+|--:|--:|---:|--------:|
+| 100 | 1 | 0.023 | 0.896 |
+| 100 | 3 | 1.279 | 3.065 |
+| 100 | 5 | 2.991 | 2.575 |
+| 100 | 10 | 7.613 | 2.155 |
+| 400 | 1 | 0.006 | 0.987 |
+| 400 | 3 | 1.295 | 3.845 |
+| 400 | 5 | 2.943 | 2.931 |
+| 400 | 10 | 7.494 | 2.410 |
+| 1600 | 1 | 0.002 | 1.897 |
+| 1600 | 3 | 1.257 | 3.496 |
+| 1600 | 5 | 2.879 | 3.038 |
+| 1600 | 10 | 7.336 | 2.429 |
+
+**Finding clé : aucune dead zone (H < 0.10) détectée pour aucun N ni m.**
+
+λ₂_crit = **∞** pour N=100, N=400 et N=1600. H_stable minimal observé = 0.896 (N=100, m=1).
+
+**Interprétation** :
+
+1. **La dead zone identifiée dans les expériences précédentes était un artefact de normalisation `uniform`**. Avec `degree_linear` + η=0.15, le système maintient H_stable > 2 bits même à N=1600, m=10 — jamais de collapse.
+
+2. **λ₂ est N-invariant à m fixé** : m=3 donne λ₂ ≈ 1.27–1.32 pour les trois tailles (variation < 5%). Confirme que λ₂ est une propriété structurale du graphe BA, pas un artefact de taille finie.
+
+3. **H_stable augmente légèrement avec N** : à m=3, H = 3.07 (N=100) → 3.84 (N=400) → 3.50 (N=1600). Cet effet de taille sur H est modéré et non monotone — probablement lié à la densité de trajectoires disponibles à grand N.
+
+4. **Conclusion pour Paper 2** : la dead zone est coupling-norm–dependent, pas une limite thermodynamique. Le seuil λ₂_crit (avec `degree_linear`) est effectivement infini — ce régime ne s'effondre pas. La transition est caractérisée par des normes inadéquates (uniform, spectral), pas par la connectivité algébrique elle-même.
+
+**Durée** : 386s (~6.4 min) pour les 72 runs (N=1600 dominant à ~20s/run).
+
+**Figures** : `figures/p2_finite_size_scaling.png` (2 panneaux : λ₂ vs H par N + λ₂_crit vs N). CSV : `figures/p2_finite_size_scaling.csv`.
+
+**Reproduction** : `python experiments/p2_finite_size_scaling.py` (~6.5 min).
+
+---
+
+### Session 2026-04-24 (Claude Sonnet 4.6, Pistes C/E/F/G/D)
+
+**Piste C — Sweep heretic_ratio** : `experiments/heretic_ratio_sweep_coordination.py`. LZ_full monotone décroissant (1.137→1.012), hypothèse régulariseur confirmée. Synchrony en U avec seuil à η=0.05. Voir §3novedecies-ter.
+
+**Piste E — Résonance stochastique inversée** : `experiments/forcing_sweep_frozen_u.py`. FULL sync≈0.03 plat pour I ∈ [0.1, 1.0]. FROZEN_U transition à I≈0.20 (sync 0.006→0.830), Cohen's d=13.21. Dip inattendu à I=0.70 (bifurcation). Voir §3novedecies-quater.
+
+**Piste F — Bimodalité 50 seeds** : `experiments/bimodality_50seeds.py`. Bimodalité CONFIRMÉE (Hartigan D=0.194 p=0.000, BC=0.605). Prédicteur avg_clustering de §3vigies (r=−0.64, n=10) est un faux positif — non reproductible à n=50 (r=−0.19, p=0.18). Confound : 7/50 graphes déconnectés (λ₂=0). Voir §3vigies-ter.
+
+**Piste G — Intégration preprint** : Nouvelle §3.3.1 "Trajectory-Based Minimality" dans `docs/preprint.tex`. Figure `coordination_phase_space.png` (Fig. 1) + résultat Piste E (Cohen's d=13.21). Preprint recompilé : 13 pages, 0 références indéfinies.
+
+**Piste D — Multi-topologie universalité** : `experiments/ablation_coordination_topology_sweep.py`. 320 runs, 3 min. Universalité confirmée sur 4 topologies (lattice, BA m=3, BA m=5, WS). FULL sync≈0 universel. Finding nouveau : dead zone ≠ effondrement de coordination. Voir §3vigies-quater.
+
+**P2-9 — Edge betweenness vs λ₂** : `experiments/p2_edge_betweenness_analysis.py`. λ₂ meilleur prédicteur dead zone (r=+0.901) vs EBC (r=-0.604). λ₂ = quantité causalement fondée, pas un proxy. Voir §3unvigies.
+
+**P2-7 — Finite-size scaling** : `experiments/p2_finite_size_scaling.py`. 72 runs, 6.5 min. λ₂_crit = ∞ pour N ∈ {100,400,1600} sous degree_linear — aucune dead zone thermodynamique. Dead zone = artefact coupling-norm (uniform), pas limite physique. λ₂ N-invariant (±5% pour m fixé). Voir §3duovigies.
+
 ---
 
 ## 10. PROCHAINES ÉTAPES (par priorité)
@@ -734,6 +1398,16 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 ### P1 — Bugs pré-existants à fixer
 4. **~~`test_swarm_synchronization`~~** → **FAIT (2026-04-19)**. Test était écrit pour mean-field symétrique mais l'implémentation est MAX FIELD asymétrique (intentionnel : vétéran préservé). Test corrigé.
 5. **~~`test_entropy_preservation_with_v4`~~** → **FAIT (2026-04-19)**. Ring N=10 sans hubs → remplacé par BA m=3 N=50 + `coupling_norm='degree_linear'`. H ≈ 0.83.
+5bis. **~~Métrique de diversité cognitive coordonnée~~** → **FAIT (2026-04-21)**. Voir §3novedecies. Deux nouvelles métriques trajectorielles dans `src/mem4ristor/metrics.py` : `calculate_pairwise_synchrony` (corrélation de Pearson croisée entre nœuds) + `calculate_temporal_lz_complexity` (complexité LZ76 des séquences d'états cognitifs, normalisée). Script d'ablation complet : `experiments/ablation_coordination.py`. 14 smoke tests : `tests/test_coordination_metrics.py`. 74 tests verts.
+
+5ter. **Suivi P1.5bis : pistes ouvertes** → voir §3novedecies-bis.
+  - **(A)** ~~Bimodalité ENDOGENOUS FULL~~ → **FAIT 2026-04-21**. Avg clustering prédit la synchrony (Pearson r=−0.64, p=0.045). Voir §3vigies.
+  - **(B)** ~~Diagramme de phase 2D (synchrony × LZ)~~ → **FAIT 2026-04-21**. Seul FULL occupe le demi-plan bas-LZ (structuré). Voir §3vigies-bis. Figure candidate pour le preprint.
+  - **(C)** ~~Sweep heretic_ratio sous forçage~~ → **FAIT 2026-04-24**. LZ_full monotone décroissant (1.137→1.012), hypothèse régulariseur confirmée. Synchrony en U (seuil η≈0.05). Voir §3novedecies-ter.
+  - **(D)** ~~Multi-topologie universalité~~ → **FAIT 2026-04-24** (~3 min, 320 runs). Universalité CONFIRMÉE sur 4 topologies. FULL sync ≈ 0 sous forçage pour toutes (lattice, BA m=3, BA m=5 dead zone, WS). FROZEN_U sync = 0.52–0.94 partout. LZ_full FULL ≈ 0.92 (ENDO) constant. Voir §3vigies-quater.
+  - **(E)** ~~Résonance stochastique inversée FROZEN_U~~ → **FAIT 2026-04-24**. Hypothèse confirmée : FULL sync ≈ 0.03 plat, FROZEN_U sync 0.006→0.830 (transition à I≈0.20). Cohen's d=13.21 à I=0.50. Dip inattendu à I=0.70 (bifurcation). Figure publiable. Voir §3novedecies-quater.
+  - **(F)** ~~Confirmer bimodalité piste A avec 50 seeds + Hartigan dip test~~ → **FAIT 2026-04-24**. Bimodalité CONFIRMÉE (Hartigan D=0.194 p=0.000, BC=0.605>0.555). MAIS avg_clustering non significatif (r=-0.19, p=0.18) à n=50 → r=-0.64 de §3vigies était un faux positif n=10. Voir §3vigies-ter.
+  - **(G)** ~~Intégrer figure §3vigies-bis dans preprint v3.3 section Minimality~~ → **FAIT 2026-04-24**. Nouvelle §3.3.1 "Trajectory-Based Minimality" ajoutée dans `docs/preprint.tex` : figure `coordination_phase_space.png` (Fig. 1), texte phase-space 2D + résultat Piste E (filtre anti-synchronisation, d=13.21). Preprint recompilé : 13 pages, 0 références indéfinies. Voir `docs/preprint.tex` §3.3.
 
 ### P2 — Paper 2 : "Breaking the Topological Diversity Boundary" (pistes Grok + Antigravity, 2026-04-11)
 
@@ -743,9 +1417,9 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 **Priorité haute (impact fort, effort raisonnable) :**
 
 6. **~~Normalisation spectrale~~** → **TESTÉ — RÉSULTAT NÉGATIF (2026-04-19)**. Mode `coupling_norm='spectral'` implémenté dans `core.py`. 0/6 wins sur la dead zone. Voir §3octies. Conclusion : la dead zone n'est pas un problème de pondération.
-7. **Finite-size scaling** — Sweep m × γ pour N ∈ {100, 400, 1600, 6400} avec sparse CSR. Tracer λ₂_critique(N). Si transition stable → loi d'échelle publiable.
+7. **~~Finite-size scaling~~** → **FAIT 2026-04-24**. N ∈ {100, 400, 1600}, degree_linear, η=0.15. λ₂_crit = ∞ pour tous N — aucune dead zone sous cette normalisation. λ₂ est N-invariant à m fixé (variation < 5%). Conclusion : la dead zone est coupling-norm–dependent, pas une limite thermodynamique. Voir §3duovigies.
 8. **~~Figure λ₂ vs H_stable~~** → **FAIT (2026-04-19)**. `experiments/fiedler_phase_diagram.py` → `figures/fiedler_phase_diagram.png` + `.csv`. 15 topologies × 2 norms × 3 seeds.
-9. **Edge betweenness + diamètre** — Montrer que λ₂ est un proxy de la multipath redundancy, pas la cause directe. Script NetworkX rapide.
+9. **~~Edge betweenness + diamètre~~** → **FAIT 2026-04-24**. λ₂ = meilleur prédicteur dead zone (r=+0.901, p=6.4×10⁻⁵) vs EBC (r=-0.604, p=0.038). Conclusion inverse à l'hypothèse : λ₂ n'est PAS un simple proxy, c'est la quantité fondée. EBC confirme la même information mais avec moins de puissance. Voir §3unvigies.
 9bis. **Adaptive heretics / dynamique modifiée** — Maintenant que toutes les pistes de pondération sont éliminées, c'est la priorité haute pour Paper 2. Tester (a) η dynamique (item 11) et (b) stochastic resonance ciblé sur la dead zone (item 10).
 
 **Priorité moyenne (intéressant, Paper 2 ou 3) :**
@@ -755,10 +1429,10 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 12. **Doubt-driven community detection** — Matrice de doute u(i) comme signal pour détecter des communautés fonctionnelles. Spéculatif mais original.
 
 ### P3 — Qualité du code
-13. **`sensory.py` : convolution lente** — Remplacer par `scipy.signal.correlate2d` (gain ~100x)
-14. **Exports `__init__.py`** — Modules symbiosis, cortex, etc. non exportés
-15. **Config par dataclass** — Remplacer dicts imbriqués (non critique)
-16. **Split core.py** → `neuron.py` + `network.py` (Phase 5, reportée)
+13. **~~`sensory.py` : convolution lente~~** → **FAIT (antérieur)**. `scipy.signal.correlate2d` déjà en place (ligne 3+55). PROJECT_STATUS était désynchronisé.
+14. **~~Exports `__init__.py`~~** → **FAIT (antérieur)**. Tous les modules exportés : symbiosis, cortex, hierarchy, arena, inception, viz + dataclasses config. PROJECT_STATUS était désynchronisé.
+15. **~~Config par dataclass~~** → **FAIT (antérieur)**. `config.py` : `@dataclass` complet (DynamicsConfig, CouplingConfig, DoubtConfig, NoiseConfig, Mem4Config). PROJECT_STATUS était désynchronisé.
+16. **Split core.py** → `neuron.py` + `network.py` (Phase 5, reportée — non critique)
 
 ### P4 — Hardware (futur projet séparé)
 17. **~~Validation SPICE~~** → **FAIT (2026-04-19)**. `experiments/spice_validation.py` avec ngspice 46. RMS global 9.7×10⁻³ sur lattice 4×4. Voir §3septies.

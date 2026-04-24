@@ -7,7 +7,9 @@
 | Hardware mapping | ❌ SPECULATION | None | No SPICE model exists | NO (unfalsifiable) |
 | Long-term stability | ⚠️ NUANCED — INVESTIGATED | dt=0.05 stable | "Drift" is transient convergence, not instability | YES (see LIMIT-04 below) |
 | Cross-platform parity | ✅ FIXED | Yes | MKL Non-determinism | YES (v3.0 fix) |
-| H ≈ 1.94 Attractor | ❌ FALSE — INVESTIGATED | No | Stable H ≈ 0.92, transient peaks ≈ 2.31 | YES (see LIMIT-05 below) |
+| H ≈ 1.94 Attractor | ❌ FALSE — INVESTIGATED | No | Stable H ≈ 0.92 (*with pre-KIMI bins ±0.8/1.5*). With current KIMI bins (±0.4/1.2): H_cog = 0.00 at default params. See LIMIT-05 and AUDIT-2026-04-22 | YES (see LIMIT-05 below) |
+| Isolated node unstable (preprint §3.1) | 🚨 FALSE — AUDIT 2026-04-22 | No | Jacobian eigenvalues −0.055 ± 0.283i → stable spiral at α=0.15. Hopf at α_crit≈0.296 only. See §3octvicies | YES |
+| Heretics active at I_stim=0 | 🚨 VACUOUS — AUDIT 2026-04-22 | No | I_eff[heretic_mask]*=−1 is no-op when I_stim=0. All "endogenous" preprint experiments do not test the heretic mechanism. | YES |
 
 **Rule**: Any claim marked ❌ MUST be qualified as "Phenomenological" or "Speculative" in the preprint.
 
@@ -199,12 +201,14 @@ A 4-phase parameter sweep was conducted with 800+ parameter combinations across 
 **Key findings**:
 1. **Transient peaks reach H ≈ 2.31** (99.7% of theoretical max) — but these are fleeting states during system evolution, not attractors
 2. **Best sustained H ≈ 1.48 ± 0.66** — achievable with weak coupling (D=0.01) + external stimulus (I=1.0), but with HIGH variance (system oscillates between high and low entropy)
-3. **Default paper config sustains H ≈ 0.92 ± 0.04** — this is the true stable attractor for published parameters
+3. **Default paper config sustains H ≈ 0.92 ± 0.04** — this is the true stable attractor for published parameters **with pre-KIMI bins (±0.8/1.5)**
 4. **No parameter combination produces a stable H ≈ 1.94** — the claim is definitively false as an attractor
 
+> ⚠️ **AUDIT UPDATE 2026-04-22**: All H values above were measured with **pre-KIMI bin boundaries (±0.8, ±1.5)**. With the current code (`metrics.py` KIMI bins ±0.4/1.2), H_cog = 0.00 for ALL tested configurations at default parameters. The pre-KIMI bins straddled the consensus cluster (v ∈ [−2.4, −1.2]) at the −1.5 boundary, producing an artificial 48/52 split. This is confirmed by the external audit (§3octvicies PROJECT_STATUS). The SPICE-based results (§3undecies–§3septdecies) use H_cont 100-bin continuous entropy and remain valid.
+
 **Conclusion**: The H ≈ 1.94 value was likely measured during a transient peak rather than at steady state. The preprint should be corrected:
-- Replace "H ≈ 1.94 attractor" with "H ≈ 0.92 (stable) with transient peaks up to 2.3"
-- Or, with optimal parameters (D=0.01, I_stimulus=1.0): "H ≈ 1.48 ± 0.66 (sustained, high variance)"
+- Replace "H ≈ 1.94 attractor" with "H ≈ 0.92 (stable) with transient peaks up to 2.3" *(note: this 0.92 was measured with pre-KIMI bins)*
+- With current metrics: H_cog = 0 at default params; genuine multi-state diversity (H_cog ≈ 0.56) requires α ≈ 0.30 (near Hopf bifurcation)
 
 **Reproduction**: Scripts in `experiments/entropy_sweep/` (sweep + stability analysis).
 - **Status**: INVESTIGATED. Claim MUST be revised.
