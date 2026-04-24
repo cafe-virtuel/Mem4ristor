@@ -1438,6 +1438,50 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 
 ---
 
+### 3octvigies. Item 12 — Doubt-Driven Community Detection : RESULTAT PARTIEL / INTERESSANT (2026-04-25)
+
+**Question** : La matrice de correlation Pearson des traces u(t) porte-t-elle une information sur les communautes fonctionnelles du reseau ? Les noeuds qui oscillent en phase dans leur niveau de doute appartiendraient-ils au meme attracteur cognitif ?
+
+**Methode** : `experiments/p2_doubt_community_detection.py`. Record de u_history (T=2500, N) apres warm-up. Pearson C_u (N×N) sur numpy pur. Seuillage |C_u| > 0.3 → graphe doubt-affinity. Louvain (NetworkX 3.5) sur doubt-affinity et sur graphe structural. NMI custom (numpy, sans sklearn) entre les deux partitions. Topologies : Lattice 10x10, BA m=3 N=100. I_stim=0.5, coupling_norm='degree_linear', 3 seeds. Duree : 7.9s.
+
+**Resultats** :
+
+| Topo | seed | #comm_doubt | #comm_struct | NMI | doubt_edges |
+|:-----|-----:|:-----------:|:------------:|:---:|:-----------:|
+| Lattice | 42 | 24 | 8 | 0.263 | 1729 |
+| Lattice | 123 | 23 | 8 | 0.291 | 1769 |
+| Lattice | 777 | 34 | 8 | 0.341 | 1583 |
+| **Lattice** | **mean** | — | — | **0.298** | — |
+| BA m=3 | 42 | 17 | 7 | 0.192 | 434 |
+| BA m=3 | 123 | 17 | 7 | 0.170 | 416 |
+| BA m=3 | 777 | 23 | 9 | 0.335 | 336 |
+| **BA m=3** | **mean** | — | — | **0.232** | — |
+
+**Deux regimes u au sein des communautes du doute (seed=42, lattice) :**
+
+| Type | Taille | mean_u | std_u | mean_v | Interpretation |
+|:-----|:------:|:------:|:------:|:------:|:--------------|
+| Grands groupes (2x) | 36-42 | 0.953-0.958 | 0.04-0.07 | -1.36 a -1.49 | Noeuds "frustres" oscillant en phase |
+| Singletons (22x) | 1 | 1.000 | 0.000 | -2.6 environ | Heretiques satires au doute maximal |
+
+**Findings** :
+
+1. **Hypothese partiellement confirmee** : NMI ~ 0.23-0.30 indique une correlation faible-moderate entre les communautes u et les communautes structurelles. Le signal est reel mais faible.
+
+2. **Deux populations u distinctes** : (a) noeuds heretiques satires a u=1.0 (variance nulle → isoles dans le graphe doubt-affinity → singletons); (b) noeuds frustres avec oscillations u correlees → 1-2 grands groupes qui transcendent les frontieres structurelles.
+
+3. **Les communautes u operent a une echelle plus grossiere que la topologie** : sur lattice 10x10, les 8 communautes structurelles se projettent sur seulement 2 grands groupes u + 22 singletons. Le doute homogenise les differences topologiques locales.
+
+4. **Coherence avec Piste A4 (MI decorrelateur)** : u reduit la MI inter-noeuds → les communautes u mesurent en fait QUELS noeuds sont co-frustres, pas qui oscille ensemble dans l'espace-v. Ce n'est pas redondant avec les communautes structurelles, c'est complementaire.
+
+5. **Limite methodologique** : le seuil theta=0.3 cree beaucoup de singletons (heretiques). Un theta plus bas (0.1) absorberait les heretiques dans des super-groupes, mais au prix de bruit. L'ajustement du seuil est un parametre de l'analyse.
+
+**Interpretation narrative** : Le doute constitutionnel u forme des "bassins de frustration collective" qui traversent les frontieres topologiques. C'est coherent avec le role de u comme mecanisme d'homogeneisation de la frustration — il synchronise le doute de noeuds structurellement eloignes qui subissent le meme regime de stimulation. NMI ~ 0.25 signifie qu'environ 25% de l'information communautaire topologique est presente dans la partition u.
+
+**Figures** : `figures/p2_doubt_community_detection.png` (2x3 : heatmap C_u + communautes-doute + communautes-struct, par topo). CSV : `figures/p2_doubt_community_detection.csv`.
+
+---
+
 ### 3sexvigies. Piste A4 — Information Mutuelle Spatio-Temporelle : RESULTAT POSITIF (2026-04-24)
 
 **Question** : La MI entre noeuds voisins vs distants revele-t-elle une longueur de correlation caracteristique du regime FULL ?
@@ -1623,7 +1667,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 10. **Stochastic resonance** — Sweep σ_noise × λ₂ : le bruit optimal dépend-il de la topologie ? Analogie avec spin glasses biologiques.
 11. **Adaptive heretics** — η dynamique : nœuds deviennent hérétiques si u_i > 0.8 pendant >100 pas. Auto-régulation. Pourrait supprimer la dead zone sans changer la topologie. ⚠️ Change le modèle fondamentalement → v4.0.
-12. **Doubt-driven community detection** — Matrice de doute u(i) comme signal pour détecter des communautés fonctionnelles. Spéculatif mais original.
+12. **Doubt-driven community detection** — ✅ CLOTURE (2026-04-25). NMI~0.25 (partiel). Deux regimes u : heretiques satures u=1.0 (singletons) + noeuds frustres oscillants (grands groupes transcendant la topologie). Voir §3octvigies.
 
 ---
 
@@ -1673,7 +1717,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 13. **~~`sensory.py` : convolution lente~~** → **FAIT (antérieur)**. `scipy.signal.correlate2d` déjà en place (ligne 3+55). PROJECT_STATUS était désynchronisé.
 14. **~~Exports `__init__.py`~~** → **FAIT (antérieur)**. Tous les modules exportés : symbiosis, cortex, hierarchy, arena, inception, viz + dataclasses config. PROJECT_STATUS était désynchronisé.
 15. **~~Config par dataclass~~** → **FAIT (antérieur)**. `config.py` : `@dataclass` complet (DynamicsConfig, CouplingConfig, DoubtConfig, NoiseConfig, Mem4Config). PROJECT_STATUS était désynchronisé.
-16. **Split core.py** → `neuron.py` + `network.py` (Phase 5, reportée — non critique)
+16. **~~Split core.py~~** → **DÉJÀ FAIT (refactoring KIMI)**. `dynamics.py` = neurone, `topology.py` = réseau. `core.py` est une façade de 26 lignes pour la rétrocompatibilité. Rien à faire.
 
 ### P4 — Hardware (futur projet séparé)
 17. **~~Validation SPICE~~** → **FAIT (2026-04-19)**. `experiments/spice_validation.py` avec ngspice 46. RMS global 9.7×10⁻³ sur lattice 4×4. Voir §3septies.
