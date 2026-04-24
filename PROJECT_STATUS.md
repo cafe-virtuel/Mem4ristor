@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor v3.2.0
-**Dernière mise à jour : 2026-04-24**
+**Dernière mise à jour : 2026-04-25**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -1438,6 +1438,46 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 
 ---
 
+### 3novemvigies. Item 10 — Stochastic Resonance x Topology : RESULTAT NEGATIF / INSTRUCTIF (2026-04-25)
+
+**Question** : Pour chaque topologie (lambda2 = connectivite algebrique), existe-t-il un sigma_noise optimal sigma* qui maximise H_cog (resonance stochastique) ? sigma* depend-il systematiquement de lambda2 ?
+
+**Methode** : `experiments/p2_stochastic_resonance_topology.py`. 7 topologies (BA m=2/3/5/8 N=100, Lattice 10x10, ER p=0.05/0.10), sigma sweep [0, 0.01, 0.03, 0.07, 0.15, 0.30, 0.50, 0.80, 1.20], coupling_norm='degree_linear', I_stim=0.5, 3 seeds. Injection bruit via `sigma_v_vec=np.full(N, sigma)`. Metriques : H_cog, H_cont, LZ, sync. Duree : 171s.
+
+**Topologies et lambda2 (seed=42) :**
+
+| Topo | lambda2 | sigma* | H_cog(sigma*) |
+|:-----|:-------:|:------:|:-------------:|
+| Lattice 10x10 | 0.382 | 1.200 | 0.647 |
+| ER p=0.05 | 0.528 | 1.200 | 0.450 |
+| BA m=2 | 0.625 | 1.200 | 0.658 |
+| BA m=3 | 1.413 | 1.200 | 0.265 |
+| ER p=0.10 | 2.568 | 1.200 | 0.001 |
+| BA m=5 | 2.990 | 1.200 | 0.006 |
+| BA m=8 | 5.864 | 0.000 | 0.000 |
+
+Correlation Pearson(sigma*, lambda2) = -0.854 (mais artefact de saturation — sigma* sature a 1.2 pour 6/7 topos).
+
+**Findings** :
+
+1. **Pas de pic SR classique dans [0, 1.2]** : pour les topologies faible-lambda2 (BA m=2, Lattice, ER p=0.05), H_cog augmente de facon monotone avec sigma. Pas de cloche de resonance — le bruit est toujours benefique dans cette gamme.
+
+2. **Zone morte robuste au bruit pour lambda2 > 2.5** : BA m=5 (lambda2=2.99), BA m=8 (5.86), ER p=0.10 (2.57) ont H_cog ~ 0 sur tout le sweep, meme a sigma=1.2. Le couplage synchronisant est plus fort que n'importe quel bruit teste. Confirme et etend Piste A1.
+
+3. **lambda2_crit ~ 2.5 : seuil de rescousse** : en-dessous, le bruit recupere toujours de la diversite cognitive. Au-dessus, le bruit est inefficace. Ce seuil est coherent avec le predicateur lambda2 de la dead zone (r=+0.901, §3unvigies).
+
+4. **BA m=3 est au bord** : lambda2=1.41, H_cog(sigma=0) ~ 0.016 (effondrement sans bruit), H_cog(sigma=1.2) = 0.265 — le bruit aide mais le rescousse incompletement. Coherent avec la bifurcation tau_u (§3quatervigies) : tau_u=10 place le systeme au bord.
+
+5. **Relation veritable** : c'est H_cog(sigma_max) vs lambda2 qui est robuste (forte decroissance avec lambda2), pas sigma* vs lambda2 (artefact). La quantite scientifiquement pertinente est **la capacite maximale de diversite cognitive recuperable par le bruit**, qui est une fonction decroissante de lambda2.
+
+6. **Pas de SR au sens strict** : la resonance stochastique classique (amelioration d'un signal sous-seuil par bruit optimal) n'est pas le bon cadre ici. Le mecanisme est plutot : bruit = decorrelateur supplementaire qui compete avec le couplage synchronisant. Si lambda2 est trop eleve, le couplage gagne quelle que soit l'intensite du bruit dans la gamme testee.
+
+**Consequence** : l'hypothese de "bruit optimal topologie-dependant" est infirmee dans sa forme naive. La vraie relation est une dichotomie : lambda2 < lambda2_crit → bruit benefique (mais pas de pic, juste amelioration monotone) ; lambda2 > lambda2_crit → bruit inefficace. Pas de parametre sigma* a optimiser.
+
+**Figures** : `figures/p2_stochastic_resonance_topology.png` (H_cog/LZ/sync vs sigma par topo + scatter sigma* vs lambda2). CSV : `figures/p2_stochastic_resonance_topology.csv`.
+
+---
+
 ### 3octvigies. Item 12 — Doubt-Driven Community Detection : RESULTAT PARTIEL / INTERESSANT (2026-04-25)
 
 **Question** : La matrice de correlation Pearson des traces u(t) porte-t-elle une information sur les communautes fonctionnelles du reseau ? Les noeuds qui oscillent en phase dans leur niveau de doute appartiendraient-ils au meme attracteur cognitif ?
@@ -1665,7 +1705,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 **Priorité moyenne (intéressant, Paper 2 ou 3) :**
 
-10. **Stochastic resonance** — Sweep σ_noise × λ₂ : le bruit optimal dépend-il de la topologie ? Analogie avec spin glasses biologiques.
+10. **Stochastic resonance** — ✅ CLOTURE (2026-04-25). Pas de SR classique. Dichotomie lambda2 : < 2.5 → bruit benefique monotone ; > 2.5 → zone morte resistante au bruit. Voir §3novemvigies.
 11. **Adaptive heretics** — η dynamique : nœuds deviennent hérétiques si u_i > 0.8 pendant >100 pas. Auto-régulation. Pourrait supprimer la dead zone sans changer la topologie. ⚠️ Change le modèle fondamentalement → v4.0.
 12. **Doubt-driven community detection** — ✅ CLOTURE (2026-04-25). NMI~0.25 (partiel). Deux regimes u : heretiques satures u=1.0 (singletons) + noeuds frustres oscillants (grands groupes transcendant la topologie). Voir §3octvigies.
 
