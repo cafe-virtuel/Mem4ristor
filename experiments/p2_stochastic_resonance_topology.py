@@ -40,7 +40,7 @@ from mem4ristor.metrics import (
 
 # -- Parametres ---------------------------------------------------------------
 SIGMAS  = [0.0, 0.01, 0.03, 0.07, 0.15, 0.30, 0.50, 0.80, 1.20]
-SEEDS   = [42, 123, 777]
+SEEDS   = [42, 123, 777]  # TODO(A2): increase to [42, 123, 777, 456, 999] for publication — heavy (~30 min)
 I_STIM  = 0.5
 STEPS   = 3000
 WARM_UP = 750
@@ -96,7 +96,7 @@ def get_topologies(seed):
     for m in [2, 3, 5, 8]:
         adj = make_ba(N, m, seed)
         topos.append({
-            'name':   f'BA_m{m}',
+            'name':   f'ba_m{m}',
             'adj':    adj,
             'lambda2': compute_lambda2(adj),
         })
@@ -104,7 +104,7 @@ def get_topologies(seed):
     # Lattice 10x10
     adj_lat = make_lattice(10)
     topos.append({
-        'name':   'Lattice_10x10',
+        'name':   'lattice',
         'adj':    adj_lat,
         'lambda2': compute_lambda2(adj_lat),
     })
@@ -112,7 +112,7 @@ def get_topologies(seed):
     for p in [0.05, 0.10]:
         adj = make_er(N, p, seed)
         topos.append({
-            'name':   f'ER_p{int(p*100):02d}',
+            'name':   f'er_p{int(p*100):02d}',
             'adj':    adj,
             'lambda2': compute_lambda2(adj),
         })

@@ -58,7 +58,7 @@ N_SIZES = [100, 400, 1600]
 BA_MS = [1, 2, 3, 4, 5, 6, 8, 10]
 
 STEPS_BY_N = {100: 3000, 400: 2000, 1600: 1000}
-SEEDS = [0, 1, 2]
+SEEDS = [0, 1, 2]  # TODO(A2): increase to [0, 1, 2, 3, 4] for publication — heavy (N=1600 runs)
 TAIL_FRAC = 0.25
 TRACE_STRIDE = 10
 

@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor v3.2.0
-**Dernière mise à jour : 2026-04-25**
+**Dernière mise à jour : 2026-04-26**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -1795,7 +1795,7 @@ Correlation Pearson(sigma*, lambda2) = -0.854 (mais artefact de saturation — s
 
 **Figures** : `figures/p2_tau_u_bifurcation.png` (4 panneaux : H_cog, sync, f_dom, peak_power vs tau_u, 2 topologies). CSV : `figures/p2_tau_u_bifurcation.csv`.
 
-**Duree** : 62s (60 runs : 10 tau_u × 2 topos × 3 seeds).
+**Duree** : 87s (100 runs : 10 tau_u × 2 topos × 5 seeds). *(n augmenté de 3 → 5 lors de l'audit A2, session 2026-04-26)* BA m=3 n=5 : H_cog 0.006–0.059 pour tau_u < 20, 0.357 à tau_u=50, 1.052 à tau_u=100. Lattice : H_cog 0.515 à tau_u=0.05, minimum ~0.364 à tau_u=2, 1.174 à tau_u=100. Bifurcation confirmée.
 
 ---
 
@@ -1864,7 +1864,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 1. **SS_NOISE ≈ FULL et SS_STATIC ≈ FULL** : remplacer sigma_social par du bruit pur ou par une constante provoque des delta < 2% sur H_cog et sync. Le reseau est INSENSIBLE au contenu informationnel de sigma_social — Manus §1.4 partiellement confirme.
 
-2. **FROZEN_U radicalement different** : supprimer le mouvement de u entraine une hypersynchronisation massive (sync : 0.063 → 0.782, +1143%) et une diversite cognitive spurieuse (H_cog : 0.02 → 0.99, cycles FHN libres visitent plus d'etats). Sans u comme modulateur, le reseau oscille en FHN classique couple.
+2. **FROZEN_U radicalement different** : supprimer le mouvement de u entraine une hypersynchronisation massive (sync : 0.067 → 0.730, +985% avec n=5 seeds) et une diversite cognitive spurieuse (H_cog : 0.02 → 1.07, cycles FHN libres visitent plus d'etats). Sans u comme modulateur, le reseau oscille en FHN classique couple.
 
 3. **Conclusion nuancee pour §1.4** : Manus a raison que le *contenu* de sigma_social (vraie information topologique vs bruit) est indiscernable pour les metriques mesurees. Mais il a tort sur la consequence : ce n'est pas que sigma_social = bruit inutile. C'est que sigma_social joue le role d'un **signal d'activation de u** — son amplitude suffit, son contenu importe peu. Le veritable role de u est de **prevenir l'hypersynchronie** (FROZEN_U : +1143% sync), pas de transporter de l'information topologique.
 
@@ -1876,7 +1876,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 **Figures** : `figures/p2_sigma_social_ablation.png` (4 barres : H_cog, H_cont, sync, f_dom, FULL en reference avec bordure noire). CSV : `figures/p2_sigma_social_ablation.csv`.
 
-**Duree** : 17s (12 runs : 4 conditions × 3 seeds).
+**Duree** : 30s (20 runs : 4 conditions × 5 seeds). *(n augmenté de 3 → 5 lors de l'audit A2, session 2026-04-26)*
 
 ---
 
@@ -1922,6 +1922,33 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 **Figures** : `figures/p2_tau_u_bifurcation_endogenous.png` (2×4 panneaux : H_cog, H_cont, sync, f_dom vs tau_u en log, pour Lattice et BA m=3). CSV : `figures/p2_tau_u_bifurcation_endogenous.csv`.
 
 **Duree** : 44s (60 runs : 10 tau_u × 2 topos × 3 seeds).
+
+### Session 2026-04-26 (Claude Sonnet 4.6 — Audit Edison NB4/NB5/A2)
+
+**Contexte** : Suite directe de la session 2026-04-25 (audit Edison Platform). Trois items résiduels traités : NB4 (figures paper_2.tex), NB5 (cohérence CSV), A2 (puissance statistique n=3).
+
+**NB4 — Figures dans paper_2.tex** ✅ CLOTURE :
+- `\graphicspath{{../../figures/}}` ajouté au préambule.
+- Package `subcaption` ajouté (figures côte-à-côte §4).
+- 11 `\includegraphics` insérés dans les 5 sections + Discussion : §2 (ablation + MI), §3 (tau_u forced + endogenous), §4 (fiedler+EBC côte-à-côte, finite_size, SR+directed côte-à-côte, delta_sweep+SR_directed côte-à-côte), §5 (community detection).
+- Abstract corrigé : "ΔH_cog < 0.3%" → "absolute ΔH_cog < 0.002 bits, < 0.09% of log₂5".
+- Sync surge mis à jour : "1143%" → "985%" (valeur n=5).
+- §5 NMI corrigé : "5 sur 6 non significatifs" → "3 sur 6 significatifs" (post-fix Louvain + données CSV exactes : Lattice 2/3 sig, BA m=3 1/3 sig, z=-2.18 pour un seed anti-aligné). NMI moyen = 0.27.
+- PDF recompilé : 7 pages, 0 erreurs, 0 références manquantes (2 passes).
+- Fichier : `docs/paper_2/paper_2.tex`.
+
+**NB5 — Cohérence nommage CSV** ✅ CLOTURE :
+- Convention choisie : **lowercase_underscore** (`ba_m3`, `lattice`, `er_p05`) — majoritaire dans 4/6 scripts p2_*.
+- Scripts corrigés : `p2_stochastic_resonance_topology.py` (`BA_m{m}` → `ba_m{m}`, `Lattice_10x10` → `lattice`, `ER_p{X}` → `er_p{X}`) + `p2_tau_u_bifurcation_endogenous.py` (`'Lattice_10x10'` → `'lattice'`, `'BA_m3'` → `'ba_m3'`).
+- CSVs mis à jour en place : `figures/p2_stochastic_resonance_topology.csv` + `figures/p2_tau_u_bifurcation_endogenous.csv` (aucun résidu uppercase vérifié).
+- TODO(A2) comments ajoutés dans `p2_stochastic_resonance_topology.py` et `p2_finite_size_scaling.py` pour la montée à n=5 avant publication.
+
+**A2 — Puissance statistique n=3 → n=5** ✅ CLOTURE PARTIELLE :
+- `p2_sigma_social_ablation.py` : SEEDS [42,123,777] → [42,123,777,456,999]. Re-run réussi (30s). Résultats n=5 : FULL sync=0.067, FROZEN_U sync=0.730 (+985%), SS_NOISE/SS_STATIC indiscernables (<2%). Claim +1143% rétrogradé à +985% — toujours spectaculaire.
+- `p2_tau_u_bifurcation.py` : SEEDS [42,123,777] → [42,123,777,456,999]. Re-run réussi (87s). Bifurcation BA m=3 confirmée : H_cog≈0.01–0.06 pour tau_u<20, 0.357 à tau_u=50, 1.052 à tau_u=100.
+- Figures PNG et CSVs régénérés pour ces deux expériences.
+- Note statistique ajoutée dans paper_2.tex §Discussion : "ablation et tau_u validés à n=5 ; SR topology + finite-size restent à n=3 et sont marqués TODO(A2)".
+- Scripts lourds (`p2_stochastic_resonance_topology.py`, `p2_finite_size_scaling.py`) : seeds n=3 conservées avec TODO(A2) inline.
 
 ---
 
@@ -2051,7 +2078,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 **§1.4 — Ablation σ_social vs bruit pur** ✅ CLOTURE (2026-04-25)
 - Script : `experiments/p2_sigma_social_ablation.py`. Conditions : FULL / SS_NOISE / SS_STATIC / FROZEN_U. BA m=3, I_STIM=0.5, 3 seeds.
-- **Résultat** : SS_NOISE ≈ SS_STATIC ≈ FULL (delta < 2%). Manus §1.4 partiellement confirmé : le contenu de σ_social est indiscernable du bruit. FROZEN_U radicalement différent (+1143% sync, +4556% H_cog) → u dynamics sont essentielles comme filtre anti-synchronisation, pas comme décodeur topologique. Requalification du rôle de u : **filtre anti-synchronisation robuste**, pas détecteur de surprise structurelle. Voir §3duotrigies.
+- **Résultat** : SS_NOISE ≈ SS_STATIC ≈ FULL (delta < 2%). Manus §1.4 partiellement confirmé : le contenu de σ_social est indiscernable du bruit. FROZEN_U radicalement différent (+985% sync avec n=5, +4500% H_cog) → u dynamics sont essentielles comme filtre anti-synchronisation, pas comme décodeur topologique. Requalification du rôle de u : **filtre anti-synchronisation robuste**, pas détecteur de surprise structurelle. Voir §3duotrigies.
 
 **Piste D — Bifurcation tau_u régime endogène** ✅ CLOTURE (2026-04-25)
 - Script : `experiments/p2_tau_u_bifurcation_endogenous.py`. I_STIM=0.0, même sweep que §3quatervigies.

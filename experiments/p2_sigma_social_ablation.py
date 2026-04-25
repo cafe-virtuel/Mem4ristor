@@ -39,7 +39,7 @@ from mem4ristor.metrics import (
 )
 
 # -- Parametres ---------------------------------------------------------------
-SEEDS    = [42, 123, 777]
+SEEDS    = [42, 123, 777, 456, 999]
 I_STIM   = 0.5
 STEPS    = 5000
 WARM_UP  = 1000

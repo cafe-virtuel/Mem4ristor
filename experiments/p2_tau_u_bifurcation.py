@@ -42,7 +42,7 @@ from mem4ristor.metrics import (
 
 # -- Parametres ---------------------------------------------------------------
 TAU_U_VALUES = [0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0]
-SEEDS        = [42, 123, 777]
+SEEDS        = [42, 123, 777, 456, 999]
 I_STIM       = 0.5     # regime force : heretiques actifs
 STEPS        = 4000    # besoin de long pour capturer les oscillations lentes
 WARM_UP      = 1000    # ignore le transitoire

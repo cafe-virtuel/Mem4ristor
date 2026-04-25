@@ -108,8 +108,8 @@ if __name__ == '__main__':
     rows = []
 
     topologies = {
-        'Lattice_10x10': make_lattice(10),
-        'BA_m3':         make_ba(N, 3, seed=42),
+        'lattice': make_lattice(10),
+        'ba_m3':   make_ba(N, 3, seed=42),
     }
 
     for topo_name, adj in topologies.items():
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     # -- Comparaison I_STIM=0.5 vs I_STIM=0.0 --------------------------------
     print("\n--- Comparaison avec I_STIM=0.5 (§3quatervigies) ---")
     print("BA m=3 :")
-    ba_rows = [r for r in rows if r['topo'] == 'BA_m3']
+    ba_rows = [r for r in rows if r['topo'] == 'ba_m3']
     for r in ba_rows:
         regime = ("bifurcation?" if r['h_cog_mean'] > 0.1 else "dead")
         print(f"  tau_u={r['tau_u']:6.1f}  H_cog={r['h_cog_mean']:.4f}  "
