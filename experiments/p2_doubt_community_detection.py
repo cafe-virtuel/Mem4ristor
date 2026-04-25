@@ -42,6 +42,10 @@ WARM_UP      = 1500
 N_BA         = 100
 M_BA         = 3
 CORR_THETA   = 0.3    # seuil de correlation pour le graphe doubt-affinity
+# Note : theta=0.1 teste le 2026-04-25 -- PIRE sur BA m=3 (z: +0.50 -> -0.04)
+# Les singletons heretiques (u=1.0, var=0) ont corr~0 avec tout noeud
+# quelle que soit theta (variance nulle -> Pearson indefini -> ~0 apres clip).
+# theta=0.3 reste le meilleur reglage.
 N_BOOTSTRAP  = 500    # permutations pour la baseline NMI aleatoire
 
 

@@ -1681,7 +1681,7 @@ Correlation Pearson(sigma*, lambda2) = -0.854 (mais artefact de saturation — s
 
 4. **Coherence avec Piste A4 (MI decorrelateur)** : u reduit la MI inter-noeuds → les communautes u mesurent en fait QUELS noeuds sont co-frustres. Ce n'est pas redondant avec les communautes structurelles, mais la correspondance quantitative est faible.
 
-5. **Piste ouverte** : reduire le seuil theta (0.3 → 0.1) pour absorber les singletons dans des super-groupes → partitions moins granulaires → baseline NMI_rand plus basse → discriminabilite accrue. A tester.
+5. **Piste theta=0.1 testee et infirmee (2026-04-25)** : theta=0.1 est pire (BA m=3 z: +0.50 → -0.04 ; seed=777 p=0.002 → p=0.238). Les singletons héretiques (u=1.0, var=0) ont Pearson≈0 avec tout nœud par construction (dénominateur std protégé à 1.0, numérateur nul). Ils restent isolés à n'importe quel theta — le problème est structurel. theta=0.3 est conservé comme meilleur réglage.
 
 **Interpretation narrative revisee** : Le doute constitutionnel u forme des "bassins de frustration collective" (finding robuste). En revanche, la correspondance avec les communautes structurelles est trop faible pour etre affirmee statistiquement dans la configuration actuelle (theta=0.3, Louvain). Resultat qualitativement interessant mais quantitativement fragile.
 
