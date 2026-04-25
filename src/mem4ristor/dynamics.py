@@ -137,7 +137,11 @@ class Mem4ristorV3:
         self.time_in_state[~switched] += self.dt
 
     def step(self, I_stimulus: float = 0.0, coupling_input: Optional[np.ndarray] = None,
-             sigma_v_vec: Optional[np.ndarray] = None) -> None:
+             sigma_v_vec: Optional[np.ndarray] = None,
+             sigma_social_override: Optional[np.ndarray] = None) -> None:
+        # sigma_social_override: if provided, replaces |laplacian_v| in the u dynamics
+        # (du equation only). Coupling and plasticity still use the real laplacian_v.
+        # Used by ablation experiments (p2_sigma_social_ablation.py).
         # GUARD: Deterministic Input (restored from core_backup_pre_v5.py)
         if hasattr(I_stimulus, '__float__') and not isinstance(I_stimulus, (int, float, np.number, np.ndarray)):
             raise TypeError("Stimulus must be a numeric constant.")
@@ -171,6 +175,8 @@ class Mem4ristorV3:
             laplacian_v = np.nan_to_num(laplacian_v, nan=0.0, posinf=1.0, neginf=-1.0)
 
         sigma_social = np.abs(laplacian_v)
+        # Override sigma_social for u dynamics only (ablation experiment hook)
+        sigma_social_for_u = sigma_social_override if sigma_social_override is not None else sigma_social
         if sigma_v_vec is not None:
             eta = self.rng.normal(0, 1, self.N) * sigma_v_vec
         else:
@@ -217,12 +223,12 @@ class Mem4ristorV3:
               self.cfg['dynamics']['alpha'] * np.tanh(self.v) + eta)
         dw = self.cfg['dynamics']['epsilon'] * (self.v + self.cfg['dynamics']['a'] - self.cfg['dynamics']['b'] * self.w)
 
-        sigma_social_safe = np.clip(sigma_social, 0.0, 100.0)
+        sigma_social_safe = np.clip(sigma_social_for_u, 0.0, 100.0)
         alpha_s = self.cfg['doubt'].get('alpha_surprise', 2.0)
         epsilon_u_adaptive = self.cfg['doubt']['epsilon_u'] * np.clip(
             1.0 + alpha_s * sigma_social_safe, 1.0, self.cfg['doubt'].get('surprise_cap', 5.0)
         )
-        du = (epsilon_u_adaptive * (self.cfg['doubt']['k_u'] * sigma_social +
+        du = (epsilon_u_adaptive * (self.cfg['doubt']['k_u'] * sigma_social_for_u +
               self.cfg['doubt']['sigma_baseline'] - self.u)) / self.cfg['doubt']['tau_u']
 
         self.v += dv * self.dt
