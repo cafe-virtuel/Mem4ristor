@@ -166,6 +166,12 @@ def generate_netlist(adj: np.ndarray, scale: np.ndarray, heretic: np.ndarray,
             f"- alpha*tanh(V(v{i}))"
         )
         L.append(f"B_dw{i} 0 w{i} I = eps*(V(v{i}) + a - b*V(w{i}))")
+        # NOTE (Audit Manus 2026-04-25 — Faille C): B_du omits the sigma_social term
+        # present in the full Python model: du/dt = (eps_u/tau_u)*(k_u*sigma_local + sigma_base - u).
+        # This is a deliberate simplification for a STRUCTURAL dead-zone probe (I_stimulus=0,
+        # no noise). The full metacognitive coupling requires an additional B-source measuring
+        # |mean(V(neighbors)) - V(v_i)|, which is out of scope here.
+        # Consequence: hardware feasibility validated for FHN + autonomous doubt only.
         L.append(f"B_du{i} 0 u{i} I = eps_u*(sigma_base - V(u{i}))")
     L.append("")
 
@@ -244,6 +250,8 @@ def python_reference(adj: np.ndarray, scale: np.ndarray, init_v: np.ndarray,
         coupling = D_uniform * scale * kernel * coupling_lap
         dv = v - v ** 3 / cubic - w + coupling - alpha * np.tanh(v)
         dw = eps * (v + a - b * w)
+        # NOTE: sigma_social term omitted here to match the SPICE netlist (see B_du comment).
+        # This is the truncated-doubt model used for the structural dead-zone probe only.
         du = eps_u * (sigma_base - u)
         v = v + dv * dt
         w = w + dw * dt
@@ -257,8 +265,12 @@ def python_reference(adj: np.ndarray, scale: np.ndarray, init_v: np.ndarray,
 # ---------- Entropy on cognitive bins (matches Mem4Network.calculate_entropy) ----------
 
 def cognitive_entropy(v: np.ndarray) -> float:
-    """5-bin Shannon entropy on cognitive thresholds [-1.5, -0.8, 0.8, 1.5]."""
-    bin_edges = [-np.inf, -1.5, -0.8, 0.8, 1.5, np.inf]
+    """5-bin Shannon entropy on KIMI cognitive thresholds [-1.2, -0.4, 0.4, 1.2].
+    Corrected 2026-04-25 (Audit Manus): replaced obsolete pre-KIMI bins
+    [-1.5, -0.8, 0.8, 1.5] with current KIMI bins matching calculate_cognitive_entropy()
+    in src/mem4ristor/metrics.py.
+    """
+    bin_edges = [-np.inf, -1.2, -0.4, 0.4, 1.2, np.inf]
     counts, _ = np.histogram(v, bins=bin_edges)
     total = counts.sum()
     if total == 0:

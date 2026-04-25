@@ -33,6 +33,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from mem4ristor.core import Mem4Network
+from mem4ristor.graph_utils import make_ba
 from mem4ristor.metrics import (
     calculate_cognitive_entropy,
     calculate_continuous_entropy,
@@ -53,20 +54,6 @@ TOPOLOGIES = {
 }
 
 
-def make_ba(n, m, seed):
-    rng = np.random.RandomState(seed)
-    adj = np.zeros((n, n), dtype=float)
-    for i in range(m + 1):
-        for j in range(i + 1, m + 1):
-            adj[i, j] = adj[j, i] = 1.0
-    degrees = np.sum(adj, axis=1)
-    for new_node in range(m + 1, n):
-        probs = degrees[:new_node] / degrees[:new_node].sum()
-        targets = rng.choice(new_node, size=m, replace=False, p=probs)
-        for t in targets:
-            adj[new_node, t] = adj[t, new_node] = 1.0
-        degrees = np.sum(adj, axis=1)
-    return adj
 
 
 def dominant_frequency(v_history, dt):

@@ -76,10 +76,10 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | **Hérétiques actifs à I_stim=0** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | `I_eff[heretic_mask] *= -1` est no-op quand I_stim=0. Les expériences "endogènes" ne testent pas le mécanisme hérétique. Voir §3octvicies |
 | **Verilog-A (v26.va) = Python** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Noyau linéaire (1-2u), τ_u=1.0, pas d'ε_u adaptatif, pas de plasticité, double-comptage I_coup. Voir §3octvicies |
 | **Escape SPICE noise+mismatch (P4.19)** | **✅ CONFIRMÉ sous 3 métriques** | H_cont=4.58 bits à (η=0.5, σ_C=0.5). Survit à la métrique continue et aux bins KIMI. Voir §3quindecies |
-| **Calibration η SPICE ↔ σ Python** | **⚠️ FAILLE OUVERTE — AUDIT MANUS 2026-04-25** | η=0.5 SPICE et σ Python n'ont jamais été mis en correspondance d'amplitude. Le claim "bruit thermique qualitativement distinct du bruit gaussien" est postulé, pas démontré. Expérience de calibration requise. Voir §3trigies |
-| **Bins obsolètes dans `spice_dead_zone_test.py`** | **🚨 BUG DE COHÉRENCE — AUDIT MANUS 2026-04-25** | Fichier utilise encore les seuils pré-KIMI `[-1.5, -0.8, 0.8, 1.5]` au lieu des bins actuelles `[-1.2, -0.4, 0.4, 1.2]`. Résultats dead zone SPICE incomparables avec résultats Python. Correction prioritaire. Voir §3trigies |
-| **Dynamique u tronquée dans les netlists SPICE** | **⚠️ LIMITATION NON DOCUMENTÉE — AUDIT MANUS 2026-04-25** | `B_du` SPICE = `eps_u*(sigma_base - u)` uniquement. Terme σ_social absent. La faisabilité hardware est validée pour un modèle appauvri (sans couplage métacognitif), pas pour le modèle complet. Voir §3trigies |
-| **Duplication make_ba() inter-scripts** | **⚠️ DETTE TECHNIQUE — AUDIT MANUS 2026-04-25** | 7 scripts implémentent leur propre `make_ba()` NumPy ; `spice_19ter_robustness.py` utilise `networkx.barabasi_albert_graph`. Divergences possibles pour même seed/m. Voir §3trigies |
+| **Calibration η SPICE ↔ σ Python** | **✅ RÉSOLU (2026-04-25)** | η=0.5 SPICE ↔ σ_equiv=0.0044 Python. Item 10 testait σ=1.2 = 270× l'équivalent. Python reste H_cog≈0 à toutes amplitudes calibrées. Bruit thermique SPICE catégoriquement distinct → claim Paper B RENFORCÉ. Voir §3trigies + `experiments/spice_noise_calibration.py` |
+| **Bins obsolètes dans `spice_dead_zone_test.py`** | **✅ RÉSOLU (2026-04-25)** | Seuils corrigés vers KIMI `[-1.2, -0.4, 0.4, 1.2]`. Conclusion inchangée. Voir §3trigies |
+| **Dynamique u tronquée dans les netlists SPICE** | **✅ DOCUMENTÉ (2026-04-25)** | Limitation explicite ajoutée dans Paper B §2 + commentaires inline. Voir §3trigies |
+| **Duplication make_ba() inter-scripts** | **✅ RÉSOLU (2026-04-25)** | `src/mem4ristor/graph_utils.py` créé. 7 scripts p2_* migrés. Voir §3trigies |
 
 ### 3bis. LIMIT-05 : Entropie maximale (2026-03-21)
 
@@ -1834,27 +1834,32 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 > Ces 4 actions sont issues du rapport `.Audit/25-04-2026_Rapport d'Audit Scientifique et Technique du Projet Mem4ristor v3.2.0.md`. Elles doivent être traitées **avant soumission de Paper B**.
 
-**Faille A — Calibration η SPICE ↔ σ Python** *(PRIORITÉ HAUTE)*
-- Mesurer la variance injectée par `trnoise(eta=0.5)` dans une cellule RC SPICE unitaire.
-- Convertir en σ_equiv Python (variance de bruit par pas de temps normalisée à Δt=0.05).
-- Relancer Item 10 à σ_equiv et à σ_equiv×2 pour confirmer ou infirmer la distinction qualitative.
-- Script à créer : `experiments/spice_noise_calibration.py`.
-- **Statut** : ⬜ OUVERT
+**Faille A — Calibration η SPICE ↔ σ Python** ✅ CLOTURE (2026-04-25)
+- Script : `experiments/spice_noise_calibration.py`. Cellule RC + trnoise, mesure std(dV).
+- **Résultat** : η=0.5 SPICE ↔ σ_equiv = 0.0044 Python. Item 10 testait jusqu'à σ=1.2 = **270× l'amplitude équivalente**. Python reste H_cog≈0 à σ=0.0044 ET à σ=0.014 (2× η=0.8). **La dead zone Python est immune au bruit Gaussien même à 270× l'amplitude SPICE.** Le bruit thermique analogique est catégoriquement différent — le claim Paper B est RENFORCÉ, pas fragilisé. Voir §3trigies pour le tableau de calibration complet.
 
-**Faille B — Bins obsolètes `spice_dead_zone_test.py`** *(PRIORITÉ MOYENNE — quick fix)*
-- Remplacer `[-1.5, -0.8, 0.8, 1.5]` → `[-1.2, -0.4, 0.4, 1.2]` dans le fichier.
-- Relancer pour confirmer que la conclusion (H≈0 dans dead zone) est inchangée.
-- **Statut** : ⬜ OUVERT
+| η SPICE | σ_equiv Python | H_cog Python (BA m=5) | Verdict |
+|:-------:|:--------------:|:---------------------:|:-------:|
+| 0.10 | 0.0009 | 0.000 | dead zone |
+| 0.30 | 0.0026 | 0.000 | dead zone |
+| 0.50 | 0.0044 | 0.000 | dead zone |
+| 0.80 | 0.0072 | 0.000 | dead zone |
+| — | 1.200 (Item 10 max) | 0.006 | quasi-dead zone |
 
-**Faille C — Dynamique u tronquée dans les netlists SPICE** *(PRIORITÉ MOYENNE — documentation)*
-- Option 1 (recommandée) : ajouter une note explicite dans Paper B §2 : "la validation hardware porte sur le noyau FHN + doute autonome ; le terme σ_social requiert un B-source supplémentaire, hors scope de cette étude."
-- Option 2 (future) : implémenter σ_social dans SPICE (nécessite B-source supplémentaire).
-- **Statut** : ⬜ OUVERT
+**Faille B — Bins obsolètes `spice_dead_zone_test.py`** ✅ CLOTURE (2026-04-25)
+- Seuils corrigés : `[-1.5, -0.8, 0.8, 1.5]` → `[-1.2, -0.4, 0.4, 1.2]` (KIMI).
+- Docstring mise à jour. Conclusion inchangée (H≈0 dans dead zone dans les deux cas).
 
-**Faille D — Duplication make_ba() inter-scripts** *(PRIORITÉ BASSE — dette technique)*
-- Créer `src/mem4ristor/graph_utils.py` avec une fonction `make_ba(n, m, seed)` canonique.
-- Remplacer les 7+ implémentations locales.
-- **Statut** : ⬜ OUVERT
+**Faille C — Dynamique u tronquée dans les netlists SPICE** ✅ CLOTURE (2026-04-25)
+- Commentaire NOTE ajouté inline dans `B_du` netlist et dans `python_reference()`.
+- Paragraphe "Scope of the hardware validation" ajouté dans Paper B §2.
+- La limitation est désormais explicite et défendable face à un reviewer.
+
+**Faille D — Duplication make_ba() inter-scripts** ✅ CLOTURE (2026-04-25)
+- `src/mem4ristor/graph_utils.py` créé : `make_ba()`, `make_er()`, `make_lattice_adj()`.
+- Exporté depuis `src/mem4ristor/__init__.py`.
+- 7 scripts `p2_*` + `spice_noise_calibration.py` migrés vers `from mem4ristor.graph_utils import make_ba`.
+- 5 scripts anciens (limit02_*, spice_*, ablation_*) inchangés pour préserver la reproductibilité des résultats enregistrés.
 
 ---
 
