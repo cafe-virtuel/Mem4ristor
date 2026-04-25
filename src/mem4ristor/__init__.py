@@ -1,9 +1,11 @@
 """
-Mem4ristor v3.1.1 — Neuromorphic-inspired diversity-preserving cognitive architecture.
+Mem4ristor v3.2.0 — Neuromorphic-inspired diversity-preserving cognitive architecture.
 
 Modules:
     core        — Mem4ristorV3 engine & Mem4Network (lattice / adjacency)
     config      — Typed dataclass configuration
+    metrics     — Entropy, LZ complexity, pairwise synchrony
+    graph_utils — Canonical topology generators (make_ba, make_er, make_lattice_adj)
     sensory     — SensoryFrontend (image → stimulus)
     cortex      — LearnableCortex (learnable decision layer)
     hierarchy   — HierarchicalChimera (multi-scale chimera states)
@@ -18,6 +20,18 @@ from .core import Mem4ristorV3, Mem4ristorV2, Mem4Network
 
 # Configuration
 from .config import Mem4Config, DynamicsConfig, CouplingConfig, DoubtConfig, NoiseConfig
+
+# Graph utilities
+from .graph_utils import make_ba, make_er, make_lattice_adj
+
+# Metrics
+from .metrics import (
+    calculate_continuous_entropy,
+    calculate_cognitive_entropy,
+    get_cognitive_states,
+    calculate_temporal_lz_complexity,
+    calculate_pairwise_synchrony,
+)
 
 # Extension modules
 from .sensory import SensoryFrontend
@@ -41,13 +55,23 @@ try:
 except ImportError:
     pass  # matplotlib not installed — viz functions unavailable
 
-__version__ = "3.1.1"
+__version__ = "3.2.0"
 
 __all__ = [
+    # Graph utilities
+    "make_ba",
+    "make_er",
+    "make_lattice_adj",
     # Core
     "Mem4ristorV3",
     "Mem4ristorV2",
     "Mem4Network",
+    # Metrics
+    "calculate_continuous_entropy",
+    "calculate_cognitive_entropy",
+    "get_cognitive_states",
+    "calculate_temporal_lz_complexity",
+    "calculate_pairwise_synchrony",
     # Config
     "Mem4Config",
     "DynamicsConfig",

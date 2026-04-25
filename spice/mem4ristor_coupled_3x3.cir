@@ -3,6 +3,14 @@
 * Network: 3×3 = 9 units with 4-neighbor coupling
 * State variables per unit: v (cognitive), w (recovery), u (doubt)
 * ============================================================
+* ⚠️  NETLIST DÉFECTUEUX — AUDIT 2026-04-22
+* Ce netlist utilise le pattern R+B-voltage (filtre RC) qui intègre
+*   dv/dt = f(v) − v  au lieu de  dv/dt = f(v)
+* (voir §3septies §164–166 PROJECT_STATUS.md, "Trap #2")
+* UTILISER les netlists générés par experiments/spice_validation.py
+* (pattern direct C_v + B_dv avec source courant).
+* Ce fichier est conservé comme référence historique UNIQUEMENT.
+* ============================================================
 
 .title Mem4ristor v3 Coupled Network (3x3)
 

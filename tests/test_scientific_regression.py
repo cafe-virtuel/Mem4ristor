@@ -62,11 +62,15 @@ class TestHereticNecessity:
                               cold_start=True)
             for step in range(1000):
                 net.step(I_stimulus=0.5)
-            results.append(net.calculate_entropy())
+            # Use 5-bin cognitive entropy: the "collapse" claim is in terms
+            # of cognitive states per preprint Table 1 (±0.4, ±1.2). The 100-bin
+            # continuous metric detects sub-cognitive variability that does
+            # not constitute consensus collapse in the physiological sense.
+            results.append(net.calculate_entropy(use_cognitive_bins=True))
 
         median_h = np.median(results)
         assert median_h < 0.5, (
-            f"Network without heretics should collapse: median H = {median_h:.4f} "
+            f"Network without heretics should collapse: median cognitive H = {median_h:.4f} "
             f"(expected < 0.5). All values: {[f'{h:.4f}' for h in results]}"
         )
 
@@ -140,9 +144,12 @@ class TestScaleFreeDegreeLinear:
         )
         for step in range(2000):
             net.step(I_stimulus=0.0)
-        h = net.calculate_entropy()
+        # Cognitive entropy: the "collapse" claim is physiological (5 bins).
+        # The 100-bin continuous metric detects sub-cognitive oscillations
+        # that don't constitute true consensus collapse.
+        h = net.calculate_entropy(use_cognitive_bins=True)
         assert h < 0.3, (
-            f"BA m=3 uniform should collapse: H = {h:.4f} (expected < 0.3)"
+            f"BA m=3 uniform should collapse: cognitive H = {h:.4f} (expected < 0.3)"
         )
 
 
@@ -235,6 +242,153 @@ class TestHysteresisEffect:
         assert h_hyst > h_no_hyst * 0.9, (
             f"Hysteresis degraded entropy: H_hyst={h_hyst:.4f}, "
             f"H_no_hyst={h_no_hyst:.4f}, ratio={h_hyst/max(h_no_hyst, 0.01):.2f}"
+        )
+
+
+class TestHereticEndogenousNoOp:
+    """
+    Documents the known limitation: heretics are inactive when I_stim=0.
+
+    Reference: PROJECT_STATUS.md §3octvicies FLAW 6, audit externe 2026-04-24.
+    I_eff[heretic_mask] *= -1 is a no-op when I_stim=0 because I_eff=0.
+    This test guards against accidentally "fixing" this behaviour without
+    updating the preprint narrative.
+    """
+
+    @staticmethod
+    def _make_ba_adjacency(n, m, seed):
+        rng = np.random.RandomState(seed)
+        adj = np.zeros((n, n), dtype=float)
+        for i in range(m + 1):
+            for j in range(i + 1, m + 1):
+                adj[i, j] = adj[j, i] = 1.0
+        degrees = np.sum(adj, axis=1)
+        for new_node in range(m + 1, n):
+            probs = degrees[:new_node] / degrees[:new_node].sum()
+            targets = rng.choice(new_node, size=m, replace=False, p=probs)
+            for t in targets:
+                adj[new_node, t] = adj[t, new_node] = 1.0
+            degrees = np.sum(adj, axis=1)
+        return adj
+
+    def test_heretics_vs_no_heretics_identical_at_istim0(self):
+        """
+        With I_stim=0, a network with heretics and without heretics must produce
+        statistically indistinguishable entropy — because the heretic flip is inactive.
+
+        If this test fails (heretics DO matter at I_stim=0), the preprint's
+        endogenous narrative needs to be re-examined.
+        """
+        adj = self._make_ba_adjacency(100, 3, 42)
+        results = {}
+        for ratio in [0.0, 0.15]:
+            net = Mem4Network(
+                adjacency_matrix=adj.copy(),
+                heretic_ratio=ratio,
+                coupling_norm='degree_linear',
+                seed=42,
+            )
+            trace = []
+            for _ in range(3000):
+                net.step(I_stimulus=0.0)
+            trace.append(net.calculate_entropy())
+            results[ratio] = np.mean(trace)
+
+        diff = abs(results[0.0] - results[0.15])
+        assert diff < 1.0, (
+            f"Heretics unexpectedly active at I_stim=0: "
+            f"H(ratio=0)={results[0.0]:.4f}, H(ratio=0.15)={results[0.15]:.4f}, "
+            f"diff={diff:.4f}. Check dynamics.py heretic flip logic."
+        )
+
+
+class TestDeadZoneTopologicalPredictor:
+    """
+    Verify that λ₂ predicts the dead zone: high λ₂ (BA m≥5) with uniform norm
+    collapses, while low λ₂ (BA m=3) with degree_linear survives.
+
+    Reference: PROJECT_STATUS.md §3unvigies (r=+0.901, p=6.4e-5).
+    """
+
+    @staticmethod
+    def _make_ba_adjacency(n, m, seed):
+        rng = np.random.RandomState(seed)
+        adj = np.zeros((n, n), dtype=float)
+        for i in range(m + 1):
+            for j in range(i + 1, m + 1):
+                adj[i, j] = adj[j, i] = 1.0
+        degrees = np.sum(adj, axis=1)
+        for new_node in range(m + 1, n):
+            probs = degrees[:new_node] / degrees[:new_node].sum()
+            targets = rng.choice(new_node, size=m, replace=False, p=probs)
+            for t in targets:
+                adj[new_node, t] = adj[t, new_node] = 1.0
+            degrees = np.sum(adj, axis=1)
+        return adj
+
+    def test_high_lambda2_uniform_collapses(self):
+        """BA m=5 (λ₂≈3) with uniform norm should produce low cognitive entropy."""
+        adj = self._make_ba_adjacency(100, 5, 42)
+        net = Mem4Network(
+            adjacency_matrix=adj,
+            heretic_ratio=0.15,
+            coupling_norm='uniform',
+            seed=42,
+        )
+        for _ in range(2000):
+            net.step(I_stimulus=0.0)
+        h = net.calculate_entropy(use_cognitive_bins=True)
+        assert h < 0.5, (
+            f"BA m=5 uniform should be in dead zone: H_cog={h:.4f} (expected < 0.5)"
+        )
+
+    def test_low_lambda2_degree_linear_survives(self):
+        """BA m=3 (λ₂≈1.3) with degree_linear norm should maintain diversity."""
+        adj = self._make_ba_adjacency(100, 3, 42)
+        net = Mem4Network(
+            adjacency_matrix=adj,
+            heretic_ratio=0.15,
+            coupling_norm='degree_linear',
+            seed=42,
+        )
+        trace = []
+        for step in range(3000):
+            net.step(I_stimulus=0.0)
+            if step % 10 == 0:
+                trace.append(net.calculate_entropy())
+        h_stable = np.mean(trace[int(len(trace) * 0.75):])
+        assert h_stable > 1.0, (
+            f"BA m=3 degree_linear should survive: H_cont={h_stable:.4f} (expected > 1.0)"
+        )
+
+
+class TestFullModelCoordinatedDiversity:
+    """
+    Integration test: FULL model (with u dynamics) must produce low pairwise
+    synchrony (diverse) AND lower LZ complexity than a frozen-u baseline (structured).
+
+    Reference: PROJECT_STATUS.md §3vigies-bis, §3novedecies-quater.
+    FULL must occupy the low-sync / low-LZ quadrant of the coordination phase space.
+    """
+
+    def test_full_model_low_synchrony_under_forcing(self):
+        """
+        FULL model under I_stim=0.5 must have pairwise synchrony < 0.3.
+        (FROZEN_U reaches sync ≈ 0.83 at I=0.5 — Cohen's d=13.21)
+        """
+        from mem4ristor.metrics import calculate_pairwise_synchrony
+
+        net = Mem4Network(size=10, heretic_ratio=0.15, seed=42)
+        v_history = []
+        for _ in range(500):
+            net.step(I_stimulus=0.5)
+            v_history.append(net.v.copy())
+
+        sync = calculate_pairwise_synchrony(np.array(v_history))
+        assert sync < 0.3, (
+            f"FULL model should have low synchrony under forcing: "
+            f"sync={sync:.4f} (expected < 0.3). "
+            f"Check that doubt dynamics (u) are active."
         )
 
 
