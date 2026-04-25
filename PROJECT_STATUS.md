@@ -1497,6 +1497,92 @@ L'audit est solide sur la cohérence technique (B, D) et identifie correctement 
 
 ---
 
+### 3untrigies. Audit Manus AI — Version Modifiée : Nouvelles Sections (2026-04-25)
+
+**Auditeur** : Manus AI (version révisée du premier rapport)
+**Fichier** : `.Audit/modif d'Audit du Projet Mem4ristor v3.2.0.md`
+
+Manus a enrichi son rapport initial avec trois nouvelles sections (§1.4, §1.5, §2.4) et une évaluation globale (§5). Ce document analyse point par point leur validité.
+
+---
+
+#### §1.4 — Causalité de u vs Bruit Hétérogène Déguisé : CRITIQUE VALIDE
+
+**Thèse de Manus** : La variable de doute u pourrait être un simple proxy du bruit hétérogène plutôt qu'un mécanisme métacognitif causal. `sigma_social` est défini comme `|laplacian_v|` — directement influencé par le bruit injecté sur v. Donc : bruit → v → sigma_social → u → couplage → pseudo-causalité circulaire.
+
+**Notre défense partielle** : La boucle u → I_coup → v → sigma_social → u est un **feedback adaptatif**, non une simple proxy. La modulation via `u_filter = tanh(π(0.5 − u)) + δ` bascule entre attractif et répulsif — non-linéarité irréductible. Les ablations FROZEN_U (§3octdecies + §3novedecies) montrent que geler u **collapse la coordination** (d = +9.75 en ENDOGENOUS), démontrant la causalité fonctionnelle.
+
+**Cependant : la critique pointe une lacune réelle.** Nous n'avons jamais testé l'ablation "sigma_social ← bruit pur" ou "sigma_social ← hétérogénéité statique fixe". Ces ablations démontreraient que c'est bien la **boucle fermée adaptative** (pas juste un signal dynamique quelconque) qui produit les propriétés de coordination observées.
+
+**Statut** : ⚠️ OUVERT — Expérience à planifier (backlog futur). La critique ne réfute pas nos résultats mais identifie un contrôle manquant.
+
+**Expérience proposée** :
+- `SIGMA_SOCIAL_NOISE` : remplacer `sigma_social = |laplacian_v|` par bruit pur `~ N(0, σ)` calibré à la même amplitude RMS que sigma_social typique.
+- `SIGMA_SOCIAL_STATIC` : figer sigma_social à sa valeur temporelle moyenne (hétérogénéité statique).
+- Comparer sync + LZ avec FULL et FROZEN_U. Si SIGMA_SOCIAL_NOISE ≈ FULL → u est proxy du bruit. Si SIGMA_SOCIAL_NOISE ≈ FROZEN_U → la dynamique adaptative de u est irréductible.
+
+---
+
+#### §1.5 — Bifurcation tau_u sous I_STIM = 0 : 🚨 ERREUR FACTUELLE DANS L'AUDIT
+
+**Affirmation de Manus** : "L'expérience est explicitement configurée avec I_STIM = 0.0 [14, ligne 56]". Manus cite cela comme une **force** : "la bifurcation est observée dans un régime endogène, sans forçage externe".
+
+**C'EST FACTUELLEMENT FAUX.** `experiments/p2_tau_u_bifurcation.py` utilise `I_STIM = 0.5` (ligne 34), **pas 0.0**. L'expérience a été conçue avec un forçage externe actif (hérétiques actifs). La valeur `I_STIM = 0.0` que Manus cite n'existe pas dans le script actuel. Soit Manus a lu une ancienne version, soit il a extrapolé depuis d'autres scripts.
+
+**Implication** : La "force" décrite par Manus (régime endogène pur) n'est pas ce que nous testons. Tester la bifurcation tau_u en régime endogène (I_STIM=0) est une expérience **distincte et non encore réalisée** — scientifiquement pertinente pour Paper 2, mais distincte de §3quatervigies.
+
+**Note** : Une bifurcation tau_u en régime endogène pur serait en effet plus forte (preuve que u structure la dynamique sans forçage externe). À envisager comme expérience complémentaire.
+
+---
+
+#### §2.4 — Absence de Community Detection et Baseline NMI : 🚨 SECTION COMPLÈTEMENT OBSOLÈTE
+
+**Affirmation de Manus** : "Le script `p2_doubt_community_detection.py` n'existe pas, et les recherches de 'NMI' ou 'community' dans le code sont restées infructueuses."
+
+**C'EST FAUX à la date de l'audit.** Item 12 (Doubt-Driven Community Detection) a été **implémenté et exécuté le 25 avril 2026** (commit `2fdc660`), résultats documentés en §3octvigies :
+
+| Résultat | Valeur |
+|:---------|:-------|
+| Script | `experiments/p2_doubt_community_detection.py` — EXISTE |
+| NMI implémenté | Oui — custom numpy (sans sklearn) |
+| NMI Lattice | 0.298 ± 0.040 (3 seeds) |
+| NMI BA m=3 | 0.232 ± 0.087 (3 seeds) |
+| Algorithme | Louvain (NetworkX 3.5) sur graphe doubt-affinity ET structural |
+
+Manus a audité le dépôt **avant** que le script soit commis. C'est une **limite de l'audit en temps réel** : l'auditeur ne voit que l'état au moment de sa lecture.
+
+**Point valide extrait de §2.4** : La nécessité d'une **baseline NMI aléatoire** est une critique légitime. NMI = 0.25–0.30 est reportée sans comparaison avec la distribution NMI de partitions aléatoires. La significativité statistique ne peut pas être affirmée sans ce contrôle.
+
+**Action requise** : Calculer NMI(partitions_aléatoires) par bootstrap (100+ permutations des labels) et vérifier NMI_observé > NMI_aléatoire + 2σ. < 5 min. Renforcerait matériellement le claim.
+
+---
+
+#### §5 — Score Global 6/10 et Pitch Nature Physics
+
+**Score** : **6/10** (Nouveauté: 3/10 · Rigueur: 3/10 · Clarté: 2/10 · Robustesse: 2/10)
+
+**Lecture du score** : Avec les quatre failles A/B/C/D corrigées (§3trigies + P2-AUDIT-2 ✅), les critiques "Rigueur" et "Robustesse" sont en grande partie adressées. Estimation post-corrections : **~7.5/10**. Le point restant le plus faible est §1.3 (diversité sub-cognitive, H_cog ≈ 0 en Python défaut), documenté dans les limitations mais pas encore intégré dans le narrative Paper B.
+
+**Pitch Nature Physics fourni par Manus** :
+
+> *"Nous démontrons que le bruit thermique inhérent aux systèmes neuromorphiques analogiques permet d'échapper aux zones mortes topologiques, un problème persistant dans les modèles logiciels. Cette découverte transforme les imperfections matérielles de défauts en ressources computationnelles essentielles, ouvrant la voie à une nouvelle génération de substrats neuromorphiques inspirés des verres de spin."*
+
+Ce pitch est **excellent** — aligné avec le claim central de Paper B et le résultat Faille A (η=0.5 SPICE ↔ σ=0.0044 Python, bruit thermique catégoriquement distinct). À utiliser comme modèle pour le titre et l'abstract de Paper B.
+
+---
+
+#### Synthèse : Réponse à l'Audit Manus v2
+
+| Section | Validité | Statut |
+|:--------|:---------|:-------|
+| §1.4 (causalité u) | ✅ Critique valide, lacune réelle | ⚠️ Backlog : ablation σ_social → bruit pur |
+| §1.5 (I_STIM = 0) | 🚨 ERREUR FACTUELLE — I_STIM = 0.5 dans le script réel | Aucune correction nécessaire |
+| §2.4 (community detection absente) | 🚨 OBSOLÈTE — commit 2fdc660 avant l'audit | ⚠️ À faire : baseline NMI aléatoire (< 5 min) |
+| §5 score 6/10 | ✅ Évaluation honnête pré-corrections | Post-corrections estimé ~7.5/10 |
+| Pitch Nature Physics | ✅ Excellent, aligné Paper B | À réutiliser dans abstract Paper B |
+
+---
+
 ### Session 2026-04-25 (Claude Sonnet 4.6 — P2 Items 10 & 12)
 
 **Contexte** : Continuation de la session 2026-04-24. Deux items P2 backlog implémentés et clos.
@@ -1860,6 +1946,18 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 - Exporté depuis `src/mem4ristor/__init__.py`.
 - 7 scripts `p2_*` + `spice_noise_calibration.py` migrés vers `from mem4ristor.graph_utils import make_ba`.
 - 5 scripts anciens (limit02_*, spice_*, ablation_*) inchangés pour préserver la reproductibilité des résultats enregistrés.
+
+**Audit Manus v2 — Actions issues des nouvelles sections (2026-04-25)** Voir §3untrigies pour analyse complète.
+
+**§2.4 — Baseline NMI aléatoire** ⚠️ OUVERT (< 5 min)
+- NMI = 0.25–0.30 reporté en §3octvigies sans comparaison à la distribution NMI de partitions aléatoires.
+- Bootstrap 100+ permutations des labels de partition → NMI_aléatoire moyen + 2σ.
+- Si NMI_observé > baseline + 2σ → significativité statistique confirmée → claim publiable.
+- Script à créer : `experiments/p2_nmi_baseline.py` (< 30 lignes en ajout à `p2_doubt_community_detection.py`).
+
+**§1.4 — Ablation σ_social vs bruit pur** ⚠️ BACKLOG FUTUR
+- Voir §3untrigies §1.4 pour protocole détaillé.
+- Non bloquant pour Paper B mais renforcera le claim causalité u pour Paper 2.
 
 ---
 
