@@ -1647,43 +1647,45 @@ Correlation Pearson(sigma*, lambda2) = -0.854 (mais artefact de saturation — s
 
 **Methode** : `experiments/p2_doubt_community_detection.py`. Record de u_history (T=2500, N) apres warm-up. Pearson C_u (N×N) sur numpy pur. Seuillage |C_u| > 0.3 → graphe doubt-affinity. Louvain (NetworkX 3.5) sur doubt-affinity et sur graphe structural. NMI custom (numpy, sans sklearn). **Baseline NMI aleatoire : 500 permutations des labels du doute** (ajout 2026-04-25, reponse Audit Manus §2.4). Topologies : Lattice 10x10, BA m=3 N=100. I_stim=0.5, coupling_norm='degree_linear', 3 seeds. Duree : 6s.
 
-**Resultats avec baseline NMI aleatoire (500 permutations)** :
+⚠️ **BUG CORRIGE (audit Edison 2026-04-25)** : Le graphe doubt-affinity etait construit avec des poids de correlation signes (C_u[i,j] negatif possible). NetworkX Louvain suppose des poids non-negatifs — les poids negatifs corrompaient l'optimisation de la modularite en repoussant artificiellement certains noeuds dans des communautes separees. **Correction** : `weight=abs(C_u[i,j])` (affinite = force de co-variation, signe ignore). Les resultats ci-dessous sont post-correction.
+
+**Resultats avec baseline NMI aleatoire (500 permutations, poids |corr|)** :
 
 | Topo | seed | NMI_obs | NMI_rand | z | p | sig |
 |:-----|-----:|:-------:|:--------:|:---:|:---:|:---:|
-| Lattice | 42 | 0.2633 | 0.2608±0.013 | +0.19 | 0.396 | ns |
-| Lattice | 123 | 0.2905 | 0.2618±0.015 | +1.87 | 0.046 | * |
-| Lattice | 777 | 0.3412 | 0.3311±0.012 | +0.84 | 0.202 | ns |
-| **Lattice** | **mean** | **0.298** | **0.285** | **+0.97** | — | **ns** |
-| BA m=3 | 42 | 0.1923 | 0.1942±0.021 | -0.09 | 0.512 | ns |
-| BA m=3 | 123 | 0.1697 | 0.1952±0.021 | -1.23 | 0.914 | ns |
-| BA m=3 | 777 | 0.3348 | 0.2764±0.021 | +2.82 | 0.002 | ** |
-| **BA m=3** | **mean** | **0.232** | **0.222** | **+0.50** | — | **ns** |
+| Lattice | 42 | 0.3050 | 0.2702±0.014 | +2.41 | 0.014 | * |
+| Lattice | 123 | 0.2750 | 0.2442±0.017 | +1.83 | 0.046 | * |
+| Lattice | 777 | 0.3551 | 0.3386±0.014 | +1.17 | 0.116 | ns |
+| **Lattice** | **mean** | **0.312** | **0.284** | **+1.80** | — | **2/3 sig** |
+| BA m=3 | 42 | 0.1857 | 0.1796±0.019 | +0.32 | 0.362 | ns |
+| BA m=3 | 123 | 0.1508 | 0.1951±0.020 | -2.18 | 0.992 | ns |
+| BA m=3 | 777 | 0.3281 | 0.2751±0.021 | +2.55 | 0.004 | ** |
+| **BA m=3** | **mean** | **0.222** | **0.217** | **+0.23** | — | **1/3 sig** |
 
-⚠️ **REQUALIFICATION** : La baseline révèle que NMI_obs ≈ NMI_rand pour 5/6 seeds. Seul BA m=3 seed=777 est réellement significatif (p=0.002, z=+2.82). **Le claim "NMI~0.25 indique une corrélation faible-modérée" ne peut plus être soutenu sans qualification.**
+**REQUALIFICATION post-fix** : Le Louvain corrige renforce le signal Lattice (2/3 seeds maintenant significatifs, z_mean=+1.80 — signal modere). Pour BA m=3, seul seed=777 est significatif (p=0.004) mais seed=123 est fortement negatif (z=-2.18) : les communautes u sont ANTI-alignees avec les communautes structurelles sur ce graphe. L'interpretation du signal BA m=3 est donc ambigue.
 
-**Pourquoi NMI_rand est-il si élevé ?** La partition du doute comporte beaucoup de communautés (17-34) dont de nombreux singletons (hérétiques u=1.0, variance nulle). Avec N>8 communautés et des singletons, la permutation aléatoire peut accidentellement produire un NMI élevé avec une partition structurelle à 7-9 communautés. C'est la structure des partitions (granularité élevée) qui gonfle la baseline, pas un signal.
+**Pourquoi NMI_rand est-il eleve ?** La partition du doute comporte beaucoup de communautes (17-35) dont de nombreux singletons (heretiques u=1.0, variance nulle). Avec N>8 communautes et des singletons, la permutation aleatoire produit accidentellement un NMI eleve avec une partition structurelle a 7-9 communautes. C'est la granularite elevee des partitions qui gonfle la baseline.
 
 **Deux regimes u (finding robuste, independant de la NMI) :**
 
 | Type | Taille | mean_u | std_u | mean_v | Interpretation |
 |:-----|:------:|:------:|:------:|:------:|:--------------|
-| Grands groupes (1-2x) | 25-42 | 0.953-0.973 | 0.04-0.09 | -1.36 a -1.65 | Noeuds frustres oscillant en phase |
-| Singletons (11-22x) | 1 | 1.000 | 0.000 | -1.6 a -2.7 | Heretiques satires au doute maximal |
+| Grands groupes (1-2x) | 18-36 | 0.933-0.987 | 0.04-0.11 | -1.36 a -1.65 | Noeuds frustres oscillant en phase |
+| Singletons (11-22x) | 1 | 1.000 | 0.000 | -1.6 a -2.7 | Heretiques satures au doute maximal |
 
-**Findings requalifies** :
+**Findings post-correction** :
 
-1. **Hypothese NMI infirmee statistiquement** : NMI_obs ≈ NMI_rand dans 5/6 cas (z_mean < +1 pour les deux topos). La corrélation doubt-communities / structural-communities n'est pas significative avec ce protocole.
+1. **Signal Lattice modere** : 2/3 seeds significatifs apres fix Louvain (z=+2.41, +1.83). La topologie reguliere (Lattice) structure davantage les communautes u que la topologie scale-free. z_mean=+1.80 est au-dessus du seuil de 1.65 (p<0.05 unilateral).
 
-2. **Signal reel mais rare** : BA m=3 seed=777 est significatif (z=+2.82, p=0.002). Ce n'est pas un artefact. Mais il depend du seed — la structure du graphe BA genere aleatoirement conditionne si le signal existe.
+2. **BA m=3 ambigu** : un seed fortement positif (z=+2.55) et un fortement negatif (z=-2.18). L'alignement doubt/structure est topologie-dependant sur BA m=3. La moyenne z_mean=+0.23 n'est pas significative. Le signal BA m=3 reste seed-dependant.
 
-3. **Deux populations u distinctes** (finding robuste, independant de la NMI) : hérétiques saturés u=1.0 (singletons) + noeuds frustres avec oscillations u correlees → grands groupes transcendant les frontieres structurelles. Ce resultat qualitatif est valide.
+3. **Deux populations u distinctes** (finding robuste, independant de la NMI) : heretiques satures u=1.0 (singletons) + noeuds frustres avec oscillations u correlees → grands groupes transcendant les frontieres structurelles. Ce resultat qualitatif est valide independamment du z-score.
 
-4. **Coherence avec Piste A4 (MI decorrelateur)** : u reduit la MI inter-noeuds → les communautes u mesurent en fait QUELS noeuds sont co-frustres. Ce n'est pas redondant avec les communautes structurelles, mais la correspondance quantitative est faible.
+4. **Coherence avec Piste A4 (MI decorrelateur)** : u reduit la MI inter-noeuds → les communautes u mesurent en fait QUELS noeuds sont co-frustres. Ce n'est pas redondant avec les communautes structurelles, mais la correspondance quantitative reste moderee.
 
-5. **Piste theta=0.1 testee et infirmee (2026-04-25)** : theta=0.1 est pire (BA m=3 z: +0.50 → -0.04 ; seed=777 p=0.002 → p=0.238). Les singletons héretiques (u=1.0, var=0) ont Pearson≈0 avec tout nœud par construction (dénominateur std protégé à 1.0, numérateur nul). Ils restent isolés à n'importe quel theta — le problème est structurel. theta=0.3 est conservé comme meilleur réglage.
+5. **Piste theta=0.1 testee et infirmee (2026-04-25)** : theta=0.1 est pire quelle que soit la topo. Les singletons heretiques (u=1.0, var=0) ont Pearson=0 avec tout noeud par construction — ils restent isoles a n'importe quel theta. Probleme structurel non resolu par le seuillage. theta=0.3 conserve.
 
-**Interpretation narrative revisee** : Le doute constitutionnel u forme des "bassins de frustration collective" (finding robuste). En revanche, la correspondance avec les communautes structurelles est trop faible pour etre affirmee statistiquement dans la configuration actuelle (theta=0.3, Louvain). Resultat qualitativement interessant mais quantitativement fragile.
+**Interpretation narrative revisee (post audit Edison)** : Le Louvain corrige (poids |corr|) revele un signal Lattice modere (2/3 seeds, z_mean=+1.80). Pour BA m=3, le signal est ambigu (un seed anti-aligne). Le finding robuste demeure : u cree des "bassins de frustration collective" (deux populations distinctes), mais leur correspondance avec les communautes structurelles est moderee sur Lattice et ambigue sur BA m=3.
 
 **Figures** : `figures/p2_doubt_community_detection.png` (2x3 : heatmap C_u + communautes-doute + communautes-struct, par topo). CSV : `figures/p2_doubt_community_detection.csv` (inclut colonnes nmi_obs, nmi_rand_mean, nmi_rand_std, z_score, p_value, significant).
 
@@ -1961,7 +1963,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 10. **Stochastic resonance** — ✅ CLOTURE (2026-04-25). Pas de SR classique. Dichotomie lambda2 : < 2.5 → bruit benefique monotone ; > 2.5 → zone morte resistante au bruit. Voir §3novemvigies.
 11. **Adaptive heretics** — η dynamique : nœuds deviennent hérétiques si u_i > 0.8 pendant >100 pas. Auto-régulation. Pourrait supprimer la dead zone sans changer la topologie. ⚠️ Change le modèle fondamentalement → v4.0.
-12. **Doubt-driven community detection** — ✅ CLOTURE (2026-04-25). NMI_obs ≈ NMI_rand (baseline 500 permutations) en 5/6 seeds — signal non significatif statistiquement dans la configuration actuelle. Finding robuste : deux régimes u (singletons hérétiques u=1.0 + grands groupes frustrés). Requalifié de "corrélation faible-modérée" à "signal rare seed-dépendant". Voir §3octvigies.
+12. **Doubt-driven community detection** — ✅ CLOTURE (2026-04-25, re-analyse audit Edison). Bug Louvain corrige (poids signes → |corr|). Post-fix : Lattice 2/3 seeds sig (z_mean=+1.80), BA m=3 signal ambigu (z=+2.55/-2.18/+0.32, z_mean=+0.23). Finding robuste : deux regimes u (singletons heretiques u=1.0 + grands groupes frustres). Voir §3octvigies.
 
 ---
 
@@ -2042,8 +2044,9 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 **§2.4 — Baseline NMI aléatoire** ✅ CLOTURE (2026-04-25)
 - 500 permutations bootstrap ajoutées directement dans `p2_doubt_community_detection.py`.
-- **Résultat** : NMI_obs ≈ NMI_rand dans 5/6 seeds (z_mean < +1 pour Lattice et BA m=3). Seul BA m=3 seed=777 est significatif (p=0.002, z=+2.82). Le claim "NMI~0.25 = corrélation faible-modérée" est REQUALIFIÉ : signal rare et seed-dépendant.
-- §3octvigies mis à jour avec table complète (NMI_obs / NMI_rand / z / p / sig).
+- **Résultat initial (poids signés, bugué)** : NMI_obs ≈ NMI_rand dans 5/6 seeds. Seul Lattice seed=123 significatif.
+- **⚠️ BUG CORRIGE (audit Edison 2026-04-25)** : Louvain appliqué à des poids Pearson signés (négatifs possibles) → modularity corrompue. Fix : `weight=|C_u[i,j]|`. Post-fix : Lattice 2/3 seeds significatifs (z_mean=+1.80, signal modéré), BA m=3 ambigu (1 positif p=0.004, 1 négatif z=-2.18).
+- §3octvigies mis à jour avec table complète post-fix + note de correction.
 - **Manus §2.4 avait raison sur la nécessité de la baseline.** Honnêteté scientifique préservée.
 
 **§1.4 — Ablation σ_social vs bruit pur** ✅ CLOTURE (2026-04-25)

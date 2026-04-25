@@ -179,12 +179,16 @@ def run_one(topo, seed):
     C_u = pearson_corr_matrix(u_arr)
 
     # 2. Doubt-affinity graph (seuillage |corr| > CORR_THETA)
+    # FIX (audit Edison 2026-04-25): NetworkX Louvain assume des poids non-negatifs.
+    # On utilise |C_u| comme poids d'affinite (force de co-variation, signe ignore).
+    # Utiliser C_u signe brut corrompait la modularity optim. (poids negatifs → voisins
+    # repousses artificiellement dans des communautes distinctes).
     G_doubt = nx.Graph()
     G_doubt.add_nodes_from(range(N))
     pairs = np.argwhere(np.abs(C_u) > CORR_THETA)
     for i, j in pairs:
         if i < j:
-            G_doubt.add_edge(i, j, weight=float(C_u[i, j]))
+            G_doubt.add_edge(i, j, weight=abs(float(C_u[i, j])))
 
     # 3. Structural graph
     G_struct = nx.from_numpy_array(adj)
