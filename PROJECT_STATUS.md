@@ -14,7 +14,7 @@ Mem4ristor est une implémentation computationnelle de dynamiques FitzHugh-Nagum
 
 Le projet est né au sein du **Café Virtuel**, un laboratoire de collaboration entre un humain et plusieurs IA (Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek). L'historique complet est dans le dépôt Café Virtuel : https://github.com/cafe-virtuel/
 
-Publication : DOI 10.5281/zenodo.18620597 (preprint dans `docs/preprint.pdf`)
+Publication : DOI 10.5281/zenodo.19700749 (preprint dans `docs/preprint.pdf`)
 
 ---
 
