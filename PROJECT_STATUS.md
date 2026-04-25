@@ -76,6 +76,10 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | **Hérétiques actifs à I_stim=0** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | `I_eff[heretic_mask] *= -1` est no-op quand I_stim=0. Les expériences "endogènes" ne testent pas le mécanisme hérétique. Voir §3octvicies |
 | **Verilog-A (v26.va) = Python** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Noyau linéaire (1-2u), τ_u=1.0, pas d'ε_u adaptatif, pas de plasticité, double-comptage I_coup. Voir §3octvicies |
 | **Escape SPICE noise+mismatch (P4.19)** | **✅ CONFIRMÉ sous 3 métriques** | H_cont=4.58 bits à (η=0.5, σ_C=0.5). Survit à la métrique continue et aux bins KIMI. Voir §3quindecies |
+| **Calibration η SPICE ↔ σ Python** | **⚠️ FAILLE OUVERTE — AUDIT MANUS 2026-04-25** | η=0.5 SPICE et σ Python n'ont jamais été mis en correspondance d'amplitude. Le claim "bruit thermique qualitativement distinct du bruit gaussien" est postulé, pas démontré. Expérience de calibration requise. Voir §3trigies |
+| **Bins obsolètes dans `spice_dead_zone_test.py`** | **🚨 BUG DE COHÉRENCE — AUDIT MANUS 2026-04-25** | Fichier utilise encore les seuils pré-KIMI `[-1.5, -0.8, 0.8, 1.5]` au lieu des bins actuelles `[-1.2, -0.4, 0.4, 1.2]`. Résultats dead zone SPICE incomparables avec résultats Python. Correction prioritaire. Voir §3trigies |
+| **Dynamique u tronquée dans les netlists SPICE** | **⚠️ LIMITATION NON DOCUMENTÉE — AUDIT MANUS 2026-04-25** | `B_du` SPICE = `eps_u*(sigma_base - u)` uniquement. Terme σ_social absent. La faisabilité hardware est validée pour un modèle appauvri (sans couplage métacognitif), pas pour le modèle complet. Voir §3trigies |
+| **Duplication make_ba() inter-scripts** | **⚠️ DETTE TECHNIQUE — AUDIT MANUS 2026-04-25** | 7 scripts implémentent leur propre `make_ba()` NumPy ; `spice_19ter_robustness.py` utilise `networkx.barabasi_albert_graph`. Divergences possibles pour même seed/m. Voir §3trigies |
 
 ### 3bis. LIMIT-05 : Entropie maximale (2026-03-21)
 
@@ -1438,6 +1442,61 @@ Plan d'attaque validé par Julien : **D → B → C → A**.
 
 ---
 
+### 3trigies. Audit Externe Manus AI — FAIBLESSES IDENTIFIÉES (2026-04-25)
+
+**Auditeur** : Manus AI. Fichier : `.Audit/25-04-2026_Rapport d'Audit Scientifique et Technique du Projet Mem4ristor v3.2.0.md`
+
+**Contexte** : Deuxième audit externe du projet (le premier était le 2026-04-22 par un auditeur anonyme, voir §3octvicies). Ce rapport couvre la solidité scientifique des claims, la qualité du code et propose de nouvelles pistes.
+
+---
+
+#### Critique de l'audit : ce qui est valide vs ce qui est déjà traité
+
+**Trois points soulevés par Manus que nous avions DÉJÀ traités (audit insuffisamment informé) :**
+
+- §1.1 Effets de taille finie → **DÉJÀ FAIT** en §3duovigies : N∈{100,400,1600}, λ₂ N-invariant, λ₂_crit=∞ sous degree_linear.
+- §3.1 Normalisation spectrale → **DÉJÀ TESTÉE ET NÉGATIVE** en §3octies : 0/6 wins, résultat dans le preprint.
+- §3.2 Redondance des chemins → **DÉJÀ FAIT** en §3unvigies : λ₂ vs EBC r=−0.665, λ₂ = meilleur prédicteur.
+
+---
+
+#### Faiblesses réelles identifiées par Manus — ACTIONS REQUISES
+
+**FAILLE A — Absence de calibration η SPICE ↔ σ Python** *(Priorité : HAUTE — impact Paper B)*
+
+Le claim central de Paper B ("le bruit thermique SPICE rescue la dead zone") et le résultat Item 10 ("le bruit Gaussien Python ne le peut pas jusqu'à σ=1.2") coexistent sans calibration d'amplitude. On ne sait pas si η=0.5 SPICE correspond à σ≈0.1 Python (amplitudes incomparables) ou σ≈2.0 Python (amplitudes déjà au-dessus de notre sweep). Le claim "bruit thermique qualitativement distinct" est postulé, pas démontré.
+
+- **Test requis** : mesurer la variance de tension injectée par `trnoise(eta)` dans une cellule SPICE simple → convertir en σ_equiv Python → relancer Item 10 à cette amplitude.
+- **Résultat attendu (hypothèse favorable)** : η=0.5 SPICE ↔ σ >> 1.2 Python → le bruit Python est simplement sous-dosé dans le sweep Item 10, pas qualitativement différent.
+- **Résultat défavorable** : σ_equiv ≈ 0.5-1.0 → les deux régimes de bruit sont à amplitude comparable mais l'un rescue et l'autre non → cela RENFORCE le claim Paper B (le bruit thermique est structurellement différent).
+- **Dans tous les cas** : la calibration est nécessaire pour que le claim soit défendable.
+
+**FAILLE B — Bins pré-KIMI dans `experiments/spice_dead_zone_test.py`** *(Priorité : MOYENNE — cohérence)*
+
+`spice_dead_zone_test.py` utilise encore les seuils obsolètes `[-1.5, -0.8, 0.8, 1.5]` au lieu des seuils KIMI actuels `[-1.2, -0.4, 0.4, 1.2]`. Les valeurs H_cog reportées pour la dead zone SPICE sont donc calculées avec une métrique différente de tous les résultats Python récents. Bug de cohérence, pas d'impact sur la conclusion principale (dead zone H≈0 dans les deux cas) mais invalide la comparabilité quantitative.
+
+- **Correction** : remplacer les seuils dans `spice_dead_zone_test.py` et relancer (< 5 min).
+
+**FAILLE C — Dynamique u tronquée dans les netlists SPICE** *(Priorité : MOYENNE — transparence)*
+
+Les netlists SPICE utilisent `B_du = eps_u*(sigma_base - u)`, omettant le terme `k_u * sigma_social_i` présent dans `dynamics.py`. La faisabilité hardware est donc validée pour un modèle où le doute ne répond pas aux désaccords locaux — c'est une version appauvrie du mécanisme. L'escape SPICE démontré ne prouve pas que le modèle *complet* (avec métacognition) est faisable en hardware.
+
+- **Correction** : soit implémenter σ_social dans SPICE (complexe, nécessite B-source supplémentaire), soit documenter explicitement dans Paper B que la validation hardware porte sur le "noyau FHN + doute autonome", pas sur le mécanisme métacognitif complet.
+
+**FAILLE D — Duplication make_ba() inter-scripts** *(Priorité : BASSE — dette technique)*
+
+Reproductibilité inter-expériences potentiellement compromise. Non-urgent scientifiquement mais devrait être adressé avant la soumission de Paper 2.
+
+---
+
+#### Diagnostic global de l'audit Manus
+
+L'audit est solide sur la cohérence technique (B, D) et identifie correctement la calibration SPICE/Python (A) comme la faiblesse principale de Paper B. En revanche, il n'a pas attaqué les claims scientifiques durs (causalité de u, τ_u bifurcation sous autres conditions, baseline NMI) que notre prompt demandait — l'audit reste en surface sur la partie scientifique.
+
+**Score implicite** : le projet est techniquement publiable avec corrections B+C, scientifiquement publiable à condition de traiter A. La faille A est la seule qui pourrait être soulevée par un reviewer de Nature Physics ou Physical Review E.
+
+---
+
 ### Session 2026-04-25 (Claude Sonnet 4.6 — P2 Items 10 & 12)
 
 **Contexte** : Continuation de la session 2026-04-24. Deux items P2 backlog implémentés et clos.
@@ -1770,6 +1829,34 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 - **Méthode** : Sweep δ ∈ [−0.1, 0.1] sur Lattice 10×10. Script : `experiments/p2_delta_sweep.py`.
 - **Métriques** : `calculate_temporal_lz_complexity` + H_cont.
 - **Statut** : ✅ CLOTURE — RESULTAT NEGATIF / ROBUSTESSE (2026-04-24). delta sans effet significatif (variation LZ < bruit inter-seeds). delta = parametre technique, pas de controle. Voir §3septvigies.
+
+### P2-AUDIT-2 — Actions issues de l'Audit Manus (2026-04-25)
+
+> Ces 4 actions sont issues du rapport `.Audit/25-04-2026_Rapport d'Audit Scientifique et Technique du Projet Mem4ristor v3.2.0.md`. Elles doivent être traitées **avant soumission de Paper B**.
+
+**Faille A — Calibration η SPICE ↔ σ Python** *(PRIORITÉ HAUTE)*
+- Mesurer la variance injectée par `trnoise(eta=0.5)` dans une cellule RC SPICE unitaire.
+- Convertir en σ_equiv Python (variance de bruit par pas de temps normalisée à Δt=0.05).
+- Relancer Item 10 à σ_equiv et à σ_equiv×2 pour confirmer ou infirmer la distinction qualitative.
+- Script à créer : `experiments/spice_noise_calibration.py`.
+- **Statut** : ⬜ OUVERT
+
+**Faille B — Bins obsolètes `spice_dead_zone_test.py`** *(PRIORITÉ MOYENNE — quick fix)*
+- Remplacer `[-1.5, -0.8, 0.8, 1.5]` → `[-1.2, -0.4, 0.4, 1.2]` dans le fichier.
+- Relancer pour confirmer que la conclusion (H≈0 dans dead zone) est inchangée.
+- **Statut** : ⬜ OUVERT
+
+**Faille C — Dynamique u tronquée dans les netlists SPICE** *(PRIORITÉ MOYENNE — documentation)*
+- Option 1 (recommandée) : ajouter une note explicite dans Paper B §2 : "la validation hardware porte sur le noyau FHN + doute autonome ; le terme σ_social requiert un B-source supplémentaire, hors scope de cette étude."
+- Option 2 (future) : implémenter σ_social dans SPICE (nécessite B-source supplémentaire).
+- **Statut** : ⬜ OUVERT
+
+**Faille D — Duplication make_ba() inter-scripts** *(PRIORITÉ BASSE — dette technique)*
+- Créer `src/mem4ristor/graph_utils.py` avec une fonction `make_ba(n, m, seed)` canonique.
+- Remplacer les 7+ implémentations locales.
+- **Statut** : ⬜ OUVERT
+
+---
 
 ### P3 — Qualité du code
 13. **~~`sensory.py` : convolution lente~~** → **FAIT (antérieur)**. `scipy.signal.correlate2d` déjà en place (ligne 3+55). PROJECT_STATUS était désynchronisé.
