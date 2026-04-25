@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Item 12 -- Doubt-Driven Community Detection (2026-04-24)
+        + NMI Baseline aléatoire (2026-04-25 — réponse Audit Manus §2.4)
 
 Hypothese : La matrice de doute u(i,t) porte une information sur les
 communautes fonctionnelles du reseau. Les noeuds qui oscillent en phase
@@ -13,7 +14,9 @@ Approche :
   4. Detection de communautes Louvain sur ce graphe (NetworkX 3.5).
   5. Detection de communautes Louvain sur le graphe structural (adjacence).
   6. NMI entre les deux partitions → alignment.
-  7. Visualisation : heatmap C_u + side-by-side communautes.
+  7. Baseline NMI aleatoire : N_BOOTSTRAP permutations des labels du doute
+     → NMI_rand mean ± std. Comparaison NMI_observé vs NMI_rand + 2*sigma.
+  8. Visualisation : heatmap C_u + side-by-side communautes.
 
 Topologies : Lattice 10x10, BA m=3 N=100.
 Regime : I_stim=0.5 (force), coupling_norm='degree_linear'.
@@ -22,7 +25,7 @@ Script  : experiments/p2_doubt_community_detection.py
 Figures : figures/p2_doubt_community_detection.png
 CSV     : figures/p2_doubt_community_detection.csv
 
-Reference : PROJECT_STATUS.md Item 12
+Reference : PROJECT_STATUS.md Item 12, §3octvigies, §3untrigies §2.4
 """
 import sys, os, time
 import numpy as np
@@ -32,13 +35,14 @@ from mem4ristor.core import Mem4Network
 from mem4ristor.graph_utils import make_ba
 
 # -- Parametres ---------------------------------------------------------------
-SEEDS   = [42, 123, 777]
-I_STIM  = 0.5
-STEPS   = 4000
-WARM_UP = 1500
-N_BA    = 100
-M_BA    = 3
-CORR_THETA = 0.3   # seuil de correlation pour le graphe doubt-affinity
+SEEDS        = [42, 123, 777]
+I_STIM       = 0.5
+STEPS        = 4000
+WARM_UP      = 1500
+N_BA         = 100
+M_BA         = 3
+CORR_THETA   = 0.3    # seuil de correlation pour le graphe doubt-affinity
+N_BOOTSTRAP  = 500    # permutations pour la baseline NMI aleatoire
 
 
 
@@ -86,6 +90,36 @@ def nmi(labels_a, labels_b):
 
     denom = (ha + hb) / 2.0
     return mi / denom if denom > 1e-12 else 0.0
+
+
+def nmi_random_baseline(labels_a, labels_b, n_bootstrap=500, rng_seed=0):
+    """
+    Baseline NMI aléatoire par bootstrap.
+    Permute aleatoirement les labels de la partition A et calcule NMI
+    avec la partition B fixe. Retourne (mean, std, p_value_empirique).
+
+    p_value = fraction des NMI aléatoires >= NMI_observé (test unilatéral).
+    """
+    rng    = np.random.RandomState(rng_seed)
+    a      = np.asarray(labels_a)
+    b      = np.asarray(labels_b)
+    nmi_obs = nmi(a, b)
+    nmi_rand = np.empty(n_bootstrap)
+    for i in range(n_bootstrap):
+        a_shuffled   = rng.permutation(a)
+        nmi_rand[i]  = nmi(a_shuffled, b)
+    mean_r = float(nmi_rand.mean())
+    std_r  = float(nmi_rand.std())
+    p_val  = float((nmi_rand >= nmi_obs).mean())
+    z_score = (nmi_obs - mean_r) / (std_r + 1e-12)
+    return {
+        'nmi_obs':  nmi_obs,
+        'rand_mean': mean_r,
+        'rand_std':  std_r,
+        'z_score':   z_score,
+        'p_value':   p_val,
+        'significant': p_val < 0.05,
+    }
 
 
 def louvain_partition(G):
@@ -159,7 +193,11 @@ def run_one(topo, seed):
     n_comm_struct = len(np.unique(lbl_struct))
     nmi_score     = nmi(lbl_doubt, lbl_struct)
 
-    # 5. Mean u and v per doubt-community
+    # 5. Baseline NMI aleatoire (reponse Audit Manus §2.4)
+    baseline      = nmi_random_baseline(lbl_doubt, lbl_struct,
+                                        n_bootstrap=N_BOOTSTRAP, rng_seed=seed)
+
+    # 6. Mean u and v per doubt-community
     comm_stats = []
     for k in np.unique(lbl_doubt):
         mask_k = lbl_doubt == k
@@ -178,6 +216,7 @@ def run_one(topo, seed):
         'n_comm_doubt': n_comm_doubt,
         'n_comm_struct': n_comm_struct,
         'nmi': nmi_score,
+        'baseline': baseline,
         'n_doubt_edges': G_doubt.number_of_edges(),
         'comm_stats': comm_stats,
         'adj': adj,
@@ -199,26 +238,46 @@ if __name__ == '__main__':
 
     for topo in ['lattice', 'ba_m3']:
         print(f"\nTopologie : {topo}")
-        print(f"  {'seed':>5}  {'#comm_doubt':>12}  {'#comm_struct':>13}  "
-              f"{'NMI':>7}  {'doubt_edges':>12}")
+        print(f"  {'seed':>5}  {'#comm_d':>8}  {'#comm_s':>8}  "
+              f"{'NMI_obs':>8}  {'NMI_rand':>9}  {'z':>6}  {'p':>6}  {'sig':>4}")
         nmi_list = []
+        baseline_list = []
         for seed in SEEDS:
             res = run_one(topo, seed)
+            bl  = res['baseline']
             nmi_list.append(res['nmi'])
-            print(f"  {seed:>5}  {res['n_comm_doubt']:>12}  {res['n_comm_struct']:>13}  "
-                  f"{res['nmi']:>7.4f}  {res['n_doubt_edges']:>12}")
+            baseline_list.append(bl)
+            sig = '***' if bl['p_value'] < 0.001 else ('**' if bl['p_value'] < 0.01
+                  else ('*' if bl['p_value'] < 0.05 else 'ns'))
+            print(f"  {seed:>5}  {res['n_comm_doubt']:>8}  {res['n_comm_struct']:>8}  "
+                  f"{res['nmi']:>8.4f}  "
+                  f"{bl['rand_mean']:.4f}±{bl['rand_std']:.4f}  "
+                  f"{bl['z_score']:>+6.2f}  {bl['p_value']:>6.3f}  {sig:>4}")
             rows.append({
-                'topo': topo, 'seed': seed,
-                'n_comm_doubt': res['n_comm_doubt'],
+                'topo':          topo,
+                'seed':          seed,
+                'n_comm_doubt':  res['n_comm_doubt'],
                 'n_comm_struct': res['n_comm_struct'],
-                'nmi': res['nmi'],
+                'nmi_obs':       res['nmi'],
+                'nmi_rand_mean': bl['rand_mean'],
+                'nmi_rand_std':  bl['rand_std'],
+                'z_score':       bl['z_score'],
+                'p_value':       bl['p_value'],
+                'significant':   bl['significant'],
                 'n_doubt_edges': res['n_doubt_edges'],
             })
             # Garder seed=42 pour la figure
             if seed == 42:
                 best_results[topo] = res
 
-        print(f"  --> NMI mean={np.mean(nmi_list):.4f}  std={np.std(nmi_list):.4f}")
+        nmi_obs_mean = float(np.mean(nmi_list))
+        nmi_obs_std  = float(np.std(nmi_list))
+        rand_mean    = float(np.mean([b['rand_mean'] for b in baseline_list]))
+        rand_std     = float(np.mean([b['rand_std']  for b in baseline_list]))
+        z_mean       = float(np.mean([b['z_score']   for b in baseline_list]))
+        print(f"  --> NMI_obs={nmi_obs_mean:.4f}±{nmi_obs_std:.4f}  "
+              f"NMI_rand={rand_mean:.4f}±{rand_std:.4f}  "
+              f"z_mean={z_mean:+.2f}")
 
         # Detail des communautes du doute (seed=42)
         res42 = best_results[topo]
