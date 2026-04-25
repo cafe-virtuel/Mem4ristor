@@ -1,0 +1,374 @@
+#!/usr/bin/env python3
+"""
+Item 12 -- Doubt-Driven Community Detection (2026-04-24)
+        + NMI Baseline aléatoire (2026-04-25 — réponse Audit Manus §2.4)
+
+Hypothese : La matrice de doute u(i,t) porte une information sur les
+communautes fonctionnelles du reseau. Les noeuds qui oscillent en phase
+dans leur niveau de doute u(t) appartiendraient au meme attracteur cognitif.
+
+Approche :
+  1. Enregistrer u_history (T, N) apres convergence.
+  2. Calculer la matrice de correlation Pearson des traces u(t) → C_u (N×N).
+  3. Seuillage de C_u → graphe de "doubt affinity" (aretes si |corr| > theta).
+  4. Detection de communautes Louvain sur ce graphe (NetworkX 3.5).
+  5. Detection de communautes Louvain sur le graphe structural (adjacence).
+  6. NMI entre les deux partitions → alignment.
+  7. Baseline NMI aleatoire : N_BOOTSTRAP permutations des labels du doute
+     → NMI_rand mean ± std. Comparaison NMI_observé vs NMI_rand + 2*sigma.
+  8. Visualisation : heatmap C_u + side-by-side communautes.
+
+Topologies : Lattice 10x10, BA m=3 N=100.
+Regime : I_stim=0.5 (force), coupling_norm='degree_linear'.
+
+Script  : experiments/p2_doubt_community_detection.py
+Figures : figures/p2_doubt_community_detection.png
+CSV     : figures/p2_doubt_community_detection.csv
+
+Reference : PROJECT_STATUS.md Item 12, §3octvigies, §3untrigies §2.4
+"""
+import sys, os, time
+import numpy as np
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+from mem4ristor.core import Mem4Network
+from mem4ristor.graph_utils import make_ba
+
+# -- Parametres ---------------------------------------------------------------
+SEEDS        = [42, 123, 777]
+I_STIM       = 0.5
+STEPS        = 4000
+WARM_UP      = 1500
+N_BA         = 100
+M_BA         = 3
+CORR_THETA   = 0.3    # seuil de correlation pour le graphe doubt-affinity
+# Note : theta=0.1 teste le 2026-04-25 -- PIRE sur BA m=3 (z: +0.50 -> -0.04)
+# Les singletons heretiques (u=1.0, var=0) ont corr~0 avec tout noeud
+# quelle que soit theta (variance nulle -> Pearson indefini -> ~0 apres clip).
+# theta=0.3 reste le meilleur reglage.
+N_BOOTSTRAP  = 500    # permutations pour la baseline NMI aleatoire
+
+
+
+
+def pearson_corr_matrix(X):
+    """Matrice de correlation Pearson de X (T, N) → (N, N). Sans sklearn."""
+    mu  = X.mean(axis=0)
+    std = X.std(axis=0)
+    std = np.where(std < 1e-12, 1.0, std)
+    Z   = (X - mu) / std          # (T, N)
+    C   = (Z.T @ Z) / X.shape[0]  # (N, N)
+    return np.clip(C, -1.0, 1.0)
+
+
+def nmi(labels_a, labels_b):
+    """
+    Normalized Mutual Information entre deux vecteurs d'etiquettes entiers.
+    NMI = 2*MI(A,B) / (H(A) + H(B)). Retourne float in [0, 1].
+    """
+    a = np.asarray(labels_a)
+    b = np.asarray(labels_b)
+    n = len(a)
+    classes_a = np.unique(a)
+    classes_b = np.unique(b)
+
+    # Joint distribution
+    joint = np.zeros((len(classes_a), len(classes_b)))
+    a_idx = {c: i for i, c in enumerate(classes_a)}
+    b_idx = {c: i for i, c in enumerate(classes_b)}
+    for ai, bi in zip(a, b):
+        joint[a_idx[ai], b_idx[bi]] += 1
+    joint /= n
+
+    pa = joint.sum(axis=1)
+    pb = joint.sum(axis=0)
+
+    # H(A), H(B)
+    ha = -float(np.sum(pa[pa > 0] * np.log2(pa[pa > 0])))
+    hb = -float(np.sum(pb[pb > 0] * np.log2(pb[pb > 0])))
+
+    # MI
+    outer = np.outer(pa, pb)
+    mask  = (joint > 0) & (outer > 0)
+    mi    = float(np.sum(joint[mask] * np.log2(joint[mask] / outer[mask])))
+
+    denom = (ha + hb) / 2.0
+    return mi / denom if denom > 1e-12 else 0.0
+
+
+def nmi_random_baseline(labels_a, labels_b, n_bootstrap=500, rng_seed=0):
+    """
+    Baseline NMI aléatoire par bootstrap.
+    Permute aleatoirement les labels de la partition A et calcule NMI
+    avec la partition B fixe. Retourne (mean, std, p_value_empirique).
+
+    p_value = fraction des NMI aléatoires >= NMI_observé (test unilatéral).
+    """
+    rng    = np.random.RandomState(rng_seed)
+    a      = np.asarray(labels_a)
+    b      = np.asarray(labels_b)
+    nmi_obs = nmi(a, b)
+    nmi_rand = np.empty(n_bootstrap)
+    for i in range(n_bootstrap):
+        a_shuffled   = rng.permutation(a)
+        nmi_rand[i]  = nmi(a_shuffled, b)
+    mean_r = float(nmi_rand.mean())
+    std_r  = float(nmi_rand.std())
+    p_val  = float((nmi_rand >= nmi_obs).mean())
+    z_score = (nmi_obs - mean_r) / (std_r + 1e-12)
+    return {
+        'nmi_obs':  nmi_obs,
+        'rand_mean': mean_r,
+        'rand_std':  std_r,
+        'z_score':   z_score,
+        'p_value':   p_val,
+        'significant': p_val < 0.05,
+    }
+
+
+def louvain_partition(G):
+    """
+    Louvain communities via NetworkX. Retourne un vecteur d'etiquettes
+    de longueur N (labels[i] = communaute du noeud i).
+    """
+    import networkx.algorithms.community as nxc
+    communities = nxc.louvain_communities(G, seed=42)
+    labels = np.zeros(G.number_of_nodes(), dtype=int)
+    for k, comm in enumerate(communities):
+        for node in comm:
+            labels[node] = k
+    return labels
+
+
+def run_one(topo, seed):
+    import networkx as nx
+
+    if topo == 'lattice':
+        net = Mem4Network(size=10, heretic_ratio=0.15, seed=seed,
+                          coupling_norm='degree_linear')
+        # Build lattice adjacency
+        size = net.size
+        N    = net.N
+        adj  = np.zeros((N, N))
+        for i in range(size):
+            for j in range(size):
+                node = i * size + j
+                for di, dj in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    ni2, nj2 = (i + di) % size, (j + dj) % size
+                    adj[node, ni2 * size + nj2] = 1.0
+    else:
+        adj = make_ba(N_BA, M_BA, seed)
+        net = Mem4Network(adjacency_matrix=adj.copy(), heretic_ratio=0.15,
+                          seed=seed, coupling_norm='degree_linear')
+
+    N = net.N
+
+    # Simulate and record u_history + v_history post warm-up
+    u_history = []
+    v_history = []
+    for step in range(STEPS):
+        net.step(I_stimulus=I_STIM)
+        if step >= WARM_UP:
+            u_history.append(net.model.u.copy())
+            v_history.append(net.v.copy())
+
+    u_arr = np.array(u_history)   # (T, N)
+    v_arr = np.array(v_history)   # (T, N)
+
+    # 1. Correlation matrix of u traces
+    C_u = pearson_corr_matrix(u_arr)
+
+    # 2. Doubt-affinity graph (seuillage |corr| > CORR_THETA)
+    G_doubt = nx.Graph()
+    G_doubt.add_nodes_from(range(N))
+    pairs = np.argwhere(np.abs(C_u) > CORR_THETA)
+    for i, j in pairs:
+        if i < j:
+            G_doubt.add_edge(i, j, weight=float(C_u[i, j]))
+
+    # 3. Structural graph
+    G_struct = nx.from_numpy_array(adj)
+
+    # 4. Community detection on both graphs
+    lbl_doubt  = louvain_partition(G_doubt)
+    lbl_struct = louvain_partition(G_struct)
+
+    n_comm_doubt  = len(np.unique(lbl_doubt))
+    n_comm_struct = len(np.unique(lbl_struct))
+    nmi_score     = nmi(lbl_doubt, lbl_struct)
+
+    # 5. Baseline NMI aleatoire (reponse Audit Manus §2.4)
+    baseline      = nmi_random_baseline(lbl_doubt, lbl_struct,
+                                        n_bootstrap=N_BOOTSTRAP, rng_seed=seed)
+
+    # 6. Mean u and v per doubt-community
+    comm_stats = []
+    for k in np.unique(lbl_doubt):
+        mask_k = lbl_doubt == k
+        comm_stats.append({
+            'comm': k,
+            'size': int(mask_k.sum()),
+            'mean_u': float(u_arr[:, mask_k].mean()),
+            'std_u':  float(u_arr[:, mask_k].std()),
+            'mean_v': float(v_arr[:, mask_k].mean()),
+        })
+
+    return {
+        'C_u': C_u,
+        'lbl_doubt': lbl_doubt,
+        'lbl_struct': lbl_struct,
+        'n_comm_doubt': n_comm_doubt,
+        'n_comm_struct': n_comm_struct,
+        'nmi': nmi_score,
+        'baseline': baseline,
+        'n_doubt_edges': G_doubt.number_of_edges(),
+        'comm_stats': comm_stats,
+        'adj': adj,
+        'N': N,
+    }
+
+
+# -- Main ---------------------------------------------------------------------
+if __name__ == '__main__':
+    print("=" * 80)
+    print("Item 12 -- Doubt-Driven Community Detection")
+    print(f"I_stim={I_STIM} | steps={STEPS} | warm_up={WARM_UP}")
+    print(f"Corr threshold theta={CORR_THETA} | seeds={SEEDS}")
+    print("=" * 80)
+
+    t0   = time.time()
+    rows = []
+    best_results = {}   # for figures: keep one seed per topo
+
+    for topo in ['lattice', 'ba_m3']:
+        print(f"\nTopologie : {topo}")
+        print(f"  {'seed':>5}  {'#comm_d':>8}  {'#comm_s':>8}  "
+              f"{'NMI_obs':>8}  {'NMI_rand':>9}  {'z':>6}  {'p':>6}  {'sig':>4}")
+        nmi_list = []
+        baseline_list = []
+        for seed in SEEDS:
+            res = run_one(topo, seed)
+            bl  = res['baseline']
+            nmi_list.append(res['nmi'])
+            baseline_list.append(bl)
+            sig = '***' if bl['p_value'] < 0.001 else ('**' if bl['p_value'] < 0.01
+                  else ('*' if bl['p_value'] < 0.05 else 'ns'))
+            print(f"  {seed:>5}  {res['n_comm_doubt']:>8}  {res['n_comm_struct']:>8}  "
+                  f"{res['nmi']:>8.4f}  "
+                  f"{bl['rand_mean']:.4f}±{bl['rand_std']:.4f}  "
+                  f"{bl['z_score']:>+6.2f}  {bl['p_value']:>6.3f}  {sig:>4}")
+            rows.append({
+                'topo':          topo,
+                'seed':          seed,
+                'n_comm_doubt':  res['n_comm_doubt'],
+                'n_comm_struct': res['n_comm_struct'],
+                'nmi_obs':       res['nmi'],
+                'nmi_rand_mean': bl['rand_mean'],
+                'nmi_rand_std':  bl['rand_std'],
+                'z_score':       bl['z_score'],
+                'p_value':       bl['p_value'],
+                'significant':   bl['significant'],
+                'n_doubt_edges': res['n_doubt_edges'],
+            })
+            # Garder seed=42 pour la figure
+            if seed == 42:
+                best_results[topo] = res
+
+        nmi_obs_mean = float(np.mean(nmi_list))
+        nmi_obs_std  = float(np.std(nmi_list))
+        rand_mean    = float(np.mean([b['rand_mean'] for b in baseline_list]))
+        rand_std     = float(np.mean([b['rand_std']  for b in baseline_list]))
+        z_mean       = float(np.mean([b['z_score']   for b in baseline_list]))
+        print(f"  --> NMI_obs={nmi_obs_mean:.4f}±{nmi_obs_std:.4f}  "
+              f"NMI_rand={rand_mean:.4f}±{rand_std:.4f}  "
+              f"z_mean={z_mean:+.2f}")
+
+        # Detail des communautes du doute (seed=42)
+        res42 = best_results[topo]
+        print(f"\n  Communautes du doute (seed=42) :")
+        for cs in sorted(res42['comm_stats'], key=lambda x: -x['size']):
+            print(f"    comm {cs['comm']} : size={cs['size']:3d}  "
+                  f"mean_u={cs['mean_u']:.3f}  std_u={cs['std_u']:.3f}  "
+                  f"mean_v={cs['mean_v']:.3f}")
+
+    elapsed = time.time() - t0
+    print(f"\nElapsed: {elapsed:.1f}s")
+
+    # -- CSV ------------------------------------------------------------------
+    import csv, pathlib
+    fig_dir = pathlib.Path(__file__).resolve().parents[1] / 'figures'
+    fig_dir.mkdir(exist_ok=True)
+    csv_path = fig_dir / 'p2_doubt_community_detection.csv'
+    with open(csv_path, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"CSV : {csv_path}")
+
+    # -- Figure ---------------------------------------------------------------
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.colors as mcolors
+
+        fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+
+        for row_idx, topo in enumerate(['lattice', 'ba_m3']):
+            res = best_results[topo]
+            N   = res['N']
+            C_u = res['C_u']
+
+            ax_corr, ax_doubt, ax_struct = axes[row_idx]
+
+            # Panel 1 : heatmap correlation u
+            im = ax_corr.imshow(C_u, vmin=-1, vmax=1, cmap='RdBu_r',
+                                aspect='auto')
+            plt.colorbar(im, ax=ax_corr, fraction=0.046)
+            ax_corr.set_title(f'{topo} | u(t) correlation matrix\n'
+                              f'(seed=42, T={STEPS-WARM_UP})')
+            ax_corr.set_xlabel('node'); ax_corr.set_ylabel('node')
+
+            # Panel 2 : communautes du doute sur graphe structural
+            try:
+                import networkx as nx
+                G_struct = nx.from_numpy_array(res['adj'])
+                pos = nx.spring_layout(G_struct, seed=42, k=0.3)
+                lbl_d = res['lbl_doubt']
+                n_cd  = res['n_comm_doubt']
+                cmap  = plt.cm.get_cmap('tab10', max(n_cd, 1))
+                node_colors = [cmap(lbl_d[i]) for i in range(N)]
+                nx.draw_networkx(G_struct, pos=pos, ax=ax_doubt,
+                                 node_color=node_colors, node_size=50,
+                                 with_labels=False, edge_color='gray',
+                                 alpha=0.7, width=0.4)
+                ax_doubt.set_title(f'Doubt communities ({n_cd} comms)\n'
+                                   f'NMI vs struct = {res["nmi"]:.3f}')
+                ax_doubt.axis('off')
+
+                # Panel 3 : communautes structurelles
+                lbl_s = res['lbl_struct']
+                n_cs  = res['n_comm_struct']
+                cmap2 = plt.cm.get_cmap('tab10', max(n_cs, 1))
+                node_colors2 = [cmap2(lbl_s[i]) for i in range(N)]
+                nx.draw_networkx(G_struct, pos=pos, ax=ax_struct,
+                                 node_color=node_colors2, node_size=50,
+                                 with_labels=False, edge_color='gray',
+                                 alpha=0.7, width=0.4)
+                ax_struct.set_title(f'Structural communities ({n_cs} comms)')
+                ax_struct.axis('off')
+            except Exception as e:
+                ax_doubt.text(0.5, 0.5, str(e), ha='center', va='center')
+                ax_struct.text(0.5, 0.5, str(e), ha='center', va='center')
+
+        fig.suptitle(
+            f'Item 12 -- Doubt-Driven Community Detection\n'
+            f'I_stim={I_STIM}, theta={CORR_THETA}, coupling=degree_linear',
+            fontsize=11
+        )
+        plt.tight_layout()
+        png_path = fig_dir / 'p2_doubt_community_detection.png'
+        plt.savefig(png_path, dpi=150, bbox_inches='tight')
+        print(f"Figure : {png_path}")
+    except Exception as e:
+        print(f"[matplotlib error] {e}")
