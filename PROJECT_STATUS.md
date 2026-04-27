@@ -1981,6 +1981,53 @@ La cascade compresse la diversité cognitive. L'effondrement maximal est à u_th
 **Scripts** : `experiments/v4_dynamic_heretics_emergence.py`, `experiments/v4_parametric_sweep.py`
 **Git** : commits `88b9983` + `171c519` sur `feat/v4-dynamic-heretics`
 
+### 3quinquetrigies. λ₂_crit — Formalisation par régression logistique (2026-04-27)
+
+**Contexte** : λ₂_crit ≈ 2.5 était until'ici une valeur « eyeballed » tirée visuellement de §3novemvigies (SR topology). Ce statut informel était le point le plus vulnérable du dossier face à un reviewer. Expérience : régression logistique multi-sources pour formaliser la frontière.
+
+**Méthode** : `experiments/lambda2_crit_regression.py`. Fusion de trois sources expérimentales indépendantes (n=58 observations) en une table unifiée (λ₂, dead_zone_binary). Analyse primaire sur la source la plus fiable (labels explicites), analyse combinée pour validation.
+
+**Définition rigoureuse de "dead zone"** : le système est en dead zone si *aucune* normalisation raisonnable ne permet d'atteindre la diversité cognitive (H < 0.10 pour uniform *et* degree_linear). Les topologies où degree_linear=0 mais uniform>0 (CM, BA m=1) ne sont **pas** en dead zone — elles requièrent simplement la normalisation correcte.
+
+**Sources** :
+| Source | n | dead | not_dead | Méthode |
+|:-------|:-:|:----:|:--------:|:--------|
+| `p2_edge_betweenness.csv` | 36 | 12 | 24 | Labels explicites par seed (régime déterminé empiriquement) |
+| `fiedler_phase_diagram.csv` | 15 | 2 | 13 | best_H = max(H_uniform, H_degree_linear) < 0.10 |
+| `p2_stochastic_resonance_topology.csv` | 7 | 3 | 4 | H_cog(σ_max) < 0.10 |
+
+**Résultat primaire — séparation complète (n=36, ebc) :**
+
+Les 36 observations de la source ebc (la plus fiable) montrent une **séparation complète** sans chevauchement :
+
+| Frontière | λ₂ | Topologie |
+|:----------|---:|:---------|
+| Max λ₂ non-dead | **2.126** | BA m=4, seed=2 |
+| Min λ₂ dead | **2.504** | BA m=5, seed=2 |
+
+→ **λ₂_crit ∈ (2.13, 2.50)**, midpoint = **2.31**
+→ Classification : 100% correcte sur 36 observations (aucun faux positif/négatif)
+
+**Résultat combiné — régression logistique MLE (n=58) :**
+- λ₂_crit = 3.140, IC 95% bootstrap : [1.928, 4.845]
+- McFadden R² = 0.697
+- IC large dû aux incohérences de définition entre sources (BA m=8 : fiedler H_uniform=0.12 > seuil → non-dead, mais ebc → dead)
+
+**Conclusion** :
+- La valeur eyeballed **2.5 est dans l'intervalle de séparation (2.13, 2.50)** — compatible, mais légèrement surestimée.
+- La valeur formelle à rapporter : **λ₂_crit ~ 2.31** (midpoint), ou plus précisément **λ₂_crit ∈ (2.13, 2.50)**.
+- La séparation complète (aucun chevauchement sur 36 obs.) est un résultat plus fort qu'une simple régression : elle établit que le seuil existe, qu'il est net, et qu'il se situe dans cet intervalle.
+
+**Formulation pour le papier** :
+> *"Analysis of 36 topological configurations reveals complete separation of the dead zone from the functional regime at λ₂ ∈ (2.13, 2.50). No configuration with λ₂ < 2.13 exhibits a dead zone; all configurations with λ₂ > 2.50 do. We estimate λ₂_crit ≈ 2.31 as the midpoint of this transition interval."*
+
+**Fichiers** :
+- Script : `experiments/lambda2_crit_regression.py`
+- Figure : `figures/lambda2_crit_regression.png` (régression logistique + distribution bootstrap)
+- CSV : `figures/lambda2_crit_regression.csv` (résultats numériques complets)
+
+---
+
 ### Session 2026-04-26 (Claude Sonnet 4.6 — Audit Edison NB4/NB5/A2)
 
 **Contexte** : Suite directe de la session 2026-04-25 (audit Edison Platform). Trois items résiduels traités : NB4 (figures paper_2.tex), NB5 (cohérence CSV), A2 (puissance statistique n=3).
