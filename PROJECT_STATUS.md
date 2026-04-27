@@ -2028,6 +2028,51 @@ Les 36 observations de la source ebc (la plus fiable) montrent une **séparation
 
 ---
 
+### 3sexquetrigies. V4 — Exploration du régime haute zone u_thr > 0.9 (2026-04-27)
+
+**Contexte** : Le sweep paramétrique V4 initial (`v4_parametric_sweep.py`) couvrait u_thr ∈ [0.3, 0.9]. La MEM4RISTOR.md listait « Explorer u_thr > 0.9 pour contrôle fin de la cascade » comme prochaine étape. Expérience : sweep ciblé sur la zone haute avec diagnostic de l'amplitude maximale de u observée.
+
+**Méthode** : `experiments/v4_high_uthr_sweep.py`. Grille u_thr ∈ {0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.05, 1.10, 1.20, 1.50, 2.00} × steps_required ∈ {10, 50, 200} × n=5 seeds = 165 runs. N_STEPS=3000, grille 10×10. Métrique supplémentaire : `u_max_observed` = maximum de |u_i| observé sur toute la simulation.
+
+**Résultat central : plafond dur à u = 1.0**
+
+La Levitating Sigmoid borne u dans [0, 1]. Pour **tous** les seuils testés (y compris u_thr=2.0), `u_max_observed = 1.000`. La cascade s'effondre non pas graduellement mais par un saut abrupt entre u_thr=1.00 et u_thr=1.05.
+
+**Frontière critique : u_thr_crit ∈ (1.00, 1.05)**
+
+| u_thr | heretic% (steps=50) | H_final | cascade ? |
+|------:|--------------------:|--------:|----------:|
+| 0.90  | 92.8%               | 2.647   | OUI       |
+| 0.92  | 91.0%               | 2.727   | OUI       |
+| 0.94  | 88.0%               | 2.896   | OUI       |
+| 0.96  | 86.0%               | 2.933   | OUI       |
+| 0.98  | 84.2%               | 2.982   | OUI       |
+| 1.00  | 76.2%               | 3.108   | OUI (partiel) |
+| **1.05**  | **15.0%**           | **3.509** | **NON** |
+| 1.10  | 15.0%               | 3.509   | NON       |
+| ≥1.20 | 15.0%               | 3.509   | NON       |
+
+**Interprétation mécanique** :
+- u_thr ≤ 0.98 : u_max = 1.0 dépasse le seuil → cascade inévitable (marge > 0.02)
+- u_thr = 1.00 : seuil exactement au plafond → cascade partielle, très sensible à steps_required (steps=10 → 81%, steps=200 → 54%)
+- u_thr ≥ 1.05 : seuil physiquement inatteignable → 0% cascade dynamique, H retourne exactement à la baseline V3 (3.509)
+
+**Cas spécial u_thr = 1.00** : le seuil coïncide avec le maximum absolu de u. Les nœuds à fort couplage atteignent u=1.0 épisodiquement mais ne peuvent le maintenir au-delà de quelques steps. Plus steps_required est long, moins la bascule est probable : c'est un filtre de durée au plafond.
+
+**Zone de contrôle fin [0.90, 1.00]** : la cascade décline de 93% à ~76% (steps=50). La décroissance est quasi-linéaire (~8%/0.05 de u_thr). C'est la seule zone où u_thr offre un contrôle graduel sans éteindre complètement la cascade.
+
+**Contrôle négatif parfait** : à u_thr ≥ 1.05, H_final = 3.509 = baseline V3 exacte (aucun hérétique dynamique né). Le mécanisme V4 est chirurgicalement inactif.
+
+**Loi t_first dans la zone haute** : la loi linéaire `t_first ≈ steps_required + 130 × u_threshold` reste approximativement valide jusqu'à u_thr=0.98, mais commence à dévier à u_thr=1.00 (219 observé vs 180 prédit pour steps=50). Cohérent : au plafond, u ne converge plus régulièrement vers le seuil — il y touche épisodiquement.
+
+**Fichiers** :
+- Script sweep : `experiments/v4_high_uthr_sweep.py`
+- Script figure : `experiments/v4_high_uthr_figure.py`
+- Figure : `figures/v4_high_uthr_sweep.png` (3 panels : cascade vs u_thr, H vs u_thr, diagnostic plafond)
+- CSV : `figures/v4_high_uthr_sweep.csv` (165 runs, 5 seeds)
+
+---
+
 ### Session 2026-04-26 (Claude Sonnet 4.6 — Audit Edison NB4/NB5/A2)
 
 **Contexte** : Suite directe de la session 2026-04-25 (audit Edison Platform). Trois items résiduels traités : NB4 (figures paper_2.tex), NB5 (cohérence CSV), A2 (puissance statistique n=3).
