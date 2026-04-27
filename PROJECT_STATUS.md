@@ -1,5 +1,5 @@
-# PROJECT STATUS — Mem4ristor v3.2.0
-**Dernière mise à jour : 2026-04-26**
+# PROJECT STATUS — Mem4ristor v3.2.1
+**Dernière mise à jour : 2026-04-27**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -1923,6 +1923,64 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 
 **Duree** : 44s (60 runs : 10 tau_u × 2 topos × 3 seeds).
 
+---
+
+### 3quatertrigies. V4 Dynamic Heretics — Sweep Paramétrique (2026-04-27)
+
+**Contexte** : Implémentation du mécanisme de bascule dynamique des hérétiques. Un nœud `i` bascule irréversiblement en hérétique quand `u_i >= u_threshold` pendant `steps_required` steps consécutifs. Branche `feat/v4-dynamic-heretics`.
+
+**Implémentation** :
+- `src/mem4ristor/dynamics.py` : config `coupling.dynamic_heretics` (enabled / u_threshold / steps_required), tableau `heretic_counter` par nœud, compteur `dynamic_heretic_count`, logique de bascule irréversible dans `step()` après mise à jour de `u`.
+- `src/mem4ristor/topology.py` : `health_check()` enrichie avec `total_heretics` et `dynamic_heretic_count`.
+
+**Sweep 2D** : `u_threshold` ∈ [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] × `steps_required` ∈ [10, 25, 50, 100, 200, 500], n=3 seeds, 3000 steps, grille 10×10, I=0.3.
+Script : `experiments/v4_parametric_sweep.py`. CSV : `figures/v4_parametric_sweep.csv`.
+
+**Loi linéaire découverte** :
+
+```
+t_first = steps_required + tau(u_threshold)
+tau ≈ 130 × u_threshold   (linéaire, R²≈1)
+```
+
+`tau` = temps de montée de `u` vers le seuil depuis `sigma_baseline=0.05`. Les deux paramètres sont **orthogonaux et additifs**.
+
+**Carte de phase (heretic_pct_final)** :
+
+| u_threshold | heretic_pct (n=3 seeds) |
+|:-----------:|:-----------------------:|
+| 0.3 – 0.8   | **100%** (cascade totale) |
+| 0.9         | **~92%** (cascade quasi-totale) |
+
+Pas de régime "pas de cascade" dans la plage testée. La cascade est un **attracteur quasi-inévitable** sous ce régime (grille 10×10, I=0.3).
+
+**Entropie** :
+
+| Paramètres | H final | delta vs V3 (H~3.41) |
+|:-----------|:-------:|:--------------------:|
+| u=0.7, s=500 | **2.057** | **-1.35 bits** |
+| u=0.9, s=500 | 2.584 | -0.83 bits |
+| u=0.3, s=10  | 2.824 | -0.59 bits |
+
+La cascade compresse la diversité cognitive. L'effondrement maximal est à u_thr ∈ [0.6, 0.8].
+
+**Comparaison V3 vs V4** (10×10, I=0.3, n=5 seeds, 5000 steps) :
+
+| Métrique | V3 (statique) | V4 (dynamique) |
+|:---------|:------------:|:--------------:|
+| total_heretics | 15.0 ± 0.0 | **99.8 ± 0.4** |
+| dynamic_born | 0 | **84.8 ± 0.4** |
+| synchrony | 1.61 ± 0.02 | 1.68 ± 0.01 |
+| entropy H | 3.41 ± 0.13 | **2.33 ± 0.11** |
+
+**Questions ouvertes** :
+- Explorer u_thr > 0.9 : y a-t-il une zone de contrôle fin de la cascade ?
+- La cascade irréversible est-elle souhaitable ou faut-il envisager une version réversible ?
+- Impact sur la dead zone BA m>=5 : V4 dynamique pourrait-il contourner la strangulation topologique ?
+
+**Scripts** : `experiments/v4_dynamic_heretics_emergence.py`, `experiments/v4_parametric_sweep.py`
+**Git** : commits `88b9983` + `171c519` sur `feat/v4-dynamic-heretics`
+
 ### Session 2026-04-26 (Claude Sonnet 4.6 — Audit Edison NB4/NB5/A2)
 
 **Contexte** : Suite directe de la session 2026-04-25 (audit Edison Platform). Trois items résiduels traités : NB4 (figures paper_2.tex), NB5 (cohérence CSV), A2 (puissance statistique n=3).
@@ -1950,13 +2008,25 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 - Note statistique ajoutée dans paper_2.tex §Discussion : "ablation et tau_u validés à n=5 ; SR topology + finite-size restent à n=3 et sont marqués TODO(A2)".
 - Scripts lourds (`p2_stochastic_resonance_topology.py`, `p2_finite_size_scaling.py`) : seeds n=3 conservées avec TODO(A2) inline.
 
+### Session 2026-04-27 (Claude Sonnet 4.6 — V4 Dynamic Heretics)
+
+**Commits sur main (62d3b2a)** :
+- `topology.py` : `health_check()` ajoutée — 6 gardes de santé (NaN/Inf, explosion, zone morte, doute saturé/gelé, matrice corrompue, rewiring excessif), retourne `ok/warning/critical` + liste des issues + `total_heretics` + `dynamic_heretic_count`.
+- `dynamics.py` : 2 marqueurs `@DOUBT` (correction NaN silencieuse L154-157 + clipping silencieux L241-244).
+
+**Commits sur `feat/v4-dynamic-heretics`** :
+- **88b9983** : V4 implémenté dans `dynamics.py` (config `dynamic_heretics`, `heretic_counter`, bascule irréversible) + `topology.py` (health_check V4) + script `v4_dynamic_heretics_emergence.py`.
+- **171c519** : Sweep paramétrique 2D (126 runs) + CSV `figures/v4_parametric_sweep.csv`. Loi découverte : `t_first = steps_required + 130 × u_threshold`.
+
+**Résultat clé** : cascade totale (100%) pour u_thr ≤ 0.8 ; attracteur quasi-inévitable dans le régime testé. Entropie effondrée de -1.35 bits max. Voir §3quatertrigies.
+
 ---
 
 ## 10. PROCHAINES ÉTAPES (par priorité)
 
 ### P0 — Soumission
 1. **~~Relecture finale~~** → **SOUMIS 2026-04-22** par Julien.
-2. **Upload Zenodo** avec la v3.2.0 (DOI existant à mettre à jour)
+2. **~~Upload Zenodo~~** → **FAIT (2026-04-27)** par Julien. v3.2.1 uploadée (preprint.pdf + paper_2.pdf + PROJECT_STATUS.md + figures).
 3. **Commit + push GitHub** avec tous les changements de cette session
 
 ### P1 — Bugs pré-existants à fixer
@@ -1989,7 +2059,7 @@ H_cog reste proche de 0 pour **tous les modes et toutes les amplitudes**. La dea
 **Priorité moyenne (intéressant, Paper 2 ou 3) :**
 
 10. **Stochastic resonance** — ✅ CLOTURE (2026-04-25). Pas de SR classique. Dichotomie lambda2 : < 2.5 → bruit benefique monotone ; > 2.5 → zone morte resistante au bruit. Voir §3novemvigies.
-11. **Adaptive heretics** — η dynamique : nœuds deviennent hérétiques si u_i > 0.8 pendant >100 pas. Auto-régulation. Pourrait supprimer la dead zone sans changer la topologie. ⚠️ Change le modèle fondamentalement → v4.0.
+11. **Adaptive heretics** — ✅ **IMPLÉMENTÉ (2026-04-27)** sur `feat/v4-dynamic-heretics`. Bascule irréversible : u_i >= u_threshold × steps_required steps → heretic. Loi : t_first = steps_required + 130×u_threshold. Cascade totale (100%) pour u_thr ≤ 0.8. Voir §3quatertrigies.
 12. **Doubt-driven community detection** — ✅ CLOTURE (2026-04-25, re-analyse audit Edison). Bug Louvain corrige (poids signes → |corr|). Post-fix : Lattice 2/3 seeds sig (z_mean=+1.80), BA m=3 signal ambigu (z=+2.55/-2.18/+0.32, z_mean=+0.23). Finding robuste : deux regimes u (singletons heretiques u=1.0 + grands groupes frustres). Voir §3octvigies.
 
 ---
