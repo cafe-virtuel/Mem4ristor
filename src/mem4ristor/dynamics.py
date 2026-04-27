@@ -20,7 +20,8 @@ class Mem4ristorV3:
                 'v_cubic_divisor': 5.0, 'dt': 0.05,
                 'lambda_learn': 0.05, 'tau_plasticity': 1000, 'w_saturation': 2.0
             },
-            'coupling': {'D': 0.15, 'heretic_ratio': 0.15, 'uniform_placement': True},
+            'coupling': {'D': 0.15, 'heretic_ratio': 0.15, 'uniform_placement': True,
+                         'dynamic_heretics': {'enabled': False, 'u_threshold': 0.8, 'steps_required': 100}},
             'doubt': {'epsilon_u': 0.02, 'k_u': 1.0, 'sigma_baseline': 0.05, 'u_clamp': [0.0, 1.0], 'tau_u': 10.0,
                       'alpha_surprise': 2.0, 'surprise_cap': 5.0},
             'noise': {'sigma_v': 0.05, 'use_rtn': False, 'rtn_amplitude': 0.1, 'rtn_p_flip': 0.01},
@@ -119,6 +120,10 @@ class Mem4ristorV3:
         self.D_eff = self.cfg['coupling']['D'] / np.sqrt(self.N)
         self.mode_state = np.zeros(self.N, dtype=bool)
         self.time_in_state = np.zeros(self.N, dtype=float)
+
+        # V4: dynamic heretics — counts consecutive steps where u_i >= u_threshold
+        self.heretic_counter = np.zeros(self.N, dtype=int)
+        self.dynamic_heretic_count = 0
 
     def _update_hysteresis(self):
         hyst = self.cfg['hysteresis']
@@ -242,6 +247,19 @@ class Mem4ristorV3:
         self.v = np.clip(self.v, -100.0, 100.0)
         self.w = np.clip(self.w, -100.0, 100.0)
         self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
+
+        # V4: dynamic heretics — bascule irréversible quand u_i >= u_threshold pendant steps_required steps
+        dyn = self.cfg['coupling'].get('dynamic_heretics', {})
+        if dyn.get('enabled', False):
+            threshold = dyn.get('u_threshold', 0.8)
+            steps_req = dyn.get('steps_required', 100)
+            above = self.u >= threshold
+            self.heretic_counter[above] += 1
+            self.heretic_counter[~above] = 0
+            newly_heretic = (self.heretic_counter >= steps_req) & (~self.heretic_mask)
+            if np.any(newly_heretic):
+                self.heretic_mask |= newly_heretic
+                self.dynamic_heretic_count += int(np.sum(newly_heretic))
 
     def solve_rk45(self, t_span, I_stimulus=0.0, adj_matrix=None):
         # WARNING (audit 2026-04-22): the combined_dynamics closure below calls

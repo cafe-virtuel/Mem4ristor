@@ -373,12 +373,20 @@ class Mem4Network:
                   " | ".join(msg for _, msg in issues)
             warnings.warn(msg, UserWarning, stacklevel=2)
 
+        # --- V4: dynamic heretics status ---
+        dyn_cfg = self.model.cfg['coupling'].get('dynamic_heretics', {})
+        dyn_enabled = dyn_cfg.get('enabled', False)
+        dynamic_heretic_count = self.model.dynamic_heretic_count if dyn_enabled else None
+        total_heretics = int(np.sum(self.model.heretic_mask))
+
         return {
-            'status':       status,
-            'entropy_H':    H,
-            'u_mean':       u_mean,
-            'v_max_abs':    v_max_abs,
-            'rewire_count': self.rewire_count,
-            'N':            self.N,
-            'issues':       issues,
+            'status':                status,
+            'entropy_H':             H,
+            'u_mean':                u_mean,
+            'v_max_abs':             v_max_abs,
+            'rewire_count':          self.rewire_count,
+            'N':                     self.N,
+            'issues':                issues,
+            'total_heretics':        total_heretics,
+            'dynamic_heretic_count': dynamic_heretic_count,
         }
