@@ -58,7 +58,7 @@ N_SIZES = [100, 400, 1600]
 BA_MS = [1, 2, 3, 4, 5, 6, 8, 10]
 
 STEPS_BY_N = {100: 3000, 400: 2000, 1600: 1000}
-SEEDS = [0, 1, 2]  # TODO(A2): increase to [0, 1, 2, 3, 4] for publication — heavy (N=1600 runs)
+SEEDS = [0, 1, 2, 3, 4]  # n=5 seeds (publication-ready)
 TAIL_FRAC = 0.25
 TRACE_STRIDE = 10
 
@@ -260,7 +260,7 @@ def main() -> int:
     ax1.axhline(H_THRESHOLD, ls="--", color="k", lw=1.5, alpha=0.6,
                 label=f"H threshold = {H_THRESHOLD}")
     ax1.set_xlabel("lambda2 (Fiedler value)", fontsize=11)
-    ax1.set_ylabel("H_stable (continuous 100-bin, mean over 3 seeds)", fontsize=10)
+    ax1.set_ylabel("H_stable (continuous 100-bin, mean over 5 seeds)", fontsize=10)
     ax1.set_title("Finite-size scaling: lambda2 vs H_stable\nby network size N", fontsize=10)
     ax1.grid(alpha=0.3)
     ax1.legend(fontsize=9)
@@ -298,7 +298,7 @@ def main() -> int:
 
     fig.suptitle(
         "P2-7 — Finite-size scaling of the dead zone transition\n"
-        "(BA m sweep, degree_linear norm, 3 seeds per point)",
+        "(BA m sweep, degree_linear norm, 5 seeds per point)",
         fontsize=11,
     )
     plt.tight_layout()

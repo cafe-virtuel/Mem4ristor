@@ -40,7 +40,7 @@ from mem4ristor.metrics import (
 
 # -- Parametres ---------------------------------------------------------------
 SIGMAS  = [0.0, 0.01, 0.03, 0.07, 0.15, 0.30, 0.50, 0.80, 1.20]
-SEEDS   = [42, 123, 777]  # TODO(A2): increase to [42, 123, 777, 456, 999] for publication — heavy (~30 min)
+SEEDS   = [42, 123, 777, 456, 999]  # n=5 seeds (publication-ready)
 I_STIM  = 0.5
 STEPS   = 3000
 WARM_UP = 750
