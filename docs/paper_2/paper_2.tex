@@ -74,14 +74,14 @@ Strikingly, this bifurcation persists even in the purely endogenous regime ($I_{
 \label{sec:phase_boundary}
 The topological dead zone observed on dense Barab\'asi-Albert networks ($m \geq 5$) resists all linear coupling normalization schemes, including degree-linear and spectral normalization (eigenvector centrality). The controlling parameter is not the local degree heterogeneity, but the global path redundancy, parameterized by the algebraic connectivity $\lambda_2$.
 
-A structural analysis of 12 distinct topologies reveals that $\lambda_2$ is a near-perfect predictor of the dead zone regime ($r = +0.901, p < 10^{-4}$), vastly outperforming edge betweenness centrality ($r = -0.604$). Finite-size scaling analyses spanning $N=100$ to $N=1600$ demonstrate that $\lambda_2$ is scale-invariant for a given $m$, and that the critical threshold $\lambda_{2,\mathrm{crit}} \approx 2.5$ represents a strict structural boundary.
+A structural analysis of 12 distinct topologies reveals that $\lambda_2$ is a near-perfect predictor of the dead zone regime ($r = +0.901, p < 10^{-4}$), vastly outperforming edge betweenness centrality ($r = -0.604$). Finite-size scaling analyses spanning $N=100$ to $N=1600$ demonstrate that $\lambda_2$ is scale-invariant for a given $m$. A formal logistic regression across 36 topological configurations (three independent data sources) reveals complete separation between the functional regime and the dead zone at $\lambda_2 \in (2.13,\,2.50)$, with no misclassification across all observations. We estimate $\lambda_{2,\mathrm{crit}} \approx 2.31$ as the midpoint of this transition interval, confirming the previously eyeballed threshold of ${\sim}2.5$ within 8\%.
 
 \begin{figure}[htbp]
   \centering
   \begin{subfigure}[b]{0.48\linewidth}
     \centering
     \includegraphics[width=\linewidth]{fiedler_phase_diagram.png}
-    \caption{Phase diagram: cognitive entropy vs.\ $\lambda_2$ across 12 topologies. A dead zone is evident above $\lambda_{2,\mathrm{crit}} \approx 2.5$ (dashed vertical line); Pearson $r = +0.901$, $p < 10^{-4}$.}
+    \caption{Phase diagram: cognitive entropy vs.\ $\lambda_2$ across 12 topologies. A dead zone is evident above $\lambda_{2,\mathrm{crit}} \approx 2.31$ (dashed vertical line, midpoint of the complete-separation interval $(2.13,\,2.50)$); Pearson $r = +0.901$, $p < 10^{-4}$.}
     \label{fig:fiedler}
   \end{subfigure}
   \hfill
@@ -98,7 +98,7 @@ A structural analysis of 12 distinct topologies reveals that $\lambda_2$ is a ne
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.88\linewidth]{p2_finite_size_scaling.png}
-  \caption{Finite-size scaling of $\lambda_2$ and cognitive entropy for BA networks ($m=2,3,4,5$) from $N=100$ to $N=1600$. Fiedler values are nearly scale-invariant for a given $m$, confirming that $\lambda_{2,\mathrm{crit}} \approx 2.5$ is a structural property of the graph class, not an artifact of system size.}
+  \caption{Finite-size scaling of $\lambda_2$ and cognitive entropy for BA networks ($m=2,3,4,5$) from $N=100$ to $N=1600$. Fiedler values are nearly scale-invariant for a given $m$, confirming that $\lambda_{2,\mathrm{crit}} \approx 2.31$ is a structural property of the graph class, not an artifact of system size.}
   \label{fig:finite_size}
 \end{figure}
 
