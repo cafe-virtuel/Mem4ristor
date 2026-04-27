@@ -150,6 +150,8 @@ class Mem4ristorV3:
             if not isinstance(I_stimulus, (list, tuple)):
                 raise TypeError(f"Stimulus type {type(I_stimulus).__name__} not supported.")
 
+        # @DOUBT — Correction silencieuse : si v/w/u contiennent NaN/Inf, on remet à zéro sans erreur.
+        # Si tu vois des résultats incohérents, appelle health_check() pour détecter ce cas.
         if np.any(~np.isfinite(self.v)): self.v = np.nan_to_num(self.v, nan=0.0, posinf=0.0, neginf=0.0)
         if np.any(~np.isfinite(self.w)): self.w = np.nan_to_num(self.w, nan=0.0, posinf=0.0, neginf=0.0)
         if np.any(~np.isfinite(self.u)): self.u = np.nan_to_num(self.u, nan=0.5, posinf=0.5, neginf=0.5)
@@ -235,6 +237,8 @@ class Mem4ristorV3:
         self.w += (dw + dw_learning) * self.dt
         self.u += du * self.dt
 
+        # @DOUBT — Clipping silencieux : si v ou w explosent au-delà de ±100, ils sont écrasés sans signal.
+        # Des valeurs clipées = simulation potentiellement fausse. Utilise health_check() pour le détecter.
         self.v = np.clip(self.v, -100.0, 100.0)
         self.w = np.clip(self.w, -100.0, 100.0)
         self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])

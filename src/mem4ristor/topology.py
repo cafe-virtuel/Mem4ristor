@@ -257,3 +257,128 @@ class Mem4Network:
         states = get_cognitive_states(self.model.v)
         counts = np.bincount(states, minlength=6)[1:]
         return {f"bin_{i}": int(c) for i, c in enumerate(counts)}
+
+    def health_check(self) -> dict:
+        """
+        Point de contrôle de santé du réseau.
+
+        Appelle cette méthode à tout moment pour détecter les défaillances silencieuses :
+        zone morte, explosion de variables, doute saturé/gelé, matrice corrompue.
+
+        Returns
+        -------
+        dict avec :
+            'status'       : 'ok' | 'warning' | 'critical'
+            'entropy_H'    : float — entropie actuelle
+            'u_mean'       : float — doute moyen
+            'v_max_abs'    : float — valeur absolue maximale de v
+            'rewire_count' : int   — nombre de rewirings depuis le début
+            'N'            : int   — taille du réseau
+            'issues'       : list of (level, message) — liste des problèmes détectés
+
+        Exemple d'usage
+        ---------------
+            rapport = reseau.health_check()
+            if rapport['status'] != 'ok':
+                print(rapport['issues'])
+        """
+        import warnings
+        issues = []
+
+        # --- 1. Intégrité des variables d'état ---
+        v_nan = not np.all(np.isfinite(self.model.v))
+        w_nan = not np.all(np.isfinite(self.model.w))
+        u_nan = not np.all(np.isfinite(self.model.u))
+        if v_nan:
+            issues.append(('critical', 'v contient NaN/Inf — état du réseau corrompu'))
+        if w_nan:
+            issues.append(('critical', 'w contient NaN/Inf — variable de récupération corrompue'))
+        if u_nan:
+            issues.append(('critical', 'u contient NaN/Inf — variable de doute corrompue'))
+
+        # --- 2. Détection d'explosion silencieuse (clipping) ---
+        v_max_abs = float(np.max(np.abs(self.model.v))) if np.all(np.isfinite(self.model.v)) else float('inf')
+        n_clipped = int(np.sum(np.abs(self.model.v) > 50))
+        if n_clipped > 0:
+            issues.append((
+                'warning',
+                f'{n_clipped}/{self.N} nœuds ont |v| > 50 — explosion possible, clipping silencieux actif'
+            ))
+
+        # --- 3. Zone morte (effondrement de l'entropie) ---
+        try:
+            H = float(self.model.calculate_entropy())
+        except Exception:
+            H = 0.0
+            issues.append(('critical', 'Impossible de calculer l\'entropie — état critique'))
+
+        if H < 0.1:
+            issues.append((
+                'critical',
+                f'ZONE MORTE : entropie H={H:.4f} < 0.1 — le réseau a convergé vers le consensus'
+            ))
+        elif H < 0.5:
+            issues.append((
+                'warning',
+                f'Entropie faible : H={H:.4f} — approche de la zone morte (seuil critique : 0.1)'
+            ))
+
+        # --- 4. Doute saturé ou gelé ---
+        u_clamp = self.model.cfg['doubt']['u_clamp']
+        u_mean = float(np.mean(self.model.u))
+        n_at_max = int(np.sum(self.model.u >= u_clamp[1] - 1e-6))
+        n_at_min = int(np.sum(self.model.u <= u_clamp[0] + 1e-6))
+        if n_at_max > self.N * 0.5:
+            issues.append((
+                'warning',
+                f'Doute saturé : {n_at_max}/{self.N} nœuds à u_max={u_clamp[1]} — tous les nœuds doutent au maximum'
+            ))
+        if n_at_min > self.N * 0.5:
+            issues.append((
+                'warning',
+                f'Doute gelé : {n_at_min}/{self.N} nœuds à u_min={u_clamp[0]} — aucun doute actif dans le réseau'
+            ))
+
+        # --- 5. Intégrité de la matrice d'adjacence ---
+        if self.adjacency_matrix is not None and not self.use_stencil:
+            if self._is_sparse:
+                has_negative = np.any(self.adjacency_matrix.data < 0)
+                has_nan = not np.all(np.isfinite(self.adjacency_matrix.data))
+            else:
+                has_negative = np.any(self.adjacency_matrix < 0)
+                has_nan = not np.all(np.isfinite(self.adjacency_matrix))
+            if has_negative:
+                issues.append(('critical', 'Matrice d\'adjacence contient des valeurs négatives — Laplacien invalide'))
+            if has_nan:
+                issues.append(('critical', 'Matrice d\'adjacence contient NaN/Inf — topologie corrompue'))
+
+        # --- 6. Tempête de rewiring ---
+        if self.rewire_count > self.N * 10:
+            issues.append((
+                'warning',
+                f'Rewiring excessif : {self.rewire_count} rewirings pour {self.N} nœuds — topologie instable'
+            ))
+
+        # --- Statut global ---
+        if any(level == 'critical' for level, _ in issues):
+            status = 'critical'
+        elif issues:
+            status = 'warning'
+        else:
+            status = 'ok'
+
+        # Émettre un warning Python visible dans les logs si problème détecté
+        if status != 'ok':
+            msg = f"[Mem4Network health_check] status={status.upper()} — " + \
+                  " | ".join(msg for _, msg in issues)
+            warnings.warn(msg, UserWarning, stacklevel=2)
+
+        return {
+            'status':       status,
+            'entropy_H':    H,
+            'u_mean':       u_mean,
+            'v_max_abs':    v_max_abs,
+            'rewire_count': self.rewire_count,
+            'N':            self.N,
+            'issues':       issues,
+        }
