@@ -83,6 +83,7 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | **Terminologie : "frustrated synchronization" / "topological phase transition"** | **✅ CORRIGÉ (2026-04-28)** | → "polarity-modulated anti-synchronization" / "spectral phase transition". Distinction fondamentale : la polarité est state-dependent et continue, pas quenched. Voir §3quinquetrigies |
 | **H_cog=0 dans ablation preprint** | **✅ DOCUMENTÉ ET RECENTRÉ (2026-04-28)** | Artefact de binning : voltages Python [-3.2,-1.3] tous en bin 1. Claim recentrée sur H_cont (100-bin) = 3.79±0.14 bits + synchrony FULL=0.031 vs FROZEN=0.751. Voir §3quinquetrigies |
 | **SPICE : validation 50 seeds BA m=5 N=64** | **✅ DOCUMENTÉ DANS PAPER (2026-04-28)** | Résultats préexistants documentés : dead zone H_cont=1.38±0.04, functional H_cont=4.30±0.19. Mismatch CMOS σ_C=0.10 sans effet sur la diversité. Section dédiée ajoutée dans preprint.tex. Voir §3quinquetrigies |
+| **[6] Cohen U3 — non-chevauchement distributions FROZEN_U vs FULL** | **✅ VALIDÉ (2026-04-29)** | U3=100% (empirique et analytique) dans 3 comparaisons. OVL=0.000000 (distributions strictement disjointes). SPICE d=20.78 (n=50) + Python d=13.21 (n=7) + ablation d=11.44 (n=5). Commit 4a0bd62. Voir §3quadragies |
 | **[8] RK4 vs Euler — validation intégrateur (paramètres corrigés)** | **✅ VALIDÉ (2026-04-29)** | Euler dt=0.05 validé sur paramètres alignés config.yaml (sigmoid_steepness=π, SOC_LEAK=0.01, ε_u=0.02, τ_u=10). Plasticité=OFF : Max Δ(H_cog)=0.0018, surge delta=0.3pp. Plasticité=ON (λ_learn=0.05) : Max Δ(H_cog)=0.0053, surge delta=0.1pp. Commits 91a0072 + 4cd7fce sur feat/v4-dynamic-heretics. Voir §3novetrigies |
 
 ### 3bis. LIMIT-05 : Entropie maximale (2026-03-21)
@@ -2291,6 +2292,33 @@ Le script a été corrigé le 29 avril 2026. Deux runs exécutés pour couvrir l
 ---
 
 
+### 3quadragies. Cohen U3 -- Non-chevauchement des distributions (2026-04-29)
+
+**Contexte** : Item [6] de l'audit. Quantification formelle de la separation entre distributions FROZEN_U/FULL (Python) et A_dead_zone/B_noise_only (SPICE).
+
+**Definitions** :
+- **U3 analytique** : Phi(d) -- proportion theorique de la distribution traitee depassant la moyenne du controle (sous normalite)
+- **U3 empirique** : fraction des observations traitees depassant la **mediane** du controle (non-parametrique)
+- **OVL** : coefficient de chevauchement -- 0 = distributions disjointes, 1 = distributions identiques
+
+**Resultats** :
+
+| Comparaison | n | Cohen d | U3 empirique | OVL | Disjoint |
+|:------------|:-:|:-------:|:------------:|:---:|:--------:|
+| SPICE A_dead_zone vs B_noise_only (H_cont) | 50+50 | **20.78** | **100%** | **0.000000** | **OUI** |
+| Python FULL vs FROZEN_U sync @ I=0.50 | 7+7 | **13.21** | **100%** | **0.000000** | **OUI** |
+| Python ablation sync n=5 (parametrique) | 5+5 | **11.44** | **100%** (Phi(d)) | -- | -- |
+
+**SPICE** : max(A_dead_zone)=1.497 bits < min(B_noise_only)=3.865 bits. Aucune des 50 observations dead zone n'atteint la plus basse observation noise-only. Separation stricte, pas seulement statistique.
+
+**Python** : max(FULL sync @ I=0.50)=0.099 < min(FROZEN_U sync)=0.658. Meme constat sur n=7 seeds.
+
+**Formulation preprint suggeree** :
+> "Cohen's U3 = 100% (SPICE A vs B, d=20.78 ; Python FROZEN_U vs FULL, d=13.21) : les distributions sont strictement disjointes (OVL=0.000). Chaque observation noise-only depasse la valeur maximale de la condition dead zone [max(A)=1.497 < min(B)=3.865 bits]. Chaque seed FROZEN_U depasse la valeur maximale observee pour FULL [max(FULL)=0.099 < min(FROZEN_U)=0.658]."
+
+**Fichiers** : `experiments/cohen_u3.py`, `figures/cohen_u3_results.csv` -- Commit : `4a0bd62`
+
+---
 ### Session 2026-04-29 (Claude Sonnet 4.6 — Validation intégrateur [8] complète)
 
 **Objectif** : Validation complète de l'item [8] RK4 vs Euler de l'audit DeepSeek. Deux runs : plasticité=OFF (isolation FHN pur) et plasticité=ON (système complet).
