@@ -2318,7 +2318,7 @@ Le script a été corrigé le 29 avril 2026. Deux runs exécutés pour couvrir l
 ### P0 — Soumission
 1. **~~Relecture finale~~** → **SOUMIS 2026-04-22** par Julien.
 2. **~~Upload Zenodo~~** → **FAIT (2026-04-27)** par Julien. v3.2.1 uploadée (preprint.pdf + paper_2.pdf + PROJECT_STATUS.md + figures).
-3. **Commit + push GitHub** avec tous les changements de cette session
+3. **~~Commit + push GitHub~~** → **FAIT (2026-04-28 + 2026-04-29)**. 4 commits sur `feat/v4-dynamic-heretics` : révision adversariale (d057865), correction paramètres + validation [8] plasticité=OFF (91a0072), validation [8] plasticité=ON (4cd7fce), PROJECT_STATUS [8] (357f69f). Audit DeepSeek items [7] (dt sensitivity, §3septemtrigies) et [8] (RK4/Euler, §3novetrigies) : TOUS DEUX VALIDÉS.
 
 ### P1 — Bugs pré-existants à fixer
 4. **~~`test_swarm_synchronization`~~** → **FAIT (2026-04-19)**. Test était écrit pour mean-field symétrique mais l'implémentation est MAX FIELD asymétrique (intentionnel : vétéran préservé). Test corrigé.
