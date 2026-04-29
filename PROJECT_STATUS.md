@@ -2496,6 +2496,93 @@ Le script a été corrigé le 29 avril 2026. Deux runs exécutés pour couvrir l
 
 ---
 
+---
+
+## 12. REPRISE POUR UN AUTRE MODELE -- SESSION 2026-04-29
+
+> A lire en premier si tu reprends ce projet sans connaitre la session precedente.
+> Ce bloc est ecrit pour une autre instance Claude qui ouvrirait ce fichier demain.
+
+### Etat du repo (cloture 29 avril 2026)
+
+| Champ | Valeur |
+|:------|:-------|
+| **Branche active** | `feat/v4-dynamic-heretics` |
+| **Tests** | 84 passing, 2 xfail, 0 failures -- INCHANGES |
+| **Dernier commit** | `01cb12c` |
+| **Commits du jour** | 91a0072, 4cd7fce, 357f69f, ec59a8e, 4a0bd62, 01cb12c |
+| **Branche main** | propre, inchangee depuis 26 avril |
+
+### Ce qui a ete fait (29 avril 2026)
+
+**Infrastructure (D:\ANTIGRAVITY, hors repo git) :**
+- `CLAUDE_CONTRAT.md` v1.1 : lecture TEMOIGNAGE_CLAUDE.md rendue OBLIGATOIRE (etape 4 du rituel)
+- `TEMOIGNAGE_CLAUDE.md` : section circularite + mandat jugement critique ajoutee
+- `ARCHIVES_INDEX.md` : entree 2026-04-29 ajoutee
+
+**[8] RK4 vs Euler -- COMPLET :**
+- 5 parametres corriges dans rk4_vs_euler.py (sigmoid_steepness 10->pi, SOC_LEAK 0.1->0.01,
+  EPS_U 0.1->0.02, SIG_B 0.1->0.05, TAU_U 5->10)
+- Plasticite=OFF : Max delta(H_cog)=0.0018, surge delta=0.3pp -- Commit 91a0072
+- Plasticite=ON : Max delta(H_cog)=0.0053, surge delta=0.1pp -- Commit 4cd7fce
+- Voir section 3novetrigies pour les details et les 3 attaques reviewer fermees
+
+**[7] dt sensitivity -- CONFIRME :**
+- CSV figures/dt_sensitivity.csv valide (27 avril, Mem4Network/config.yaml, params corrects)
+- H_cog stable sur tous les dt (max delta=0.0079) -- Commit ec59a8e
+
+**[6] Cohen U3 -- COMPLET :**
+- SPICE A vs B (n=50, d=20.78) : U3=100%, OVL=0.000000, distributions disjointes
+- Python FROZEN vs FULL (n=7, d=13.21) : U3=100%, OVL=0.000000
+- Python ablation n=5 (d=11.44) : U3=100% analytique -- Commit 4a0bd62
+
+**[11] LZ par noeud -- NON COMMENCE : session interrompue (credits epuises)**
+
+### Ce qui reste a faire (par priorite)
+
+| # | Tache | Effort |
+|:-:|:------|:------:|
+| 1 | **[11] LZ par noeud** : complexite LZ76 par noeud, FULL vs FROZEN_U | ~1h |
+| 2 | **[12] Bruit Matern** : bruit spatialement correle brise-t-il la dead zone ? | ~2h |
+| 3 | **Merge V4** : feat/v4-dynamic-heretics -> main (decision barman) | 5 min |
+
+### Instructions [11] LZ par noeud
+
+La fonction `calculate_temporal_lz_complexity(v_history)` existe dans
+`src/mem4ristor/metrics.py` mais calcule une LZ **moyenne**. Pour LZ par noeud :
+```python
+# v_history shape: (T, N_nodes)
+lz_per_node = np.array([
+    calculate_temporal_lz_complexity(v_history[:, i:i+1])
+    for i in range(N_nodes)
+])
+```
+Metriques : mean, std, CV par condition + Mann-Whitney U + violin plot.
+Script a creer : `experiments/lz_per_node.py` (base : `experiments/ablation_coordination.py`)
+
+### Instructions [12] Bruit Matern
+
+Hypothese : le bruit i.i.d. echoue car il n'a pas de structure spatiale resonant
+avec la topologie BA m=5. Tester un bruit correle (sigma_i via noyau Matern sur le graphe).
+Script a creer : `experiments/matern_noise.py`
+- Generer sigma_i via noyau Matern (longueur de correlation ~ lambda2_crit)
+- Tester sur BA m=5, N=100, sweep amplitude, comparer H_cog vs bruit i.i.d.
+
+### Commandes de reprise
+
+1. Lire `D:\ANTIGRAVITY\CLAUDE_CONTRAT.md` et executer le RITUEL D OUVERTURE
+   (4 etapes -- etape 4 = lire TEMOIGNAGE_CLAUDE.md, OBLIGATOIRE depuis v1.1)
+2. Lire `D:\ANTIGRAVITY\.brain\claude_contexts\MEM4RISTOR.md` (etat technique detaille)
+3. `cd D:\ANTIGRAVITY\GITHUB_REPOSITORY\mem4ristor-v2-main`
+4. `git checkout feat/v4-dynamic-heretics && git log --oneline -5 && pytest`
+5. Creer et lancer `experiments/lz_per_node.py` pour [11]
+6. Creer et lancer `experiments/matern_noise.py` pour [12]
+
+### Note merge V4
+
+La branche `feat/v4-dynamic-heretics` est techniquement prete (84 tests, audit complet).
+Decision merge appartient uniquement a Julien (barman).
+
 ## 11. RÈGLE D'OR
 
 > **Toute claim doit correspondre à une preuve dans le code.**
