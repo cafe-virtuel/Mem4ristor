@@ -86,6 +86,7 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | **[6] Cohen U3 — non-chevauchement distributions FROZEN_U vs FULL** | **✅ VALIDÉ (2026-04-29)** | U3=100% (empirique et analytique) dans 3 comparaisons. OVL=0.000000 (distributions strictement disjointes). SPICE d=20.78 (n=50) + Python d=13.21 (n=7) + ablation d=11.44 (n=5). Commit 4a0bd62. Voir §3quadragies |
 | **[8] RK4 vs Euler — validation intégrateur (paramètres corrigés)** | **✅ VALIDÉ (2026-04-29)** | Euler dt=0.05 validé sur paramètres alignés config.yaml (sigmoid_steepness=π, SOC_LEAK=0.01, ε_u=0.02, τ_u=10). Plasticité=OFF : Max Δ(H_cog)=0.0018, surge delta=0.3pp. Plasticité=ON (λ_learn=0.05) : Max Δ(H_cog)=0.0053, surge delta=0.1pp. Commits 91a0072 + 4cd7fce sur feat/v4-dynamic-heretics. Voir §3novetrigies |
 | **[7] dt sensitivity — H_cog stable, synchrony dépend de dt (physique Euler)** | **✅ VALIDÉ (2026-04-29)** | H_cog : max_delta < 0.01 sur toutes topologies (seuil 0.05) → claim principale robuste. Synchrony sensible au dt (BA m=3 : 0.751→0.462→0.396 pour dt=0.01/0.05/0.10) mais variation reflète la dissipation numérique Euler, cohérente avec [8]. Les comparaisons relatives FULL vs FROZEN_U restent valides. 60 runs, 3 topos × 4 dt × 5 seeds. CSV : figures/dt_sensitivity.csv. Voir §3quadragies-bis |
+| **[11] LZ par nœud — hubs plus structurés dans FULL, corrélation absente dans FROZEN_U** | **✅ VALIDÉ (2026-04-29)** | FULL Forcé : LZ_mean=1.101 (BA m=3) / 1.123 (BA m=5). FROZEN_U Forcé : LZ_mean=1.619 / 1.679 (+47-50%). **Finding clé : corrélation degré ↔ LZ dans FULL** : r=-0.564 (BA m=3) / r=-0.716 (BA m=5) — les hubs ont des trajectoires plus structurées. Dans FROZEN_U : r≈0 (p>0.5) — corrélation absente. 40 runs, 22s. CSV : figures/lz_per_node.csv. Voir §3quinquagies |
 
 ### §3quadragies-bis. [7] dt sensitivity — H_cog stable, synchrony suit la dissipation Euler (2026-04-29)
 
@@ -122,6 +123,56 @@ La variation de synchrony avec dt est **physiquement attendue** et non probléma
 **Données** : `figures/dt_sensitivity.csv` (60 lignes). Wall time : 97.7s.
 
 **Reproduction** : `python experiments/dt_sensitivity.py`
+
+---
+
+### §3quinquagies. [11] LZ par nœud — hubs plus structurés dans FULL, corrélation absente dans FROZEN_U (2026-04-29)
+
+**Question** : La complexité de Lempel-Ziv (LZ76) per-nœud diffère-t-elle entre FULL et FROZEN_U ? Et la position topologique d'un nœud (son degré) influence-t-elle sa complexité de trajectoire ?
+
+**Méthode** : `experiments/lz_per_node.py` (nouveau, créé 2026-04-29). Calcul LZ76 normalisé pour chaque nœud individuellement (non moyenné). 2 topologies (BA m=3 fonctionnel, BA m=5 dead zone), 2 configs (FULL, FROZEN_U), 2 régimes (ENDOGENOUS I=0.0, FORCED I=0.3), 5 seeds, N=100 nœuds, 3000 steps (stride=10 → T=300 snapshots). Wall time : 22s (bien moins que l'estimation ~1h). 4000 lignes CSV (100 nœuds × 5 seeds × 8 cellules).
+
+**Résultats — LZ_full moyen (N=500 nœuds × seeds poolés)** :
+
+| Topologie | Config | I_stim | LZ_full mean | LZ_full std |
+|:---|:---|:---:|---:|---:|
+| BA m=3 | FULL | 0.0 | 0.9202 | 0.0832 |
+| BA m=3 | FULL | 0.3 | **1.1006** | 0.1293 |
+| BA m=3 | FROZEN_U | 0.0 | 0.9232 | 0.0729 |
+| BA m=3 | FROZEN_U | 0.3 | **1.6194** | 0.2254 |
+| BA m=5 | FULL | 0.0 | 1.0701 | 0.1001 |
+| BA m=5 | FULL | 0.3 | **1.1233** | 0.1638 |
+| BA m=5 | FROZEN_U | 0.0 | 0.9211 | 0.0706 |
+| BA m=5 | FROZEN_U | 0.3 | **1.6791** | 0.0672 |
+
+FROZEN_U Forcé est +47% (BA m=3) et +50% (BA m=5) plus chaotique que FULL Forcé. Toutes les comparaisons FULL vs FROZEN_U : p < 1e-200 (Welch t-test).
+
+**Finding clé — corrélation degré ↔ LZ (Pearson r)** :
+
+| Topologie | Config | I_stim | r | p |
+|:---|:---|:---:|---:|---:|
+| BA m=3 | FULL | 0.0 | -0.292 | 2.84e-11 |
+| BA m=3 | FULL | 0.3 | **-0.564** | 2.33e-43 |
+| BA m=3 | FROZEN_U | 0.0 | +0.025 | 0.570 (ns) |
+| BA m=3 | FROZEN_U | 0.3 | -0.022 | 0.617 (ns) |
+| BA m=5 | FULL | 0.0 | **-0.632** | 5.26e-57 |
+| BA m=5 | FULL | 0.3 | **-0.716** | 1.29e-79 |
+| BA m=5 | FROZEN_U | 0.0 | +0.015 | 0.739 (ns) |
+| BA m=5 | FROZEN_U | 0.3 | +0.015 | 0.736 (ns) |
+
+**Interprétation — `u` active une intelligence topologique** :
+
+1. **Dans FULL, les hubs ont des trajectoires PLUS structurées** (r négatif : degré élevé → LZ bas). Plus un nœud est connecté, plus ses trajectoires sont prédictibles/structurées quand `u` est actif. L'effet est renforcé sous forcing et sur BA m=5 (r=-0.716).
+
+2. **Dans FROZEN_U, le degré n'a aucun effet** (r≈0, p>0.5 dans tous les cas). Sans `u`, le réseau traite tous les nœuds de façon identique en termes de complexité trajectorielle — la position dans la hiérarchie topologique devient invisible.
+
+3. **Conséquence mécaniste** : `u` couple la complexité individuelle à la connectivité locale. Les hubs, recevant plus de signaux entrants, voient leur doute `u` se stabiliser différemment des nœuds périphériques — ce qui conduit à des trajectoires plus régulières. C'est une propriété émergente non prévue par la conception du noyau.
+
+4. **Variance FROZEN_U BA m=5** (std=0.067) est remarquablement plus faible que FULL BA m=5 (std=0.164) : sous FROZEN_U, tous les nœuds de la dead zone convergent vers la même complexité élevée uniforme. FULL maintient une diversité de complexité structurée par topologie.
+
+**Figure** : `figures/lz_per_node.png` (2 rangées × 2 colonnes : violin distribution LZ + scatter degré vs LZ).
+**Données** : `figures/lz_per_node.csv` (4000 lignes), `figures/lz_per_node_summary.csv`.
+**Reproduction** : `python experiments/lz_per_node.py` (~22s, 40 runs).
 
 ---
 
