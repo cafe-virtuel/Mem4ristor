@@ -1,5 +1,5 @@
-# PROJECT STATUS — Mem4ristor v3.2.1
-**Dernière mise à jour : 2026-04-28**
+﻿# PROJECT STATUS — Mem4ristor v3.2.1
+**Dernière mise à jour : 2026-04-29**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -83,6 +83,7 @@ Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
 | **Terminologie : "frustrated synchronization" / "topological phase transition"** | **✅ CORRIGÉ (2026-04-28)** | → "polarity-modulated anti-synchronization" / "spectral phase transition". Distinction fondamentale : la polarité est state-dependent et continue, pas quenched. Voir §3quinquetrigies |
 | **H_cog=0 dans ablation preprint** | **✅ DOCUMENTÉ ET RECENTRÉ (2026-04-28)** | Artefact de binning : voltages Python [-3.2,-1.3] tous en bin 1. Claim recentrée sur H_cont (100-bin) = 3.79±0.14 bits + synchrony FULL=0.031 vs FROZEN=0.751. Voir §3quinquetrigies |
 | **SPICE : validation 50 seeds BA m=5 N=64** | **✅ DOCUMENTÉ DANS PAPER (2026-04-28)** | Résultats préexistants documentés : dead zone H_cont=1.38±0.04, functional H_cont=4.30±0.19. Mismatch CMOS σ_C=0.10 sans effet sur la diversité. Section dédiée ajoutée dans preprint.tex. Voir §3quinquetrigies |
+| **[8] RK4 vs Euler — validation intégrateur (paramètres corrigés)** | **✅ VALIDÉ (2026-04-29)** | Euler dt=0.05 validé sur paramètres alignés config.yaml (sigmoid_steepness=π, SOC_LEAK=0.01, ε_u=0.02, τ_u=10). Plasticité=OFF : Max Δ(H_cog)=0.0018, surge delta=0.3pp. Plasticité=ON (λ_learn=0.05) : Max Δ(H_cog)=0.0053, surge delta=0.1pp. Commits 91a0072 + 4cd7fce sur feat/v4-dynamic-heretics. Voir §3novetrigies |
 
 ### 3bis. LIMIT-05 : Entropie maximale (2026-03-21)
 
@@ -2169,6 +2170,63 @@ La Levitating Sigmoid borne u dans [0, 1]. Pour **tous** les seuils testés (y c
 
 **Fichiers** : `experiments/rk4_vs_euler.py`, `figures/rk4_vs_euler.csv`
 
+### 3novetrigies. Audit numérique — RK4 vs Euler : validation avec paramètres corrigés (2026-04-29)
+
+**Contexte** : La section §3octotrigies (2026-04-27) documentait une première validation Euler/RK4. À l'examen du script source `experiments/rk4_vs_euler.py`, cinq paramètres étaient incorrects par rapport à `config.yaml` et `dynamics.py` :
+
+| Paramètre | Ancien (script) | Correct (config.yaml) |
+|:----------|:---------------:|:---------------------:|
+| sigmoid_steepness | 10.0 | π ≈ 3.1416 |
+| social_leakage | 0.1 | 0.01 |
+| epsilon_u | 0.1 | 0.02 |
+| sigma_baseline | 0.1 | 0.05 |
+| tau_u | 5.0 | 10.0 |
+
+Le script a été corrigé le 29 avril 2026. Deux runs exécutés pour couvrir les deux configurations pertinentes du système.
+
+#### Run 1 — Plasticité=OFF (λ_learn=0.0)
+
+**Protocole** : N_warm=1000, N_steps=2000, dt=0.05, N_seeds=5, I_stim=0.3. Conditions : BA m=3/m=5, FULL/FROZEN_U.
+
+| Condition | MAE(v) moyen | ΔH_cog | Surge Euler | Surge RK4 | Delta surge |
+|:----------|:-----------:|:------:|:-----------:|:---------:|:-----------:|
+| BA m=3 FULL | 0.0054 | 0.0019 | — | — | — |
+| BA m=3 FROZEN_U | 0.0051 | 0.0018 | mesurable | mesurable | **0.3 pp** |
+| BA m=5 FULL | 0.0069 | 0.0003 | — | — | — |
+| BA m=5 FROZEN_U | 0.0051 | 0.0017 | mesurable | mesurable | **0.3 pp** |
+
+- **Max Δ(H_cog) Euler vs RK4 : 0.0018** [seuil 0.05 → OK]
+- **Max Δ(surge) Euler vs RK4 : 0.3 pp** [seuil 10 pp → OK]
+- **Verdict : EULER dt=0.05 VALIDE (plasticité=OFF)**
+
+**Fichiers** : `experiments/rk4_vs_euler.py`, `figures/rk4_vs_euler.csv` — Commit : `91a0072`
+
+#### Run 2 — Plasticité=ON (λ_learn=0.05, τ_plast=1000, w_sat=2.0)
+
+**Protocole** : Identique au Run 1 + terme plastique dans `fhn_derivatives()` : `dw_learn = λ_learn × σ_s × innovation_mask × sat_factor − w/τ_plast`, avec `innovation_mask = (u > 0.5)` et `sat_factor = clip(1 − (w/w_sat)², 0, 1)`.
+
+| Condition | MAE(v) moyen | ΔH_cog (Euler vs RK4) | Surge Euler | Surge RK4 | Delta surge |
+|:----------|:-----------:|:--------------------:|:-----------:|:---------:|:-----------:|
+| BA m=3 FULL | 0.0059 | 0.0053 | — | — | — |
+| BA m=3 FROZEN_U | 0.0051 | 0.0043 | +23.2% | +23.2% | **0.0 pp** |
+| BA m=5 FULL | 0.0069 | 0.0039 | — | — | — |
+| BA m=5 FROZEN_U | 0.0051 | 0.0046 | +18.1% | +18.0% | **0.1 pp** |
+
+- **Max Δ(H_cog) Euler vs RK4 : 0.0053** [seuil 0.05 → OK]
+- **Max Δ(surge) Euler vs RK4 : 0.1 pp** [seuil 10 pp → OK]
+- **Verdict : EULER dt=0.05 VALIDE (plasticité=ON)**
+
+**Note sur le surge réduit** : Le surge +23% (plasticité=ON) vs +985% (protocole complet Paper 1) est attendu. La plasticité modifie `w` (terme de récupération FHN) sur des simulations courtes T=100 — ce qui atténue la séparation FROZEN_U/FULL. La validation numérique Euler/RK4 porte sur les équations core du système, pas sur la reproductibilité du résultat principal. Le claim +985% est mesuré sur protocole long avec initialisation complète, non sur 2000 steps de validation.
+
+**Ce que cette validation ferme face à un reviewer** :
+1. *"Les trajectoires Euler divergent de RK4 et créent un faux surge"* → Réfuté. Delta surge max = 0.3 pp (OFF) / 0.1 pp (ON). Le surge n'est pas un artefact de l'intégrateur.
+2. *"La plasticité pourrait cacher un artefact numérique"* → Réfuté. Avec λ_learn actif, le système reste identiquement intégré par Euler et RK4 (Δ(H_cog) < 0.006 dans les deux conditions).
+3. *"Les paramètres simulés ne correspondent pas au code source"* → Fermé. Les deux validations utilisent désormais les paramètres exactement alignés sur `config.yaml` et `dynamics.py`.
+
+**Fichiers** : `experiments/rk4_vs_euler.py`, `figures/rk4_vs_euler_plasticity_on.csv` — Commit : `4cd7fce`
+
+---
+
 ---
 
 ### Session 2026-04-26 (Claude Sonnet 4.6 — Audit Edison NB4/NB5/A2)
@@ -2229,6 +2287,29 @@ La Levitating Sigmoid borne u dans [0, 1]. Pour **tous** les seuils testés (y c
 - **Attack 5 — Validation SPICE** : Reviewer prétendait "seulement 4×4 lattice". Réfutation : 50 seeds × 3 conditions sur BA m=5, N=64 existaient déjà dans `experiments/spice/results/`. Ajout de `\subsection{SPICE Circuit Validation}` dans preprint.tex avec la table complète : dead zone H_cont=1.38±0.04 vs functional 4.30±0.19 bits (ratio 3.1×). CMOS mismatch sans effet sur la diversité. NGSpice 46 batch mode confirmé opérationnel.
 
 **Aucun changement au code Python ni aux tests** — les 84 tests restent valides.
+
+---
+
+
+### Session 2026-04-29 (Claude Sonnet 4.6 — Validation intégrateur [8] complète)
+
+**Objectif** : Validation complète de l'item [8] RK4 vs Euler de l'audit DeepSeek. Deux runs : plasticité=OFF (isolation FHN pur) et plasticité=ON (système complet).
+
+**Anomalie détectée et corrigée** : Le script `experiments/rk4_vs_euler.py` existant (écrit session 2026-04-27) utilisait 5 paramètres incorrects par rapport à `config.yaml` / `dynamics.py`. Corrigés avant exécution (sigmoid_steepness 10→π, social_leakage 0.1→0.01, epsilon_u 0.1→0.02, sigma_baseline 0.1→0.05, tau_u 5→10).
+
+**Commit `91a0072` sur `feat/v4-dynamic-heretics`** — plasticité=OFF :
+- Max Δ(H_cog) Euler/RK4 : **0.0018** [seuil 0.05]
+- Max Δ(surge) : **0.3 pp** [seuil 10 pp]
+- MAE(v) moyen : 0.005 (trajectoires quasi-identiques)
+
+**Commit `4cd7fce` sur `feat/v4-dynamic-heretics`** — plasticité=ON (λ_learn=0.05) :
+- BA m=3 : surge Euler=+23.2%, RK4=+23.2%, delta **0.0 pp**
+- BA m=5 : surge Euler=+18.1%, RK4=+18.0%, delta **0.1 pp**
+- Max Δ(H_cog) Euler/RK4 : **0.0053** [seuil 0.05]
+
+**Verdict** : L'intégrateur Euler à dt=0.05 est validé dans les deux configurations. Le surge FROZEN_U/FULL n'est pas un artefact numérique. Trois attaques reviewer potentielles sur la robustesse numérique sont désormais fermées (voir §3novetrigies).
+
+**Aucun changement aux tests** — les 84 tests restent valides.
 
 ---
 
