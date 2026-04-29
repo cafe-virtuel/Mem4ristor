@@ -8,19 +8,20 @@ Protocole :
   1. Implémenter un intégrateur RK4 standalone reproduisant les équations FHN
      de dynamics.py (dv, dw, du) avec couplage réseau fixé.
   2. Comparer Euler vs RK4 à dt=0.05 (même pas) sur 2000 steps.
-  3. Tester 3 conditions critiques :
-       (a) FULL (dynamics normales)
-       (b) FROZEN_U (du=0 -- u gelé, claim principal de Paper 1)
-       (c) BA m=3 (fonctionnel) et m=5 (frontière dead zone)
+  3. Tester 4 conditions critiques :
+       (a) FULL     BA m=3 et m=5
+       (b) FROZEN_U BA m=3 et m=5 (claim principal de Paper 1)
   4. Metriques : divergence de trajectoire (MAE(v)), H_cog, synchrony, surge ratio.
 
 Bruit : meme eta fixé une fois par step pour les deux intégrateurs
 (Euler-Maruyama -- approche standard pour SDE faibles).
 
-Plasticity : désactivée (lambda_learn=0) pour isoler l'intégration FHN pure.
+Plasticite : ACTIVE (lambda_learn=0.05) -- validation complète du systeme reel.
+  La plasticite affecte dw (terme dw_learning) via sigma_social et innovation_mask.
+  Elle n'affecte pas dv (la variable la plus sensible numeriquement).
 
-PARAMETRES : alignés sur config.yaml + dynamics.py (correction 2026-04-29)
-  - sigmoid_steepness = pi  (etait 10.0 -- erreur de transcription)
+PARAMETRES : alignés sur config.yaml + dynamics.py defaults (correction 2026-04-29)
+  - sigmoid_steepness = pi    (etait 10.0 -- erreur de transcription)
   - social_leakage    = 0.01  (etait 0.1)
   - epsilon_u         = 0.02  (etait 0.1)
   - sigma_baseline    = 0.05  (etait 0.1)
@@ -33,7 +34,6 @@ import sys, os, time, csv
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-from mem4ristor.topology import Mem4Network
 from mem4ristor.graph_utils import make_ba
 from mem4ristor.metrics import calculate_cognitive_entropy, calculate_pairwise_synchrony
 
@@ -42,7 +42,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --- Parametres de simulation ---
 DT       = 0.05
-N_WARM   = 1000   # warmup Euler (partagé -- on copie l'état après)
+N_WARM   = 1000   # warmup Euler (partage -- on copie l'etat apres)
 N_STEPS  = 2000   # steps de comparaison
 N_SEEDS  = 5
 I_STIM   = 0.3
@@ -65,26 +65,43 @@ SOC_LEAK  = 0.01        # social_leakage     (etait 0.1 -- corrige 2026-04-29)
 SIG_V     = 0.05        # sigma_v bruit
 ALPHA_S   = 2.0         # alpha_surprise
 SUR_CAP   = 5.0         # surprise_cap
-LAM_LEARN = 0.0         # plasticity off pour isoler l'integrateur
+
+# Plasticite -- ACTIVE (validation complete du systeme reel)
+LAM_LEARN = 0.05        # lambda_learn (config.yaml default)
+TAU_PLAST = 1000        # tau_plasticity
+W_SAT     = 2.0         # w_saturation
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Derivees FHN -- reproduisent fidelement dynamics.py step()
+# Derivees FHN + plasticite -- reproduisent fidelement dynamics.py step()
 # ─────────────────────────────────────────────────────────────────────────────
 
 def fhn_derivatives(v, w, u, laplacian_v, eta, I_stim, heretic_mask,
                     D_eff, frozen_u=False):
+    """
+    Retourne (dv, dw, du) avec plasticite active.
+    Identique a dynamics.py step() sans hysteresis (innovation_mask = u > 0.5).
+    """
+    sigma_s   = np.abs(laplacian_v)
     u_filter  = np.tanh(SIG_STEEP * (0.5 - u)) + SOC_LEAK
     I_coup    = D_eff * u_filter * laplacian_v
     I_eff     = np.full(len(v), I_stim)
     I_eff[heretic_mask] *= -1.0
     I_ext     = I_eff + I_coup
 
-    sigma_s   = np.abs(laplacian_v)
-    eps_u_eff = EPS_U * np.clip(1.0 + ALPHA_S * sigma_s, 1.0, SUR_CAP)
-
+    # FHN core
     dv = v - (v**3) / VCD - w + I_ext - ALPHA * np.tanh(v) + eta
-    dw = EPS * (v + A - B * w)
+
+    # Plasticite (lambda_learn = 0 -> desactivee, 0.05 -> systeme reel)
+    innovation_mask = (u > 0.5).astype(float)
+    w_ratio     = w / W_SAT
+    sat_factor  = np.clip(1.0 - w_ratio**2, 0.0, 1.0)
+    dw_learn    = LAM_LEARN * sigma_s * innovation_mask * sat_factor - w / TAU_PLAST
+    dw_fhn      = EPS * (v + A - B * w)
+    dw          = dw_fhn + dw_learn
+
+    # Doute
+    eps_u_eff = EPS_U * np.clip(1.0 + ALPHA_S * sigma_s, 1.0, SUR_CAP)
     if frozen_u:
         du = np.zeros_like(u)
     else:
@@ -110,7 +127,12 @@ def euler_step(v, w, u, adj_norm, heretic_mask, D_eff, rng, I_stim, frozen_u=Fal
 
 
 def rk4_step(v, w, u, adj_norm, heretic_mask, D_eff, rng, I_stim, frozen_u=False):
-    # eta fixe une fois par step (Euler-Maruyama -- convention standard pour SDE)
+    """
+    RK4 fixed-step avec eta fixe une fois par step (Euler-Maruyama pour la SDE).
+    Pour la partie deterministe (dv_det, dw, du), RK4 est exact a l'ordre 4.
+    Le terme eta est traite comme un forcing additif constant sur le step,
+    ce qui est la convention standard pour les SDE faibles.
+    """
     eta = rng.normal(0, SIG_V, len(v))
 
     def deriv(v_, w_, u_):
@@ -149,7 +171,7 @@ def run_comparison(adj, heretic_mask, seed, I_stim, frozen_u=False, label=""):
                               frozen_u=frozen_u)
 
     # --- Snapshot etat initial post-warmup ---
-    v0, w0, u0 = v.copy(), w.copy(), u.copy()
+    v0, w0, u0  = v.copy(), w.copy(), u.copy()
     rng_state0  = rng.get_state()
 
     # --- Euler forward ---
@@ -175,11 +197,11 @@ def run_comparison(adj, heretic_mask, seed, I_stim, frozen_u=False, label=""):
     arr_e = np.array(snaps_e)
     arr_r = np.array(snaps_r)
 
-    h_euler  = float(np.mean([calculate_cognitive_entropy(s) for s in arr_e[::5]]))
-    h_rk4    = float(np.mean([calculate_cognitive_entropy(s) for s in arr_r[::5]]))
-    sy_euler = float(calculate_pairwise_synchrony(arr_e))
-    sy_rk4   = float(calculate_pairwise_synchrony(arr_r))
-    mae_v    = float(np.mean(np.abs(arr_e - arr_r)))
+    h_euler   = float(np.mean([calculate_cognitive_entropy(s) for s in arr_e[::5]]))
+    h_rk4     = float(np.mean([calculate_cognitive_entropy(s) for s in arr_r[::5]]))
+    sy_euler  = float(calculate_pairwise_synchrony(arr_e))
+    sy_rk4    = float(calculate_pairwise_synchrony(arr_r))
+    mae_v     = float(np.mean(np.abs(arr_e - arr_r)))
     max_mae_v = float(np.max(np.abs(arr_e - arr_r)))
 
     return {
@@ -192,11 +214,13 @@ def run_comparison(adj, heretic_mask, seed, I_stim, frozen_u=False, label=""):
 
 def main():
     print("=" * 70)
-    print("RK4 vs Euler -- dt=0.05, N_warm=1000, N_steps=2000")
+    print("RK4 vs Euler -- dt=0.05, N_warm=1000, N_steps=2000, PLASTICITE=ON")
     print("Params alignes sur config.yaml + dynamics.py (corrige 2026-04-29)")
     print("SIG_STEEP=pi (%.4f), SOC_LEAK=%.2f, EPS_U=%.3f, TAU_U=%.1f" % (
           SIG_STEEP, SOC_LEAK, EPS_U, TAU_U))
-    print("Seeds=%d, I_stim=%.1f, plasticity=OFF" % (N_SEEDS, I_STIM))
+    print("LAM_LEARN=%.2f (actif), TAU_PLAST=%d, W_SAT=%.1f" % (
+          LAM_LEARN, TAU_PLAST, W_SAT))
+    print("Seeds=%d, I_stim=%.1f" % (N_SEEDS, I_STIM))
     print("=" * 70 + "\n")
     t0 = time.time()
 
@@ -213,7 +237,8 @@ def main():
         seed_rows = []
         for seed in range(N_SEEDS):
             adj = make_ba(GRID * GRID, m, seed=42)  # structure fixe, 100 noeuds
-            N = adj.shape[0]
+            N   = adj.shape[0]
+            # Masque heretique deterministe (15%, uniforme)
             step_h = max(int(1.0 / 0.15), 1)
             rng_h  = np.random.RandomState(seed)
             heretic_ids = []
@@ -238,7 +263,7 @@ def main():
               label, mae_m, maxm_m, h_e_m, h_r_m, abs(h_e_m - h_r_m), sy_e_m, sy_r_m), flush=True)
 
     # CSV
-    csv_path = os.path.join(OUTPUT_DIR, 'rk4_vs_euler.csv')
+    csv_path = os.path.join(OUTPUT_DIR, 'rk4_vs_euler_plasticity_on.csv')
     with open(csv_path, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=results[0].keys())
         writer.writeheader()
@@ -277,7 +302,7 @@ def main():
 
     # --- Verdict global ---
     print("\n" + "=" * 70)
-    print("VERDICT GLOBAL")
+    print("VERDICT GLOBAL (plasticite=ON)")
     print("=" * 70)
     max_h_delta = max(all_h_deltas)
     surge_deltas = []
@@ -294,8 +319,9 @@ def main():
           max_h_delta, "OK" if max_h_delta < 0.05 else "ATTENTION"))
     print("  Max Delta(surge ratio) Euler vs RK4 : %.1fpp  [%s]" % (
           max_surge_delta, "OK" if max_surge_delta < 10 else "ATTENTION"))
+
     if max_h_delta < 0.05 and max_surge_delta < 10:
-        print("\n  -> EULER dt=0.05 VALIDE -- pas d'artefact d'integration detecte.")
+        print("\n  -> EULER dt=0.05 VALIDE (plasticite=ON) -- pas d'artefact detecte.")
     else:
         print("\n  -> ATTENTION -- artefacts potentiels detectes, reverifier.")
 
