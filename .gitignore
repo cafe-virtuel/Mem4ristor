@@ -67,3 +67,6 @@ graphify-out/
 # SPICE raw simulation traces (large binary data, reproducible from scripts)
 experiments/spice/results/*.dat
 experiments/spice/results/*.cir
+
+# Demo output
+demo_chimera_output.png

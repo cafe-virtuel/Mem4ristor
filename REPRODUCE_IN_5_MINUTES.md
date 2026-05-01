@@ -9,7 +9,8 @@ We know your time is valuable. You don't need to read the 2,000+ lines of docume
 ## Quick Start (Linux, macOS, Windows)
 
 ```bash
-# 1. Clone the repository
+# 1. Clone the repository (optional: navigate to your Desktop first)
+# cd ~/Desktop 
 git clone https://github.com/cafe-virtuel/mem4ristor-v2.git
 cd mem4ristor-v2
 
