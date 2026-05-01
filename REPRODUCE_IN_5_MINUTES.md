@@ -32,5 +32,8 @@ This model mathematically demonstrates that **"heretic" nodes (forced with an in
 ## Let's Connect
 I am an independent researcher and I am currently looking for an **arXiv endorsement** (e.g., in `nlin.AO` or `cs.NE`) to publish the preprint associated with this code.
 
-If the demo intrigues you, I would be honored to discuss the methodology with you. You can reach out by opening an issue on this repository or contacting me via my GitHub profile.
+If the demo intrigues you, I would be honored to discuss the methodology with you. You can reach out directly via:
+* **Email:** contact@cafevirtuel.org
+* **X / Twitter:** [@Jusyl80](https://x.com/Jusyl80)
+
 Julien Chauvin
