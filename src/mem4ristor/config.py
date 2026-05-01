@@ -40,7 +40,7 @@ class DynamicsConfig:
     alpha: float = 0.15
     v_cubic_divisor: float = 5.0
     dt: float = 0.05
-    lambda_learn: float = 0.05
+    lambda_intrinsic: float = 0.05
     tau_plasticity: float = 1000.0
     w_saturation: float = 2.0
 

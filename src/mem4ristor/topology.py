@@ -69,17 +69,24 @@ class Mem4Network:
         self._weights_dirty = True
 
     def _update_laplacian_incremental(self, i, j, k):
+        # OBSOLETE: Replaced by _update_laplacian_incremental_swap
+        pass
+
+    def _update_laplacian_incremental_swap(self, i, j, k, l):
         if self._is_sparse:
             self._rebuild_laplacian()
             return
-        self.L[i, i] -= 1
-        self.L[j, j] -= 1
+        # L = D - A. Degrees are perfectly preserved, so D is unchanged!
+        # Break (i,j) and (k,l): A goes 1->0, so L goes -1->0 (+1)
         self.L[i, j] += 1
         self.L[j, i] += 1
-        self.L[i, i] += 1
-        self.L[k, k] += 1
+        self.L[k, l] += 1
+        self.L[l, k] += 1
+        # Make (i,k) and (j,l): A goes 0->1, so L goes 0->-1 (-1)
         self.L[i, k] -= 1
         self.L[k, i] -= 1
+        self.L[j, l] -= 1
+        self.L[l, j] -= 1
 
     def _compute_coupling_weights(self):
         if self.adjacency_matrix is not None and self.coupling_norm != 'uniform':
@@ -170,27 +177,47 @@ class Mem4Network:
             if j is None:
                 continue
 
+            # FIX: Degree-Preserving Edge Swap (Reviewer 2 Vague 2)
+            # Find a random edge (k, l) to swap with (i, j)
             if self._is_sparse:
-                neighbor_set = set(adj_lil.rows[i])
-                neighbor_set.add(i)
-                non_neighbors = np.array([nn for nn in range(self.N) if nn not in neighbor_set])
+                rows, cols = adj_lil.nonzero()
             else:
-                non_neighbors = np.where(adj[i] == 0)[0]
-                non_neighbors = non_neighbors[non_neighbors != i]
+                rows, cols = np.where(adj > 0)
+                
+            # Filter valid edges (avoid self-loops and existing connections)
+            valid_mask = (rows != i) & (rows != j) & (cols != i) & (cols != j)
+            valid_rows = rows[valid_mask]
+            valid_cols = cols[valid_mask]
             
-            if len(non_neighbors) == 0:
+            if len(valid_rows) == 0:
                 continue
-
-            k = self.rng.choice(non_neighbors)
-
+                
+            # Pick a random edge
+            edge_idx = self.rng.randint(len(valid_rows))
+            k = valid_rows[edge_idx]
+            l = valid_cols[edge_idx]
+            
+            # Check if new edges (i, k) or (j, l) already exist
+            if self._is_sparse:
+                if k in adj_lil.rows[i] or l in adj_lil.rows[j]:
+                    continue
+            else:
+                if adj[i, k] > 0 or adj[j, l] > 0:
+                    continue
+            
+            # Execute Swap
             if self._is_sparse:
                 adj_lil[i, j] = 0; adj_lil[j, i] = 0
+                adj_lil[k, l] = 0; adj_lil[l, k] = 0
                 adj_lil[i, k] = 1; adj_lil[k, i] = 1
+                adj_lil[j, l] = 1; adj_lil[l, j] = 1
             else:
                 adj[i, j] = 0; adj[j, i] = 0
+                adj[k, l] = 0; adj[l, k] = 0
                 adj[i, k] = 1; adj[k, i] = 1
+                adj[j, l] = 1; adj[l, j] = 1
 
-            self._update_laplacian_incremental(i, j, k)
+            self._update_laplacian_incremental_swap(i, j, k, l)
             self._rewire_timers[i] = self.rewire_cooldown
             self.rewire_count += 1
             self._weights_dirty = True
@@ -213,6 +240,36 @@ class Mem4Network:
             from scipy.linalg import eigh
             vals = eigh(self.L, eigvals_only=True)
             return vals[1] if len(vals) > 1 else 0.0
+
+    def get_effective_spectral_gap(self) -> float:
+        """
+        Calculates the Fiedler value (2nd smallest eigenvalue) of the 
+        EFFECTIVE Laplacian L_eff = Diag(scale_factors) * L.
+        This accounts for the coupling normalization (e.g. 'degree_linear').
+        """
+        if self.use_stencil or self.L is None:
+            return 0.0
+        
+        # Calculate scale_factors just like in step()
+        D_global = self.model.cfg['coupling']['D']
+        uniform_D_eff = D_global / np.sqrt(self.N)
+        scale_factors = (self.node_weights * D_global) / uniform_D_eff
+        
+        if self._is_sparse:
+            # L_eff = diags(scale_factors) @ L
+            L_eff = sp_sparse.diags(scale_factors) @ self.L
+            try:
+                from scipy.sparse.linalg import eigs as sparse_eigs
+                # Use eigs instead of eigsh because L_eff might not be perfectly symmetric
+                vals = sparse_eigs(L_eff.astype(float), k=2, which='SM', return_eigenvectors=False)
+                return np.sort(np.real(vals))[1]
+            except Exception:
+                return 0.0
+        else:
+            L_eff = np.diag(scale_factors) @ self.L
+            from scipy.linalg import eig
+            vals = eig(L_eff, right=False)
+            return np.sort(np.real(vals))[1]
 
     def _calculate_laplacian_stencil(self, v):
         s = self.size

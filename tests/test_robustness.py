@@ -205,16 +205,14 @@ def test_extreme_stimulus_overflow():
 
 
 def test_extreme_initial_conditions():
-    """v initialized to extreme values should be clamped and recover."""
+    """v initialized to extreme values should raise OverflowError without the safety net."""
     model = Mem4ristorV3(seed=42)
     model._initialize_params(N=10)
     model.v = np.full(10, 1e10)
 
-    for _ in range(100):
-        model.step()
-
-    assert np.all(np.isfinite(model.v)), "Failed to recover from extreme IC"
-    assert np.all(np.abs(model.v) <= 100), f"System didn't converge: max(v)={np.max(np.abs(model.v))}"
+    with pytest.raises(OverflowError, match="Boom ! La simulation a déraillé"):
+        for _ in range(100):
+            model.step()
 
 
 # =============================================================================

@@ -91,11 +91,17 @@ def calculate_temporal_lz_complexity(
         return 0.0
 
     # Discretise each node's v(t) trajectory into n_bins uniform bins
-    v_min, v_max = v_history.min(), v_history.max()
-    if v_max == v_min:
+    # FIX (Reviewer 2 Vague 2): Use 1st and 99th percentiles instead of absolute min/max 
+    # to prevent a single thermal outlier from stretching the bins and destroying the metric.
+    v_min = np.percentile(v_history, 1)
+    v_max = np.percentile(v_history, 99)
+    
+    if v_max <= v_min:
         return 0.0
+        
+    v_clipped = np.clip(v_history, v_min, v_max)
     bin_idx = np.floor(
-        (v_history - v_min) / (v_max - v_min) * n_bins
+        (v_clipped - v_min) / (v_max - v_min) * n_bins
     ).astype(int).clip(0, n_bins - 1)  # shape (T, N)
 
     total = 0.0
@@ -145,6 +151,90 @@ def calculate_pairwise_synchrony(v_history: np.ndarray) -> float:
     # Pearson r for each pair = dot product of z-scores / T
     corrs = np.einsum('ti,tj->ij', z, z)[i_idx, j_idx] / T
     return float(corrs.mean())
+
+
+def calculate_kuramoto_order_parameter(v_history: np.ndarray, w_history: np.ndarray = None) -> float:
+    """
+    Continuous Kuramoto order parameter via Geometric Phase (Reviewer 2 Vague 2 Fix).
+    Avoids the Hilbert transform artifact on broadband/spiky signals by using the 
+    actual (v, w) phase space of the oscillator.
+
+    v_history: shape (T, N)
+    w_history: shape (T, N) - Required for robust geometric phase. If None, falls back to Hilbert.
+    Returns: Mean synchronization R (0 to 1).
+    """
+    T, N = v_history.shape
+    if T < 10 or N < 2:
+        return 0.0
+    
+    if w_history is not None:
+        # Geometric Phase in (v, w) plane
+        v_c = v_history - np.mean(v_history, axis=0)
+        w_c = w_history - np.mean(w_history, axis=0)
+        # Normalize to avoid elliptical distortion in the atan2
+        v_c = v_c / (np.std(v_c, axis=0) + 1e-9)
+        w_c = w_c / (np.std(w_c, axis=0) + 1e-9)
+        phase = np.arctan2(w_c, v_c)
+        margin = 0 # No edge artifacts with geometric phase
+    else:
+        # Fallback to Hilbert (deprecated for FHN broadband spikes)
+        from scipy.signal import hilbert
+        v_centered = v_history - np.mean(v_history, axis=0)
+        analytic_signal = hilbert(v_centered, axis=0)
+        phase = np.angle(analytic_signal)
+        margin = max(1, int(T * 0.1))
+    
+    # R(t) = | 1/N * sum(e^{i * phase_j(t)}) |
+    order_param_t = np.abs(np.mean(np.exp(1j * phase), axis=1))
+    
+    if margin > 0:
+        return float(np.mean(order_param_t[margin:-margin]))
+    return float(np.mean(order_param_t))
+
+
+def calculate_transfer_entropy(source_history: np.ndarray, target_history: np.ndarray, bins: int = 6) -> float:
+    """
+    Computes Discrete Transfer Entropy TE_{X -> Y} from source to target.
+    X = source_history, Y = target_history.
+    TE_{X -> Y} = H(Y_{t}, Y_{t-1}) + H(Y_{t-1}, X_{t-1}) - H(Y_{t-1}) - H(Y_{t}, Y_{t-1}, X_{t-1})
+    
+    Both histories must be 1D numpy arrays of the same length, discretized into integers [0, bins-1].
+    (e.g., using cognitive_states).
+    """
+    if len(source_history) != len(target_history) or len(source_history) < 2:
+        return 0.0
+        
+    X = source_history[:-1]
+    Y_prev = target_history[:-1]
+    Y_curr = target_history[1:]
+    
+    # Compute joint histograms
+    # H(Y_{t-1})
+    p_Y_prev, _ = np.histogram(Y_prev, bins=bins, range=(-0.5, bins-0.5), density=True)
+    p_Y_prev = p_Y_prev[p_Y_prev > 0]
+    H_Y_prev = -np.sum(p_Y_prev * np.log2(p_Y_prev))
+    
+    # H(Y_t, Y_{t-1})
+    p_Y_curr_prev, _, _ = np.histogram2d(Y_curr, Y_prev, bins=bins, range=[[-0.5, bins-0.5], [-0.5, bins-0.5]], density=True)
+    p_Y_curr_prev = p_Y_curr_prev[p_Y_curr_prev > 0]
+    H_Y_curr_prev = -np.sum(p_Y_curr_prev * np.log2(p_Y_curr_prev))
+    
+    # H(Y_{t-1}, X_{t-1})
+    p_Y_prev_X_prev, _, _ = np.histogram2d(Y_prev, X, bins=bins, range=[[-0.5, bins-0.5], [-0.5, bins-0.5]], density=True)
+    p_Y_prev_X_prev = p_Y_prev_X_prev[p_Y_prev_X_prev > 0]
+    H_Y_prev_X_prev = -np.sum(p_Y_prev_X_prev * np.log2(p_Y_prev_X_prev))
+    
+    # H(Y_t, Y_{t-1}, X_{t-1})
+    # For 3D histogram, we use numpy.histogramdd
+    data_3d = np.vstack((Y_curr, Y_prev, X)).T
+    p_3d, _ = np.histogramdd(data_3d, bins=bins, range=[[-0.5, bins-0.5]]*3, density=True)
+    p_3d = p_3d[p_3d > 0]
+    H_3d = -np.sum(p_3d * np.log2(p_3d))
+    
+    TE = H_Y_curr_prev + H_Y_prev_X_prev - H_Y_prev - H_3d
+    print(f"H_Yp={H_Y_prev:.3f}, H_Ycp={H_Y_curr_prev:.3f}, H_YpXp={H_Y_prev_X_prev:.3f}, H_3d={H_3d:.3f}, TE={TE:.5f}")
+    return max(0.0, float(TE))
+
 
 
 # ---------------------------------------------------------------------------

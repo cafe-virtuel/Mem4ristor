@@ -8,7 +8,7 @@ dynamics:
   v_cubic_divisor: 5.0
   dt: 0.05
   # V3: Inhibition Plasticity Parameters
-  lambda_learn: 0.05       # Plasticity learning rate
+  lambda_intrinsic: 0.05       # Intrinsic plasticity learning rate (Reviewer 2 Vague 2 fix)
   tau_plasticity: 1000     # Forgetting time constant (steps)
   w_saturation: 2.0        # Maximum plasticity range
 

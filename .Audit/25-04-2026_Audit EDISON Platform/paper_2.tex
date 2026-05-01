@@ -1,0 +1,61 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{xcolor}
+
+\geometry{margin=1in}
+
+\title{The Doubt Variable as Anti-Synchronization Filter:\\Topological Diversity Boundaries and Their Adaptive Resolution}
+\author{Mem4ristor Project Consortium}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Coupled oscillator networks often collapse into homogeneous states when simulated on dense scale-free topologies. In the extended FitzHugh-Nagumo model equipped with a metacognitive ``doubt'' variable ($u$), this structural trap is absolute for Barab\'asi-Albert networks of parameter $m \geq 5$---a \emph{Topological Dead Zone} that no linear coupling normalization can break. We demonstrate that the doubt variable functions primarily as an active anti-synchronization filter rather than an optimal decoder of topological surprise. Ablating the local disagreement signal driving $u$ and replacing it with pure noise or its static temporal mean preserves network diversity ($\Delta H_{\mathrm{cog}} < 0.3\%$), whereas completely freezing $u$ induces a $1143\%$ surge in pairwise synchrony. Furthermore, the characteristic timescale of doubt, $\tau_u$, serves as a master bifurcation parameter, with a critical transition around $\tau_u \approx 10$ separating regimes of frozen frustration and breathing chimeras. Through extensive numerical simulations and finite-size scaling ($N$ up to $1600$), we map the phase boundary defined by the algebraic connectivity $\lambda_2$ and reveal that stochastic resonance via uniform thermal noise provides a topology-dependent escape, which is robust only for $\lambda_2 < 2.5$.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+Scale-free topologies represent the structural foundation of biological and artificial neural networks. However, in models of coupled oscillators, the presence of densely connected hubs inherently biases the system toward global synchronization, erasing the very cognitive diversity these networks are designed to support. This phenomenon, formalized as the \textit{Topological Dead Zone}, describes the inability of conventional coupling mechanisms to sustain distinct attractor states when the network's algebraic connectivity exceeds a critical threshold ($\lambda_2 \approx 2.5$). 
+
+While earlier investigations (Paper 1) established that doubt-modulated coupling can sustain diversity on regular lattices and sparse scale-free networks, denser topologies ($m \geq 5$) remain impenetrable traps. This paper delineates the strict topological boundary of the doubt mechanism and redefines the role of the doubt variable ($u$) itself: not as a decoder of structural surprise, but as an essential, robust anti-synchronization filter.
+
+\section{The $u$ Variable: Mechanism and Ablation}
+\label{sec:mechanism}
+To isolate the causal role of the metacognitive doubt variable $u$, we performed targeted ablations of the local disagreement signal ($\sigma_{\mathrm{social}}$) that drives it. If $u$ acts as a precise decoder of topological structural information, replacing its driving signal with noise should collapse the network's diversity. 
+
+Our results refute this hypothesis. Replacing $\sigma_{\mathrm{social}}$ with a pure Gaussian noise sequence matched to its root-mean-square amplitude (\textsc{SS\_NOISE}) or its static temporal mean (\textsc{SS\_STATIC}) produces identical cognitive entropy and pairwise synchrony to the full model ($\Delta H_{\mathrm{cog}} < 0.3\%$, $\Delta\mathrm{sync} < 2\%$). The network is profoundly insensitive to the informational content of the disagreement signal. 
+
+However, the variable $u$ itself is absolutely necessary. Freezing $u$ entirely (\textsc{FROZEN\_U}) collapses the network into a hyper-synchronized regime. Pairwise synchrony surges by $+1143\%$, and the system adopts a globally coherent limit-cycle oscillation. This establishes $u$ as an active anti-synchronization filter: its continuous modulation of coupling polarity actively decorrelates neighboring nodes, maintaining spatial mutual information strictly below that of ablated models across all distances. The doubt variable does not decode the topology; it constantly perturbs it to prevent consensus.
+
+\section{$\tau_u$ as a Master Control Parameter}
+\label{sec:bifurcation}
+The characteristic timescale of the doubt variable, $\tau_u$, determines the network's capacity to adapt to local frustration. A systematic sweep of $\tau_u$ under forced conditions ($I_{\mathrm{stim}}=0.5$) reveals a sharp bifurcation. For fast doubt dynamics ($\tau_u < 10$), the system is trapped in a regime of frozen frustration, where rapid coupling polarity flips lock the network into a pseudo-consensus state ($H_{\mathrm{cog}} \approx 0.02$). For slower dynamics ($\tau_u > 50$), the network transitions into a ``breathing chimera'' regime ($H_{\mathrm{cog}} \approx 0.38$), where dynamic clusters form and dissolve.
+
+Strikingly, this bifurcation persists even in the purely endogenous regime ($I_{\mathrm{stim}}=0.0$), where structural heretics are mathematically inactive. In the absence of external forcing, the system lacks the symmetry-breaking required to occupy distinct physiological states (yielding a binning artifact where $H_{\mathrm{cog}} \approx 0$), yet the continuous sub-threshold entropy $H_{\mathrm{cont}}$ clearly traces the identical bifurcation: peaking at $\tau_u = 5$ before collapsing as $\tau_u \to 50$. This confirms that $\tau_u$ intrinsically governs the coherence of the network, independently of stimulus.
+
+\section{Topological Phase Boundary}
+\label{sec:phase_boundary}
+The topological dead zone observed on dense Barab\'asi-Albert networks ($m \geq 5$) resists all linear coupling normalization schemes, including degree-linear and spectral normalization (eigenvector centrality). The controlling parameter is not the local degree heterogeneity, but the global path redundancy, parameterized by the algebraic connectivity $\lambda_2$. 
+
+A structural analysis of 12 distinct topologies reveals that $\lambda_2$ is a near-perfect predictor of the dead zone regime ($r = +0.901, p < 10^{-4}$), vastly outperforming edge betweenness centrality ($r = -0.604$). Finite-size scaling analyses spanning $N=100$ to $N=1600$ demonstrate that $\lambda_2$ is scale-invariant for a given $m$, and that the critical threshold $\lambda_{2,\mathrm{crit}} \approx 2.5$ represents a strict structural boundary. Below this threshold, uniform digital Gaussian noise monotonically improves diversity via stochastic resonance. Above it, the path redundancy is so severe that no amplitude of Gaussian noise ($\sigma_v \le 1.20$) can fracture the synchronized manifold. Null results using directed noise strategies further confirm that the dead zone cannot be escaped through simple topological heuristics.
+
+\section{Doubt-Driven Community Structure}
+\label{sec:communities}
+We hypothesized that nodes experiencing synchronous fluctuations in their doubt variables form emergent functional communities that transcend the underlying physical topology. We constructed a doubt-affinity graph by thresholding the Pearson correlation of the $u(t)$ traces and applied the Louvain method to extract doubt-driven communities. 
+
+While two distinct behavioral populations emerge---saturated singleton heretics ($u=1.0$) and large groups of collectively frustrated nodes---the alignment with structural communities is weak. Using Normalized Mutual Information (NMI) against a rigorous bootstrap permutation baseline, the observed overlap ($NMI \approx 0.25$) is statistically indistinguishable from random chance in 5 out of 6 tested seeds ($z < 1.0$). We conclude that while doubt forms "basins of collective frustration," these basins do not reliably decode the structural modularity of the network.
+
+\section{Discussion and Conclusion}
+\label{sec:discussion}
+The Mem4ristor architecture introduces a powerful mechanism for frustrated synchronization, but its limits are rigorously defined by the underlying graph topology. The doubt variable $u$ functions not as a passive decoder of local structure, but as a critical, adaptive anti-synchronization filter. Its timescale, $\tau_u$, acts as a master bifurcation parameter controlling the network's phase.
+
+Crucially, the resilience of the topological dead zone above $\lambda_{2,\mathrm{crit}} \approx 2.5$ highlights a fundamental limitation of software-based, digitally integrated oscillator models. As explored in parallel hardware mappings (Paper B), the homogeneous Gaussian noise that fails to rescue the dead zone in software is qualitatively different from the heterogeneously correlated Johnson-Nyquist thermal noise inherent to analog substrates. The boundaries defined here therefore represent not just a mathematical phase transition, but the precise point at which physical analog computation becomes strictly necessary to unlock the full computational diversity of dense neuromorphic networks.
+
+\end{document}

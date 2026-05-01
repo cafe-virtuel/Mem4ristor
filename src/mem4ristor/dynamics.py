@@ -18,7 +18,7 @@ class Mem4ristorV3:
             'dynamics': {
                 'a': 0.7, 'b': 0.8, 'epsilon': 0.08, 'alpha': 0.15,
                 'v_cubic_divisor': 5.0, 'dt': 0.05,
-                'lambda_learn': 0.05, 'tau_plasticity': 1000, 'w_saturation': 2.0
+                'lambda_intrinsic': 0.05, 'tau_plasticity': 1000, 'w_saturation': 2.0
             },
             'coupling': {'D': 0.15, 'heretic_ratio': 0.15, 'uniform_placement': True,
                          'dynamic_heretics': {'enabled': False, 'u_threshold': 0.8, 'steps_required': 100}},
@@ -45,7 +45,7 @@ class Mem4ristorV3:
 
         self._validate_config()
 
-        self.lambda_learn = self.cfg['dynamics'].get('lambda_learn', 0.05)
+        self.lambda_intrinsic = self.cfg['dynamics'].get('lambda_intrinsic', 0.05)
         self.tau_plasticity = self.cfg['dynamics'].get('tau_plasticity', 1000)
         self.w_saturation = self.cfg['dynamics'].get('w_saturation', 2.0)
 
@@ -184,10 +184,12 @@ class Mem4ristorV3:
         sigma_social = np.abs(laplacian_v)
         # Override sigma_social for u dynamics only (ablation experiment hook)
         sigma_social_for_u = sigma_social_override if sigma_social_override is not None else sigma_social
+        # Euler-Maruyama scaling : le bruit thermique obéit au calcul d'Itô et s'accumule avec sqrt(dt).
+        # On divise par sqrt(dt) ici car dv sera multiplié par dt à la fin (eta * dt / sqrt(dt) = eta * sqrt(dt)).
         if sigma_v_vec is not None:
-            eta = self.rng.normal(0, 1, self.N) * sigma_v_vec
+            eta = self.rng.normal(0, 1, self.N) * sigma_v_vec / np.sqrt(self.dt)
         else:
-            eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N)
+            eta = self.rng.normal(0, self.cfg['noise'].get('sigma_v', 0.05), self.N) / np.sqrt(self.dt)
 
         if self.cfg['noise'].get('use_rtn', False):
             rtn_amp = self.cfg['noise'].get('rtn_amplitude', 0.1)
@@ -221,7 +223,7 @@ class Mem4ristorV3:
         else:
             innovation_mask = (self.u > 0.5).astype(float)
 
-        plasticity_drive = self.lambda_learn * sigma_social * innovation_mask
+        plasticity_drive = self.lambda_intrinsic * sigma_social * innovation_mask
         w_ratio = self.w / self.w_saturation
         saturation_factor = np.clip(1.0 - (w_ratio**2), 0.0, 1.0)
         dw_learning = (plasticity_drive * saturation_factor) - (self.w / self.tau_plasticity)
@@ -242,10 +244,10 @@ class Mem4ristorV3:
         self.w += (dw + dw_learning) * self.dt
         self.u += du * self.dt
 
-        # @DOUBT — Clipping silencieux : si v ou w explosent au-delà de ±100, ils sont écrasés sans signal.
-        # Des valeurs clipées = simulation potentiellement fausse. Utilise health_check() pour le détecter.
-        self.v = np.clip(self.v, -100.0, 100.0)
-        self.w = np.clip(self.w, -100.0, 100.0)
+        # Alarme de divergence : au lieu de cacher l'explosion, on l'annonce.
+        if np.any(np.abs(self.v) > 100.0) or np.any(np.abs(self.w) > 100.0):
+            raise OverflowError("Boom ! La simulation a déraillé et a dépassé ±100. Le filet de sécurité est retiré.")
+        
         self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
 
         # V4: dynamic heretics — bascule irréversible quand u_i >= u_threshold pendant steps_required steps
@@ -285,7 +287,7 @@ class Mem4ristorV3:
             dv = v - (v**3)/self.cfg['dynamics']['v_cubic_divisor'] - w + I_ext - self.cfg['dynamics']['alpha']*np.tanh(v) + eta
             dw_fhn = self.cfg['dynamics']['epsilon'] * (v + self.cfg['dynamics']['a'] - self.cfg['dynamics']['b'] * w)
             
-            p_drive = self.lambda_learn * sigma_social * (u > 0.5).astype(float)
+            p_drive = self.lambda_intrinsic * sigma_social * (u > 0.5).astype(float)
             w_ratio = w / self.w_saturation
             sat_fact = np.clip(1.0 - (w_ratio**2), 0.0, 1.0)
             dw_learn = (p_drive * sat_fact) - (w / self.tau_plasticity)

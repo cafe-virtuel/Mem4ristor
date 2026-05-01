@@ -138,7 +138,7 @@ def test_plasticity_activation():
     """
     cfg = {
         'dynamics': {'a': 0.7, 'b': 0.8, 'epsilon': 0.08, 'alpha': 0.15, 'v_cubic_divisor': 5.0, 'dt': 0.05,
-                     'lambda_learn': 1.0, 'tau_plasticity': 1e9, 'w_saturation': 10.0},
+                     'lambda_intrinsic': 1.0, 'tau_plasticity': 1e9, 'w_saturation': 10.0},
         'coupling': {'D': 1.0, 'heretic_ratio': 0.0},
         'doubt': {'epsilon_u': 0.0, 'k_u': 1.0, 'sigma_baseline': 0.05, 'u_clamp': [0.0, 1.0], 'tau_u': 1.0,
                   'alpha_surprise': 0.0, 'surprise_cap': 5.0},

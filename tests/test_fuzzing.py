@@ -54,7 +54,7 @@ def test_vicious_fuzzing_inputs():
             assert not np.any(np.isnan(model.w)), f"NaN in w after accepting input {type(garbage).__name__}"
             assert not np.any(np.isnan(model.u)), f"NaN in u after accepting input {type(garbage).__name__}"
 
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, OverflowError):
             rejected_count += 1
         except Exception as e:
             pytest.fail(f"CRASH at iteration {i}: {type(e).__name__} with input {str(garbage)[:50]}: {e}")
@@ -83,7 +83,7 @@ def test_vicious_fuzzing_config():
             # If accepted, state must be clean
             assert np.all(np.isfinite(new_model.v)), f"Non-finite v with config {bad_config}"
 
-        except (ValueError, TypeError, KeyError):
+        except (ValueError, TypeError, KeyError, OverflowError):
             rejected_count += 1
         except Exception as e:
             pytest.fail(f"CONFIG CRASH at iteration {i}: {type(e).__name__} with config {bad_config}: {e}")
