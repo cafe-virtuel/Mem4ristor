@@ -1,5 +1,5 @@
 """
-Mem4ristor v3.2.0 — Neuromorphic-inspired diversity-preserving cognitive architecture.
+Mem4ristor v4.0.0 — Neuromorphic-inspired diversity-preserving cognitive architecture.
 
 Modules:
     core        — Mem4ristorV3 engine & Mem4Network (lattice / adjacency)
@@ -8,9 +8,7 @@ Modules:
     graph_utils — Canonical topology generators (make_ba, make_er, make_lattice_adj)
     sensory     — SensoryFrontend (image → stimulus)
     cortex      — LearnableCortex (learnable decision layer)
-    hierarchy   — HierarchicalChimera (multi-scale chimera states)
     symbiosis   — CreativeProjector (creative divergence mapping)
-    arena       — GladiatorMem4ristor (competitive evaluation)
     inception   — DreamVisualizer (internal state visualization)
     viz         — Plotting utilities (entropy, doubt maps, phase portraits)
 """
@@ -36,9 +34,7 @@ from .metrics import (
 # Extension modules
 from .sensory import SensoryFrontend
 from .cortex import LearnableCortex
-from .hierarchy import HierarchicalChimera
 from .symbiosis import CreativeProjector
-from .arena import GladiatorMem4ristor
 from .inception import DreamVisualizer
 
 # Visualization (soft dependency on matplotlib)
@@ -55,7 +51,7 @@ try:
 except ImportError:
     pass  # matplotlib not installed — viz functions unavailable
 
-__version__ = "3.2.0"
+__version__ = "4.0.0"
 
 __all__ = [
     # Graph utilities
@@ -81,9 +77,7 @@ __all__ = [
     # Extensions
     "SensoryFrontend",
     "LearnableCortex",
-    "HierarchicalChimera",
     "CreativeProjector",
-    "GladiatorMem4ristor",
     "DreamVisualizer",
     # Viz
     "SimHistory",

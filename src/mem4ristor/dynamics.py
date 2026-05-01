@@ -264,12 +264,19 @@ class Mem4ristorV3:
                 self.dynamic_heretic_count += int(np.sum(newly_heretic))
 
     def solve_rk45(self, t_span, I_stimulus=0.0, adj_matrix=None):
-        # WARNING (audit 2026-04-22): the combined_dynamics closure below calls
-        # self.rng.normal() on every ODE evaluation. solve_ivp (RK45) evaluates
-        # the RHS multiple times per step with different (t, y) pairs, so each
-        # call draws a fresh noise sample, violating the deterministic contract
-        # required by adaptive integrators. Results with sigma_v > 0 are
-        # non-reproducible and numerically incorrect. Use sigma_v=0 only.
+        """
+        Adaptive RK45 Integrator.
+        
+        WARNING: Only numerically valid for Deterministic systems (sigma_v = 0).
+        For Stochastic Differential Equations (SDEs), use the 'step()' method (Euler-Maruyama).
+        """
+        if self.cfg['noise'].get('sigma_v', 0.0) > 0:
+            import warnings
+            warnings.warn("RK45 detected with sigma_v > 0. Standard adaptive integrators "
+                          "are mathematically inconsistent with stochastic noise. "
+                          "Results will be non-reproducible. Use sigma_v=0 or use .step().", 
+                          RuntimeWarning)
+                          
         duration = t_span[1] - t_span[0]
         max_step = min(0.1, duration / 10.0) if duration > 0 else 0.1
 

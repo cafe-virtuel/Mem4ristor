@@ -2,10 +2,12 @@ import numpy as np
 import sys
 import os
 
-# Add src to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+# Add src and experimental to path
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(base_dir, 'src'))
+sys.path.insert(0, os.path.join(base_dir, 'experimental'))
 
-from mem4ristor.mem4ristor_v3 import Mem4ristorV3
+from mem4ristor.dynamics import Mem4ristorV3
 from mem4ristor.symbiosis import CreativeProjector
 from mem4ristor.cortex import LearnableCortex
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mem4ristor"
-version = "3.2.0"
+version = "4.0.0"
 description = "Neuromorphic cognitive architecture with constitutional doubt and levitating sigmoid coupling"
 readme = "README.md"
 requires-python = ">=3.9"

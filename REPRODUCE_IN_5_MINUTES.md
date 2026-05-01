@@ -11,8 +11,8 @@ We know your time is valuable. You don't need to read the 2,000+ lines of docume
 ```bash
 # 1. Clone the repository (optional: navigate to your Desktop first)
 # cd ~/Desktop 
-git clone https://github.com/cafe-virtuel/mem4ristor-v2.git
-cd mem4ristor-v2
+git clone https://github.com/cafe-virtuel/mem4ristor.git
+cd mem4ristor
 
 # 2. Install dependencies (requires Python 3.9+)
 pip install -e .

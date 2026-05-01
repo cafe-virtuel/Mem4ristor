@@ -3,10 +3,12 @@ import sys
 import os
 import matplotlib.pyplot as plt
 
-# Add src to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+# Add src and experimental to path
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(base_dir, 'src'))
+sys.path.insert(0, os.path.join(base_dir, 'experimental'))
 
-from mem4ristor.hierarchy import HierarchicalChimera
+from hierarchy import HierarchicalChimera
 
 def demo_deep_chimera():
     print("\n🏗️ DEMO: Deep Chimera (Hierarchical Architecture)")
