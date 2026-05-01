@@ -1,24 +1,26 @@
-# Mem4ristor V3: Neuromorphic Cognitive Architecture
+# Mem4ristor V4: Spatiotemporal Chaos & Chimera States
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18620596.svg)](https://doi.org/10.5281/zenodo.18620596)
 [![Tests](https://github.com/cafe-virtuel/mem4ristor-v2/actions/workflows/test.yml/badge.svg)](https://github.com/cafe-virtuel/mem4ristor-v2/actions/workflows/test.yml)
 
-**Mem4ristor V3** is a computational implementation of extended FitzHugh-Nagumo dynamics designed to investigate emergent critical states in neuromorphic networks. This research code focuses on the role of "Constitutional Doubt" ($u$) and "Structural Heretics" in preventing consensus collapse in scale-free and lattice networks.
+**Mem4ristor V4** is a computational implementation of extended FitzHugh-Nagumo dynamics designed to investigate emergent critical states in neuromorphic networks. This mathematically audited code focuses on how "Constitutional Doubt" ($u$) and "Structural Heretics" prevent consensus collapse in scale-free networks, generating robust Chimera states without requiring stochastic noise.
 
-> **Status**: v3.2.1 (Post-Audit — corrected doubt equation, n=5 statistics, Paper 2 draft)
+> **Status**: V4 Stable (Audited: Euler integration, Spectral Gap, Transfer Entropy causality proven)
+
+---
+🔥 **[CLICK HERE TO REPRODUCE THE CHIMERA STATE IN 5 MINUTES](REPRODUCE_IN_5_MINUTES.md)** 🔥
+---
 
 ## 🔬 Key Scientific Features
 
 *   **Constitutional Doubt ($u$):** A dynamic state variable that modulates coupling polarity based on local uncertainty, enabling repulsive social coupling when doubt is high.
-*   **Structural Heretics:** A subset of nodes with inverted stimulus perception, critical for maintaining global diversity (Empirical Threshold of 15%, validated on regular lattices).
+*   **Structural Heretics:** A subset of nodes with inverted stimulus perception. Audited by Transfer Entropy, these act as *causal structural walls*, forcing the network to fragment its phase space.
 *   **Levitating Sigmoid Coupling:** Smooth repulsive coupling via $\tanh(\pi(0.5-u)) + \delta$, eliminating the dead zone at $u=0.5$.
-*   **Adaptive Meta-Doubt (v3.1.0):** Doubt learning rate accelerates proportionally to social surprise, providing social-driven meta-plasticity.
-*   **Degree-Normalized Coupling (v3.2.0):** Per-node coupling $D/\deg(i)$ breaks hub strangulation on scale-free networks, recovering 86% of lattice-level diversity on Barabási-Albert networks.
-*   **V5 Hysteresis (v3.2.0):** Dead-zone latching with Schmitt-trigger-style transitions and watchdog fatigue for memristor-realistic dynamics.
-*   **Sparse CSR Backend (v3.2.0):** Automatic scipy.sparse conversion for $N > 1000$, yielding 455× memory reduction at $N=5000$.
-*   **Scale-Invariant Dynamics:** Normalized coupling strength ($D_{eff} = D/\sqrt{N}$) ensures consistent behavior across network sizes ($N=10$ to $N=2500$).
+*   **Degree-Normalized Coupling:** Per-node coupling $D/\deg(i)$ prevents hub strangulation on Barabási-Albert networks. Proven asymptotically stable via Effective Spectral Gap ($\lambda_2(L_{eff})$) at the thermodynamic limit ($N=4000$).
+*   **Robust Chimera States:** Proven resilience against symmetry breaking. The macroscopic phase-locked state coexists with spatial diversity regardless of homogeneous or random initial conditions.
+*   **Sparse CSR Backend:** Automatic `scipy.sparse` conversion for $N > 1000$, yielding massive memory reductions.
 
 ## 🚀 Installation
 
