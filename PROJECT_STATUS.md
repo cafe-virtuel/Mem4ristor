@@ -1335,8 +1335,8 @@ mem4ristor-v2-main/
 ## 7. COMMENT DÉMARRER
 
 ```bash
-git clone https://github.com/Jusyl236/mem4ristor-v2.git
-cd mem4ristor-v2
+git clone https://github.com/cafe-virtuel/Mem4ristor.git
+cd Mem4ristor
 pip install -e .
 pytest tests/
 ```

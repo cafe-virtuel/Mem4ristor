@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18620596.svg)](https://doi.org/10.5281/zenodo.18620596)
-[![Tests](https://github.com/cafe-virtuel/mem4ristor-v2/actions/workflows/test.yml/badge.svg)](https://github.com/cafe-virtuel/mem4ristor-v2/actions/workflows/test.yml)
+[![Tests](https://github.com/cafe-virtuel/Mem4ristor/actions/workflows/test.yml/badge.svg)](https://github.com/cafe-virtuel/Mem4ristor/actions/workflows/test.yml)
 
 **Mem4ristor V4** is a computational implementation of extended FitzHugh-Nagumo dynamics designed to investigate emergent critical states in neuromorphic networks. This mathematically audited code focuses on how "Constitutional Doubt" ($u$) and "Structural Heretics" prevent consensus collapse in scale-free networks, generating robust Chimera states without requiring stochastic noise.
 
@@ -25,8 +25,8 @@
 ## 🚀 Installation
 
 ```bash
-git clone https://github.com/cafe-virtuel/mem4ristor-v2.git
-cd mem4ristor-v2
+git clone https://github.com/cafe-virtuel/Mem4ristor.git
+cd Mem4ristor
 pip install -e .
 ```
 

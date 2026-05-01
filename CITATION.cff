@@ -4,12 +4,12 @@ authors:
 - family-names: "Chauvin"
   given-names: "Julien"
   orcid: "https://orcid.org/0009-0006-9285-2308"
-title: "Mem4ristor: Constitutional Doubt for Attractor Diversity Stabilization"
-version: 3.0.0
-doi: "10.5281/zenodo.18620597"
-date-released: 2026-02-16
-url: "https://github.com/Jusyl236/mem4ristor-v2"
-repository: "https://zenodo.org/records/18620597"
+title: "Mem4ristor V4: Spatiotemporal Chaos and Chimera States in Doubt-Modulated FHN Networks"
+version: 4.0.0
+doi: "10.5281/zenodo.18620596"
+date-released: 2026-05-01
+url: "https://github.com/cafe-virtuel/Mem4ristor"
+repository: "https://zenodo.org/records/18620596"
 keywords:
   - neuromorphic computing
   - memristor

@@ -37,7 +37,7 @@ This work is delivered as a **"Don Pur"** (Pure Gift) from its creator, Julien C
 
 ## 🛠️ Getting Started
 ```bash
-git clone https://github.com/cafe-virtuel/mem4ristor-v2.git
+git clone https://github.com/cafe-virtuel/Mem4ristor.git
 pip install -r requirements.txt
 python reproduction/tests_reproduce_paper.py
 ```
