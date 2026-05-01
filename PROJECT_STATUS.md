@@ -2758,3 +2758,24 @@ Decision merge appartient uniquement a Julien (barman).
 > Si une claim est marquée FAUX dans `docs/limitations.md`, elle doit être qualifiée
 > de "phénoménologique" ou "spéculative" dans le preprint.
 > Les échecs sont conservés dans `failures/`. Rien n'est effacé.
+
+---
+
+## 🚀 Future Research: Roadmap V4.1 / V5 (Cognitive Innovations)
+
+Following the 2026-05-01 Professional Audit (ManusAI), the following concepts are prioritized for future exploration:
+
+### 1. Metacognitive Plasticity ($u \to \epsilon$)
+- **Concept**: Dynamic modulation of neuronal excitability based on local doubt.
+- **Goal**: Uncertain nodes become "slow/prudent" while certain nodes become "fast/impulsive", simulating adaptive cognitive effort.
+
+### 2. Non-Local Topological Coupling (Doubt Similarity)
+- **Concept**: Establishing virtual links between nodes with similar doubt levels, regardless of physical proximity.
+- **Goal**: Emergence of "communities of thought" and selective information gating.
+
+### 3. Dynamic Compartmentalization (Sub-Personalities)
+- **Concept**: Using doubt-driven rewiring to isolate contradictory sub-graphs.
+- **Goal**: Preventing global consensus collapse by sequestering "traumatic" or inconsistent information in modular silos.
+
+### 4. Advanced Visualization
+- **Concept**: 3D mapping of entropy flows between Hierarchical layers (V1 -> V4 -> PFC).
