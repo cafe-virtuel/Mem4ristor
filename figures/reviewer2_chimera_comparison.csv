@@ -1,0 +1,3 @@
+model,R_global,R_pop1,R_pop2,H_cont,mechanism
+Abrams-Strogatz,0.7656206687652721,0.7681298050795503,0.7763739475862187,,quenched non-local coupling
+Mem4ristor (tau_u=50),0.1413276199375377,,,3.828885833708442,state-dependent polarity switching (u variable)

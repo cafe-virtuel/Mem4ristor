@@ -2779,3 +2779,34 @@ Following the 2026-05-01 Professional Audit (ManusAI), the following concepts ar
 
 ### 4. Advanced Visualization
 - **Concept**: 3D mapping of entropy flows between Hierarchical layers (V1 -> V4 -> PFC).
+
+
+## 13. FIGURES DE RÉFÉRENCE — INVENTAIRE INTERNE (02 mai 2026)
+
+Ces figures existent dans figures/ mais ne sont pas citées dans les documents publiés.
+Elles sont documentées ici pour traçabilité et pour répondre aux reviewers si nécessaire.
+
+### Résultats scientifiques confirmés (non publiés)
+
+| Fichier | Expérience | Résultat | Statut |
+|---------|-----------|---------|--------|
+| event_phase_transition.png / .csv / _summary.csv | [13] Transition de phase événementielle | Nœud périphérique I>=0.8 pendant >=50 steps → dH=+1.20 bits (BA m=3). Périphérique > Hub. | Confirmé, commit 667a2a9 |
+| matern_noise.png / .csv / _summary.csv | [12] Bruit Matern spatialement corrélé | Tous types de bruit (i.i.d., Matern exp/Gauss) brisent la dead zone à eta=0.1+. Amplitude seule compte. | Confirmé, commit a8d6ba4 |
+| v4_dynamic_heretics_emergence.csv | V4 Dynamic Heretics | Loi linéaire t_first = steps_required + 130 * u_threshold (R²~1). Cascade quasi-inévitable pour u_thr <= 0.8. | Confirmé, commit 88b9983 |
+
+### Analyses de robustesse et défenses reviewer
+
+| Fichier | Analyse | Note |
+|---------|---------|------|
+| floquet_multipliers.png | Multiplicateurs de Floquet (Section 5.2 preprint) | Ajouté figure preprint.tex 02 mai 2026 |
+| lyapunov_analysis.png | Exposant de Lyapunov max vs couplage D (Section 5.2 preprint) | Ajouté figure preprint.tex 02 mai 2026 |
+| phase_diagram_corrected.png | Diagramme de phase corrigé (post-audit KIMI) | Remplacé par fiedler_phase_diagram.png comme référence principale |
+| phase_diagram_v4_extensions.png | Extensions V4 (dynamic heretics) | Exploratoire, données dans figures/v4_parametric_sweep.csv |
+| flop_benchmark.png | Benchmark performances (FLOP/s vs N) | Interne — pas dans les papers |
+
+### Données hardware SPICE
+
+| Fichier | Contenu | Note |
+|---------|---------|------|
+| p420_hfo2_memristor.csv | Caractérisation SPICE HfO₂ — 50 seeds Monte Carlo | Référencé dans Paper B (in preparation) |
+| spice_noise_calibration.png / .csv | Calibration bruit SPICE/Python — eta=0.5 ↔ sigma_equiv=0.0044 | Faille A Audit ManusAI — clôturée |

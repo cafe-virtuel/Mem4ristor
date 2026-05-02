@@ -375,6 +375,15 @@ The model uses first-order Euler integration with $\Delta t = 0.05$. A systemati
 
 Under periodic forcing $I(t) = A\sin(\omega t)$ ($A = 0.3$, $\omega = 0.5$), we computed the Floquet multipliers of the linearized dynamics around the synchronized manifold. For the synchronized state to be stable, transverse Floquet multipliers must satisfy $|\mu| < 1$. Here, all transverse multipliers satisfy $|\mu| \gg 1$ (magnitudes $\sim 10^3$--$10^4$), confirming instability of the synchronized state and resistance to periodic entrainment. The maximum Lyapunov exponent $\lambda_{\max} \approx 0$ indicates quasi-periodic dynamics---neither chaotic ($\lambda_{\max} > 0$) nor convergent ($\lambda_{\max} < 0$).
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.48\linewidth]{floquet_multipliers.png}
+  \hfill
+  \includegraphics[width=0.48\linewidth]{lyapunov_analysis.png}
+  \caption{Left: Floquet multiplier magnitudes $|\mu_k|$ for all transverse modes $k > 0$ under periodic forcing ($A=0.3$, $\omega=0.5$). All multipliers satisfy $|\mu_k| \gg 1$, confirming that the synchronized state is strongly unstable to transverse perturbations. Right: Maximum Lyapunov exponent $\lambda_{\max}$ as a function of network coupling strength $D$. At the reference parameterization, $\lambda_{\max} \approx 0$, indicating quasi-periodic dynamics consistent with sustained diversity.}
+  \label{fig:floquet_lyapunov}
+\end{figure}
+
 % ============================================================================
 % 6. DISCUSSION
 % ============================================================================
