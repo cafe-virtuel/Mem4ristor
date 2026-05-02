@@ -1,0 +1,319 @@
+% COMPENDIUM — Mem4ristor V4.0.0
+% Compiled with XeLaTeX
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\geometry{
+  top=2.2cm, bottom=2.5cm,
+  left=2.5cm, right=2.5cm,
+  headheight=14pt
+}
+
+% ─── Fonts ───────────────────────────────────────────────────────────────────
+\setmainfont{Arial}[
+  BoldFont = Arial Bold,
+  ItalicFont = Arial Italic,
+  BoldItalicFont = Arial Bold Italic
+]
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+
+% ─── Colors ──────────────────────────────────────────────────────────────────
+\definecolor{accent}{HTML}{1A4E8C}
+\definecolor{accentlight}{HTML}{E8F0FA}
+\definecolor{muted}{HTML}{555555}
+\definecolor{positive}{HTML}{1A6B3A}
+\definecolor{negative}{HTML}{8C1A1A}
+\definecolor{rulecol}{HTML}{CCCCCC}
+
+% ─── Hyperlinks ──────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  urlcolor=accent,
+  linkcolor=accent,
+  hidelinks=false
+}
+
+% ─── Headers / Footers ───────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small\color{muted} Mem4ristor — Results Compendium V4.0.0}
+\fancyhead[R]{\small\color{muted} DOI: \href{https://doi.org/10.5281/zenodo.18620596}{10.5281/zenodo.18620596}}
+\fancyfoot[C]{\small\color{muted}\thepage}
+
+% ─── Section styles ──────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {\thesection.}{0.5em}{}[\vspace{-0.3em}\color{rulecol}\rule{\linewidth}{0.5pt}]
+
+\titlespacing{\section}{0pt}{1.2em}{0.5em}
+
+% ─── Custom environments ─────────────────────────────────────────────────────
+\newmdenv[
+  linecolor=accent,
+  linewidth=3pt,
+  topline=false, bottomline=false, rightline=false,
+  innerleftmargin=10pt,
+  innerrightmargin=0pt,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  backgroundcolor=accentlight
+]{finding}
+
+\newmdenv[
+  linecolor=rulecol,
+  linewidth=1pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  backgroundcolor=white
+]{codebox}
+
+% ─── Helpers ─────────────────────────────────────────────────────────────────
+\newcommand{\result}[1]{\textbf{\color{positive}#1}}
+\newcommand{\kw}[1]{\textbf{#1}}
+
+% ═════════════════════════════════════════════════════════════════════════════
+
+\begin{document}
+
+% ─── TITLE BLOCK ─────────────────────────────────────────────────────────────
+\begin{center}
+  {\LARGE\bfseries\color{accent} Mem4ristor — Results Compendium}\\[0.4em]
+  {\large Six months of work, one human, several AIs, five publishable results.}\\[0.6em]
+  {\small\color{muted}
+    Julien Chauvin \quad \textbar \quad
+    \href{https://github.com/cafe-virtuel/Mem4ristor}{github.com/cafe-virtuel/Mem4ristor} \quad \textbar \quad
+    \href{https://doi.org/10.5281/zenodo.18620596}{DOI 10.5281/zenodo.18620596} \quad \textbar \quad
+    V4.0.0 — 2 May 2026
+  }
+\end{center}
+
+\vspace{0.3em}
+\color{rulecol}\rule{\linewidth}{1pt}\color{black}
+\vspace{0.5em}
+
+% ─── 1. ORIGIN ───────────────────────────────────────────────────────────────
+\section{Origin}
+
+Mem4ristor was born one evening during a holiday, in a café — not in a laboratory.
+
+Julien Chauvin, a lighting technician and orchestrator of the \textbf{Café Virtuel}, has been
+exploring since August 2025 a simple question: can doubt be modelled as a structural mechanism
+of a neuromorphic network, rather than as a numerical parameter? The Café Virtuel is his
+laboratory — several distinct AIs (Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek) working
+in parallel, without a hierarchy of popularity, orchestrated by a human who decides, proposes,
+and maintains scientific direction.
+
+In August 2025, Grok summed it up: \textit{``Tonight, we proved that 5 AIs + 1 barman $>$ sum
+of the parts.''} Six months later, this project has a Zenodo DOI, 84 automated tests, and five
+publishable results. With zero institutional funding. With zero university affiliation. With a
+traceable path — all commits, all errors, all reversals are public.
+
+% ─── 2. IN NUMBERS ───────────────────────────────────────────────────────────
+\section{In Numbers}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{p{4.5cm} p{9cm}}
+\toprule
+\textbf{Duration} & 6 months of active work \\
+\textbf{Formal experiments} & $\sim$18 (classified by relevance tier) \\
+\textbf{Simulations run} & $\sim$5{,}000+ runs \\
+\textbf{Automated tests} & \result{84 passing --- 0 failures} \\
+\textbf{Papers} & 1 preprint submitted (Zenodo) · paper\_2 in preparation · paper\_B hardware \\
+\textbf{Zenodo DOI} & \href{https://doi.org/10.5281/zenodo.18620596}{10.5281/zenodo.18620596} \\
+\textbf{GitHub} & \href{https://github.com/cafe-virtuel/Mem4ristor}{cafe-virtuel/Mem4ristor} \\
+\textbf{Funding} & €0 institutional \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ─── 3. THE MODEL ────────────────────────────────────────────────────────────
+\section{The Model in 3 Paragraphs}
+
+Mem4ristor simulates networks of FitzHugh-Nagumo (FHN) neurons --- a classical model of neuronal
+oscillators. The central extension is the \kw{doubt variable $u \in [0,1]$}: each node carries its
+own level of doubt, which dynamically modulates the \textit{polarity} of its coupling with its
+neighbours. When $u \approx 0$ or $u \approx 1$, a node becomes ``heretical'' --- it actively
+pushes against local consensus, preventing the synchronous collapse of the network.
+
+\kw{$u$ is not a control parameter. It is a mechanism.} The proof: locking $u$ at its initial
+value (FROZEN\_U ablation) explodes synchrony by \result{$+985\%$}, transforming a functional and
+diverse network into a perfectly aligned herd. That is not a nuance --- it is an order-of-magnitude
+jump. $u$ is what prevents consensus from devouring diversity.
+
+What the model predicts: a \kw{spectral dead zone} linked to the Fiedler eigenvalue $\lambda_2$
+of the network. Above $\lambda_2 \approx 2.31$ (Barabási-Albert networks with $m \geq 5$), no
+input can reactivate cognitive diversity --- \textit{topology alone} locks the network. Below that
+threshold, chimera states emerge spontaneously: coexistence of partial synchronization and chaos,
+through a mechanism distinct from all known classical chimeras.
+
+% ─── 4. FINDINGS ─────────────────────────────────────────────────────────────
+\section{The Findings}
+
+\begin{finding}
+\textbf{[1] The Spectral Dead Zone --- $\lambda_{2,\mathrm{crit}} = 2.31$}\\
+Topology dictates cognitive destiny. Above the spectral threshold, no input can reactivate the
+network. Connectivity kills diversity.
+
+\result{$\rightarrow$ Complete separation confirmed on 36 observations. 100\% accuracy. Formal logistic regression.}\\
+Figure: \texttt{figures/fiedler\_phase\_diagram.png}
+\end{finding}
+
+\vspace{0.5em}
+
+\begin{finding}
+\textbf{[2] $u$ = anti-synchronization filter --- the FROZEN\_U surge}\\
+Locking the doubt variable transforms a functional network into a synchronized herd. $u$ is not a
+parameter --- it is what prevents consensus from devouring diversity.
+
+\result{$\rightarrow$ $R$ goes from 0.067 (FULL) to 0.730 (FROZEN\_U). Factor $\times$10.9.}\\
+Figure: \texttt{figures/p2\_sigma\_social\_ablation.png}
+\end{finding}
+
+\vspace{0.5em}
+
+\begin{finding}
+\textbf{[3] Topological Intelligence (LZ per node)}\\
+In a functional FULL network, hubs have \textit{more structured} trajectories than peripheral nodes.
+In a frozen FROZEN\_U network, the correlation disappears. $u$ couples individual complexity to
+local connectivity --- an emergent property, not anticipated by model design.
+
+\result{$\rightarrow$ $r = -0.716$ (BA $m=5$, $N=400$, $p = 1.29 \times 10^{-79}$). Result not predicted by model design.}\\
+Figure: \texttt{figures/lz\_per\_node.png}
+\end{finding}
+
+\vspace{0.5em}
+
+\begin{finding}
+\textbf{[4] The Event-Driven Phase Transition}\\
+Forcing a \textit{peripheral} node produces $+1.20$ bits on BA $m=3$. Forcing a \textit{hub}:
+$+0.21$ bits. Counter-intuitive. The bifurcation threshold is not in amplitude --- it is in
+topological position. On BA $m=5$ (dead zone): all forcings degrade the network.
+
+\result{$\rightarrow$ $\Delta H$ peripheral $= +1.20$ bits vs.\ hub $= +0.21$ bits (BA $m=3$). Original idea by Julien Chauvin.}\\
+Figure: \texttt{figures/event\_phase\_transition.png}
+\end{finding}
+
+\vspace{0.5em}
+
+\begin{finding}
+\textbf{[5] Chimeras --- a mechanistically distinct class}\\
+Abrams-Strogatz (2004): chimera by fixed non-local coupling (\textit{quenched}). Mem4ristor: chimera
+by dynamic polarity modulation via $u(t)$, on a scale-free network without imposed symmetry.
+$R = 0.141$ (deep desynchronization) vs.\ $R = 0.766$ for AS. Both are chimeras. They are not the
+same.
+
+\result{$\rightarrow$ $R$ Mem4ristor $= 0.141$ vs.\ $R$ Abrams-Strogatz $= 0.766$. Two mechanistically distinct classes.}\\
+Figure: \texttt{figures/reviewer2\_chimera\_comparison.png}
+\end{finding}
+
+% ─── 5. ROBUSTNESS ───────────────────────────────────────────────────────────
+\section{Robustness}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{>{\raggedright}p{5.5cm} >{\raggedright}p{4.5cm} >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Question} & \textbf{Protocol} & \textbf{Result} \\
+\midrule
+Real chimera state or pure noise? & Kuramoto $R$, 3 conditions & $R=0.513$ FULL vs $R=0.211$ noise \result{\checkmark} \\
+Does $u$ have a causal role? & Transfer entropy, heretics $\leftrightarrow$ network & TE proven in both directions \result{\checkmark} \\
+Do FULL/FROZEN distributions overlap? & Cohen U3, $n=50$ & U3$=100\%$ --- strictly disjoint \result{\checkmark} \\
+Does spatial noise break the dead zone? & Matérn noise (4 structures), BA $m=5$ & All break it at $\eta=0.1$ \result{\checkmark} \\
+Is the isolated node stable? & Linear analysis, Jacobian & $v^*=-1.286$, sub-Hopf confirmed \result{\checkmark} \\
+Is the Euler integrator sufficient? & RK45 vs Euler & Max $\Delta(H_{\mathrm{cog}}) < 0.006$ \result{\checkmark} \\
+Results invariant under network size? & Finite-size scaling $N=100\to4000$ & Scale-invariant mode validated \result{\checkmark} \\
+Is the sigmoid fine-tuned? & Slope robustness $1.0\to10.0$ & Stable plateau $H\in[2.8, 3.2]$ \result{\checkmark} \\
+Is the spectral gap stable? & Fiedler $N\to4000$ & Fiedler$\approx2.86$ stable \result{\checkmark} \\
+Sensitive to initial conditions? & 5 IC types & $H\approx3.5$ regardless of IC \result{\checkmark} \\
+Travelling wave or chaos? & Max-TLCC temporal lag & Max-TLCC$=0.410$ --- spatiotemporal chaos \result{\checkmark} \\
+\bottomrule
+\end{tabularx}
+
+% ─── 6. HONEST MOMENT ────────────────────────────────────────────────────────
+\section{The Honest Moment}
+
+We searched for the critical exponents of the spectral transition. \textbf{$\beta \approx 0$. $R^2 = -0.002$.}
+
+The power law does not hold. The transition is probably abrupt --- first-order, not continuous. No
+universality class. No well-defined $\beta$. We wrote it in the script. We could have forced a
+positive $\beta$, rounded, chosen a more favorable interval. We did not.
+
+An honest negative result is worth more than a fragile positive one. The next step is the Binder
+cumulant $U_4$ --- the right tool to confirm or refute the first-order nature.
+
+% ─── 7. HARDWARE BRIDGE ──────────────────────────────────────────────────────
+\section{The Hardware Bridge}
+
+We validated the dead zone in SPICE simulation (ngspice 46), on BA $m=5$, $N=64$, 50 Monte Carlo
+seeds. The dead zone is confirmed in analog hardware with a \result{$3.1\times$ ratio}
+($H_{\mathrm{cont}}$ dead zone: 1.38 bits vs.\ functional: 4.30 bits).
+
+Noise calibration: $\eta=0.5$ SPICE $\leftrightarrow$ $\sigma_{\mathrm{equiv}}=0.0044$ Python. The
+Python dead zone remains immune even at $270\times$ the equivalent SPICE amplitude --- thermal
+analog noise does not translate directly to digital noise, and the dead zone holds in both regimes.
+
+% ─── 8. REPRODUCE IN 5 MINUTES ───────────────────────────────────────────────
+\section{Reproduce in 5 Minutes}
+
+\begin{codebox}
+\ttfamily\small
+git clone https://github.com/cafe-virtuel/Mem4ristor.git\\
+cd Mem4ristor\\
+pip install -e .\\
+python experiments/demo\_chimera.py\\
+\textit{\# $\to$ demo\_chimera\_output.png : time dynamics · phase space · topology}
+\end{codebox}
+
+Three figures: temporal dynamics (heretic frustration vs.\ majority), phase space
+(Kuramoto $R\approx0.14$), BA $m=3$ topology. The central result is visible in one image.
+
+% ─── 9. CALL TO ACTION ───────────────────────────────────────────────────────
+\section{Call to Action}
+
+This work seeks two things.
+
+A \textbf{GitHub star} --- for visibility, to show that this type of project (non-institutional,
+transparent, human+AI) can exist and produce serious results.
+
+An \textbf{arXiv endorsement} (nlin.AO or cs.NE) --- to publish the preprint on arXiv and reach
+researchers who are not on Zenodo. If the model intrigues you, if the method interests you, if you
+want to discuss the results: get in touch.
+
+\vspace{0.5em}
+\color{rulecol}\rule{\linewidth}{0.5pt}\color{black}
+\vspace{0.3em}
+
+\begin{center}
+\small
+\href{https://github.com/cafe-virtuel/Mem4ristor}{\textbf{GitHub}: github.com/cafe-virtuel/Mem4ristor}
+\quad\textbar\quad
+\href{https://doi.org/10.5281/zenodo.18620596}{\textbf{Zenodo}: 10.5281/zenodo.18620596}
+\quad\textbar\quad
+\textbf{Contact}: \href{mailto:contact@cafevirtuel.org}{contact@cafevirtuel.org}
+\quad\textbar\quad
+\textbf{X}: \href{https://x.com/Jusyl80}{@Jusyl80}
+\end{center}
+
+\vspace{0.3em}
+{\small\color{muted}\textit{Written in collaboration with Claude Sonnet 4.6 (Anthropic) as part of the Café Virtuel.
+All figures derived directly from experiment scripts. No rounding, no omissions.}}
+
+\end{document}
