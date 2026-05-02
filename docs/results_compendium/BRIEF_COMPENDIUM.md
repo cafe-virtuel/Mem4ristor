@@ -202,7 +202,8 @@ Ne pas réécrire ce que ces fichiers disent déjà — les synthétiser et les 
 
 - **Voix** : première personne du pluriel ("nous avons", "le projet a produit") — c'est Julien + les IAs, pas "l'auteur"
 - **Café Virtuel** : mentionner dès le début. C'est ce qui différencie ce projet de tout le reste.
-- **Julien non-chercheur** : ne pas cacher, c'est une force narrative. Un barman BAC+2 qui publie sur Zenodo avec un DOI. C'est le point.
+- **Julien non-chercheur** : ne pas cacher, c'est une force narrative. Un technicien éclairage BAC+2 qui publie sur Zenodo avec un DOI. C'est le point.
+  NOTE : "Le Barman" = son rôle dans le Café Virtuel (orchestrateur). Son vrai métier = technicien / prescripteur éclairage. Ne pas écrire "barman" dans les documents publics.
 - **Les IAs** : Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek — nommer. Ce n'est pas "Claude a fait ça". C'est une collaboration.
 - **Honnêteté** : β≈0 est dans le document. L'intégrateur Euler est formellement instable (RK45 ajouté). On le dit.
 - **Longueur** : visée ~800-1200 mots pour COMPENDIUM.md. Assez long pour être sérieux, assez court pour être lu en entier.
