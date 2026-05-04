@@ -39,6 +39,19 @@ noise:
   rtn_amplitude: 0.1
   rtn_p_flip: 0.01
 
+# V5: Non-Local Coupling by Doubt Similarity
+# A chaque step, chaque noeud recoit un signal supplementaire de tous les autres
+# noeuds, pondere par leur similarite de doute (noyau gaussien en u-espace) :
+#   poids_ij  = exp( -(u_i - u_j)^2 / sigma_u^2 )
+#   I_virtual = D_meta * ( W_norm @ v - v )   [W_norm = poids normalises par ligne]
+# sigma_u petit -> seuls les noeuds tres proches en doute se voient (communautes serrees)
+# sigma_u grand -> tous les noeuds se voient (champ moyen global)
+# D_meta=0 reproduit exactement V4 (backward compatible)
+nonlocal_coupling:
+  enabled: false
+  D_meta:  0.05   # Force du couplage virtuel (commence faible vs D=0.15 physique)
+  sigma_u: 0.10   # Rayon de similarite en u-espace (0.10 = communautes serrees)
+
 # V5: Metacognitive Plasticity
 # epsilon_i = epsilon * (1 + alpha_meta * (0.5 - u_i))
 #

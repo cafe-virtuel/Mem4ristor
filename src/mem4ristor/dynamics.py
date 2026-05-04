@@ -199,6 +199,23 @@ class Mem4ristorV3:
         u_filter = np.tanh(self.sigmoid_steepness * (0.5 - self.u)) + self.social_leakage
         I_coup = self.D_eff * u_filter * laplacian_v
 
+        # V5: Couplage non-local par similarite de doute
+        # poids_ij = exp(-(u_i - u_j)^2 / sigma_u^2), normalises par ligne
+        # I_virtual_i = D_meta * (moyenne_ponderee_v_voisins_similaires - v_i)
+        nlc = self.cfg.get('nonlocal_coupling', {})
+        if nlc.get('enabled', False):
+            D_meta  = float(nlc.get('D_meta',  0.05))
+            sigma_u = float(nlc.get('sigma_u', 0.10))
+            u_diff2 = (self.u[:, None] - self.u[None, :]) ** 2   # (N, N)
+            W = np.exp(-u_diff2 / (sigma_u ** 2))
+            np.fill_diagonal(W, 0.0)
+            row_sums = W.sum(axis=1, keepdims=True)
+            row_sums = np.where(row_sums < 1e-10, 1.0, row_sums)
+            W_norm = W / row_sums                                  # chaque ligne somme a 1
+            I_virtual = D_meta * (W_norm @ self.v - self.v)
+        else:
+            I_virtual = 0.0
+
         # GUARD: Stimulus Sanitization + Size Validation (restored from core_backup_pre_v5.py)
         try:
             stim_arr = np.array(I_stimulus, dtype=float)
@@ -215,7 +232,7 @@ class Mem4ristorV3:
             I_eff = np.nan_to_num(I_eff, nan=0.0, posinf=100.0, neginf=-100.0)
         I_eff = np.clip(I_eff, -100.0, 100.0)
         I_eff[self.heretic_mask] *= -1.0
-        I_ext = I_eff + I_coup
+        I_ext = I_eff + I_coup + I_virtual
 
         if self.cfg.get('hysteresis', {}).get('enabled', False):
             self._update_hysteresis()
