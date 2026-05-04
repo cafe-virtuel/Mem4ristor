@@ -230,7 +230,20 @@ class Mem4ristorV3:
 
         dv = (self.v - (self.v**3) / self.cfg['dynamics']['v_cubic_divisor'] - self.w + I_ext -
               self.cfg['dynamics']['alpha'] * np.tanh(self.v) + eta)
-        dw = self.cfg['dynamics']['epsilon'] * (self.v + self.cfg['dynamics']['a'] - self.cfg['dynamics']['b'] * self.w)
+
+        # V5: Plasticite metacognitive — epsilon per-noeud module par u
+        # Noeud certain (u~0) -> epsilon eleve -> impulsif
+        # Noeud douteux (u~1) -> epsilon reduit -> prudent
+        meta = self.cfg.get('metacognitive', {})
+        if meta.get('enabled', False):
+            alpha_meta = meta.get('alpha_meta', 0.5)
+            eps_min    = meta.get('epsilon_min', 0.01)
+            epsilon_i  = self.cfg['dynamics']['epsilon'] * (1.0 + alpha_meta * (0.5 - self.u))
+            epsilon_i  = np.maximum(epsilon_i, eps_min)
+        else:
+            epsilon_i  = self.cfg['dynamics']['epsilon']
+
+        dw = epsilon_i * (self.v + self.cfg['dynamics']['a'] - self.cfg['dynamics']['b'] * self.w)
 
         sigma_social_safe = np.clip(sigma_social_for_u, 0.0, 100.0)
         alpha_s = self.cfg['doubt'].get('alpha_surprise', 2.0)

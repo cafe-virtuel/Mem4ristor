@@ -38,3 +38,21 @@ noise:
   use_rtn: false
   rtn_amplitude: 0.1
   rtn_p_flip: 0.01
+
+# V5: Metacognitive Plasticity
+# epsilon_i = epsilon * (1 + alpha_meta * (0.5 - u_i))
+#
+# RESULTAT EXPERIMENTAL (2026-05-04, p2_meta_pistes.py) :
+#   alpha_meta NEGATIF est la bonne direction :
+#     u eleve (douteux) -> epsilon_i augmente -> noeud plus reactif/"emballe"
+#     u faible (certain) -> epsilon_i reduit  -> noeud plus lent/stable
+#   Gain mesure : +0.79 bits sur 10x10 a I_stim=0.5 (4.03 -> 4.82 bits)
+#
+#   alpha_meta POSITIF (douteux=lent) fonctionne aussi mais seulement a I_stim=0
+#   et donne un gain moindre (+0.28 bits).
+#
+# alpha_meta=0 reproduit exactement le comportement V4 (backward compatible)
+metacognitive:
+  enabled: false           # false par defaut : backward compatible V4
+  alpha_meta: -0.5         # Valeur recommandee (negative = douteux plus reactif)
+  epsilon_min: 0.01        # Plancher de securite (evite epsilon <= 0)
