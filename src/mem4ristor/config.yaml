@@ -1,12 +1,18 @@
-# Mem4ristor V3.0.0 Default Configuration
+# Mem4ristor V4.0.0 Default Configuration
 # Standard Dynamics Parameters
+#
+# NOTE pour les scripts experiments/ :
+#   dt, N, steps sont souvent hardcodes dans les scripts pour la reproductibilite
+#   des experiences specifiques (reviewer2_*, demo_*). Les valeurs de reference
+#   sont ici (dynamics.dt = 0.05, valide stable via dt_sensitivity.py).
+#   Pour les nouveaux scripts, lire via cfg['dynamics']['dt'] est preferable.
 dynamics:
   a: 0.7
   b: 0.8
   epsilon: 0.08
   alpha: 0.15
   v_cubic_divisor: 5.0
-  dt: 0.05
+  dt: 0.05  # Pas d'integration valide (|1+lambda*dt| <= 1 confirme, voir reviewer2_stiffness_proof.py)
   # V3: Inhibition Plasticity Parameters
   lambda_intrinsic: 0.05       # Intrinsic plasticity learning rate (Reviewer 2 Vague 2 fix)
   tau_plasticity: 1000     # Forgetting time constant (steps)

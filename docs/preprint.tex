@@ -33,7 +33,7 @@ A Spectral Phase Transition at Algebraic Connectivity}
 % ABSTRACT (~150 words)
 % ============================================================================
 \begin{abstract}
-Coupled oscillator networks generically synchronize, collapsing attractor diversity. We present a modified FitzHugh--Nagumo model in which a third state variable, \emph{doubt} ($u$), modulates coupling polarity via a shifted-tanh kernel $f(u) = \tanh(\pi(0.5-u)) + \delta$. Combined with a fraction $\eta$ of nodes receiving inverted stimulus (heretic nodes) and Gaussian noise for symmetry breaking, this mechanism sustains multi-state attractors from homogeneous initial conditions. On regular lattices ($N = 100$), the sustained attractor entropy stabilizes at $H_{\text{stable}} \approx 3.79 \pm 0.14$ bits (100-bin continuous spectral entropy, last 25\% of $3000$-step runs, $7$ seeds). Degree-normalized coupling ($D/\deg(i)^\gamma$) recovers diversity on sparse scale-free networks (Barab\'asi--Albert $m \leq 3$), but a systematic sweep over $m \in [1, 15]$ and $\gamma \in [0, 1]$ reveals an abrupt phase transition at $m \approx 5$: for denser topologies, no degree-based normalization preserves diversity ($H_{\text{stable}} < 0.5$ bits). The algebraic connectivity $\lambda_2$ predicts regime membership, suggesting that local coupling corrections fail when path redundancy exceeds a critical threshold.
+Coupled oscillator networks generically synchronize, collapsing attractor diversity. We present a modified FitzHugh--Nagumo model in which a third state variable, \emph{doubt} ($u$), modulates coupling polarity via a shifted-tanh kernel $f(u) = \tanh(\pi(0.5-u)) + \delta$. Combined with a fraction $\eta$ of nodes receiving inverted stimulus (heretic nodes) and Gaussian noise for symmetry breaking, this mechanism sustains multi-state attractors from homogeneous initial conditions. On regular lattices ($N = 100$), the sustained attractor entropy stabilizes at $H_{\text{stable}} \approx 4.03 \pm 0.07$ bits (100-bin continuous spectral entropy, last 25\% of $3000$-step runs, $I_{\text{stim}}=0.5$, 3 seeds; reproduced by \texttt{experiments/verify\_table1\_preprint.py}). Degree-normalized coupling ($D/\deg(i)^\gamma$) recovers diversity on sparse scale-free networks (Barab\'asi--Albert $m \leq 3$), but a systematic sweep over $m \in [1, 15]$ and $\gamma \in [0, 1]$ reveals an abrupt phase transition at $m \approx 5$: for denser topologies, no degree-based normalization preserves diversity ($H_{\text{stable}} < 0.5$ bits). The algebraic connectivity $\lambda_2$ predicts regime membership, suggesting that local coupling corrections fail when path redundancy exceeds a critical threshold.
 \end{abstract}
 
 % ============================================================================
@@ -47,7 +47,7 @@ The problem is well characterized: on networks with homogeneous coupling, the la
 
 We propose a mechanism based on \textbf{doubt-modulated coupling} in extended FitzHugh--Nagumo (FHN) networks. Each node carries a third state variable $u \in [0, 1]$ (the \textit{doubt} variable) that continuously modulates the sign and magnitude of inter-node coupling. When $u > 0.5$, coupling becomes repulsive, implementing polarity-modulated anti-synchronization at the single-node level---a mechanism distinct from frustrated synchronization in Kuramoto networks~\cite{odor2024}, where sign reversal is static and network-distributed rather than state-dependent and per-node. Combined with a fraction $\eta$ of nodes receiving inverted external stimulus (\textit{heretic nodes}), this architecture prevents consensus collapse from homogeneous initial conditions without requiring noise as the sole symmetry-breaking mechanism (heretics provide structural asymmetry; noise enables the Cold Start Protocol described in Section~2.3).
 
-Our contributions are: (1)~a formal specification of the doubt-modulated FHN model with five anti-synchronization mechanisms (doubt-modulated coupling, heretic nodes, $1/\sqrt{N}$ scaling, adaptive doubt speed, and degree-normalized coupling); (2)~empirical demonstration of sustained attractor diversity ($H_{\text{stable}} \approx 3.79 \pm 0.14$ bits, 100-bin continuous spectral entropy; pairwise synchrony $= 0.031 \pm 0.034$) on regular lattices; (3)~a systematic investigation of degree-normalized coupling on scale-free networks, revealing an abrupt phase transition at algebraic connectivity $\lambda_2 \approx 2$--$3$ beyond which no per-node normalization preserves diversity; and (4)~identification of the optimal power-law exponent $\gamma^*(m)$ for $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ as a function of network density.
+Our contributions are: (1)~a formal specification of the doubt-modulated FHN model with five anti-synchronization mechanisms (doubt-modulated coupling, heretic nodes, $1/\sqrt{N}$ scaling, adaptive doubt speed, and degree-normalized coupling); (2)~empirical demonstration of sustained attractor diversity ($H_{\text{stable}} \approx 4.03 \pm 0.07$ bits, 100-bin continuous spectral entropy, $N=100$, $I_{\text{stim}}=0.5$; pairwise synchrony $= 0.031 \pm 0.034$) on regular lattices; (3)~a systematic investigation of degree-normalized coupling on scale-free networks, revealing an abrupt phase transition at algebraic connectivity $\lambda_2 \approx 2$--$3$ beyond which no per-node normalization preserves diversity; and (4)~identification of the optimal power-law exponent $\gamma^*(m)$ for $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ as a function of network density.
 
 % ============================================================================
 % 2. MODEL
@@ -176,7 +176,7 @@ H \geq -\eta \log_2 \eta - (1 - \eta) \log_2(1 - \eta) \approx 0.61 \text{ bits 
 \end{equation}
 representing the mixing entropy of the two subpopulations.
 
-\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$, which is the default for all lattice experiments (Section~\ref{sec:results_lattice}). At zero stimulus, inverting polarity is a no-op: both normal and heretic nodes receive zero direct stimulus drive. Diversity in the $I_{\text{stimulus}} = 0$ regime arises from coupling-mediated asymmetry and noise, not from the heretic polarity inversion per se. The lower bound of Eq.~\ref{eq:entropy_bound} and the sustained diversity claim ($H_{\text{stable}} \approx 3.79$ bits; synchrony $= 0.031$) should be read as applying to the $I_{\text{stimulus}} \neq 0$ operating regime only.
+\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$, which is the default for all lattice experiments (Section~\ref{sec:results_lattice}). At zero stimulus, inverting polarity is a no-op: both normal and heretic nodes receive zero direct stimulus drive. Diversity in the $I_{\text{stimulus}} = 0$ regime arises from coupling-mediated asymmetry and noise, not from the heretic polarity inversion per se. The lower bound of Eq.~\ref{eq:entropy_bound} and the sustained diversity claim ($H_{\text{stable}} \approx 4.03$ bits, Table~\ref{tab:scaling}; synchrony $= 0.031$) should be read as applying to the $I_{\text{stimulus}} \neq 0$ operating regime only.
 
 % ============================================================================
 % 4. RESULTS
@@ -187,19 +187,19 @@ representing the mixing entropy of the two subpopulations.
 \subsection{Diversity on Regular Lattices}
 \label{sec:results_lattice}
 
-Table~\ref{tab:scaling} reports the sustained attractor entropy across network scales on 2D periodic lattices. All runs use the Cold Start Protocol ($v = w = 0$), $I_{\text{stimulus}} = 0$, $\eta = 0.15$, 1000 steps.
+Table~\ref{tab:scaling} reports the sustained attractor entropy across network scales on 2D periodic lattices. All runs use the Cold Start Protocol ($v = w = 0$), $I_{\text{stimulus}} = 0.5$, $\eta = 0.15$, 3000 steps, 3 seeds $\in \{42, 123, 777\}$. Results reproduced by \texttt{experiments/verify\_table1\_preprint.py}.
 
 \begin{table}[ht]
 \centering
-\caption{Scaling performance on 2D periodic lattices ($I_\mathrm{stim}=0.5$, $\eta = 0.15$, 3 seeds per configuration). $H_{\text{stable}}$: 100-bin continuous spectral entropy, mean over last 25\% of 3000-step runs (current code default).}
+\caption{Scaling performance on 2D periodic lattices ($I_\mathrm{stim}=0.5$, $\eta = 0.15$, 3 seeds $\in\{42,123,777\}$, 3000 steps, last 25\% window). $H_{\text{stable}}$: 100-bin continuous spectral entropy. Mean doubt $\bar{u}$: mean of the per-node doubt variable; $\bar{u} \approx 1$ indicates fully active repulsive coupling, consistent with the chimera mechanism (see Section~\ref{sec:model}). All values reproduced by \texttt{experiments/verify\_table1\_preprint.py}.}
 \label{tab:scaling}
 \begin{tabular}{lccc}
 \toprule
 \textbf{Metric} & \textbf{$4 \times 4$} & \textbf{$10 \times 10$} & \textbf{$25 \times 25$} \\
 \midrule
 $N$                          & 16   & 100   & 625   \\
-$H_{\text{stable}}$ (bits)   & $3.28 \pm 0.12$ & $3.79 \pm 0.15$  & $4.06 \pm 0.13$  \\
-Mean doubt $\bar{u}$          & 0.051 & 0.049 & 0.052 \\
+$H_{\text{stable}}$ (bits)   & $3.27 \pm 0.14$ & $4.03 \pm 0.07$  & $4.25 \pm 0.03$  \\
+Mean doubt $\bar{u}$          & 0.994 & 0.983 & 0.971 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -322,7 +322,7 @@ Table~\ref{tab:benchmarks} compares the model against classical collective dynam
 \toprule
 \textbf{Model} & \textbf{Synchrony} $\downarrow$ & $H_{\text{stable}}$ & \textbf{Diversity sustained?} \\
 \midrule
-Doubt-modulated FHN (this work) & $0.031 \pm 0.034$ & $3.79 \pm 0.14$ & Yes \\
+Doubt-modulated FHN (this work) & $0.031 \pm 0.034$ & $4.03 \pm 0.07$ & Yes \\
 Kuramoto ($K = 2$)              & $\approx 1.0$     & $< 0.5$         & No (phase-locked) \\
 Voter model                     & $\approx 1.0$     & $0.00$          & No (absorbing state) \\
 Distributed consensus           & $\approx 1.0$     & $0.00$          & No (by design) \\
@@ -471,7 +471,7 @@ Constructing a ``doubt-affinity'' graph by thresholding the Pearson correlation 
 % ============================================================================
 \section{Conclusion}
 
-We have presented a FitzHugh--Nagumo network model in which doubt-modulated coupling and structural heretic nodes sustain attractor diversity from homogeneous initial conditions. On regular lattices, the model reliably achieves $H_{\text{stable}} \approx 3.79 \pm 0.14$ bits (100-bin continuous spectral entropy) with $\eta = 0.15$ heretic fraction. Degree-normalized coupling ($D/\deg(i)^\gamma$) extends this to sparse scale-free networks ($m \leq 3$), with optimal exponent $\gamma^*(m)$ varying from 0.7 ($m = 2$) to 0.9 ($m = 3$).
+We have presented a FitzHugh--Nagumo network model in which doubt-modulated coupling and structural heretic nodes sustain attractor diversity from homogeneous initial conditions. On regular lattices ($10\times10$, $I_{\text{stim}}=0.5$), the model reliably achieves $H_{\text{stable}} \approx 4.03 \pm 0.07$ bits (100-bin continuous spectral entropy, 3 seeds, reproduced by \texttt{experiments/verify\_table1\_preprint.py}) with $\eta = 0.15$ heretic fraction. Degree-normalized coupling ($D/\deg(i)^\gamma$) extends this to sparse scale-free networks ($m \leq 3$), with optimal exponent $\gamma^*(m)$ varying from 0.7 ($m = 2$) to 0.9 ($m = 3$).
 
 The principal negative result is that for Barab\'asi--Albert networks with $m \geq 5$, no degree-based normalization preserves diversity. This phase transition, correlated with the algebraic connectivity $\lambda_2$ exceeding $\sim$2--3, establishes a fundamental boundary for local coupling corrections and motivates future investigation of spectrally-informed normalization.
 

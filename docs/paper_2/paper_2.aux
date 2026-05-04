@@ -2,6 +2,12 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{fitzhugh1961}
+\citation{nagumo1962}
+\citation{barabasi1999}
+\citation{mem4ristor2026}
+\citation{pikovsky2001}
+\citation{mem4ristor2026}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}The $u$ Variable: Mechanism and Ablation}{1}{section.2}\protected@file@percent }
@@ -11,12 +17,12 @@
 \newlabel{fig:ablation}{{1}{2}{Ablation of the $\sigma _{\mathrm {social}}$ signal driving the doubt variable $u$, on a Barab\'asi-Albert network ($m=3$, $N=100$, $I_{\mathrm {stim}}=0.5$, mean over 5 seeds). Four conditions are shown: \textsc {FULL} (reference), \textsc {SS\_NOISE} ($\sigma _{\mathrm {social}}$ replaced by amplitude-matched Gaussian noise), \textsc {SS\_STATIC} ($\sigma _{\mathrm {social}}$ frozen at its temporal warmup mean), and \textsc {FROZEN\_U} (adaptive epsilon set to zero, $u$ fixed). Left: cognitive entropy $H_{\mathrm {cog}}$. Right: mean pairwise synchrony. \textsc {SS\_NOISE} and \textsc {SS\_STATIC} are indistinguishable from \textsc {FULL}, while \textsc {FROZEN\_U} triggers a $+985\%$ synchrony surge ($n=5$ seeds)}{figure.caption.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Spatial mutual information $I(v_i; v_j)$ as a function of topological distance (hop count) on the BA $m=3$ network, for the four ablation conditions. The \textsc  {FROZEN\_U} condition maintains high mutual information at all distances, while the three active-$u$ conditions (\textsc  {FULL}, \textsc  {SS\_NOISE}, \textsc  {SS\_STATIC}) are mutually indistinguishable and exhibit rapid decorrelation with distance. This confirms that $u$ operates as a topological decorrelator regardless of its driving signal.}}{2}{figure.caption.2}\protected@file@percent }
 \newlabel{fig:spatial_mi}{{2}{2}{Spatial mutual information $I(v_i; v_j)$ as a function of topological distance (hop count) on the BA $m=3$ network, for the four ablation conditions. The \textsc {FROZEN\_U} condition maintains high mutual information at all distances, while the three active-$u$ conditions (\textsc {FULL}, \textsc {SS\_NOISE}, \textsc {SS\_STATIC}) are mutually indistinguishable and exhibit rapid decorrelation with distance. This confirms that $u$ operates as a topological decorrelator regardless of its driving signal}{figure.caption.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}$\tau _u$ as a Master Control Parameter}{2}{section.3}\protected@file@percent }
-\newlabel{sec:bifurcation}{{3}{2}{$\tau _u$ as a Master Control Parameter}{section.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}$\tau _u$ as a Master Control Parameter}{3}{section.3}\protected@file@percent }
+\newlabel{sec:bifurcation}{{3}{3}{$\tau _u$ as a Master Control Parameter}{section.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Bifurcation in cognitive entropy $H_{\mathrm  {cog}}$ and mean pairwise synchrony as a function of the doubt timescale $\tau _u$, under forced stimulation ($I_{\mathrm  {stim}}=0.5$). Results are shown for the regular lattice ($10{\times }10$) and BA $m=3$ ($N=100$), averaged over 5 seeds. A critical transition near $\tau _u \approx 10$ separates frozen-frustration ($H_{\mathrm  {cog}} \approx 0.02$) and breathing-chimera ($H_{\mathrm  {cog}} \approx 0.38$) regimes.}}{3}{figure.caption.3}\protected@file@percent }
 \newlabel{fig:tau_bifurcation}{{3}{3}{Bifurcation in cognitive entropy $H_{\mathrm {cog}}$ and mean pairwise synchrony as a function of the doubt timescale $\tau _u$, under forced stimulation ($I_{\mathrm {stim}}=0.5$). Results are shown for the regular lattice ($10{\times }10$) and BA $m=3$ ($N=100$), averaged over 5 seeds. A critical transition near $\tau _u \approx 10$ separates frozen-frustration ($H_{\mathrm {cog}} \approx 0.02$) and breathing-chimera ($H_{\mathrm {cog}} \approx 0.38$) regimes}{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Topological Phase Boundary}{3}{section.4}\protected@file@percent }
-\newlabel{sec:phase_boundary}{{4}{3}{Topological Phase Boundary}{section.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Spectral Phase Boundary}{3}{section.4}\protected@file@percent }
+\newlabel{sec:phase_boundary}{{4}{3}{Spectral Phase Boundary}{section.4}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Endogenous $\tau _u$ bifurcation ($I_{\mathrm  {stim}}=0.0$). Discrete cognitive entropy $H_{\mathrm  {cog}}$ (solid) remains near zero due to the binning artifact (all nodes near the resting fixed point $v^* \approx -1.29$), but the continuous sub-threshold entropy $H_{\mathrm  {cont}}$ (dashed) recovers the same bifurcation shape as in the forced regime, confirming that $\tau _u$ governs coherence intrinsically.}}{4}{figure.caption.4}\protected@file@percent }
 \newlabel{fig:tau_endogenous}{{4}{4}{Endogenous $\tau _u$ bifurcation ($I_{\mathrm {stim}}=0.0$). Discrete cognitive entropy $H_{\mathrm {cog}}$ (solid) remains near zero due to the binning artifact (all nodes near the resting fixed point $v^* \approx -1.29$), but the continuous sub-threshold entropy $H_{\mathrm {cont}}$ (dashed) recovers the same bifurcation shape as in the forced regime, confirming that $\tau _u$ governs coherence intrinsically}{figure.caption.4}{}}
 \newlabel{fig:fiedler}{{5a}{4}{Phase diagram: cognitive entropy vs.\ $\lambda _2$ across 12 topologies. A dead zone is evident above $\lambda _{2,\mathrm {crit}} \approx 2.31$ (dashed vertical line, midpoint of the complete-separation interval $(2.13,\,2.50)$); Pearson $r = +0.901$, $p < 10^{-4}$}{figure.caption.5}{}}
@@ -25,6 +31,7 @@
 \newlabel{sub@fig:edge_betweenness}{{b}{4}{Same metric plotted against edge betweenness centrality ($r = -0.604$), which fails to separate dead-zone topologies, confirming that $\lambda _2$ is the causal structural predictor}{figure.caption.5}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Topological predictors of the dead zone. Algebraic connectivity $\lambda _2$ (Fiedler value) is a near-perfect predictor; edge betweenness is not.}}{4}{figure.caption.5}\protected@file@percent }
 \newlabel{fig:topology_predictors}{{5}{4}{Topological predictors of the dead zone. Algebraic connectivity $\lambda _2$ (Fiedler value) is a near-perfect predictor; edge betweenness is not}{figure.caption.5}{}}
+\citation{odor2024}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Finite-size scaling of $\lambda _2$ and cognitive entropy for BA networks ($m=2,3,4,5$) from $N=100$ to $N=1600$. Fiedler values are nearly scale-invariant for a given $m$, confirming that $\lambda _{2,\mathrm  {crit}} \approx 2.31$ is a structural property of the graph class, not an artifact of system size.}}{5}{figure.caption.6}\protected@file@percent }
 \newlabel{fig:finite_size}{{6}{5}{Finite-size scaling of $\lambda _2$ and cognitive entropy for BA networks ($m=2,3,4,5$) from $N=100$ to $N=1600$. Fiedler values are nearly scale-invariant for a given $m$, confirming that $\lambda _{2,\mathrm {crit}} \approx 2.31$ is a structural property of the graph class, not an artifact of system size}{figure.caption.6}{}}
 \newlabel{fig:sr_topology}{{7a}{5}{Stochastic resonance landscape: $H_{\mathrm {cog}}$ vs.\ uniform noise amplitude $\sigma _v$ for four topologies spanning the $\lambda _2$ boundary. Topologies below $\lambda _{2,\mathrm {crit}}$ (Lattice, BA $m=2$) show monotonic improvement; those above (BA $m=5$) show no rescue at any tested $\sigma _v$}{figure.caption.7}{}}
@@ -33,16 +40,24 @@
 \newlabel{sub@fig:directed_coupling}{{b}{5}{Null result: directed hub-targeted noise injection. Injecting noise selectively at high-degree nodes does not break synchrony in the dead zone (BA $m=5$), confirming that the barrier is a global spectral property, not a local hub effect}{figure.caption.7}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Stochastic resonance and null results for directed noise strategies. Neither uniform nor topologically targeted noise can rescue dead-zone topologies.}}{5}{figure.caption.7}\protected@file@percent }
 \newlabel{fig:stochastic_resonance}{{7}{5}{Stochastic resonance and null results for directed noise strategies. Neither uniform nor topologically targeted noise can rescue dead-zone topologies}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Doubt-Driven Community Structure}{5}{section.5}\protected@file@percent }
+\newlabel{sec:communities}{{5}{5}{Doubt-Driven Community Structure}{section.5}{}}
+\citation{abrams2004}
+\bibcite{mem4ristor2026}{1}
 \newlabel{fig:sr_directed}{{8a}{6}{Directed stochastic resonance (noise amplitude at hub vs.\ leaf nodes swept independently) on BA $m=5$. No combination rescues the dead zone}{figure.caption.8}{}}
 \newlabel{sub@fig:sr_directed}{{a}{6}{Directed stochastic resonance (noise amplitude at hub vs.\ leaf nodes swept independently) on BA $m=5$. No combination rescues the dead zone}{figure.caption.8}{}}
 \newlabel{fig:delta_sweep}{{8b}{6}{Sweep of the coupling asymmetry parameter $\delta $ (degree of directed coupling). Increasing $\delta $ does not lift $H_{\mathrm {cog}}$ in the dead zone, ruling out coupling-asymmetry rescue}{figure.caption.8}{}}
 \newlabel{sub@fig:delta_sweep}{{b}{6}{Sweep of the coupling asymmetry parameter $\delta $ (degree of directed coupling). Increasing $\delta $ does not lift $H_{\mathrm {cog}}$ in the dead zone, ruling out coupling-asymmetry rescue}{figure.caption.8}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Extended null results. Neither directed stochastic resonance nor coupling asymmetry ($\delta $-sweep) rescues dead-zone topologies.}}{6}{figure.caption.8}\protected@file@percent }
 \newlabel{fig:null_results}{{8}{6}{Extended null results. Neither directed stochastic resonance nor coupling asymmetry ($\delta $-sweep) rescues dead-zone topologies}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Doubt-Driven Community Structure}{6}{section.5}\protected@file@percent }
-\newlabel{sec:communities}{{5}{6}{Doubt-Driven Community Structure}{section.5}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {6}Discussion and Conclusion}{6}{section.6}\protected@file@percent }
 \newlabel{sec:discussion}{{6}{6}{Discussion and Conclusion}{section.6}{}}
+\bibcite{fitzhugh1961}{2}
+\bibcite{nagumo1962}{3}
+\bibcite{barabasi1999}{4}
+\bibcite{pikovsky2001}{5}
+\bibcite{abrams2004}{6}
+\bibcite{odor2024}{7}
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Doubt-driven community detection results for regular lattice ($10{\times }10$) and BA $m=3$ ($N=100$), three seeds each. Left column: doubt-affinity graphs (edges coloured by Louvain community assignment). Right column: NMI $z$-score relative to 500 bootstrap-permuted baselines (horizontal dashed line: $z=1.96$). Filled bars indicate statistical significance ($p < 0.05$). Three of six seeds pass the threshold; results are inconsistent across topologies and seeds.}}{7}{figure.caption.9}\protected@file@percent }
 \newlabel{fig:communities}{{9}{7}{Doubt-driven community detection results for regular lattice ($10{\times }10$) and BA $m=3$ ($N=100$), three seeds each. Left column: doubt-affinity graphs (edges coloured by Louvain community assignment). Right column: NMI $z$-score relative to 500 bootstrap-permuted baselines (horizontal dashed line: $z=1.96$). Filled bars indicate statistical significance ($p < 0.05$). Three of six seeds pass the threshold; results are inconsistent across topologies and seeds}{figure.caption.9}{}}
 \gdef \@abspage@last{7}
