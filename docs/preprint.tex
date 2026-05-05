@@ -371,18 +371,9 @@ enabling real-time simulation up to $N \approx 10{,}000$ on commodity hardware. 
 
 The model uses first-order Euler integration with $\Delta t = 0.05$. A systematic sweep ($\Delta t \in \{0.01, 0.02, 0.05, 0.10\}$, 20{,}000 steps) confirmed that $\Delta t \leq 0.05$ is numerically stable: after an initial transient convergence ($\sim$500 steps), entropy standard deviation drops to $\sim$0.016 and remains flat. Higher-order methods (Runge--Kutta 4) improve precision but are not required for stability.
 
-\subsection{Floquet Analysis and Lyapunov Exponents}
+\subsection{Origin of Sustained Diversity}
 
-Under periodic forcing $I(t) = A\sin(\omega t)$ ($A = 0.3$, $\omega = 0.5$), we computed the Floquet multipliers of the linearized dynamics around the synchronized manifold. For the synchronized state to be stable, transverse Floquet multipliers must satisfy $|\mu| < 1$. Here, all transverse multipliers satisfy $|\mu| \gg 1$ (magnitudes $\sim 10^3$--$10^4$), confirming instability of the synchronized state and resistance to periodic entrainment. The maximum Lyapunov exponent $\lambda_{\max} \approx 0$ indicates quasi-periodic dynamics---neither chaotic ($\lambda_{\max} > 0$) nor convergent ($\lambda_{\max} < 0$).
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.48\linewidth]{../figures/floquet_multipliers.png}
-  \hfill
-  \includegraphics[width=0.48\linewidth]{../figures/lyapunov_analysis.png}
-  \caption{Left: Floquet multiplier magnitudes $|\mu_k|$ for all transverse modes $k > 0$ under periodic forcing ($A=0.3$, $\omega=0.5$). All multipliers satisfy $|\mu_k| \gg 1$, confirming that the synchronized state is strongly unstable to transverse perturbations. Right: Maximum Lyapunov exponent $\lambda_{\max}$ as a function of network coupling strength $D$. At the reference parameterization, $\lambda_{\max} \approx 0$, indicating quasi-periodic dynamics consistent with sustained diversity.}
-  \label{fig:floquet_lyapunov}
-\end{figure}
+The sustained attractor diversity observed in Section~\ref{sec:results_lattice} is structural in origin rather than arising from analytical instability of a synchronized state. At the reference parameterization ($\alpha = 0.15$, sub-Hopf regime), linearization around the synchronized manifold yields Jacobian eigenvalues with negative real parts ($\approx -0.13$), indicating that perfect synchrony would be locally stable in a homogeneous network without heretics. Sustained diversity is instead produced by two mechanisms acting in concert: (1) heretic nodes receiving inverted stimulus ($-I_{\text{stim}}$) provide permanent structural asymmetry that prevents consensus nucleation; (2) the Cold Start Protocol (Gaussian noise at $t=0$, $\sigma_v = 0.1$) breaks the symmetry of homogeneous initial conditions. These two mechanisms — structural heterogeneity and symmetry-breaking initialization — are jointly necessary and sufficient to produce the chimera-like attractors reported in Table~\ref{tab:scaling}. The $u$ dynamics then sustain diversity by actively decorrelating neighbours (Section~\ref{sec:mi_analysis}), as confirmed by the $2.2\times$ MI increase under FROZEN\_U ablation.
 
 % ============================================================================
 % 6. DISCUSSION
