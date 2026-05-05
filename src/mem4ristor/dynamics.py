@@ -216,6 +216,38 @@ class Mem4ristorV3:
         else:
             I_virtual = 0.0
 
+        # V5: Compartimentalisation Dynamique (Sous-Personnalites)
+        # Chaque noeud est assigne a un groupe selon son rang de doute u.
+        # I_comp tire chaque noeud vers la moyenne de son groupe (attraction intra),
+        # et optionnellement le repousse de la moyenne des autres groupes (repulsion inter).
+        comp = self.cfg.get('compartments', {})
+        if comp.get('enabled', False):
+            K     = int(comp.get('K', 2))
+            gamma = float(comp.get('gamma', 0.10))
+            mode  = comp.get('mode', 'attraction')
+
+            # Rang de chaque noeud selon u (0 = plus certain, N-1 = plus douteux)
+            u_ranks = np.argsort(np.argsort(self.u))          # rang ordinal stable
+            labels  = np.minimum((u_ranks * K) // self.N, K - 1)  # label dans [0..K-1]
+
+            I_comp = np.zeros(self.N)
+            for k in range(K):
+                mask_k = (labels == k)
+                n_k = mask_k.sum()
+                if n_k < 2:
+                    continue
+                v_mean_k = self.v[mask_k].mean()
+                # Attraction intra-groupe : tire v_i vers la moyenne du groupe
+                I_comp[mask_k] += gamma * (v_mean_k - self.v[mask_k])
+                if mode == 'full':
+                    mask_other = ~mask_k
+                    if mask_other.sum() > 0:
+                        v_mean_other = self.v[mask_other].mean()
+                        # Repulsion inter-groupe : eloigne v_i de la moyenne des autres
+                        I_comp[mask_k] -= gamma * (v_mean_other - self.v[mask_k])
+        else:
+            I_comp = 0.0
+
         # GUARD: Stimulus Sanitization + Size Validation (restored from core_backup_pre_v5.py)
         try:
             stim_arr = np.array(I_stimulus, dtype=float)
@@ -232,7 +264,7 @@ class Mem4ristorV3:
             I_eff = np.nan_to_num(I_eff, nan=0.0, posinf=100.0, neginf=-100.0)
         I_eff = np.clip(I_eff, -100.0, 100.0)
         I_eff[self.heretic_mask] *= -1.0
-        I_ext = I_eff + I_coup + I_virtual
+        I_ext = I_eff + I_coup + I_virtual + I_comp
 
         if self.cfg.get('hysteresis', {}).get('enabled', False):
             self._update_hysteresis()

@@ -69,3 +69,22 @@ metacognitive:
   enabled: false           # false par defaut : backward compatible V4
   alpha_meta: -0.5         # Valeur recommandee (negative = douteux plus reactif)
   epsilon_min: 0.01        # Plancher de securite (evite epsilon <= 0)
+
+# V5: Compartimentalisation Dynamique (Sous-Personnalites)
+# Les noeuds sont partitionnes dynamiquement en K groupes selon leur rang de doute u.
+# Groupe 0 = les N/K noeuds les plus certains (u faible)
+# Groupe K-1 = les N/K noeuds les plus douteux (u eleve)
+#
+# A chaque step, un terme I_comp est ajoute :
+#   mode='attraction' : chaque noeud est attire vers la moyenne de son groupe
+#     I_comp_i = gamma * (mean_v_groupe_i - v_i)
+#   mode='full'       : attraction intra-groupe + repulsion inter-groupe
+#     I_comp_i = gamma * (mean_v_groupe_i - v_i) - gamma * (mean_v_autres - v_i)
+#
+# Effet attendu : les groupes se specialisent en etats distincts -> sous-personnalites
+# gamma=0 reproduit exactement V4 (backward compatible)
+compartments:
+  enabled: false
+  K:     2        # Nombre de sous-personnalites (2=certain/douteux, 3=bas/moyen/haut)
+  gamma: 0.10     # Force de la compartimentation (vs D=0.15 physique)
+  mode:  attraction  # 'attraction' (intra seul) ou 'full' (intra+inter)
