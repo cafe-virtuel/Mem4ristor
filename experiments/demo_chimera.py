@@ -3,7 +3,7 @@ Mem4ristor V4 - Chimera State Demonstration
 Auteur: Julien Chauvin
 Date: Mai 2026
 
-Ce script de 5 minutes génère la preuve visuelle de l'état chimère :
+Ce script génère la preuve visuelle de l'état chimère (1500 pas × dt=0.05 = 75 unités-temps, ~1-2 min d'exécution) :
 1. Le graphe de l'espace des phases (Kuramoto).
 2. Les séries temporelles de potentiel (v).
 3. Le graphe Barabási-Albert avec l'identification des hérétiques.

@@ -1,5 +1,5 @@
 ﻿# PROJECT STATUS — Mem4ristor V4.0.0 (Audited Stable)
-**Dernière mise à jour : 2026-05-02**
+**Dernière mise à jour : 2026-05-05**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -33,8 +33,6 @@ Publication : DOI 10.5281/zenodo.19700749 (preprint dans `docs/preprint.pdf`)
 | `src/mem4ristor/cortex.py` | LearnableCortex (MLP autoencoder pour consolidation mémoire) | STABLE |
 | `src/mem4ristor/sensory.py` | SensoryFrontend (convolution + projection pour entrées visuelles) | STABLE (lent, voir §5) |
 | `src/mem4ristor/viz.py` | Visualisation : entropy trace, doubt map, phase portrait, state distribution, dashboard | STABLE |
-
-### Modules ajoutés/modifiés récemment (2026-03-22)
 
 ### Modules expérimentaux (NON PRODUCTION)
 
@@ -226,24 +224,28 @@ Niveau de transparence : **Radical** — transcripts complets dans le dépôt Ca
 
 ---
 
-## 🚀 Future Research: Roadmap V4.1 / V5 (Cognitive Innovations)
+## 🚀 Roadmap V5 (Cognitive Innovations) — État au 2026-05-05
 
-Following the 2026-05-01 Professional Audit (ManusAI), the following concepts are prioritized for future exploration:
+Suivant l'Audit Professionnel ManusAI (2026-05-01), les trois axes V5 ont été explorés sur la branche `main` (commits 695a403, 145316e, dbf40b4).
 
-### 1. Metacognitive Plasticity ($u \to \epsilon$)
-- **Concept**: Dynamic modulation of neuronal excitability based on local doubt.
-- **Goal**: Uncertain nodes become "slow/prudent" while certain nodes become "fast/impulsive", simulating adaptive cognitive effort.
+### 1. Metacognitive Plasticity ($u \to \epsilon$) — ✅ IMPLÉMENTÉ
+- **Résultat** : alpha=-0.5 → H=4.82 bits (+0.79 vs V4 pur 4.03). Meilleur gain V5. Commit 695a403.
+- **Mécanisme** : epsilon per-node modulé par le doute u. Nœuds incertains = lents/prudents ; certains = rapides/impulsifs.
 
-### 2. Non-Local Topological Coupling (Doubt Similarity)
-- **Concept**: Establishing virtual links between nodes with similar doubt levels, regardless of physical proximity.
-- **Goal**: Emergence of "communities of thought" and selective information gating.
+### 2. Non-Local Topological Coupling (Doubt Similarity) — ❌ ÉCHEC
+- **Résultat** : u_spread augmente (+0.01 à +0.03) mais H baisse (-0.08 à -0.23 bits). La synchronisation inter-nœuds similaires étouffe la chimère. Commit 145316e.
+- **Conclusion** : V4 pur reste optimal sur cet axe.
 
-### 3. Dynamic Compartmentalization (Sub-Personalities)
-- **Concept**: Using doubt-driven rewiring to isolate contradictory sub-graphs.
-- **Goal**: Preventing global consensus collapse by sequestering "traumatic" or inconsistent information in modular silos.
+### 3. Dynamic Compartmentalization (Sub-Personalities) — ✅ IMPLÉMENTÉ
+- **Résultat** : K=3 full gamma=0.10 → H=4.18 bits (+0.15 vs V4 pur). Répulsion inter-groupe indispensable. Commit dbf40b4.
+- **Mécanisme** : partition des nœuds en K groupes selon rang de u, terme attractif intra-groupe ± répulsif inter-groupe.
 
-### 4. Advanced Visualization
-- **Concept**: 3D mapping of entropy flows between Hierarchical layers (V1 -> V4 -> PFC).
+### 4. Prochaine étape V5
+- **PRIORITÉ** : combiner Metacognitif (alpha=-0.5) + Compartimentalisation (K=3 full) — gains additifs ?
+- **Piste V6** : Memristors Photoniques — I_stimulus via fibre optique (matériaux : GST, VO2, WO3).
+
+### 5. Advanced Visualization
+- **Concept** : 3D mapping of entropy flows between Hierarchical layers (V1 → V4 → PFC). Pending.
 
 
 
