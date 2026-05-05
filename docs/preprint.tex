@@ -429,14 +429,14 @@ The key finding: \textbf{FULL achieves the lowest MI at all distances tested}. F
 \subsubsection*{Formal Spectral Regression: $\lambda_{2,\mathrm{crit}} = 2.31$}
 \label{sec:lambda2}
 
-To formally characterize the regime boundary identified in Section~\ref{sec:topo_regimes}, we examined 36 network configurations spanning the full BA attachment range $m \in \{1, \ldots, 15\}$ with $N \in \{100, 400, 1600\}$. The binary outcome is functional ($H_{\mathrm{cog}} > 0$) vs.\ dead zone ($H_{\mathrm{cog}} \approx 0$). The predictor is the algebraic connectivity $\lambda_2$ of the graph Laplacian, computed via NumPy eigensolver.
+To formally characterize the regime boundary identified in Section~\ref{sec:topo_regimes}, we examined 36 network configurations drawn from 12 distinct topology types (3 seeds each, $N \approx 100$): Barab\'asi--Albert $m \in \{1, 2, 3, 4, 5, 8, 10\}$, Erd\H{o}s--R\'enyi $p \in \{0.05, 0.12\}$, 2D periodic lattice, and Watts--Strogatz $p \in \{0.1, 0.3\}$. The binary outcome is functional ($H_{\mathrm{cog}} > 0$) vs.\ dead zone ($H_{\mathrm{cog}} \approx 0$), labelled empirically per seed. The predictor is the algebraic connectivity $\lambda_2$ of the graph Laplacian, computed via NumPy eigensolver (source: \texttt{figures/p2\_edge\_betweenness.csv}, reproduced by \texttt{experiments/lambda2\_crit\_regression.py}).
 
 The data exhibit \textbf{complete linear separation}: no observation with $\lambda_2 < 2.13$ falls in the dead zone, and no observation with $\lambda_2 > 2.50$ is functional, with zero overlap across the tested range of $N$. Complete separation is a strong structural result, but it renders standard maximum-likelihood logistic regression statistically undefined (the MLE coefficients diverge to infinity~\cite{albert1984}). The separation gap itself is therefore the appropriate statistic to report. We identify $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ as the regime boundary, with midpoint $\lambda_{2,\mathrm{crit}} = 2.31$ as the point estimate.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.75\linewidth]{../figures/fiedler_phase_diagram.png}
-  \caption{Fiedler phase diagram: algebraic connectivity $\lambda_2$ vs.\ cognitive entropy $H_{\mathrm{cog}}$ for $N \in \{100, 400, 1600\}$ across $m \in [1, 15]$. Complete linear separation between functional (open symbols) and dead-zone (filled symbols) regimes. Separation gap: $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, midpoint $2.31$ ($n = 36$ configurations).}
+  \caption{Fiedler phase diagram: algebraic connectivity $\lambda_2$ vs.\ cognitive entropy $H_{\mathrm{cog}}$ across diverse network families (Barab\'asi--Albert $m \in \{1,2,3,5,8,10\}$, Configuration Model $\gamma \in \{2.5, 3.0, 4.0\}$, Holme--Kim, Watts--Strogatz, Erd\H{o}s--R\'enyi; $N \approx 100$; two coupling normalizations per topology, $n = 30$ data points). Complete linear separation between functional (open symbols) and dead-zone (filled symbols) regimes. The regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, midpoint $2.31$, is derived from logistic regression on the independent primary dataset (\texttt{p2\_edge\_betweenness.csv}, $n = 36$; see text).}
   \label{fig:fiedler}
 \end{figure}
 
