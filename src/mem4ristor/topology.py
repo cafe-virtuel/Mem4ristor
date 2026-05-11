@@ -301,6 +301,9 @@ class Mem4Network:
             uniform_D_eff = D / np.sqrt(self.N)
             scale_factors = (self.node_weights * D) / uniform_D_eff
             l_v = l_v * scale_factors
+        # Exposer la matrice d'adjacence au modele pour l'ART (non-invasif)
+        if not self.use_stencil and self.adjacency_matrix is not None:
+            self.model._adj_matrix = self.adjacency_matrix
         self.model.step(I_stimulus, l_v, sigma_v_vec=sigma_v_vec,
                         sigma_social_override=sigma_social_override)
 

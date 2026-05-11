@@ -309,8 +309,52 @@ class Mem4ristorV3:
         # Alarme de divergence : au lieu de cacher l'explosion, on l'annonce.
         if np.any(np.abs(self.v) > 100.0) or np.any(np.abs(self.w) > 100.0):
             raise OverflowError("Boom ! La simulation a déraillé et a dépassé ±100. Le filet de sécurité est retiré.")
-        
+
         self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
+
+        # V5: Autorégulation Topologique (ART) — Kirchhoff passif
+        # Un noeud rigide (u faible) bloque le courant -> tension aux voisins
+        # -> retroaction qui augmente u des voisins. Emerge du cablage, pas d'algo.
+        # Requires self._adj_matrix set by Mem4Network.step() before calling model.step().
+        art = self.cfg.get('topological_regulation', {})
+        if art.get('enabled', False):
+            u_min_art = float(art.get('u_min', 0.05))
+            adj = getattr(self, '_adj_matrix', None)
+
+            if adj is not None:
+                rigid_thr = float(art.get('rigid_threshold', 0.7))
+                mode_art  = art.get('mode', 'soft')
+                rigidity  = 1.0 - self.u  # 1 = rigide (u faible), 0 = souple
+
+                # Convertir sparse -> dense une seule fois si necessaire
+                if hasattr(adj, 'toarray'):
+                    adj_dense = adj.toarray().astype(float)
+                else:
+                    adj_dense = np.asarray(adj, dtype=float)
+
+                degree = adj_dense.sum(axis=1)
+                degree = np.where(degree < 1.0, 1.0, degree)  # evite div/0
+
+                if mode_art == 'soft':
+                    # Gemini : pression = rigidit?? MOYENNE des voisins
+                    mean_rig = (adj_dense @ rigidity) / degree
+                    pressure = mean_rig > rigid_thr
+                    factor   = float(art.get('alpha_art_soft', 0.15))
+                    self.u[pressure] = np.minimum(
+                        self.u[pressure] * (1.0 + factor), 1.0
+                    )
+                elif mode_art == 'hard':
+                    # Grok : proportion de voisins rigides (retroaction non-lineaire)
+                    n_rigid = adj_dense @ (rigidity > rigid_thr).astype(float)
+                    ratio   = n_rigid / degree
+                    pressure = ratio > 0
+                    factor   = float(art.get('alpha_art_hard', 0.25))
+                    self.u[pressure] = np.minimum(
+                        self.u[pressure] * (1.0 + factor * ratio[pressure]), 1.0
+                    )
+
+            # Plancher fixe — toujours actif quand ART enabled (meme sans matrice adj)
+            self.u = np.maximum(self.u, u_min_art)
 
         # V4: dynamic heretics — bascule irréversible quand u_i >= u_threshold pendant steps_required steps
         dyn = self.cfg['coupling'].get('dynamic_heretics', {})
