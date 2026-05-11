@@ -88,3 +88,24 @@ compartments:
   K:     2        # Nombre de sous-personnalites (2=certain/douteux, 3=bas/moyen/haut)
   gamma: 0.10     # Force de la compartimentation (vs D=0.15 physique)
   mode:  attraction  # 'attraction' (intra seul) ou 'full' (intra+inter)
+
+# V5: Autorégulation Topologique (ART) — Kirchhoff passif
+# Inspiration Cafe Virtuel #1 (2026-05-10) — insight GLM / Boucle 5 :
+#   Un noeud rigide (u faible) bloque le courant -> tension aux bornes voisins
+#   -> retroaction qui "reveille" les voisins (augmente leur u).
+#   L'autoregulation emerge du cablage, pas d'un algorithme externe.
+#
+# mode='soft'  (Gemini) : pression = rigidit?? MOYENNE des voisins
+#   si mean(1 - u_voisins) > rigid_threshold : u_i *= (1 + alpha_art_soft)
+# mode='hard'  (Grok)   : pression non-lineaire, proportionnelle au nb de voisins rigides
+#   u_i *= (1 + alpha_art_hard * n_rigides / n_voisins)
+#
+# u_min est applique TOUJOURS quand enabled=true (plancher fixe — DeepSeek)
+# enabled=false reproduit exactement V4 (backward compatible)
+topological_regulation:
+  enabled:         false
+  u_min:           0.05    # plancher fixe (evite effondrement sous choc uniforme)
+  rigid_threshold: 0.7     # voisin "rigide" si (1 - u) > rigid_threshold (u < 0.3)
+  mode:            soft    # 'soft' (Gemini) ou 'hard' (Grok)
+  alpha_art_soft:  0.15    # facteur Gemini : +15% si pression moyenne > seuil
+  alpha_art_hard:  0.25    # facteur Grok   : +25% * proportion voisins rigides
