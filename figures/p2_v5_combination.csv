@@ -1,0 +1,5 @@
+label,H_stable,H_std,delta_v4,meta_enabled,comp_enabled
+V4 pur,4.034614,0.104576,0.0,False,False
+Metacog seul (alpha=-0.5),4.515398,0.075911,0.480784,True,False
+Compart. seul (K=3 full),4.049143,0.145698,0.014529,False,True
+Metacog + Compart. (combi),4.524937,0.142707,0.490323,True,True
