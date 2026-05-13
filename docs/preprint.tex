@@ -53,6 +53,7 @@ Our contributions are: (1)~a formal specification of the doubt-modulated FHN mod
 % 2. MODEL
 % ============================================================================
 \section{Model}
+\label{sec:model}
 
 \subsection{FitzHugh--Nagumo Dynamics with Doubt}
 
@@ -191,7 +192,7 @@ Table~\ref{tab:scaling} reports the sustained attractor entropy across network s
 
 \begin{table}[ht]
 \centering
-\caption{Scaling performance on 2D periodic lattices ($I_\mathrm{stim}=0.5$, $\eta = 0.15$, 10 seeds $\in\{42,123,777,17,256,1337,99,314,2024,888\}$, 3000 steps, last 25\% window). $H_{\text{stable}}$: 100-bin continuous spectral entropy. Mean doubt $\bar{u}$: mean of the per-node doubt variable; $\bar{u} \approx 1$ indicates fully active repulsive coupling, consistent with the chimera mechanism (see Section~\ref{sec:model}). All values reproduced by \texttt{experiments/verify\_table1\_preprint.py}.}
+\caption{Scaling performance on 2D periodic lattices ($I_\mathrm{stim}=0.5$, $\eta = 0.15$, 10 seeds $\in\{42,123,777,17,256,1337,99,314,2024,888\}$, 3000 steps, last 25\% window). $H_{\text{stable}}$: 100-bin continuous spectral entropy. Mean doubt $\bar{u}$: mean of the per-node doubt variable; $\bar{u} \approx 1$ indicates fully active repulsive coupling, consistent with state-driven chimera-like behavior~\cite{abrams2004} (see Section~\ref{sec:model}); note that the mechanism here is state-driven via $u_i(t)$, mechanistically distinct from the quenched non-local coupling of the original chimera formulation~\cite{abrams2004}. All values reproduced by \texttt{experiments/verify\_table1\_preprint.py}.}
 \label{tab:scaling}
 \begin{tabular}{lccc}
 \toprule
@@ -373,7 +374,7 @@ The model uses first-order Euler integration with $\Delta t = 0.05$. A systemati
 
 \subsection{Origin of Sustained Diversity}
 
-The sustained attractor diversity observed in Section~\ref{sec:results_lattice} is structural in origin rather than arising from analytical instability of a synchronized state. At the reference parameterization ($\alpha = 0.15$, sub-Hopf regime), linearization around the synchronized manifold yields Jacobian eigenvalues with negative real parts ($\approx -0.13$), indicating that perfect synchrony would be locally stable in a homogeneous network without heretics. Sustained diversity is instead produced by two mechanisms acting in concert: (1) heretic nodes receiving inverted stimulus ($-I_{\text{stim}}$) provide permanent structural asymmetry that prevents consensus nucleation; (2) the Cold Start Protocol (Gaussian noise at $t=0$, $\sigma_v = 0.1$) breaks the symmetry of homogeneous initial conditions. These two mechanisms — structural heterogeneity and symmetry-breaking initialization — are jointly necessary and sufficient to produce the chimera-like attractors reported in Table~\ref{tab:scaling}. The $u$ dynamics then sustain diversity by actively decorrelating neighbours (Section~\ref{sec:mi_analysis}), as confirmed by the $2.2\times$ MI increase under FROZEN\_U ablation.
+The sustained attractor diversity observed in Section~\ref{sec:results_lattice} is structural in origin rather than arising from analytical instability of a synchronized state. At the reference parameterization ($\alpha = 0.15$, sub-Hopf regime), linearization around the synchronized manifold yields Jacobian eigenvalues with negative real parts ($\approx -0.13$), indicating that perfect synchrony would be locally stable in a homogeneous network without heretics. Sustained diversity is instead produced by two mechanisms acting in concert: (1) heretic nodes receiving inverted stimulus ($-I_{\text{stim}}$) provide permanent structural asymmetry that prevents consensus nucleation; (2) the Cold Start Protocol (Gaussian noise at $t=0$, $\sigma_v = 0.1$) breaks the symmetry of homogeneous initial conditions. These two mechanisms — structural heterogeneity and symmetry-breaking initialization — are jointly necessary and sufficient to produce the chimera-like attractors~\cite{abrams2004} reported in Table~\ref{tab:scaling}. The $u$ dynamics then sustain diversity by actively decorrelating neighbours (Section~\ref{sec:mi_analysis}), as confirmed by the $2.2\times$ MI increase under FROZEN\_U ablation.
 
 % ============================================================================
 % 6. DISCUSSION
@@ -408,6 +409,7 @@ The following results were obtained after the original submission (2026-04-22) a
 A systematic sweep of $\tau_u \in [0.05, 100]$ on BA $m=3$ (N=100, \texttt{degree\_linear}, $I_{\mathrm{stim}}=0.5$, 3 seeds) reveals a sharp bifurcation. For $\tau_u < 10$, doubt dynamics are too slow to track social fluctuations: frustration freezes and $H_{\mathrm{cog}} \approx 0$ (pseudo-consensus). For $\tau_u \in [10, 50]$, the system enters a transition regime ("breathing chimera"): $H_{\mathrm{cog}}$ rises from $0.023$ to $0.380$. For $\tau_u > 50$, fast doubt dynamics over-respond and the system regains coordinated diversity ($H_{\mathrm{cog}} \approx 0.8$, $\mathrm{sync} \approx 0$). \textbf{The reference value $\tau_u = 10$ sits precisely at the bifurcation edge}, which explains the bimodal distribution of outcomes observed across seeds (Section~\ref{sec:topo_regimes}). This also clarifies why the trajectory-metrics study (Section~\ref{sec:traj_minimality}) found the FULL model at the boundary of the structured half-plane: it is operating near criticality.
 
 \subsubsection*{Doubt as an Active Decorrelator: Spatial Mutual Information}
+\label{sec:mi_analysis}
 
 To characterize the role of $u$ beyond snapshot entropy, we computed the pairwise mutual information MI$(d)$ as a function of graph hop-distance $d$ under four ablation conditions on Lattice ($N=100$) and BA $m=3$ ($N=100$). MI is estimated via 2D joint histograms on $v(t)$ histories post-warmup ($I_{\mathrm{stim}}=0.5$, \texttt{degree\_linear}, 3 seeds).
 
@@ -480,6 +482,7 @@ The principal negative result is that for Barab\'asi--Albert networks with $m \g
 \item \textbf{Doubt time-scale near the phase boundary:} The doubt recovery time constant $\tau_u = 10.0$ (default) was held fixed across all experiments. Near the spectral phase boundary ($\lambda_2 \approx \lambda_{2,\mathrm{crit}}$), the system's ability to sustain functional diversity may depend sensitively on $\tau_u$: a shorter $\tau_u$ could shift the effective transition threshold by allowing faster polarity reassignment, while a longer $\tau_u$ may produce critical-slowing-down signatures analogous to those observed near bifurcations in excitable media. The dependence of $\lambda_{2,\mathrm{crit}}$ on $\tau_u$ has not been characterized and remains an open question.
 \item \textbf{Scale:} The model has been tested up to $N = 2500$. Behavior at $N \gg 10{,}000$ is not validated.
 \item \textbf{Spectral phase transition:} The transition at $m \approx 5$ (or $\lambda_2 \approx 2$--$3$) is empirically observed on $N = 100$ BA networks. Finite-size effects may shift this boundary at larger $N$.
+\item \textbf{Replication count for secondary experiments:} Primary results (Table~\ref{tab:scaling}, component ablation, scale-free topology sweep) use $n = 10$ seeds. Secondary validation experiments---spatial mutual information (\texttt{p2\_spatial\_mutual\_information.py}), stochastic resonance (\texttt{p2\_stochastic\_resonance\_directed.py}, \texttt{p2\_stochastic\_resonance\_topology.py}), and the $\gamma$ sweep (\texttt{limit02\_alpha\_sweep.py})---use $n = 3$--$5$ seeds. These are directional and exploratory results; full replication at $n = 10$ is planned for a future revision.
 \end{itemize}
 
 \subsection{Methodological Transparency}
@@ -503,6 +506,9 @@ This work was developed through a multi-agent collaborative research methodology
 % Network Science
 \bibitem{barabasi1999} Barab\'asi, A.-L., Albert, R., \emph{Emergence of scaling in random networks}, Science, 286(5439):509-512, 1999.
 \bibitem{watts1998} Watts, D.J., Strogatz, S.H., \emph{Collective dynamics of `small-world' networks}, Nature, 393(6684):440-442, 1998.
+
+% Chimera States
+\bibitem{abrams2004} Abrams, D.M., Strogatz, S.H., \emph{Chimera states for coupled oscillators}, Physical Review Letters, 93(17):174102, 2004.
 
 % Opinion Dynamics
 \bibitem{castellano2009} Castellano, C., Fortunato, S., Loreto, V., \emph{Statistical physics of social dynamics}, Reviews of Modern Physics, 81(2):591, 2009.

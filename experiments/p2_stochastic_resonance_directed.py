@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# @TODO: n=3 seeds (directional result) — relancer à n=10 avant soumission journal (voir preprint.tex Limitations)
 """
 Piste A1 — Résonance Stochastique Dirigée (2026-04-24)
 
