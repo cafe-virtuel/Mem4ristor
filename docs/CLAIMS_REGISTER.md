@@ -2,7 +2,7 @@
 
 > Principe : tout claim numérique publié dans preprint.tex doit avoir un script de vérification listé ici.
 > Zéro valeur sans script reproductible. Mis à jour à chaque session.
-> Dernière mise à jour : 2026-05-13 (Session B)
+> Dernière mise à jour : 2026-05-15 (Session C — SPICE Kirchhoff)
 
 ---
 
@@ -20,6 +20,7 @@
 | C08 | MI FROZEN_U / FULL ratio (BA m=3) | 2.2× (0.870 → 1.958) | `experiments/p2_spatial_mutual_information.py` | 3 ⚠️ | 2026-04-24 | ⚠️ 3 seeds |
 | C09 | ART hard H_min_post vs V4 | +0.40 bits (3.12 vs 2.72) | `experiments/p2_art_benchmark.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C10 | Combi metacog+compart | +0.49 bits additif, synergie ≈ 0 | `experiments/p2_v5_combination.py` | 10 | 2026-05-11 | ✅ vérifié |
+| C11 | ART soft H_min_post circuit SPICE | ratio SPICE/V4=1.490 = Python/V4=1.490 (accord parfait) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15 | ✅ vérifié |
 
 ---
 
@@ -33,6 +34,7 @@ Replication à n=10 planifiée pour révision future.
 | S01 | Stochastic resonance dead zone escape | H: ~1.40 → ~3.3–3.7 bits à η=0.1 | `experiments/p2_stochastic_resonance_directed.py` | 3 | ⚠️ directional |
 | S02 | SR topology variants | Tous types brisent dead zone à η=0.1+ | `experiments/p2_stochastic_resonance_topology.py` | 5 | ⚠️ directional |
 | S03 | γ sweep optimal γ*(m) | γ*(m=2)=0.7, γ*(m=3)=0.9 | `experiments/limit02_alpha_sweep.py` | 3 | ⚠️ directional |
+| S04 | ART hard SPICE vs Python divergence | SPICE ratio=4.43 vs Python=1.49 (rétroaction implicite trap > Euler) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 🔍 exploratoire |
 
 ---
 
