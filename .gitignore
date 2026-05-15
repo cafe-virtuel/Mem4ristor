@@ -29,15 +29,15 @@ Thumbs.db
 nul
 
 # LaTeX build artifacts
-docs/*.aux
-docs/*.log
-docs/*.out
-docs/*.toc
-docs/*.synctex.gz
-docs/*.fls
-docs/*.fdb_latexmk
-docs/*.bbl
-docs/*.blg
+**/*.aux
+**/*.log
+**/*.out
+**/*.toc
+**/*.synctex.gz
+**/*.fls
+**/*.fdb_latexmk
+**/*.bbl
+**/*.blg
 
 # Keep the preprint PDF
 !docs/preprint.pdf

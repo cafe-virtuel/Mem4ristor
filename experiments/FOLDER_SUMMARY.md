@@ -1,5 +1,5 @@
 # experiments/ — Résumé du dossier
-> Mis à jour : 2026-05-02 13:36 | Par : Ronde Perpétuelle (mode summaries)
+> Mis à jour : 2026-05-11 07:43 | Par : Ronde Perpétuelle (mode summaries)
 > **Ne pas modifier la table manuellement** — utiliser --mode summaries pour mettre à jour.
 
 ## Rôle du dossier
@@ -34,11 +34,15 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `lyapunov_numerical.py` | Vérification Numérique de Stabilité (Lyapunov) | — | — | 🆕 nouveau |
 | `lz_per_node.py` | [11] LZ Complexity Per Node — FULL vs FROZEN_U | r=-0.716 (BA m=5, p=1.29e-79). u active l'intelligence topologique. | 1 | 🆕 nouveau |
 | `matern_noise.py` | [12] Bruit spatialement correle (Matern) — dead zone BA m=5 | Escape dead zone dès η=0.1. Structure spatiale non-discriminante. | 2 | 🆕 nouveau |
+| `p2_compartments.py` | Compare des réseaux dynamiques avec et sans compartimentation, mesurant diversité et spécialisation. | — | — | 🆕 nouveau |
 | `p2_delta_sweep.py` | Piste A5 -- Sweep delta de la Levitating Sigmoid (2026-04-24) | — | — | 🆕 nouveau |
 | `p2_directed_coupling.py` | Piste A3 -- Couplage Asymetrique et Graphes Diriges (2026-04-24) | — | — | 🆕 nouveau |
 | `p2_doubt_community_detection.py` | Item 12 -- Doubt-Driven Community Detection (2026-04-24) | — | — | 🆕 nouveau |
 | `p2_edge_betweenness_analysis.py` | P2-9 — Edge betweenness + diameter vs lambda2 (PROJECT_STATUS §10 P2 item 9). | — | — | 🆕 nouveau |
 | `p2_finite_size_scaling.py` | P2-7 — Finite-size scaling of the dead zone transition (PROJECT_STATUS §10 P2 item 7). | — | — | 🆕 nouveau |
+| `p2_meta_pistes.py` | Explore l'effet de différents paramètres sur la diversité et la stabilité d'un réseau memristorique. | — | — | 🆕 nouveau |
+| `p2_metacognitive_plasticity.py` | Compare les performances d'un réseau neuronal en fonction de différents niveaux de plasticité metacognitive. | — | — | 🆕 nouveau |
+| `p2_nonlocal_coupling.py` | Compare des modèles de réseau basés sur la similarité de doute pour étudier l'effet du couplage non-local. | — | — | 🆕 nouveau |
 | `p2_sigma_social_ablation.py` | Piste C — Ablation sigma_social → bruit pur (2026-04-25) | — | — | 🆕 nouveau |
 | `p2_spatial_mutual_information.py` | Piste A4 -- Information Mutuelle Spatio-Temporelle (2026-04-24) | — | — | 🆕 nouveau |
 | `p2_stochastic_resonance_directed.py` | Piste A1 — Résonance Stochastique Dirigée (2026-04-24) | — | — | 🆕 nouveau |
@@ -77,11 +81,13 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `v4_high_uthr_figure.py` | V4 High u_thr — Figure de synthèse | — | — | 🆕 nouveau |
 | `v4_high_uthr_sweep.py` | V4 Dynamic Heretics — Exploration régime u_thr > 0.9 | — | — | 🆕 nouveau |
 | `v4_parametric_sweep.py` | V4 Dynamic Heretics — Parametric Sweep | — | — | 🆕 nouveau |
+| `verify_pb_isolated_node.py` | Simule et analyse le comportement d'un noeud FHN isolé pour vérifier le théorème de Poincaré-Bendixson. | — | — | 🆕 nouveau |
 | `verify_quick_start.py` | Initialise et simule un réseau Memristor pour vérifier sa fonctionnement rapide. | — | — | ✅ enrichi |
+| `verify_table1_preprint.py` | Analyse l'instabilité continue d'un réseau memristor pour différentes tailles et intensités de stimulation. | — | — | 🆕 nouveau |
 
 ## Fichiers supprimés depuis la dernière mise à jour
 
-- `> Mis à jour : 2026-05-02 13:36` — présent dans l'ancienne table, introuvable sur disque
+- `> Mis à jour : 2026-05-05 18:37` — présent dans l'ancienne table, introuvable sur disque
 
 ## Prochaines expériences prévues
 
@@ -106,3 +112,9 @@ _(à compléter manuellement ou via --mode summaries après ajout de scripts)_
 > Généré par brain_watcher.py --mode summaries le 2026-05-02 13:36
 
 > Généré par brain_watcher.py --mode summaries le 2026-05-02 13:36
+
+> Généré par brain_watcher.py --mode summaries le 2026-05-04 19:03
+
+> Généré par brain_watcher.py --mode summaries le 2026-05-05 18:37
+
+> Généré par brain_watcher.py --mode summaries le 2026-05-11 07:43
