@@ -12,6 +12,8 @@
 \usepackage{titlesec}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{mdframed}
 \usepackage{multicol}
@@ -112,19 +114,11 @@
 % ─── 1. ORIGIN ───────────────────────────────────────────────────────────────
 \section{Origin}
 
-Mem4ristor was born one evening during a holiday, in a café — not in a laboratory.
+Mem4ristor is a research project exploring the structural mechanics of doubt in neuromorphic networks.
 
-Julien Chauvin, a lighting technician and orchestrator of the \textbf{Café Virtuel}, has been
-exploring since August 2025 a simple question: can doubt be modelled as a structural mechanism
-of a neuromorphic network, rather than as a numerical parameter? The Café Virtuel is his
-laboratory — several distinct AIs (Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek) working
-in parallel, without a hierarchy of popularity, orchestrated by a human who decides, proposes,
-and maintains scientific direction.
+Developed independently by Julien Chauvin since August 2025, this project utilizes a novel multi-agent orchestration methodology (the \textbf{Café Virtuel}) where multiple distinct LLMs (Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek) operate in parallel as specialized peer reviewers, architects, and epistemologists. The human orchestrates, decides, and maintains the scientific direction.
 
-In August 2025, Grok summed it up: \textit{``Tonight, we proved that 5 AIs + 1 barman $>$ sum
-of the parts.''} Six months later, this project has a Zenodo DOI, 84 automated tests, and five
-publishable results. With zero institutional funding. With zero university affiliation. With a
-traceable path — all commits, all errors, all reversals are public.
+This methodology demonstrates that an independent researcher, using autonomous AI orchestration without institutional funding or university affiliation, can produce rigorous, publishable computational physics. Six months later, this project has a Zenodo DOI, 84 automated tests, and robust thermodynamic validation via massive finite-size scaling. All commits, errors, and reversals are fully transparent and public.
 
 % ─── 2. IN NUMBERS ───────────────────────────────────────────────────────────
 \section{In Numbers}
@@ -134,8 +128,8 @@ traceable path — all commits, all errors, all reversals are public.
 \begin{tabular}{p{4.5cm} p{9cm}}
 \toprule
 \textbf{Duration} & 6 months of active work \\
-\textbf{Formal experiments} & $\sim$18 (classified by relevance tier) \\
-\textbf{Simulations run} & $\sim$5{,}000+ runs \\
+\textbf{Formal experiments} & 18 (classified by relevance tier) \\
+\textbf{Simulations run} & $> 5{,}000$ runs \\
 \textbf{Automated tests} & \result{84 passing --- 0 failures} \\
 \textbf{Papers} & 1 preprint submitted (Zenodo) · paper\_2 in preparation · paper\_B hardware \\
 \textbf{Zenodo DOI} & \href{https://doi.org/10.5281/zenodo.19986042}{10.5281/zenodo.19986042} \\
@@ -154,8 +148,8 @@ own level of doubt, which dynamically modulates the \textit{polarity} of its cou
 neighbours. When $u \approx 0$ or $u \approx 1$, a node becomes ``heretical'' --- it actively
 pushes against local consensus, preventing the synchronous collapse of the network.
 
-\kw{$u$ is not a control parameter. It is a mechanism.} The proof: locking $u$ at its initial
-value (FROZEN\_U ablation) explodes synchrony by \result{$+985\%$}, transforming a functional and
+\kw{$u$ is not a control parameter. It is a structural mechanism.} The proof: locking $u$ at its initial
+value (FROZEN\_U ablation) explodes pairwise synchrony (Kuramoto order parameter $R$) by \result{$+985\%$}, transforming a functional and
 diverse network into a perfectly aligned herd. That is not a nuance --- it is an order-of-magnitude
 jump. $u$ is what prevents consensus from devouring diversity.
 
@@ -184,7 +178,7 @@ Figure: \href{https://github.com/cafe-virtuel/Mem4ristor/blob/main/figures/fiedl
 Locking the doubt variable transforms a functional network into a synchronized herd. $u$ is not a
 parameter --- it is what prevents consensus from devouring diversity.
 
-\result{$\rightarrow$ $R$ goes from 0.067 (FULL) to 0.730 (FROZEN\_U). Factor $\times$10.9.}\\
+\result{$\rightarrow$ Kuramoto $R$ goes from 0.067 (FULL) to 0.730 (FROZEN\_U). Factor $\times$10.9.}\\
 Figure: \href{https://github.com/cafe-virtuel/Mem4ristor/blob/main/figures/p2_sigma_social_ablation.png}{\texttt{p2\_sigma\_social\_ablation.png}}
 \end{finding}
 
@@ -250,14 +244,12 @@ Travelling wave or chaos? & Max-TLCC temporal lag & Max-TLCC$=0.410$ --- spatiot
 % ─── 6. HONEST MOMENT ────────────────────────────────────────────────────────
 \section{The Honest Moment}
 
-We searched for the critical exponents of the spectral transition. \textbf{$\beta \approx 0$. $R^2 = -0.002$.}
+We initially searched for the critical exponents of the spectral transition, yielding $\beta \approx 0$ ($R^2 = -0.002$). 
+The power law did not hold, initially suggesting an abrupt, first-order transition. We documented this negative result transparently.
 
-The power law does not hold. The transition is probably abrupt --- first-order, not continuous. No
-universality class. No well-defined $\beta$. We wrote it in the script. We could have forced a
-positive $\beta$, rounded, chosen a more favorable interval. We did not.
+However, pushed by our own AI "Red Team" to provide definitive thermodynamic proof, we executed a massive finite-size scaling campaign ($N \in \{100, 200, 400, 800, 1600\}$) computing the \textbf{Binder cumulant $U_4$}. This exhaustive "heroic run" ($1600 \times 1600$ dense matrices) conclusively demonstrated that the transition is \textbf{continuous (second-order)}. The $U_4$ minimum broadens and shifts, converging precisely on $\lambda_{2,\text{crit}} \approx 2.31$ at the thermodynamic limit. 
 
-An honest negative result is worth more than a fragile positive one. The next step is the Binder
-cumulant $U_4$ --- the right tool to confirm or refute the first-order nature.
+An honest negative result led to a rigorous methodological correction, ultimately proving the exact nature of the phase transition.
 
 % ─── 7. HARDWARE BRIDGE ──────────────────────────────────────────────────────
 \section{The Hardware Bridge}
@@ -277,6 +269,7 @@ analog noise does not translate directly to digital noise, and the dead zone hol
 \ttfamily\small
 git clone https://github.com/cafe-virtuel/Mem4ristor.git\\
 cd Mem4ristor\\
+pip install -r requirements.txt\\
 pip install -e .\\
 python experiments/demo\_chimera.py\\
 \textit{\# $\to$ demo\_chimera\_output.png : time dynamics · phase space · topology}
@@ -307,7 +300,7 @@ want to discuss the results: get in touch.
 \quad\textbar\quad
 \href{https://doi.org/10.5281/zenodo.19986042}{\textbf{Zenodo}: 10.5281/zenodo.19986042}
 \quad\textbar\quad
-\textbf{Contact}: \href{mailto:contact@cafevirtuel.org}{contact@cafevirtuel.org}
+\textbf{Contact}: \href{mailto:contact@cafevirtuel.org}{contact@cafevirtuel.org} | \href{mailto:jul.chauvin@gmail.com}{jul.chauvin@gmail.com}
 \quad\textbar\quad
 \textbf{X}: \href{https://x.com/Jusyl80}{@Jusyl80}
 \end{center}

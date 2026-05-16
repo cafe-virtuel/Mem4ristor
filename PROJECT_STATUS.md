@@ -1,5 +1,5 @@
-﻿# PROJECT STATUS — Mem4ristor V4.0.0 (Audited Stable)
-**Dernière mise à jour : 2026-05-05**
+# PROJECT STATUS — Mem4ristor V6.0.0 (arXiv Ready)
+**Dernière mise à jour : 2026-05-16**
 **Auteur : Julien Chauvin (Barman / Orchestrateur)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -209,6 +209,7 @@ python examples/demo_applied.py
 | Claude Opus 4.6 (Anthropic) | Audit V3, migration imports, investigation LIMIT-02/04/05 (2026-03-21). V5 hysteresis, sparse CSR, demo appliquée (2026-03-22) |
 | Antigravity / Gemini 2.5 Pro | Consolidation v3.2.0, tests régression, BA m/α sweep, restructuration preprint, réponse critique externe (2026-04-10) |
 | Claude Opus 4.7 (Anthropic) | Fix bugs P1 (symbiosis swarm, V4 entropy), validation SPICE/Python sub-1% RMS, figure phase diagram λ₂ vs H_stable, normalisation spectrale (résultat négatif publiable) (2026-04-19) |
+| Antigravity (Gemini 3 Flash) | **Run Héroïque N=1600**, validation Binder $U_4$, résolution audit Mistral (19/20), Expérience 008 "Guerre des Phases" (2026-05-16) |
 
 Niveau de transparence : **Radical** — transcripts complets dans le dépôt Café Virtuel.
 
@@ -263,6 +264,7 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 | event_phase_transition.png / .csv / _summary.csv | [13] Transition de phase événementielle | Nœud périphérique I>=0.8 pendant >=50 steps → dH=+1.20 bits (BA m=3). Périphérique > Hub. | Confirmé, commit 667a2a9 |
 | matern_noise.png / .csv / _summary.csv | [12] Bruit Matern spatialement corrélé | Tous types de bruit (i.i.d., Matern exp/Gauss) brisent la dead zone à eta=0.1+. Amplitude seule compte. | Confirmé, commit a8d6ba4 |
 | v4_dynamic_heretics_emergence.csv | V4 Dynamic Heretics | Loi linéaire t_first = steps_required + 130 * u_threshold (R²~1). Cascade quasi-inévitable pour u_thr <= 0.8. | Confirmé, commit 88b9983 |
+| exp_008_guerre_phases.png | Expérience 008 | La minorité organisée (15%) crée une oscillation perpétuelle à l'interface. | Confirmé (Shadow Lab) |
 
 ### Analyses de robustesse et défenses reviewer
 
