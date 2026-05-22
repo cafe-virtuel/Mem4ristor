@@ -1,5 +1,5 @@
 # docs/ — Résumé du dossier
-> Mis à jour : 2026-05-11 07:43 | Par : Ronde Perpétuelle (mode summaries)
+> Mis à jour : 2026-05-16 06:43 | Par : Ronde Perpétuelle (mode summaries)
 > **Ne pas modifier la table manuellement** — utiliser --mode summaries pour mettre à jour.
 
 ## Rôle du dossier
@@ -9,8 +9,10 @@ Documents scientifiques publics. preprint.tex = Paper 1 (Zenodo). paper_2/ et pa
 
 | Fichier | Description | Tier | Statut |
 |---------|-------------|------|--------|
+| `CLAIMS_REGISTER.md` | Vérifie l'instabilité critique λ₂ pour différents graphes. | — | 🆕 nouveau |
 | `academic_history.md` | # Academic History of the Mem4Ristor Project | — | 🆕 nouveau |
 | `benchmarks_formulas.md` | # Session 5: Benchmarking Mem4Ristor v2.0 | — | 🆕 nouveau |
+| `draft_friston_free_energy.md` | Analyse thermodynamique et inférence active dans un réseau Mem4ristor. | — | 🆕 nouveau |
 | `edison_review_v310.md` | SENIOR RESEARCHER TECHNICAL REVIEW: Mem4ristor v3.1.0 | — | 🆕 nouveau |
 | `hardware_mapping_defense.md` | # Hardware Mapping Defense: Python Mean-Field vs SPICE Edge-Centric | — | 🆕 nouveau |
 | `limitations.md` | # LIMITATIONS (Scientific Truth Table) | — | 🆕 nouveau |
@@ -22,7 +24,7 @@ Documents scientifiques publics. preprint.tex = Paper 1 (Zenodo). paper_2/ et pa
 
 ## Fichiers supprimés depuis la dernière mise à jour
 
-- `> Mis à jour : 2026-05-05 18:37` — présent dans l'ancienne table, introuvable sur disque
+- `> Mis à jour : 2026-05-11 07:43` — présent dans l'ancienne table, introuvable sur disque
 
 ## Prochaines expériences prévues
 
@@ -49,3 +51,5 @@ _(à compléter manuellement ou via --mode summaries après ajout de scripts)_
 > Généré par brain_watcher.py --mode summaries le 2026-05-05 18:37
 
 > Généré par brain_watcher.py --mode summaries le 2026-05-11 07:43
+
+> Généré par brain_watcher.py --mode summaries le 2026-05-16 06:43

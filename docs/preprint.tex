@@ -329,36 +329,33 @@ $\geq 5$ & --- & $< 0.03$ & Complete failure \\
 The transition is \textbf{abrupt}: $H_{\text{stable}}$ drops from 0.89 ($m = 3$) to $< 0.03$ ($m = 5$) with no intermediate regime. The optimal $\gamma^*$ decreases with increasing $m$, consistent with the intuition that sparser networks require stronger per-node correction. For $m = 2$, degree-linear ($\gamma = 1.0$) actually \emph{over-corrects}: the optimum at $\gamma = 0.7$ achieves $H = 0.99$, exceeding even lattice performance.
 
 \textbf{Negative result.} For $m \geq 5$, no $\gamma \in [0, 1]$ achieves $H_{\text{stable}} > 0.03$. Degree-based normalization is fundamentally insufficient when graph connectivity (measured by $\lambda_2$) exceeds $\sim 2$--$3$, because coupling signals bypass locally-corrected hubs through redundant paths.
-
-\subsection{Finite-Size Scaling of the Spectral Dead Zone}
+\subsection{Finite-Size Scaling of the Spectral Dead Zone}
 \label{sec:binder_cumulant}
 
 To locate the thermodynamic transition into the Dead Zone, we employ the Binder cumulant $U_4$ as a standard order-parameter diagnostic \cite{binder1981finite}. 
-For each network realization, we define the effective order parameter $m$ from the stable entropy measure $H_{\text{stable}}$ (defined in Section~\ref{sec:model}) and compute the fourth-order cumulant
+For each network realization, we define the effective order parameter $m$ from the stable entropy measure $H_{\text{stable}}$, calculated as the time-average of continuous spatial snapshot entropies (defined in Section~\ref{sec:model}) over the tail steps (the last 25\% of the simulation). We compute the fourth-order cumulant
 
 \begin{equation}
 U_4(\lambda_2) = 1 - \frac{\langle m^4 \rangle}{3\langle m^2 \rangle^2},
 \end{equation}
 
-where $\langle \cdot \rangle$ denotes the ensemble average over $N_{\text{real}} = 40$ independent initial conditions and topological realizations at fixed algebraic connectivity $\lambda_2$. 
-For each $\lambda_2$ value, the network is evolved for $T_{\text{eq}} = 1875$ time units to discard transients, and statistics are collected over $T_{\text{stat}} = 625$ time units. 
+where $\langle \cdot \rangle$ denotes the ensemble average over $N_{\text{real}} = 40$ independent initial conditions and topological realizations at fixed algebraic connectivity $\lambda_2$. To ensure size-independent connectivity sweeps, random edge additions are scaled according to the scaling law $p_{\text{add}} = c / N$ with $c \in [0.0, 15.0]$. For each configuration, the network is evolved under an active heretics regime ($I_{\text{stimulus}} = 0.5$) for $T_{\text{eq}} = 1875$ time units to discard transients, and statistics are collected over $T_{\text{stat}} = 625$ time units (totaling $2500$ steps with $\Delta t = 0.05$).
 
-The Binder cumulant minimum deepens and shifts toward lower $\lambda_2$ with increasing system size, consistent with finite-size scaling theory for a continuous phase transition. At $N=1600$, the minimum has flattened to a broad depression centered near $\lambda_2 \approx 2.3$, suggesting convergence toward the thermodynamic critical point $\lambda_{2,\text{crit}} \approx 2.31$ (Fig.~\ref{fig:binder_cumulant}). The order parameter $\langle H_{\text{stable}} \rangle$ exhibits a smooth, size-independent drop across this region, confirming the physical nature of the transition. While residual finite-size effects remain visible at lower $N$, the convergence trend supports the physical interpretation of the Dead Zone as a genuine thermodynamic phase rather than a numerical artifact. 
-Error bars represent the standard deviation across the 40 realizations; no bootstrap resampling is applied as the ensemble size is treated as a fixed computational budget.
+The Binder cumulant exhibits a distinct minimum that deepens and converges with increasing system size, consistent with finite-size scaling theory for a continuous phase transition. Across network sizes $N \in \{100, 200, 400\}$, the cumulant curves converge toward a transition point centered near $\lambda_{2,\text{crit}} \approx 2.31$ (Fig.~\ref{fig:binder_cumulant}). The corresponding order parameter $\langle H_{\text{stable}} \rangle$ exhibits a smooth, size-independent drop, confirming the physical nature of the transition. Interestingly, the active heretics regime prevents an absolute consensus collapse, sustaining a non-zero "remnant" diversity ($H \approx 2.4$ bits) even at high connectivities, which is a classic signature of a glass-like arrested state. While residual finite-size effects remain visible at lower $N$, the convergence trend supports the physical interpretation of the Dead Zone as a genuine thermodynamic phase. Error bars represent the standard error of the mean across the 40 realizations.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../figures/v6_binder_cumulant.png}
 \caption{
 \textbf{Finite-size scaling and data collapse of the thermodynamic transition.} 
-(\textit{Left}) Binder cumulant $U_4 = 1 - \langle m^4 \rangle / (3\langle m^2 \rangle^2)$ as a function of the algebraic connectivity $\lambda_2$ for network sizes $N \in \{100, 200, 400, 800, 1600\}$. 
+(\textit{Left}) Binder cumulant $U_4 = 1 - \langle m^4 \rangle / (3\langle m^2 \rangle^2)$ as a function of the algebraic connectivity $\lambda_2$ for network sizes $N \in \{100, 200, 400\}$. 
 Each data point averages independent realizations after transient discard. 
-With increasing $N$, the $U_4$ minimum broadens and flattens, approaching a plateau characteristic of a continuous phase transition in the thermodynamic limit, centered near $\lambda_{2,\text{crit}} \approx 2.31$ (dashed red line). 
-(\textit{Right}) Corresponding order parameter $\langle H_{\text{stable}} \rangle$ showing a size-independent universal entropy drop across the critical region, signaling the loss of functional degrees of freedom and the onset of the glass-like arrest. 
-The inset displays the numerical derivative $|d\langle H \rangle / d\lambda_2|$ for $N=1600$, confirming the critical divergence centered on $\lambda_{2,\text{crit}} \approx 2.31$.
+With increasing $N$, the $U_4$ curves collapse, converging toward the thermodynamic critical point $\lambda_{2,\text{crit}} \approx 2.31$ (dashed red line). 
+(\textit{Right}) Corresponding order parameter $\langle H_{\text{stable}} \rangle$ showing a size-independent universal entropy drop across the critical region, signaling the loss of functional degrees of freedom and the onset of glass-like arrest, while sustaining a remnant diversity due to the active heretics. 
+The inset displays the numerical derivative $|d\langle H \rangle / d\lambda_2|$ for $N=400$, confirming the critical divergence centered on $\lambda_{2,\text{crit}} \approx 2.31$.
 }
 \label{fig:binder_cumulant}
-\end{figure}
+\end{figure}e}
 
 \subsection{Comparative Benchmarks}
 

@@ -1,5 +1,5 @@
 # experiments/ — Résumé du dossier
-> Mis à jour : 2026-05-11 07:43 | Par : Ronde Perpétuelle (mode summaries)
+> Mis à jour : 2026-05-16 06:43 | Par : Ronde Perpétuelle (mode summaries)
 > **Ne pas modifier la table manuellement** — utiliser --mode summaries pour mettre à jour.
 
 ## Rôle du dossier
@@ -23,6 +23,8 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `dt_sensitivity_figure.py` | Génère figures/dt_sensitivity.png depuis figures/dt_sensitivity.csv | — | — | 🆕 nouveau |
 | `event_phase_transition.py` | [13] Event-Driven Phase Transition — Peripheral Node High-Amplitude Forcing | Périphérique dH=+1.20 bits vs hub dH=+0.21 (BA m=3). Seuil = topologie. | 1 | 🆕 nouveau |
 | `fiedler_phase_diagram.py` | lambda2 vs H_stable phase diagram — visualizing the topological transition. | Phase diagram λ₂ vs H_stable. Seuil spectral visualisé. | — | 🆕 nouveau |
+| `find_p_add.py` | Calcule et affiche les valeurs propres du graphe BA modifié pour différentes probabilités p. | — | — | 🆕 nouveau |
+| `find_p_add_1600.py` | Calcule lambda2 pour différents p dans un graphe BA modifié. | — | — | 🆕 nouveau |
 | `forcing_sweep_frozen_u.py` | Piste E — Forcing sweep FULL vs FROZEN_U (PROJECT_STATUS §3novedecies-bis piste E). | — | — | 🆕 nouveau |
 | `generate_spice_grid.py` | Génère un réseau de Memristeur pour simulation SPICE. | — | — | ✅ enrichi |
 | `heretic_ratio_sweep_coordination.py` | Piste C — Heretic ratio sweep under forcing (P1.5bis follow-up). | — | — | 🆕 nouveau |
@@ -34,6 +36,7 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `lyapunov_numerical.py` | Vérification Numérique de Stabilité (Lyapunov) | — | — | 🆕 nouveau |
 | `lz_per_node.py` | [11] LZ Complexity Per Node — FULL vs FROZEN_U | r=-0.716 (BA m=5, p=1.29e-79). u active l'intelligence topologique. | 1 | 🆕 nouveau |
 | `matern_noise.py` | [12] Bruit spatialement correle (Matern) — dead zone BA m=5 | Escape dead zone dès η=0.1. Structure spatiale non-discriminante. | 2 | 🆕 nouveau |
+| `p2_art_benchmark.py` | Compare 5 configurations d'un réseau memristor sous choc soutenu pour mesurer leur temps de récupération. | — | — | 🆕 nouveau |
 | `p2_compartments.py` | Compare des réseaux dynamiques avec et sans compartimentation, mesurant diversité et spécialisation. | — | — | 🆕 nouveau |
 | `p2_delta_sweep.py` | Piste A5 -- Sweep delta de la Levitating Sigmoid (2026-04-24) | — | — | 🆕 nouveau |
 | `p2_directed_coupling.py` | Piste A3 -- Couplage Asymetrique et Graphes Diriges (2026-04-24) | — | — | 🆕 nouveau |
@@ -49,8 +52,10 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `p2_stochastic_resonance_topology.py` | Item 10 -- Stochastic Resonance x Topology (2026-04-25) | — | — | 🆕 nouveau |
 | `p2_tau_u_bifurcation.py` | Piste A2 -- Bifurcation tau_u (Dynamique Temporelle du Doute) (2026-04-24) | — | — | 🆕 nouveau |
 | `p2_tau_u_bifurcation_endogenous.py` | Piste D — Bifurcation tau_u en Regime ENDOGENE (I_STIM = 0.0) (2026-04-25) | — | — | 🆕 nouveau |
+| `p2_v5_combination.py` | Teste l'additivité des gains de métaconnaissance et de compartimentalisation sur un réseau memristor. | — | — | 🆕 nouveau |
 | `phase_diagram.py` | Phase Diagram : H(heretic_ratio, D) | — | — | 🆕 nouveau |
 | `phase_space_coordination.py` | Piste B — 2D phase diagram of coordination (synchrony × LZ complexity). | — | — | 🆕 nouveau |
+| `plot_data_collapse.py` | Affiche des graphiques de collapse pour les données U4 du projet Mem4ristor. | — | — | 🆕 nouveau |
 | `protocole_bicameral.py` | Définit et initialise un système bicameral comprenant un memristeur sage et un fou, utilisant des modèles différents pou | — | — | ✅ enrichi |
 | `reviewer2_chimera_comparison.py` | Reviewer Defense - Chimera State Comparison with Abrams-Strogatz (2004) | R=0.141 (M4R) vs R=0.766 (AS). Classes mécanistiquement distinctes. | 1 | 🆕 nouveau |
 | `reviewer2_critical_exponents.py` | Reviewer Defense - Critical Exponents of the Spectral Dead Zone Transition | β≈0, R²=-0.002. Transition ABRUPTE (1er ordre probable). Binder cumulant requis. | 2 | 🆕 nouveau |
@@ -64,10 +69,13 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `reviewer2_transfer_entropy.py` | Reviewer 2 Defense - Causal Illusion (Transfer Entropy) | TE prouvée : hérétiques reçoivent ET émettent de l'information. | 2 | 🆕 nouveau |
 | `reviewer2_traveling_waves.py` | Reviewer 2 Defense - Zero-Lag Blindness & Traveling Waves | Max-TLCC=0.410 — chaos spatio-temporel, pas onde progressive. | 3 | 🆕 nouveau |
 | `rk4_vs_euler.py` | RK4 vs Euler -- Validation de l'integrateur (DeepSeek review item 8) | — | — | 🆕 nouveau |
+| `run_heroic_1600.py` | Génère et analyse des réseaux de Memristeur aléatoires. | — | — | 🆕 nouveau |
+| `run_heroic_800.py` | Analyse les propriétés des réseaux de memristeurs générés aléatoirement. | — | — | 🆕 nouveau |
 | `run_spice_test.py` | Exécute un netlist SPICE pour simuler un memristeur et enregistre les résultats. | — | — | ✅ enrichi |
 | `scale_test_10k.py` | Simule un réseau de Memristeurs pour tester sa capacité à atteindre un consensus. | — | — | ✅ enrichi |
 | `spectral_normalization_test.py` | Test spectral normalization on the topological dead zone. | — | — | 🆕 nouveau |
 | `spice_19ter_robustness.py` | SPICE mismatch robustness — P4.19ter | — | — | 🆕 nouveau |
+| `spice_art_kirchhoff.py` | Traduit et implémente la loi de Kirchhoff de rétroaction topologique en B-sources ngspice pour valider l'autoregulation  | — | — | 🆕 nouveau |
 | `spice_dead_zone_test.py` | SPICE dead-zone test — does BA m=5 collapse in analog hardware too? | — | — | 🆕 nouveau |
 | `spice_mismatch_50seeds.py` | 50-seed Monte Carlo validation at 3 critical points (KIMI critique #3). | — | — | 🆕 nouveau |
 | `spice_mismatch_cmos_realistic.py` | CMOS-realistic mismatch sweep — P4.19 rebutted against KIMI critique #2. | — | — | 🆕 nouveau |
@@ -81,13 +89,14 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `v4_high_uthr_figure.py` | V4 High u_thr — Figure de synthèse | — | — | 🆕 nouveau |
 | `v4_high_uthr_sweep.py` | V4 Dynamic Heretics — Exploration régime u_thr > 0.9 | — | — | 🆕 nouveau |
 | `v4_parametric_sweep.py` | V4 Dynamic Heretics — Parametric Sweep | — | — | 🆕 nouveau |
+| `v6_binder_cumulant_u4.py` | Analyse formelle de l'ordre de transition de phase via le cumulant de Binder U4 pour un réseau memristor. | — | — | 🆕 nouveau |
 | `verify_pb_isolated_node.py` | Simule et analyse le comportement d'un noeud FHN isolé pour vérifier le théorème de Poincaré-Bendixson. | — | — | 🆕 nouveau |
 | `verify_quick_start.py` | Initialise et simule un réseau Memristor pour vérifier sa fonctionnement rapide. | — | — | ✅ enrichi |
 | `verify_table1_preprint.py` | Analyse l'instabilité continue d'un réseau memristor pour différentes tailles et intensités de stimulation. | — | — | 🆕 nouveau |
 
 ## Fichiers supprimés depuis la dernière mise à jour
 
-- `> Mis à jour : 2026-05-05 18:37` — présent dans l'ancienne table, introuvable sur disque
+- `> Mis à jour : 2026-05-11 07:43` — présent dans l'ancienne table, introuvable sur disque
 
 ## Prochaines expériences prévues
 
@@ -118,3 +127,5 @@ _(à compléter manuellement ou via --mode summaries après ajout de scripts)_
 > Généré par brain_watcher.py --mode summaries le 2026-05-05 18:37
 
 > Généré par brain_watcher.py --mode summaries le 2026-05-11 07:43
+
+> Généré par brain_watcher.py --mode summaries le 2026-05-16 06:43

@@ -1,5 +1,5 @@
 # src/mem4ristor/ — Résumé du dossier
-> Mis à jour : 2026-05-11 07:43 | Par : Ronde Perpétuelle (mode summaries)
+> Mis à jour : 2026-05-16 06:43 | Par : Ronde Perpétuelle (mode summaries)
 > **Ne pas modifier la table manuellement** — utiliser --mode summaries pour mettre à jour.
 
 ## Rôle du dossier
@@ -25,7 +25,7 @@ Modules core du framework Mem4ristor. Toute modification impacte les 84 tests.
 
 ## Fichiers supprimés depuis la dernière mise à jour
 
-- `> Mis à jour : 2026-05-05 18:37` — présent dans l'ancienne table, introuvable sur disque
+- `> Mis à jour : 2026-05-11 07:43` — présent dans l'ancienne table, introuvable sur disque
 
 ## Prochaines expériences prévues
 
@@ -52,3 +52,5 @@ _(à compléter manuellement ou via --mode summaries après ajout de scripts)_
 > Généré par brain_watcher.py --mode summaries le 2026-05-05 18:37
 
 > Généré par brain_watcher.py --mode summaries le 2026-05-11 07:43
+
+> Généré par brain_watcher.py --mode summaries le 2026-05-16 06:43

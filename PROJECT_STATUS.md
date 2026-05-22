@@ -1,6 +1,6 @@
 # PROJECT STATUS — Mem4ristor V6.0.0 (arXiv Ready)
-**Dernière mise à jour : 2026-05-16**
-**Auteur : Julien Chauvin (Barman / Orchestrateur)**
+**Dernière mise à jour : 2026-05-16 (Mise à jour Agentique)**
+**Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
 > Ce fichier est le point d'entrée pour quiconque (humain ou IA) travaille sur ce projet.
@@ -210,6 +210,7 @@ python examples/demo_applied.py
 | Antigravity / Gemini 2.5 Pro | Consolidation v3.2.0, tests régression, BA m/α sweep, restructuration preprint, réponse critique externe (2026-04-10) |
 | Claude Opus 4.7 (Anthropic) | Fix bugs P1 (symbiosis swarm, V4 entropy), validation SPICE/Python sub-1% RMS, figure phase diagram λ₂ vs H_stable, normalisation spectrale (résultat négatif publiable) (2026-04-19) |
 | Antigravity (Gemini 3 Flash) | **Run Héroïque N=1600**, validation Binder $U_4$, résolution audit Mistral (19/20), Expérience 008 "Guerre des Phases" (2026-05-16) |
+| **Aria, Flux, Sentinel** | **Système MAS 2026** : Veille scientifique, optimisation Chemical Inductor, Stress Test V3 (Synchronisation 100%) (2026-05-16) |
 
 Niveau de transparence : **Radical** — transcripts complets dans le dépôt Café Virtuel.
 
@@ -265,6 +266,7 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 | matern_noise.png / .csv / _summary.csv | [12] Bruit Matern spatialement corrélé | Tous types de bruit (i.i.d., Matern exp/Gauss) brisent la dead zone à eta=0.1+. Amplitude seule compte. | Confirmé, commit a8d6ba4 |
 | v4_dynamic_heretics_emergence.csv | V4 Dynamic Heretics | Loi linéaire t_first = steps_required + 130 * u_threshold (R²~1). Cascade quasi-inévitable pour u_thr <= 0.8. | Confirmé, commit 88b9983 |
 | exp_008_guerre_phases.png | Expérience 008 | La minorité organisée (15%) crée une oscillation perpétuelle à l'interface. | Confirmé (Shadow Lab) |
+| exp_008_v3_sentinel_proof.png | Expérience 008 V3 | **Stress Test Sentinel** : Synchronisation 1.0000 sans bruit. Preuve de la robustesse structurelle de l'inductance chimique. | VALIDÉ (Mai 2026) |
 
 ### Analyses de robustesse et défenses reviewer
 

@@ -21,6 +21,7 @@
 | C09 | ART hard H_min_post vs V4 | +0.40 bits (3.12 vs 2.72) | `experiments/p2_art_benchmark.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C10 | Combi metacog+compart | +0.49 bits additif, synergie ≈ 0 | `experiments/p2_v5_combination.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C11 | ART soft H_min_post circuit SPICE | ratio SPICE/V4=1.490 = Python/V4=1.490 (accord parfait) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15 | ✅ vérifié |
+| C12 | Transition thermodynamique du FSS | λ2_crit ≈ 2.31, convergence du cumulant de Binder U4 | `experiments/v6_binder_cumulant_u4.py` | 40 | 2026-05-19 | ✅ vérifié |
 
 ---
 
