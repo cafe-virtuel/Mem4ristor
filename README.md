@@ -84,7 +84,7 @@ python experiments/demo_chimera.py
 # Produces demo_chimera_output.png
 
 # Full applied demo (sensory pipeline, hysteresis, scale-free sparse, phase diversity)
-python experimental/demo_applied.py
+python examples/demo_applied.py
 # Produces 5 PNG files
 ```
 
