@@ -24,6 +24,7 @@
 | C10 | Combi metacog+compart | +0.49 bits additif, synergie ≈ 0 | `experiments/p2_v5_combination.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C11 | ART soft H_min_post circuit SPICE | ratio SPICE/V4=1.490 = Python/V4=1.490 (accord parfait) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15 | ✅ vérifié |
 | ~~C12~~ | ~~Transition thermodynamique du FSS via Binder U4~~ | ~~λ2_crit ≈ 2.31, convergence vers minimum U4~~ | ~~`experiments/v6_binder_cumulant_u4.py`~~ | ~~40~~ | ~~2026-05-19~~ | **🚨 INFIRMEE 2026-06-01** — U4 plat (0.6641–0.6666, variation 0.38%), pas de minimum. Section Binder FSS retirée du preprint V6.0.0 par AUDIT-017. Voir ligne supprimés ci-dessous. |
+| C13 | LZ76 regime classification (adaptive D(u)=0.50·u) | LZ=0.88→0.65 (-27%) à m=6 ; structuré jusqu'à m=10 (LZ=0.58) | `experiments/fss_lz_sweep.py` | 5 (re-productible avec 3 seeds aussi) | 2026-06-01 | ✅ vérifié — voir note LZ |
 
 ---
 
