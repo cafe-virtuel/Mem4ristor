@@ -2,7 +2,7 @@
 
 > Principe : tout claim numérique publié dans preprint.tex doit avoir un script de vérification listé ici.
 > Zéro valeur sans script reproductible. Mis à jour à chaque session.
-> Dernière mise à jour : 2026-06-01 (Hermes M3 audit — C07/C08/C12 corrigés)
+> Dernière mise à jour : 2026-06-03 (Claude Cowork — C20 marqué À RÉVISER après contre-expertise POC #1 v2)
 
 ---
 
@@ -25,6 +25,7 @@
 | C11 | ART soft H_min_post circuit SPICE | ratio SPICE/V4=1.490 = Python/V4=1.490 (accord parfait) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15 | ✅ vérifié |
 | ~~C12~~ | ~~Transition thermodynamique du FSS via Binder U4~~ | ~~λ2_crit ≈ 2.31, convergence vers minimum U4~~ | ~~`experiments/v6_binder_cumulant_u4.py`~~ | ~~40~~ | ~~2026-05-19~~ | **🚨 INFIRMEE 2026-06-01** — U4 plat (0.6641–0.6666, variation 0.38%), pas de minimum. Section Binder FSS retirée du preprint V6.0.0 par AUDIT-017. Voir ligne supprimés ci-dessous. |
 | C13 | LZ76 regime classification (adaptive D(u)=0.50·u) | LZ=0.88→0.65 (-27%) à m=6 ; structuré jusqu'à m=10 (LZ=0.58) | `experiments/fss_lz_sweep.py` | 5 (re-productible avec 3 seeds aussi) | 2026-06-01 | ✅ vérifié — voir note LZ |
+| ⚠️ C20 | **Intrinsic oscillator — narrow-band endogenous rhythm** | ~~f≈0.01 cycles/step (période 70–100 pas) ; LZ spontané > 1.0 partout ; AC@lag50 = +0.6 à +0.7 ; reproductible sur 5 seeds × 2 topologies (m=3, m=6) × 3 D~~ | `experiments/poc1_test_of_absence.py` → **remplacé par `poc1_absence_v2.py`** | 5 | 2026-06-03 | **⚠️ À RÉVISER — contre-expertise Claude Cowork 2026-06-03.** (1) LZ mesuré sur v_mean (T,1) ≠ LZ sur matrice (T,N) des exps principales — incomparable. LZ_state correct : 0.73 à D=0 (structuré trivial — FHN découplés), 1.71–2.19 à D>0 (chaotique, > 0.85). (2) Fréquence surestimée 5× : f_fft≈0.002, pas 0.01. (3) À D=0 seulement : oscillation FHN indépendante, topologie sans effet. (4) C20 tel que publié est indéfendable. Ce qui reste valide : AC@lag50 positif (0.57–0.74) = persistance temporelle réelle. Voir `figures/poc1_v2_raw.csv` + `poc1_v2.png`. |
 
 ---
 
@@ -35,6 +36,7 @@ Replication à n=10 planifiée pour révision future.
 
 | # | Claim | Valeur | Script | Seeds | Statut |
 |---|-------|--------|--------|-------|--------|
+| C21 | **POC C Sweep — seuil de bascule INTRINSIC → F_DRIVE** | Bascule seulement à D=0.5 : m=3 à **8%** (3/5 seeds), m=6 à **10%** (3/5 seeds). À D=0.0 et D=0.15 : INTRINSIC dominant sur toute la plage 1–10%. Transition graduelle (percolation), pas abrupte. AC@lag50 décroît monotonement avec n_pivots dans tous les cas. | `experiments/poc_c_sweep.py` | 5 | 2026-06-03 | ✅ vérifié — session Claude Cowork 2026-06-03. Voir CSV `figures/poc_c_sweep_agg.csv` + figure `figures/poc_c_sweep.png` |
 | S01 | Stochastic resonance dead zone escape | H: ~1.40 → ~3.3–3.7 bits à η=0.1 | `experiments/p2_stochastic_resonance_directed.py` | 3 | ⚠️ directional |
 | S02 | SR topology variants | Tous types brisent dead zone à η=0.1+ | `experiments/p2_stochastic_resonance_topology.py` | 5 | ⚠️ directional |
 | S03 | γ sweep optimal γ*(m) | γ*(m=2)=0.7, γ*(m=3)=0.9 | `experiments/limit02_alpha_sweep.py` | 3 | ⚠️ directional |
