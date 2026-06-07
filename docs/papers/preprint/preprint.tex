@@ -397,9 +397,19 @@ U_4(\lambda_2) = 1 - \frac{\langle m^4 \rangle}{3\langle m^2 \rangle^2},
 where $\langle \cdot  \rangle$ denotes the ensemble average over $N_{\text{real}}$ independent initial conditions and topological realizations at fixed algebraic connectivity $\lambda_2$.
 For each $\lambda_2$ value, the network is evolved for $T_{\text{eq}} = 1875$ time units to discard transients, and statistics are collected over $T_{\text{stat}} = 625$ time units.
 
-\textbf{Scope note (audit 2026-06-01).} The original Binder FSS campaign was based on a smaller pilot ($N_{\text{real}} = 9$ across 4 lambda2 bins, see \texttt{figures/v6\_binder\_cumulator\_U4.csv}); this section is retained for methodological transparency but the FSS extrapolation to the full $N \in \{100, 200, 400, 800, 1600\}$ panel shown in Figure~\ref{fig:binder_cumulant} is taken from the larger superseding Campaign~J ($N_{\text{real}} = 1800$ simulations, see \texttt{figures/campaign\_j\_agg.csv}), which confirms the same qualitative flattening. The headline conclusion is therefore robust across two independent campaigns: no converging minimum is observed.
+\textbf{Scope note (audit 2026-06-01).} The original Binder FSS campaign was based on a smaller pilot ($N_{\text{real}} = 9$ across 4 lambda2 bins, see \texttt{figures/v6\_binder\_cumulator\_U4.csv}); this section is retained for methodological transparency but the FSS extrapolation to the full $N \in \{100, 200, 400, 800, 1600\}$ panel shown in Figure~
+ef{fig:binder_cumulant} is taken from the larger superseding Campaign~J ($N_{\text{real}} = 1800$ simulations, see \texttt{figures/campaign\_j\_agg.csv}), which confirms the same qualitative flattening. The headline conclusion is therefore robust across two independent campaigns: no converging minimum is observed.
 
-The Binder cumulant $U_4$ depression broadens with increasing system size, flattening near $\lambda_2 \approx 2.3$, consistent with a continuous spectral cross-over. The order parameter $\langle H_{\text{stable}}  \rangle$ exhibits a smooth, monotonic drop across this region. No converging minimum is observed across system sizes; the deepest $U_4$ deviations at large $N$ occur at $\lambda_2 \approx 7$--$8$ (structural regime), not at the connectivity threshold. These observations are consistent with a spectral cross-over, not a thermodynamic phase transition. The regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$) is established by formal logistic regression with complete linear separation on the EBC feature subset (Section~\ref{sec:lambda2}).
+\textbf{Extended cartography (2026-06-07).} The blocking concern that the original campaign was restricted to $m = 3$ and the lower edge of the critical region ($\lambda_2 \gtrsim 2.9$) was addressed by an extended dry-run cartography spanning $m \in \{1, 2, 5, 7\}$, $N \in \{100, 200\}$, and $\lambda_2 \in [0.5, 10.0]$ ($N_{\text{real}} = 701$ valid runs, 6 seeds per configuration, see \texttt{figures/v6\_binder\_dryrun\_extended\_U4.csv} and the supplementary Figure~
+ef{fig:binder_cartography}). The systematic finding is that $U_4$ remains essentially flat at $2/3$ across the entire sampled region: amplitude of $U_4$ variations never exceeds $0.012$ (vs.\ the $0.05$--$0.20$ range expected for a clear Binder crossing~\cite{binder1981finite}), with no detectable sign change or crossing of the $2/3$ Gaussian value. This is observed uniformly across sparse ($m = 1$, $\lambda_2 \in [0.5, 2.5]$), intermediate ($m = 2$, $\lambda_2 \in [0.6, 4.6]$), and dense ($m = 5, 7$, $\lambda_2 \in [2.9, 10.0]$) regimes. The order parameter $\langle H_{\text{stable}} 
+angle$, in contrast, exhibits a smooth and monotonic decrease across the same region (drop of $0.5$--$2.0$ bits depending on $m$, with the steepest decline near $\lambda_2 \approx 2$ for $m \in \{1, 2\}$). The combination --- flat $U_4$ and monotonic $\langle H_{\text{stable}} 
+angle$ --- is the diagnostic signature of a \emph{smooth spectral cross-over}, not a phase transition in the thermodynamic sense. We therefore abandon the $U_4$-based order-of-transition diagnostic for this system and adopt $\langle H_{\text{stable}} 
+angle$ as the primary order parameter (see also Section~
+ef{sec:limitations}).
+
+The Binder cumulant $U_4$ depression broadens with increasing system size, flattening near $\lambda_2 \approx 2.3$, consistent with a continuous spectral cross-over. The order parameter $\langle H_{\text{stable}}  
+angle$ exhibits a smooth, monotonic drop across this region. No converging minimum is observed across system sizes; the deepest $U_4$ deviations at large $N$ occur at $\lambda_2 \approx 7$--$8$ (structural regime), not at the connectivity threshold. These observations are consistent with a spectral cross-over, not a thermodynamic phase transition. The regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$) is established by formal logistic regression with complete linear separation on the EBC feature subset (Section~
+ef{sec:lambda2}).
 Error bars represent the standard deviation across the 40 realizations; no bootstrap resampling is applied as the ensemble size is treated as a fixed computational budget.
 
 \begin{figure}[ht]
@@ -407,13 +417,30 @@ Error bars represent the standard deviation across the 40 realizations; no boots
 \includegraphics[width=\textwidth]{../../../figures/v6_binder_cumulant.png}
 \caption{
 \textbf{Finite-size scaling of the spectral dead zone.} 
-(\textit{Left}) Binder cumulant $U_4 = 1 - \langle m^4 \rangle / (3\langle m^2 \rangle^2)$ as a function of the algebraic connectivity $\lambda_2$ for network sizes $N \in \{100, 200, 400, 800, 1600\}$. 
+(\textit{Left}) Binder cumulant $U_4 = 1 - \langle m^4 
+angle / (3\langle m^2 
+angle^2)$ as a function of the algebraic connectivity $\lambda_2$ for network sizes $N \in \{100, 200, 400, 800, 1600\}$. 
 Each data point averages independent realizations after transient discard. 
 With increasing $N$, the $U_4$ minimum broadens and flattens, approaching a plateau characteristic of a continuous spectral cross-over, centered near $\lambda_{2,\text{crit}} \approx 2.31$ (dashed red line). 
-(\textit{Right}) Corresponding order parameter $\langle H_{\text{stable}} \rangle$ showing a size-independent universal entropy drop across the critical region, signaling the loss of functional degrees of freedom and the onset of the glass-like arrest. 
-The inset displays the numerical derivative $|d\langle H \rangle / d\lambda_2|$ for $N=1600$, showing a smooth peak near $\lambda_2 \approx 2.3$ rather than a critical divergence.
+(\textit{Right}) Corresponding order parameter $\langle H_{\text{stable}} 
+angle$ showing a size-independent universal entropy drop across the critical region, signaling the loss of functional degrees of freedom and the onset of the glass-like arrest. 
+The inset displays the numerical derivative $|d\langle H 
+angle / d\lambda_2|$ for $N=1600$, showing a smooth peak near $\lambda_2 \approx 2.3$ rather than a critical divergence.
 }
 \label{fig:binder_cumulant}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{../../../figures/v6_binder_dryrun_extended.png}
+\caption{
+\textbf{Extended cartography of the Binder cumulant across topologies ($m \in \{1, 2, 5, 7\}$, $N \in \{100, 200\}$, $N_{\text{real}} = 701$).}
+(\textit{Top row}) Binder cumulant $U_4$ as a function of the algebraic connectivity $\lambda_2$ for each attachment parameter $m$. The dashed red line marks the canonical $\lambda_{2,\text{crit}} \approx 2.31$, the dotted gray line marks the Gaussian reference $U_4 = 2/3$. Across all four topologies and the full $\lambda_2 \in [0.5, 10.0]$ range, $U_4$ remains within $[0.653, 0.667]$ (amplitude $< 0.012$), with no detectable crossing. This rules out a first-order or two-step Binder transition over the topology range explored.
+(\textit{Bottom row}) Corresponding order parameter $\langle H_{\text{stable}} 
+angle$. The entropy decreases monotonically with $\lambda_2$, with the steepest decline near $\lambda_2 \approx 2$ for $m \in \{1, 2\}$ and a milder decrease for $m \in \{5, 7\}$. The combination of a flat $U_4$ and a monotonic $\langle H_{\text{stable}} 
+angle$ is the diagnostic signature of a smooth spectral cross-over, not a thermodynamic phase transition.
+}
+\label{fig:binder_cartography}
 \end{figure}
 
 \subsection{LZ76 Regime Classification: Beyond the Binder Cumulant}
