@@ -15,7 +15,7 @@
 \geometry{margin=2.5cm}
 
 \title{Sustained Attractor Diversity in Doubt-Modulated FitzHugh--Nagumo Networks:\\
-A Spectral Phase Transition at Algebraic Connectivity}
+A Spectral Regime Boundary at Algebraic Connectivity}
 
 \author{
     \textbf{Julien Chauvin} \\
@@ -33,7 +33,7 @@ A Spectral Phase Transition at Algebraic Connectivity}
 % ABSTRACT (~150 words)
 % ============================================================================
 \begin{abstract}
-While coupled oscillator networks typically synchronize into homogeneous states, we demonstrate a mechanism---doubt-modulated coupling---that sustains attractor diversity even in dense, scale-free topologies, up to a sharp spectral regime transition at $\lambda_2 \approx 2$--$3$. We present a modified FitzHugh--Nagumo model in which a third state variable, \emph{doubt} ($u$), modulates coupling polarity via a shifted-tanh kernel $f(u) = \tanh(\pi(0.5-u)) + \delta$. Combined with a fraction $\eta$ of nodes receiving inverted stimulus (heretic nodes) and Gaussian noise for symmetry breaking, this mechanism sustains multi-state attractors from homogeneous initial conditions. On regular lattices ($N = 100$), the sustained attractor entropy stabilizes at $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (100-bin continuous spectral entropy, last 25\% of $3000$-step runs, $I_{\text{stim}}=0.5$, 10 seeds; reproduced by \texttt{experiments/verify\_table1\_preprint.py}). Degree-normalized coupling ($D/\deg(i)^\gamma$) recovers diversity on sparse scale-free networks (Barab\'asi--Albert $m \leq 3$), but a systematic sweep over $m \in [1, 15]$ and $\gamma \in [0, 1]$ reveals an abrupt regime transition at $m \approx 5$: for denser topologies, no degree-based normalization preserves diversity ($H_{\text{stable}} < 0.5$ bits). The algebraic connectivity $\lambda_2$ predicts regime membership, suggesting that local coupling corrections fail when path redundancy exceeds the regime boundary.
+While coupled oscillator networks typically synchronize into homogeneous states, we present a mechanism---doubt-modulated coupling---that sustains attractor diversity from homogeneous initial conditions, and we map its limit: a sharp spectral boundary, set by the network's algebraic connectivity, beyond which every local coupling correction fails. In a modified FitzHugh--Nagumo model, a third per-node state variable, \emph{doubt} ($u$), modulates coupling \emph{polarity} through a shifted-tanh kernel $f(u) = \tanh(\pi(0.5-u)) + \delta$: a node couples attractively when its doubt is low and repulsively when it is high. Combined with a fraction $\eta$ of nodes receiving inverted stimulus (\emph{heretic} nodes) and weak noise for symmetry breaking, this sustains multi-state attractors from homogeneous initial conditions. On regular lattices ($N = 100$) the stable spectral entropy reaches $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (10 seeds); ablating the doubt dynamics collapses the network into synchrony ($+985\%$ pairwise correlation), identifying $u$ as the primary anti-synchronization mechanism. Degree-normalized coupling extends diversity to sparse scale-free networks, but across twelve topology families the algebraic connectivity $\lambda_2$ sharply separates functional from dead-zone regimes, with \emph{complete linear separation} at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$): beyond this boundary, no local coupling correction---degree normalization included---preserves diversity. Finite-size scaling of the Binder cumulant shows that the entropy loss across this boundary is a \emph{continuous spectral crossover}, not a thermodynamic phase transition---a dichotomy a circuit-level (SPICE) implementation reproduces under analog fabrication tolerances.
 \end{abstract}
 
 % ============================================================================
@@ -47,17 +47,17 @@ The problem is well characterized: on networks with homogeneous coupling, the la
 
 We propose a mechanism based on \textbf{doubt-modulated coupling} in extended FitzHugh--Nagumo (FHN) networks. Each node carries a third state variable $u \in [0, 1]$ (the \textit{doubt} variable) that continuously modulates the sign and magnitude of inter-node coupling. When $u > 0.5$, coupling becomes repulsive, implementing polarity-modulated anti-synchronization at the single-node level---a mechanism distinct from frustrated synchronization in Kuramoto networks~\cite{odor2024}, where sign reversal is static and network-distributed rather than state-dependent and per-node. Combined with a fraction $\eta$ of nodes receiving inverted external stimulus (\textit{heretic nodes}), this architecture prevents consensus collapse from homogeneous initial conditions without requiring noise as the sole symmetry-breaking mechanism (heretics provide structural asymmetry; noise enables the Cold Start Protocol described in Section~2.3).
 
-Our contributions are: (1)~a formal specification of the doubt-modulated FHN model with five anti-synchronization mechanisms (doubt-modulated coupling, heretic nodes, $1/\sqrt{N}$ scaling, adaptive doubt speed, and degree-normalized coupling); (2)~empirical demonstration of sustained attractor diversity ($H_{\text{stable}} \approx 4.06 \pm 0.08$ bits, 100-bin continuous spectral entropy) on regular lattices; (3)~a systematic investigation of degree-normalized coupling on scale-free networks, revealing an abrupt regime transition at algebraic connectivity $\lambda_2 \approx 2$--$3$ beyond which no per-node normalization preserves diversity; and (4)~identification of the optimal power-law exponent $\gamma^*(m)$ for $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ as a function of network density.
+Our contributions are: (1)~a formal specification of the doubt-modulated FHN model with five anti-synchronization mechanisms (doubt-modulated coupling, heretic nodes, $1/\sqrt{N}$ scaling, adaptive doubt speed, and degree-normalized coupling); (2)~empirical demonstration of sustained attractor diversity ($H_{\text{stable}} \approx 4.06 \pm 0.08$ bits, 100-bin continuous spectral entropy) on regular lattices; (3)~a sharp topological boundary on the mechanism's reach: across twelve topology families, the algebraic connectivity $\lambda_2$ separates functional from dead-zone regimes with complete linear separation at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, beyond which no local (per-node) coupling correction preserves diversity; and (4)~identification of the optimal power-law exponent $\gamma^*(m)$ for $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ as a function of network density.
 
 \textbf{Roadmap.} The remainder of this paper is organized as follows. Section \ref{sec:related} positions our model within the existing literature. Section \ref{sec:model} formally defines the doubt-modulated FitzHugh--Nagumo equations, justifying the choice of hyperparameters and architectural components. Section \ref{sec:metrics} explicitly defines the evaluation metrics ($H_{\text{stable}}$, $U_4$). Section \ref{sec:results} presents our numerical results across regular and scale-free topologies, concluding with the Binder cumulant analysis of the spectral dead zone. Finally, Section \ref{sec:discussion} discusses implications for neuromorphic design and homeostatic coupling regulation.
 
 \subsection{Related Work}
 \label{sec:related}
-\textbf{Frustrated Synchronization and Chimeras.} Symmetry breaking in coupled oscillator networks is a deeply studied phenomenon. While the Kuramoto model explores synchronization through phase differences~\cite{acebrn2005}, modified models introducing phase lags or frustrated interactions have successfully generated chimera states, where coherent and incoherent domains coexist~\cite{abrams2004}. Our approach differs by making the coupling polarity \emph{state-dependent} rather than a fixed structural property, allowing the network to dynamically rewire its effective topology.
+\textbf{Frustrated Synchronization and Chimeras.} Symmetry breaking in coupled oscillator networks is a deeply studied phenomenon. While the Kuramoto model explores synchronization through phase differences~\cite{acebrn2005}, modified models introducing phase lags or frustrated interactions have successfully generated chimera states, where coherent and incoherent domains coexist~\cite{abrams2004}. Chimera states have been characterized extensively in FitzHugh--Nagumo networks in particular: multichimera states emerge under nonlocal coupling~\cite{omelchenko2013}, persist under inhomogeneities of both the elements and the coupling topology~\cite{omelchenko2015}, and arise as noise-induced (coherence-resonance) chimeras in the excitable regime~\cite{semenova2016}; see~\cite{majhi2019} for a review of chimera states in neuronal networks. In all of these settings, however, the coupling kernel is fixed --- typically nonlocal, with quenched strength and sign. Our approach differs by making the coupling polarity \emph{state-dependent} rather than a fixed structural property: each node's instantaneous doubt level $u_i(t)$ determines the sign of its own coupling, allowing the network to dynamically rewire its effective topology.
 
-\textbf{Doubt and Modulatory Variables.} The concept of a slow modulatory variable controlling the fast dynamics of a network has roots in computational neuroscience, particularly in models of neuromodulation and homeostatic plasticity. In our architecture, the doubt variable ($u$) acts as a localized conflict signal, conceptually related to homeostatic regulation mechanisms in neuromodulation~\cite{friston2010}.
+\textbf{Adaptive and Modulated Coupling.} A growing body of work studies \emph{adaptive} dynamical networks, in which coupling weights evolve according to the nodes' own dynamics, so that structure and dynamics co-determine each other~\cite{berner2023,gross2008}. In the FitzHugh--Nagumo setting specifically, Hebbian-type plasticity rules (e.g.\ Hebb--Oja) drive transitions between travelling waves, synchrony, and chimera states by adapting the \emph{magnitude} of the links~\cite{provata2026}. Our mechanism is distinct in two respects. First, what adapts is not the magnitude but the \emph{sign} of the coupling: the doubt variable $u_i(t)$ flips node $i$ from attractive to repulsive coupling at $u_i = 0.5$. Second, the modulation is strictly \emph{local and per-node} --- driven by each node's disagreement with its own neighborhood --- rather than a pairwise learning rule on the edges. The doubt variable thus functions as a slow modulatory variable in the tradition of neuromodulation and homeostatic plasticity in computational neuroscience: it acts as a localized conflict signal, conceptually related to homeostatic regulation~\cite{friston2010}.
 
-\textbf{Topological Phase Transitions.} The dependence of synchronization on network topology, particularly the algebraic connectivity (Fiedler value, $\lambda_2$), is well established~\cite{pikovsky2001}. However, our observation of a abrupt regime transition \emph{out} of functional diversity driven purely by topological redundancy (irrespective of local degree normalization) extends the understanding of how dense scale-free networks naturally suppress state heterogeneity.
+\textbf{Topological Phase Transitions.} The dependence of synchronization on network topology, particularly the algebraic connectivity (Fiedler value, $\lambda_2$), is well established~\cite{pikovsky2001}. However, our observation of a sharp regime boundary \emph{out} of functional diversity driven purely by topological redundancy (irrespective of local degree normalization) extends the understanding of how dense scale-free networks naturally suppress state heterogeneity.
 % ============================================================================
 % 2. MODEL
 % ============================================================================
@@ -270,6 +270,26 @@ The key claim is that \textbf{only the full model} consistently occupies the str
 
 \textbf{Complementary evidence from forcing sweep.} To demonstrate that $u$ acts specifically as an \emph{anti-synchronisation filter}, we swept $I_{\text{stim}} \in [0, 1]$ for FULL vs FROZEN\_U (BA $m=3$, $N=100$, 7 seeds, 3000 steps). FULL maintains $\bar{r} \approx 0.025$--$0.035$ across all $I_{\text{stim}} \in [0.1, 1.0]$ (flat, near-zero synchrony). FROZEN\_U shows a sharp transition at $I_{\text{stim}} \approx 0.2$ from $\bar{r} = 0.006$ (endogenous) to $\bar{r} = 0.830$ (plateau), with Cohen's $d = 13.21$ ($p = 9.7 \times 10^{-10}$) separating the two conditions at $I_{\text{stim}} = 0.5$. This confirms that $u$ absorbs the common forcing signal and prevents stimulus-induced phase locking---a \emph{dynamic buffering} function that snapshot metrics cannot detect.
 
+\subsection{Doubt as an Active Decorrelator: Spatial Mutual Information}
+\label{sec:mi_analysis}
+
+To characterize the role of $u$ beyond snapshot entropy, we computed the pairwise mutual information MI$(d)$ as a function of graph hop-distance $d$ under four ablation conditions on Lattice ($N=100$) and BA $m=3$ ($N=100$). MI is estimated via 2D joint histograms on $v(t)$ histories post-warmup ($I_{\mathrm{stim}}=0.5$, \texttt{degree\_linear}, 3 seeds).
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Ablation & MI($d=1$) lattice & Decay & MI($d=1$) BA & Decay \\
+\midrule
+FULL       & 0.870 & 0.102 & 1.031 & 0.055 \\
+NO\_HERETIC & 1.244 & 0.168 & 0.983 & 0.129 \\
+FROZEN\_U  & \textbf{1.958} & 0.091 & \textbf{1.894} & 0.498 \\
+NO\_SIGMOID & 0.885 & 0.126 & 1.024 & 0.260 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The key finding: \textbf{FULL achieves the lowest MI at all distances tested}. Freezing $u$ (FROZEN\_U) raises MI($d=1$) by $1.84\times$ on BA $m=3$ (1.031 $\to$ 1.894 nats, 4 seeds) and by $2.25\times$ on the 2D lattice (0.870 $\to$ 1.958 nats, 5 seeds), indicating that the $u$ dynamics actively decorrelate neighboring nodes. The lattice protocol shows the stronger decorrelation, consistent with its regular local topology exposing the $u$-mediated decorrelation effect more cleanly than scale-free hubs. This complements the trajectory result of Section~\ref{sec:traj_minimality}: $u$ functions as a dynamic buffering mechanism both in the time domain (preventing phase-locking under forcing) and in the spatial domain (reducing pairwise MI between neighbors).
+
 \subsection{Topological Normalization Regimes}
 \label{sec:topo_regimes}
 
@@ -300,7 +320,7 @@ $m$ & $H_{\text{uniform}}$ & $H_{\text{deg.\ linear}}$ & Spectral gap $\lambda_2
 Two \textbf{regime transitions} are observed:
 \begin{enumerate}
 \item $m = 1 \to m = 2$: crossover from uniform-dominant (tree topology) to degree-linear-dominant (sparse scale-free).
-\item $m = 4 \to m = 5$: abrupt transition to a dead zone where \emph{neither normalization sustains diversity}.
+\item $m = 4 \to m = 5$: a sharp drop into a dead zone where \emph{neither normalization sustains diversity}.
 \end{enumerate}
 
 The spectral gap $\lambda_2$ (algebraic connectivity of the graph Laplacian) is the strongest predictor: degree-linear normalization succeeds only when $\lambda_2 < 2$ (sparse, poorly connected networks).
@@ -326,9 +346,25 @@ $\geq 5$ & --- & $< 0.03$ & Complete failure \\
 \end{tabular}
 \end{table}
 
-The transition is \textbf{abrupt}: $H_{\text{stable}}$ drops from 0.89 ($m = 3$) to $< 0.03$ ($m = 5$) with no intermediate regime. The optimal $\gamma^*$ decreases with increasing $m$, consistent with the intuition that sparser networks require stronger per-node correction. For $m = 2$, degree-linear ($\gamma = 1.0$) actually \emph{over-corrects}: the optimum at $\gamma = 0.7$ achieves $H = 0.99$, exceeding even lattice performance.
+The drop is \textbf{sharp in the discrete attachment parameter $m$}: $H_{\text{stable}}$ falls from 0.89 ($m = 3$) to $< 0.03$ ($m = 5$) with no intermediate plateau among the sampled values---the $m$-grid being coarse near the spectral boundary, where the underlying $\lambda_2$-continuous behavior is a smooth crossover. The optimal $\gamma^*$ decreases with increasing $m$, consistent with the intuition that sparser networks require stronger per-node correction. For $m = 2$, degree-linear ($\gamma = 1.0$) actually \emph{over-corrects}: the optimum at $\gamma = 0.7$ achieves $H = 0.99$, exceeding even lattice performance.
 
 \textbf{Negative result.} For $m \geq 5$, no $\gamma \in [0, 1]$ achieves $H_{\text{stable}} > 0.03$. Degree-based normalization is fundamentally insufficient when graph connectivity (measured by $\lambda_2$) exceeds $\sim 2$--$3$, because coupling signals bypass locally-corrected hubs through redundant paths.
+
+\subsection{Formal Spectral Regression: $\lambda_{2,\mathrm{crit}} = 2.31$}
+\label{sec:lambda2}
+
+To formally characterize the regime boundary identified in Section~\ref{sec:topo_regimes}, we examined 36 network configurations drawn from 12 distinct topology types (3 seeds each, $N \approx 100$): Barab\'asi--Albert $m \in \{1, 2, 3, 4, 5, 8, 10\}$, Erd\H{o}s--R\'enyi $p \in \{0.05, 0.12\}$, 2D periodic lattice, and Watts--Strogatz $p \in \{0.1, 0.3\}$. The binary outcome is functional ($H_{\mathrm{cog}} > 0$) vs.\ dead zone ($H_{\mathrm{cog}} \approx 0$), labelled empirically per seed. The predictor is the algebraic connectivity $\lambda_2$ of the graph Laplacian, computed via NumPy eigensolver (source: \texttt{figures/p2\_edge\_betweenness.csv}, reproduced by \texttt{experiments/lambda2\_crit\_regression.py}).
+
+The data exhibit \textbf{complete linear separation}: no observation with $\lambda_2 < 2.13$ falls in the dead zone, and no observation with $\lambda_2 > 2.50$ is functional, with zero overlap across the tested range of $N$. Complete separation is a strong structural result, but it renders standard maximum-likelihood logistic regression statistically undefined (the MLE coefficients diverge to infinity~\cite{albert1984}). The separation gap itself is therefore the appropriate statistic to report. We identify $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ as the regime boundary, with midpoint $\lambda_{2,\mathrm{crit}} = 2.31$ as the point estimate.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\linewidth]{../../../figures/fiedler_phase_diagram.png}
+  \caption{Fiedler phase diagram: algebraic connectivity $\lambda_2$ vs.\ cognitive entropy $H_{\mathrm{cog}}$ across diverse network families (Barab\'asi--Albert $m \in \{1,2,3,5,8,10\}$, Configuration Model $\gamma \in \{2.5, 3.0, 4.0\}$, Holme--Kim, Watts--Strogatz, Erd\H{o}s--R\'enyi; $N \approx 100$; two coupling normalizations per topology, $n = 30$ data points). Complete linear separation between functional (open symbols) and dead-zone (filled symbols) regimes. The regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, midpoint $2.31$, is derived from logistic regression on the independent primary dataset (\texttt{p2\_edge\_betweenness.csv}, $n = 36$; see text).}
+  \label{fig:fiedler}
+\end{figure}
+
+This confirms that topology alone determines cognitive capacity: the spectral dead zone is not a parameterization artifact but a fundamental property of graph connectivity.
 
 \subsection{Adaptive Coupling Protocol $D(u) = D_{\max} \cdot u$}
 \label{sec:adaptive_coupling}
@@ -387,45 +423,30 @@ Critically, the regime boundary $m \approx 5$ is \textbf{not a universal topolog
 \subsection{Finite-Size Scaling of the Spectral Dead Zone}
 \label{sec:binder_cumulant}
 
-To locate the thermodynamic transition into the Dead Zone, we employ the Binder cumulant $U_4$ as a standard order-parameter diagnostic \cite{binder1981finite}. 
-For each network realization, we define the effective order parameter $m$ from the stable entropy measure $H_{\text{stable}}$ (defined in Section~\ref{sec:model}) and compute the fourth-order cumulant
+The regime boundary identified in Section~\ref{sec:topo_regimes} raises a natural question: is the entry into the dead zone a genuine thermodynamic phase transition, or a smooth spectral crossover? To answer it, we apply the standard order-of-transition diagnostic, the Binder cumulant~\cite{binder1981finite},
 
 \begin{equation}
-U_4(\lambda_2) = 1 - \frac{\langle m^4 \rangle}{3\langle m^2 \rangle^2},
+U_4(\lambda_2) = 1 - \frac{\langle H_{\text{stable}}^4 \rangle}{3\langle H_{\text{stable}}^2 \rangle^2},
 \end{equation}
 
-where $\langle \cdot  \rangle$ denotes the ensemble average over $N_{\text{real}}$ independent initial conditions and topological realizations at fixed algebraic connectivity $\lambda_2$.
-For each $\lambda_2$ value, the network is evolved for $T_{\text{eq}} = 1875$ time units to discard transients, and statistics are collected over $T_{\text{stat}} = 625$ time units.
+where $H_{\text{stable}}$ is the stable entropy defined in Section~\ref{sec:metrics} and $\langle \cdot \rangle$ denotes the ensemble average over independent initial conditions and topological realizations at fixed algebraic connectivity $\lambda_2$. For each $\lambda_2$ value, the network is evolved for $T_{\text{eq}} = 1875$ time units to discard transients, and statistics are collected over $T_{\text{stat}} = 625$ time units. In the finite-size-scaling (FSS) framework, a crossing or converging minimum of $U_4(\lambda_2)$ across system sizes signals a critical point; a featureless $U_4$ indicates the absence of one.
 
-\textbf{Scope note (audit 2026-06-01).} The original Binder FSS campaign was based on a smaller pilot ($N_{\text{real}} = 9$ across 4 lambda2 bins, see \texttt{figures/v6\_binder\_cumulator\_U4.csv}); this section is retained for methodological transparency but the FSS extrapolation to the full $N \in \{100, 200, 400, 800, 1600\}$ panel shown in Figure~
-ef{fig:binder_cumulant} is taken from the larger superseding Campaign~J ($N_{\text{real}} = 1800$ simulations, see \texttt{figures/campaign\_j\_agg.csv}), which confirms the same qualitative flattening. The headline conclusion is therefore robust across two independent campaigns: no converging minimum is observed.
+\textbf{Campaigns.} Three successive campaigns of increasing scope inform this analysis. An initial pilot ($N_{\text{real}} = 9$ across 4 $\lambda_2$ bins; \texttt{figures/v6\_binder\_cumulant\_U4.csv}) was too small to support FSS conclusions and is retained only for provenance. Campaign~J ($N_{\text{real}} = 1800$ simulations, $N \in \{100, 200, 400, 800, 1600\}$, BA $m = 3$; \texttt{figures/campaign\_j\_agg.csv}) provides the size-resolved panel of Figure~\ref{fig:binder_cumulant}. Finally, an extended cartography ($N_{\text{real}} = 701$ valid runs, 6 seeds per configuration; \texttt{figures/v6\_binder\_dryrun\_extended\_U4.csv}) spans $m \in \{1, 2, 5, 7\}$, $N \in \{100, 200\}$, and $\lambda_2 \in [0.5, 10.0]$ (Figure~\ref{fig:binder_cartography}), covering sparse, intermediate, and dense topologies on both sides of the regime boundary.
 
-\textbf{Extended cartography (2026-06-07).} The blocking concern that the original campaign was restricted to $m = 3$ and the lower edge of the critical region ($\lambda_2 \gtrsim 2.9$) was addressed by an extended dry-run cartography spanning $m \in \{1, 2, 5, 7\}$, $N \in \{100, 200\}$, and $\lambda_2 \in [0.5, 10.0]$ ($N_{\text{real}} = 701$ valid runs, 6 seeds per configuration, see \texttt{figures/v6\_binder\_dryrun\_extended\_U4.csv} and the supplementary Figure~
-ef{fig:binder_cartography}). The systematic finding is that $U_4$ remains essentially flat at $2/3$ across the entire sampled region: amplitude of $U_4$ variations never exceeds $0.012$ (vs.\ the $0.05$--$0.20$ range expected for a clear Binder crossing~\cite{binder1981finite}), with no detectable sign change or crossing of the $2/3$ Gaussian value. This is observed uniformly across sparse ($m = 1$, $\lambda_2 \in [0.5, 2.5]$), intermediate ($m = 2$, $\lambda_2 \in [0.6, 4.6]$), and dense ($m = 5, 7$, $\lambda_2 \in [2.9, 10.0]$) regimes. The order parameter $\langle H_{\text{stable}} 
-angle$, in contrast, exhibits a smooth and monotonic decrease across the same region (drop of $0.5$--$2.0$ bits depending on $m$, with the steepest decline near $\lambda_2 \approx 2$ for $m \in \{1, 2\}$). The combination --- flat $U_4$ and monotonic $\langle H_{\text{stable}} 
-angle$ --- is the diagnostic signature of a \emph{smooth spectral cross-over}, not a phase transition in the thermodynamic sense. We therefore abandon the $U_4$-based order-of-transition diagnostic for this system and adopt $\langle H_{\text{stable}} 
-angle$ as the primary order parameter (see also Section~
-ef{sec:limitations}).
+\textbf{Result: no thermodynamic transition.} Across both independent campaigns, $U_4$ remains essentially flat at the Gaussian reference value $2/3$. In the extended cartography, the amplitude of $U_4$ variations never exceeds $0.012$ --- an order of magnitude below the $0.05$--$0.20$ range expected for a clear Binder crossing~\cite{binder1981finite} --- with no detectable sign change or crossing of the $2/3$ value, uniformly across sparse ($m = 1$, $\lambda_2 \in [0.5, 2.5]$), intermediate ($m = 2$, $\lambda_2 \in [0.6, 4.6]$), and dense ($m = 5, 7$, $\lambda_2 \in [2.9, 10.0]$) regimes. In Campaign~J, no converging minimum is observed across system sizes; the deepest (still small) $U_4$ deviations at large $N$ occur at $\lambda_2 \approx 7$--$8$, far from the regime boundary. The order parameter $\langle H_{\text{stable}} \rangle$, in contrast, decreases smoothly and monotonically across the same region (a drop of $0.5$--$2.0$ bits depending on $m$, steepest near $\lambda_2 \approx 2$ for $m \in \{1, 2\}$). Error bars in both figures denote one standard deviation across realizations; no bootstrap resampling is applied, as the ensemble size is treated as a fixed computational budget.
 
-The Binder cumulant $U_4$ depression broadens with increasing system size, flattening near $\lambda_2 \approx 2.3$, consistent with a continuous spectral cross-over. The order parameter $\langle H_{\text{stable}}  
-angle$ exhibits a smooth, monotonic drop across this region. No converging minimum is observed across system sizes; the deepest $U_4$ deviations at large $N$ occur at $\lambda_2 \approx 7$--$8$ (structural regime), not at the connectivity threshold. These observations are consistent with a spectral cross-over, not a thermodynamic phase transition. The regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$) is established by formal logistic regression with complete linear separation on the EBC feature subset (Section~
-ef{sec:lambda2}).
-Error bars represent the standard deviation across the 40 realizations; no bootstrap resampling is applied as the ensemble size is treated as a fixed computational budget.
+\textbf{Interpretation.} The combination of a flat $U_4$ and a smooth, monotonic $\langle H_{\text{stable}} \rangle$ is the diagnostic signature of a \emph{spectral crossover}, not a phase transition in the thermodynamic sense. We therefore abandon the $U_4$-based order-of-transition diagnostic for this system and adopt $\langle H_{\text{stable}} \rangle$ as the primary order parameter (see also Section~\ref{sec:limitations}). This reading is fully compatible with the sharp \emph{classification} boundary of Section~\ref{sec:lambda2}: the regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$), established by logistic regression with complete linear separation, cleanly separates functional from dead-zone behavior as a threshold in $\lambda_2$ --- but the entropy decrease through that boundary is continuous rather than critical.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../../../figures/v6_binder_cumulant.png}
 \caption{
 \textbf{Finite-size scaling of the spectral dead zone.} 
-(\textit{Left}) Binder cumulant $U_4 = 1 - \langle m^4 
-angle / (3\langle m^2 
-angle^2)$ as a function of the algebraic connectivity $\lambda_2$ for network sizes $N \in \{100, 200, 400, 800, 1600\}$. 
-Each data point averages independent realizations after transient discard. 
-With increasing $N$, the $U_4$ minimum broadens and flattens, approaching a plateau characteristic of a continuous spectral cross-over, centered near $\lambda_{2,\text{crit}} \approx 2.31$ (dashed red line). 
-(\textit{Right}) Corresponding order parameter $\langle H_{\text{stable}} 
-angle$ showing a size-independent universal entropy drop across the critical region, signaling the loss of functional degrees of freedom and the onset of the glass-like arrest. 
-The inset displays the numerical derivative $|d\langle H 
-angle / d\lambda_2|$ for $N=1600$, showing a smooth peak near $\lambda_2 \approx 2.3$ rather than a critical divergence.
+(\textit{Left}) Binder cumulant $U_4 = 1 - \langle H_{\text{stable}}^4 \rangle / (3\langle H_{\text{stable}}^2 \rangle^2)$ as a function of the algebraic connectivity $\lambda_2$ for network sizes $N \in \{100, 200, 400, 800, 1600\}$.
+Each data point averages independent realizations after transient discard.
+With increasing $N$, the $U_4$ minimum broadens and flattens, approaching a plateau characteristic of a continuous spectral cross-over, centered near $\lambda_{2,\text{crit}} \approx 2.31$ (dashed red line).
+(\textit{Right}) Corresponding order parameter $\langle H_{\text{stable}} \rangle$ showing a size-independent entropy drop across the crossover region, signaling the progressive loss of functional degrees of freedom in the dense regime.
+The inset displays the numerical derivative $|d\langle H \rangle / d\lambda_2|$ for $N=1600$, showing a smooth peak near $\lambda_2 \approx 2.3$ rather than a critical divergence.
 }
 \label{fig:binder_cumulant}
 \end{figure}
@@ -436,9 +457,7 @@ angle / d\lambda_2|$ for $N=1600$, showing a smooth peak near $\lambda_2 \approx
 \caption{
 \textbf{Extended cartography of the Binder cumulant across topologies ($m \in \{1, 2, 5, 7\}$, $N \in \{100, 200\}$, $N_{\text{real}} = 701$).}
 (\textit{Top row}) Binder cumulant $U_4$ as a function of the algebraic connectivity $\lambda_2$ for each attachment parameter $m$. The dashed red line marks the canonical $\lambda_{2,\text{crit}} \approx 2.31$, the dotted gray line marks the Gaussian reference $U_4 = 2/3$. Across all four topologies and the full $\lambda_2 \in [0.5, 10.0]$ range, $U_4$ remains within $[0.653, 0.667]$ (amplitude $< 0.012$), with no detectable crossing. This rules out a first-order or two-step Binder transition over the topology range explored.
-(\textit{Bottom row}) Corresponding order parameter $\langle H_{\text{stable}} 
-angle$. The entropy decreases monotonically with $\lambda_2$, with the steepest decline near $\lambda_2 \approx 2$ for $m \in \{1, 2\}$ and a milder decrease for $m \in \{5, 7\}$. The combination of a flat $U_4$ and a monotonic $\langle H_{\text{stable}} 
-angle$ is the diagnostic signature of a smooth spectral cross-over, not a thermodynamic phase transition.
+(\textit{Bottom row}) Corresponding order parameter $\langle H_{\text{stable}} \rangle$. The entropy decreases monotonically with $\lambda_2$, with the steepest decline near $\lambda_2 \approx 2$ for $m \in \{1, 2\}$ and a milder decrease for $m \in \{5, 7\}$. The combination of a flat $U_4$ and a monotonic $\langle H_{\text{stable}} \rangle$ is the diagnostic signature of a smooth spectral cross-over, not a thermodynamic phase transition.
 }
 \label{fig:binder_cartography}
 \end{figure}
@@ -569,9 +588,11 @@ The doubt-modulated coupling mechanism implements polarity-modulated anti-synchr
 
 \subsection{The Spectral Connectivity Boundary}
 
-The most significant finding is the abrupt regime transition at $m \approx 5$ (or equivalently, $\lambda_2 \approx 2$--$3$). This result has a clear physical interpretation: degree-based normalization corrects coupling strength at \emph{individual} hubs, but when path redundancy is high ($\lambda_2 \gg 1$), the synchronization signal reaches each node through multiple independent paths, bypassing the corrected hub. The problem is not the strength of any single connection but the multiplicity of alternative routes.
+The most significant finding is the sharp regime boundary at $m \approx 5$ (equivalently, $\lambda_2 \approx \lambda_{2,\mathrm{crit}}$). This result has a clear physical interpretation: degree-based normalization corrects coupling strength at \emph{individual} hubs, but when path redundancy is high ($\lambda_2 \gg 1$), the synchronization signal reaches each node through multiple independent paths, bypassing the corrected hub. The problem is not the strength of any single connection but the multiplicity of alternative routes.
 
 This suggests that resolving diversity collapse on dense scale-free networks requires normalization schemes that account for \textbf{global graph structure}---such as eigenvector centrality-based coupling ($D_{\text{eff}}(i) \propto 1/c_i^{\text{eigen}}$) or symmetric Laplacian whitening. These approaches remain open for future work.
+
+\textbf{Doubt time-scale and criticality.} A systematic sweep of $\tau_u \in [0.05, 100]$ on BA $m=3$ (N=100, \texttt{degree\_linear}, $I_{\mathrm{stim}}=0.5$, 3 seeds) reveals a sharp bifurcation. For $\tau_u < 10$, doubt dynamics are too slow to track social fluctuations: frustration freezes and $H_{\mathrm{cog}} \approx 0$ (pseudo-consensus). For $\tau_u \in [10, 50]$, the system enters a transition regime ("breathing chimera"): $H_{\mathrm{cog}}$ rises from $0.023$ to $0.380$. For $\tau_u > 50$, fast doubt dynamics over-respond and the system regains coordinated diversity ($H_{\mathrm{cog}} \approx 0.8$, $\mathrm{sync} \approx 0$). \textbf{The reference value $\tau_u = 10$ sits precisely at the bifurcation edge}, which explains the bimodal distribution of outcomes observed across seeds (Section~\ref{sec:topo_regimes}). This also clarifies why the trajectory-metrics study (Section~\ref{sec:traj_minimality}) found the FULL model at the boundary of the structured half-plane: it is operating near criticality.
 
 \subsection{Thermodynamic Viability and Homeostatic Coupling Regulation}
 
@@ -596,96 +617,15 @@ Thus, the transition into the Dead Zone is not a failure of the model, but a dem
 
 
 
-\subsection{Variance Fingerprint and Glass-Like Dynamics}
-
-The critical zone ($\lambda_2 \approx 2.0$--$2.8$) exhibits a variance pattern not captured by mean metrics alone. Run-to-run variability of the continuous entropy peaks at the critical zone (raw standard deviation $= 0.544$ in the critical zone vs. $0.379$ in the sparse regime and $0.265$ in the dense regime), while the Lyapunov-like indicator LZ shows monotonically increasing variance with $\lambda_2$ ($0.056$ to $0.090$). This diverging variance fingerprint --- variance of $H_{\text{stable}}$ peaking at criticality while variance of LZ increases monotonically with connectivity --- is a characteristic signature of glassy dynamics: slow relaxation, history-dependence, and ergodicity breaking near the transition. The homeostatic coupling regulation mechanism may exhibit aging-like behavior in this zone, where the system does not reach a unique steady state in finite simulation time. Dedicated analysis of waiting-time dependence, aging exponents, and ergodicity breaking would be required to confirm this interpretation. The spectral crossover characterization remains the primary description; the glass-like variance fingerprint is noted here as a direction for future investigation.
-
-\textbf{Methodological note (audit 2026-06-01).} The numerical values above ($0.379$, $0.544$, $0.265$, $0.056$--$0.090$) are computed on the per-$\lambda_2$-bin raw standard deviation across all $1800$ runs of Campaign~J (\texttt{figures/campaign\_j\_raw.csv}), measuring the \emph{between-bin} variability. When restricted to the \emph{within-bin} standard deviation from the aggregated campaign (\texttt{figures/campaign\_j\_agg.csv}), the same qualitative pattern holds: $H_{\text{stable}}$ variance peaks in the critical zone ($0.104$ vs. $0.061$ sparse and $0.072$ dense) and $C_{\text{LZ}}$ variance is monotonically increasing ($0.0078 \to 0.0106 \to 0.0195$). The absolute scale differs by an order of magnitude because between-bin variance naturally exceeds within-bin variance, but the directional signature (peak in critical zone + monotone increase for LZ) is preserved across both analyses.
-
-\subsubsection*{A Speculative Connection: Convergence in Computational Systems}
-
-The LZ76 regime classification in Section~\ref{sec:lz_regime} suggests a more general interpretation than the Mem4ristor-specific one developed above. In the adaptive protocol, the network does not simply ``survive'' the spectral dead zone; it transitions into a regime where the mean entropy $H_{\mathrm{stable}}$ decreases while temporal coherence (low $C_{\mathrm{LZ}}$) is maintained. Read functionally, the network is \emph{losing diversity} in the snapshot sense while \emph{converging} onto a smaller set of structured trajectories. The static protocol, by contrast, loses entropy \emph{and} temporal organization simultaneously---a collapse rather than a convergence.
-
-This pattern, in which a system trades snapshot diversity for structural coherence under sustained pressure, bears a qualitative resemblance to processes observed in large language model inference, where convergence toward a structured response often involves a reduction in token-level entropy together with increased internal coherence, and where premature or absent convergence manifests as either repetition (consensus collapse, high $\bar{r}$) or hallucination (chaotic exploration, high $C_{\mathrm{LZ}}$). The Mem4ristor adaptive protocol avoids both failure modes by sustaining low $\bar{r}$ (no consensus) and low $C_{\mathrm{LZ}}$ (no chaos) across the regime $m \geq 6$.
-
-We stress that this parallel is \emph{speculative} and offered as a possible interpretation rather than an empirical claim about language models. The mapping from oscillator voltage $v_i(t)$ to language model logits, and from coupling strength $D$ to attention temperature, is not formally developed here. The observation is, however, that the LZ76 signature identifies a regime boundary that the standard Binder cumulant cannot, and that the same metric ($C_{\mathrm{LZ}} < 0.85$ threshold) might be useful for diagnosing analogous transitions in other dynamical systems where ``low diversity'' is the desired terminal state rather than a failure. We hope this observation will invite direct investigation on the LLM side.
-
-\subsection{Scope and Applicability}\subsection{Scope and Applicability}
+\subsection{Scope and Applicability}
 
 The doubt-modulated FHN model was originally motivated by deliberative scenarios in which premature consensus is undesirable (e.g., citizens' assemblies, collective decision-making). While the model captures the dynamical requirements for diversity preservation, it has not been validated against real-world deliberative data. The results presented here are purely computational and should be understood as properties of the dynamical system, not as claims about social behavior.
 
-% ============================================================================
-% 6.4 POST-SUBMISSION ADDENDUM (2026-04-24/25)
-% ============================================================================
-
-\subsection{Post-Submission Investigations (2026-04-24--25)}
-\label{sec:addendum}
-
-The following results were obtained after the original submission (2026-04-22) and are documented here for completeness. They will be integrated in the next revision.
-
-\subsubsection*{Bifurcation in Doubt Time Constant $\tau_u$}
-
-A systematic sweep of $\tau_u \in [0.05, 100]$ on BA $m=3$ (N=100, \texttt{degree\_linear}, $I_{\mathrm{stim}}=0.5$, 3 seeds) reveals a sharp bifurcation. For $\tau_u < 10$, doubt dynamics are too slow to track social fluctuations: frustration freezes and $H_{\mathrm{cog}} \approx 0$ (pseudo-consensus). For $\tau_u \in [10, 50]$, the system enters a transition regime ("breathing chimera"): $H_{\mathrm{cog}}$ rises from $0.023$ to $0.380$. For $\tau_u > 50$, fast doubt dynamics over-respond and the system regains coordinated diversity ($H_{\mathrm{cog}} \approx 0.8$, $\mathrm{sync} \approx 0$). \textbf{The reference value $\tau_u = 10$ sits precisely at the bifurcation edge}, which explains the bimodal distribution of outcomes observed across seeds (Section~\ref{sec:topo_regimes}). This also clarifies why the trajectory-metrics study (Section~\ref{sec:traj_minimality}) found the FULL model at the boundary of the structured half-plane: it is operating near criticality.
-
-\subsubsection*{Doubt as an Active Decorrelator: Spatial Mutual Information}
-\label{sec:mi_analysis}
-
-To characterize the role of $u$ beyond snapshot entropy, we computed the pairwise mutual information MI$(d)$ as a function of graph hop-distance $d$ under four ablation conditions on Lattice ($N=100$) and BA $m=3$ ($N=100$). MI is estimated via 2D joint histograms on $v(t)$ histories post-warmup ($I_{\mathrm{stim}}=0.5$, \texttt{degree\_linear}, 3 seeds).
-
-\begin{center}
-\begin{tabular}{lcccc}
-\toprule
-Ablation & MI($d=1$) lattice & Decay & MI($d=1$) BA & Decay \\
-\midrule
-FULL       & 0.870 & 0.102 & 1.031 & 0.055 \\
-NO\_HERETIC & 1.244 & 0.168 & 0.983 & 0.129 \\
-FROZEN\_U  & \textbf{1.958} & 0.091 & \textbf{1.894} & 0.498 \\
-NO\_SIGMOID & 0.885 & 0.126 & 1.024 & 0.260 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-The key finding: \textbf{FULL achieves the lowest MI at all distances tested}. Freezing $u$ (FROZEN\_U) raises MI($d=1$) by $1.84\times$ on BA $m=3$ (1.031 $\to$ 1.894 nats, 4 seeds) and by $2.25\times$ on the 2D lattice (0.870 $\to$ 1.958 nats, 5 seeds), indicating that the $u$ dynamics actively decorrelate neighboring nodes. The lattice protocol shows the stronger decorrelation, consistent with its regular local topology exposing the $u$-mediated decorrelation effect more cleanly than scale-free hubs. This complements the trajectory result of Section~\ref{sec:traj_minimality}: $u$ functions as a dynamic buffering mechanism both in the time domain (preventing phase-locking under forcing) and in the spatial domain (reducing pairwise MI between neighbors).
-
-\subsubsection*{Formal Spectral Regression: $\lambda_{2,\mathrm{crit}} = 2.31$}
-\label{sec:lambda2}
-
-To formally characterize the regime boundary identified in Section~\ref{sec:topo_regimes}, we examined 36 network configurations drawn from 12 distinct topology types (3 seeds each, $N \approx 100$): Barab\'asi--Albert $m \in \{1, 2, 3, 4, 5, 8, 10\}$, Erd\H{o}s--R\'enyi $p \in \{0.05, 0.12\}$, 2D periodic lattice, and Watts--Strogatz $p \in \{0.1, 0.3\}$. The binary outcome is functional ($H_{\mathrm{cog}} > 0$) vs.\ dead zone ($H_{\mathrm{cog}} \approx 0$), labelled empirically per seed. The predictor is the algebraic connectivity $\lambda_2$ of the graph Laplacian, computed via NumPy eigensolver (source: \texttt{figures/p2\_edge\_betweenness.csv}, reproduced by \texttt{experiments/lambda2\_crit\_regression.py}).
-
-The data exhibit \textbf{complete linear separation}: no observation with $\lambda_2 < 2.13$ falls in the dead zone, and no observation with $\lambda_2 > 2.50$ is functional, with zero overlap across the tested range of $N$. Complete separation is a strong structural result, but it renders standard maximum-likelihood logistic regression statistically undefined (the MLE coefficients diverge to infinity~\cite{albert1984}). The separation gap itself is therefore the appropriate statistic to report. We identify $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ as the regime boundary, with midpoint $\lambda_{2,\mathrm{crit}} = 2.31$ as the point estimate.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.75\linewidth]{../../../figures/fiedler_phase_diagram.png}
-  \caption{Fiedler phase diagram: algebraic connectivity $\lambda_2$ vs.\ cognitive entropy $H_{\mathrm{cog}}$ across diverse network families (Barab\'asi--Albert $m \in \{1,2,3,5,8,10\}$, Configuration Model $\gamma \in \{2.5, 3.0, 4.0\}$, Holme--Kim, Watts--Strogatz, Erd\H{o}s--R\'enyi; $N \approx 100$; two coupling normalizations per topology, $n = 30$ data points). Complete linear separation between functional (open symbols) and dead-zone (filled symbols) regimes. The regime boundary $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, midpoint $2.31$, is derived from logistic regression on the independent primary dataset (\texttt{p2\_edge\_betweenness.csv}, $n = 36$; see text).}
-  \label{fig:fiedler}
-\end{figure}
-
-This confirms that topology alone determines cognitive capacity: the spectral dead zone is not a parameterization artifact but a fundamental property of graph connectivity.
-
-\subsubsection*{Stochastic Resonance and the $\lambda_2$ Threshold}
-
-A sweep of Gaussian noise amplitude $\sigma \in [0, 1.2]$ across seven topologies with varying algebraic connectivity $\lambda_2$ (BA $m=2$--$8$, Lattice, ER $p=0.05/0.10$; \texttt{degree\_linear}; $I_{\mathrm{stim}}=0.5$; 3 seeds) reveals a structural dichotomy rather than classical stochastic resonance:
-
-\begin{itemize}
-  \item \textbf{$\lambda_2 < 2.5$ (sparse topologies):} $H_{\mathrm{cog}}$ rises monotonically with $\sigma$. No bell-shaped resonance peak within $[0, 1.2]$. Noise is unconditionally beneficial.
-  \item \textbf{$\lambda_2 > 2.5$ (dense topologies, BA $m \geq 5$, ER $p=0.10$):} $H_{\mathrm{cog}} \approx 0$ throughout the entire sweep, including $\sigma=1.2$. The dead zone is \emph{noise-resistant} under digital Gaussian injection.
-\end{itemize}
-
-The regime boundary $\lambda_{2,\mathrm{crit}} \approx 2.5$ is consistent with the regime boundary identified in Section~\ref{sec:topo_regimes}. This result clarifies that local coupling corrections and Gaussian noise share the same fundamental limitation: neither can overcome path redundancy when $\lambda_2 \gg 1$.
-
-\subsubsection*{Doubt-Driven Community Detection}
-
-Constructing a ``doubt-affinity'' graph by thresholding the Pearson correlation matrix of $u(t)$ traces ($|\rho_{ij}| > 0.3$) and applying Louvain community detection yields partitions that partially overlap with topological communities (NMI $\approx 0.30$ on lattice, $0.23$ on BA $m=3$). Two distinct $u$-regimes emerge: (1) heretic nodes that saturate at $u=1.0$ (zero variance, isolated in the doubt graph) and (2) frustrated nodes that oscillate in correlated doubt and form one or two large groups \emph{that cross structural community boundaries}. This suggests that the doubt variable encodes a coarser-grained functional partition — "basins of collective frustration" — distinct from but partially aligned with the topological structure.
-
-% ============================================================================
-% 7. CONCLUSION
-% ============================================================================
 \section{Conclusion}
 
-We have presented a FitzHugh--Nagumo network model in which doubt-modulated coupling and structural heretic nodes sustain attractor diversity from homogeneous initial conditions. On regular lattices ($10\times10$, $I_{\text{stim}}=0.5$), the model reliably achieves $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (100-bin continuous spectral entropy, 10 seeds, reproduced by \texttt{experiments/verify\_table1\_preprint.py}) with $\eta = 0.15$ heretic fraction. Degree-normalized coupling ($D/\deg(i)^\gamma$) extends this to sparse scale-free networks ($m \leq 3$), with optimal exponent $\gamma^*(m)$ varying from 0.7 ($m = 2$) to 0.9 ($m = 3$).
+We have presented a FitzHugh--Nagumo network model in which doubt-modulated coupling---a per-node variable that flips coupling polarity from attractive to repulsive---together with structural heretic nodes sustains attractor diversity from homogeneous initial conditions. On regular lattices ($10\times10$, $I_{\text{stim}}=0.5$) the model reliably achieves $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (10 seeds, reproduced by \texttt{experiments/verify\_table1\_preprint.py}), and component ablation identifies the doubt dynamics as the primary anti-synchronization mechanism: freezing $u$ raises pairwise synchrony by $+985\%$. Degree-normalized coupling extends diversity to sparse scale-free networks ($m \leq 3$, optimal exponent $\gamma^*(m) = 0.7$--$0.9$), and a formal classification across twelve topology families places the regime boundary at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$) with complete linear separation.
 
-The principal negative result is that for Barab\'asi--Albert networks with $m \geq 5$, no degree-based normalization preserves diversity. This regime transition, correlated with the algebraic connectivity $\lambda_2$ exceeding $\sim$2--3, establishes a fundamental boundary for local coupling corrections and motivates future investigation of spectrally-informed normalization.
+The principal negative result is that for denser networks ($m \geq 5$, $\lambda_2 > \lambda_{2,\mathrm{crit}}$) no degree-based normalization preserves diversity. Finite-size scaling of the Binder cumulant shows that the entropy loss across this boundary is a continuous spectral crossover rather than a thermodynamic phase transition, and a circuit-level SPICE implementation reproduces the same functional/dead-zone dichotomy under analog fabrication tolerances. Unlike adaptive networks that tune coupling \emph{magnitude}, the mechanism here adapts coupling \emph{sign}, locally and per node; the failure of local corrections beyond $\lambda_{2,\mathrm{crit}}$ motivates future work on spectrally-informed normalization that accounts for global path redundancy. More broadly, the boundary suggests a design constraint for neuromorphic and distributed systems: connectivity is not a free resource---past a spectral threshold, additional links erase the very state heterogeneity that local mechanisms are meant to preserve, so architectures that must sustain functional diversity should bound their algebraic connectivity rather than maximize it.
 
 % ============================================================================
 % 8. LIMITATIONS & TRANSPARENCY
@@ -728,6 +668,12 @@ This work was developed through a multi-agent collaborative research methodology
 
 % Chimera States
 \bibitem{abrams2004} Abrams, D.M., Strogatz, S.H., \emph{Chimera states for coupled oscillators}, Physical Review Letters, 93(17):174102, 2004.
+\bibitem{omelchenko2013} Omelchenko, I., Omel'chenko, O.E., H\"ovel, P., Sch\"oll, E., \emph{When nonlocal coupling between oscillators becomes stronger: Patched synchrony or multichimera states}, Physical Review Letters, 110(22):224101, 2013.
+\bibitem{omelchenko2015} Omelchenko, I., Provata, A., Hizanidis, J., Sch\"oll, E., H\"ovel, P., \emph{Robustness of chimera states for coupled FitzHugh--Nagumo oscillators}, Physical Review E, 91(2):022917, 2015.
+\bibitem{semenova2016} Semenova, N., Zakharova, A., Anishchenko, V., Sch\"oll, E., \emph{Coherence-resonance chimeras in a network of excitable elements}, Physical Review Letters, 117(1):014102, 2016.
+\bibitem{majhi2019} Majhi, S., Bera, B.K., Ghosh, D., Perc, M., \emph{Chimera states in neuronal networks: A review}, Physics of Life Reviews, 28:100--121, 2019.
+\bibitem{provata2026} Provata, A., Boulougouris, G.C., Hizanidis, J., \emph{Adaptive transitions in FitzHugh--Nagumo networks with Hebb--Oja coupling rules}, arXiv:2602.18198, 2026.
+\bibitem{berner2023} Berner, R., Gross, T., Kuehn, C., Kurths, J., Yanchuk, S., \emph{Adaptive dynamical networks}, Physics Reports, 1031:1--59, 2023.
 
 % Opinion Dynamics
 \bibitem{castellano2009} Castellano, C., Fortunato, S., Loreto, V., \emph{Statistical physics of social dynamics}, Reviews of Modern Physics, 81(2):591, 2009.
