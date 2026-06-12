@@ -99,12 +99,40 @@ que l'entrée. Interprétation : le doute u est un filtre passe-bas naturel
 (τ_u = 10 pas) — il moyenne le grain photonique avant qu'il n'atteigne la décision
 de polarité.
 
+## 4ter. Troisième résultat : chaîne de transduction GST réaliste (12/06/2026)
+
+**Question** : un matériau réel — qui sature (réponse en S) et qui a une inertie
+(constante de temps τ_mat) — préserve-t-il les régimes ? Chaîne complète testée :
+photons (Poisson Λ=10) → saturation T(P)=P(1+s)/(1+sP) → passe-bas 1er ordre (τ_mat)
+→ stimulus. Script : `experiments/photonic_gst_transduction_poc.py` (380 runs, 10 seeds).
+
+**Résultat : 36/36 conditions OK.** Saturation jusqu'à s=3 (compression forte) ×
+inertie jusqu'à τ_mat=100 pas : aucun changement de régime (fonctionnel intact,
+dead zone H_cog=0.0000 partout).
+
+**⚠️ Lecture honnête du τ_mat=100** : dans ce protocole le stimulus nominal est
+STATIONNAIRE — l'inertie ne retarde rien, elle filtre le bruit (bénéfique). La
+spécification est donc : *aucune contrainte de bande passante matériau pour un
+stimulus stationnaire*. Pour des stimuli DYNAMIQUES (événements type claim [13],
+drive variable type POC C), τ_mat redevient critique — c'est l'étape 2bis ci-dessous.
+
+**Conséquence pour la conversion physique** : en régime stationnaire, le choix de
+dt_physique n'est PAS contraint par le matériau de transduction — il le sera par
+la dynamique du COUPLAGE (la boucle réseau), pas par l'étage d'entrée. Les matériaux
+photochromes « lents » (WO₃) redeviennent candidats pour l'étage stimulus.
+
+**Note de modèle** : T(P) est un absorbeur saturable générique, pas une courbe GST
+mesurée — toute courbe matériau réelle se branche à la place, protocole inchangé.
+
 ## 5. Prochaines étapes du dossier (par coût croissant)
 
 1. [x] ~~Bruit de photons sur le COUPLAGE~~ — **FAIT 12/06/2026** (§4bis) :
    favorable, tout-optique viable à Λ≈10.
-2. [ ] Transduction non-linéaire réaliste (réponse en S du GST, saturation,
-   constante de temps du matériau → dt physique).
+2. [x] ~~Transduction non-linéaire réaliste (saturation + τ_mat)~~ — **FAIT
+   12/06/2026** (§4ter) : 36/36 OK en stationnaire ; spec bande passante = aucune
+   pour stimulus stationnaire.
+2bis. [ ] Stimuli DYNAMIQUES à travers la chaîne GST (forcing événementiel type
+   claim [13] / drive sinusoïdal type POC C) → la vraie contrainte τ_mat.
 3. [ ] Hérétiques optiques : inversion par interféromètre (Mach-Zehnder) vs
    canal séparé — coût en composants.
 4. [ ] Variabilité de fabrication optique (pertes d'insertion par nœud) —

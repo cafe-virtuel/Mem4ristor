@@ -286,6 +286,26 @@ Julien : « j'ai envie d'aller plus loin ». Étape 1 du PHOTONIC_PATHWAY exécu
     passe-bas naturel sur le grain photonique.
 - Livrables : PHOTONIC_PATHWAY §4bis + étape 1 cochée, S06 au registre.
 
+### ✅ PHASE 6 (même journée) — Chaîne GST réaliste (étape 2 du pathway)
+
+- **Script** : `experiments/photonic_gst_transduction_poc.py` — chaîne complète :
+  Poisson(Λ=10) → saturation T(P)=P(1+s)/(1+sP) (s∈{0,1,3}) → passe-bas 1er ordre
+  (τ_mat∈{0,1,3,10,30,100} pas) → stimulus. 380 runs, 10 seeds.
+- **Incident** : crash UnicodeEncodeError (Λ/τ dans un print, console cp1252) — MÊME
+  piège que limit02 dans la même journée. Les CSV étaient écrits AVANT le crash →
+  données sauvées, verdict+figure régénérés depuis le CSV (`C:/Temp/gst_verdict.py`,
+  jetable). Script corrigé (prints ASCII). **Règle pour le suivant : AUCUN caractère
+  non-ASCII dans les print() de scripts lancés en console Windows. Jamais.**
+- **RÉSULTAT : 36/36 conditions OK.** Saturation forte (s=3) × matériau 100× plus
+  lent que le pas : aucun changement de régime.
+- **Lecture honnête** : stimulus STATIONNAIRE dans ce protocole → l'inertie ne
+  retarde rien, elle filtre le bruit (bénéfique). Spec : aucune contrainte de bande
+  passante matériau en stationnaire ; pour des stimuli DYNAMIQUES, τ_mat redevient
+  critique → étape 2bis ajoutée au pathway (forcing événementiel/sinusoïdal à
+  travers la chaîne). Conséquence inattendue : les matériaux lents (WO₃) redeviennent
+  candidats pour l'étage stimulus.
+- Livrables : PHOTONIC_PATHWAY §4ter + étape 2 cochée + étape 2bis créée ; S07 au registre.
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`
