@@ -262,6 +262,30 @@ Julien (« très intéressé par la vague 2 photonic_transduction ») — la rev
   (ancrage littérature GST/Feldmann Nature 2019, formule de conversion en puissance,
   5 prochaines étapes par coût croissant). S05 ajouté au CLAIMS_REGISTER (exploratoire).
 
+### ✅ PHASE 5 (même journée) — Couplage photonique + TOUT-OPTIQUE (étape 1 du pathway)
+
+Julien : « j'ai envie d'aller plus loin ». Étape 1 du PHOTONIC_PATHWAY exécutée.
+
+- **Script** : `experiments/photonic_coupling_poc.py` — sous-classe `PhotonicCouplingNet`
+  qui réplique `Mem4Network.step` (topology.py:290) en ajoutant le shot noise sur l_v
+  APRÈS le scaling degree_linear. Signe préservé (détection différentielle). Le l_v
+  bruité contamine naturellement σ_social → la perception du désaccord est bruitée
+  aussi (réaliste, et c'est le test le plus dur pour u).
+- **MÉTHODE — leçon de réplication** : premier sanity check NÉGATIF (divergence 1e-16
+  dès le pas 0) — cause : associativité flottante (`l_v*x/y` ≠ `l_v*(x/y)`). Corrigé
+  pour répliquer l'expression EXACTE du parent → identité bit à bit sur 200 pas
+  vérifiée AVANT le lancement. Règle pour le suivant : un contrôle de sous-classe se
+  vérifie bit à bit, pas « à peu près ».
+- **RÉSULTATS (260 runs, 386 s)** :
+  - COUPLING seul : intact sur toute la plage, même Λ=3 (le mécanisme central est
+    PLUS tolérant que le stimulus).
+  - FULL-OPTICAL : intact dès Λ=10 ; à Λ=3 léger étalement H_cont sans changement
+    de régime. Dead zone : H_cog=0.0000 sur les 12 conditions.
+  - **Conclusion : un Mem4ristor entièrement photonique est viable à ~10
+    photons/nœud/pas par canal.** Interprétation : u (τ_u=10 pas) = filtre
+    passe-bas naturel sur le grain photonique.
+- Livrables : PHOTONIC_PATHWAY §4bis + étape 1 cochée, S06 au registre.
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`

@@ -70,10 +70,39 @@ Exemple indicatif : Λ=10, Δt=1 µs → P ≈ 1.3 fW/nœud (dérisoire — le b
 réel sera dominé par les pertes d'insertion et la photodétection, pas par le
 signal lui-même).
 
+## 4bis. Deuxième résultat : couplage optique et TOUT-OPTIQUE (12/06/2026)
+
+**Question** : si le canal de couplage inter-nœuds (le terme laplacien — là où agit
+la polarité modulée par u) devient optique, les régimes survivent-ils ? Subtilité :
+σ_social = |laplacien| pilote la dynamique de u → le bruit contamine aussi la
+*perception* du désaccord local. Signe du couplage préservé par détection
+différentielle (deux rails / détection cohérente).
+
+**Protocole** : mêmes conditions que §3, trois canaux : COUPLING seul (stimulus
+électrique parfait), FULL-OPTICAL (stimulus + couplage au même Λ), contrôle
+déterministe (vérifié **identique bit à bit** au code de référence — la sous-classe
+`PhotonicCouplingNet` ne modifie que le canal optique).
+Script : `experiments/photonic_coupling_poc.py` (260 runs, 10 seeds).
+
+**Résultats** :
+
+| Canal optique | Verdict |
+|---|---|
+| Couplage seul | Intact sur TOUTE la plage, y compris Λ=3 (58 % de bruit) — plus tolérant que le stimulus |
+| Tout-optique | Intact dès **Λ=10** ; à Λ=3, léger étalement H_cont (+0.17–0.20) sans changement de régime |
+| Dead zone | H_cog = 0.0000 sur les 12 conditions — imperturbable |
+
+**Conclusion d'étape** : un Mem4ristor **entièrement photonique** (stimulus +
+couplage) est compatible avec un budget de **~10 photons/nœud/pas** sur chaque
+canal. Le mécanisme central (polarité par u) est même PLUS tolérant au shot noise
+que l'entrée. Interprétation : le doute u est un filtre passe-bas naturel
+(τ_u = 10 pas) — il moyenne le grain photonique avant qu'il n'atteigne la décision
+de polarité.
+
 ## 5. Prochaines étapes du dossier (par coût croissant)
 
-1. [ ] Bruit de photons sur le COUPLAGE (pas seulement le stimulus) — si le
-   couplage devient optique, le shot noise s'applique aussi à I_coupling.
+1. [x] ~~Bruit de photons sur le COUPLAGE~~ — **FAIT 12/06/2026** (§4bis) :
+   favorable, tout-optique viable à Λ≈10.
 2. [ ] Transduction non-linéaire réaliste (réponse en S du GST, saturation,
    constante de temps du matériau → dt physique).
 3. [ ] Hérétiques optiques : inversion par interféromètre (Mach-Zehnder) vs
