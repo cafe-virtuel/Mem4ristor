@@ -2,12 +2,13 @@
 
 > Principe : tout claim numérique publié dans preprint.tex doit avoir un script de vérification listé ici.
 > Zéro valeur sans script reproductible. Mis à jour à chaque session.
-> Dernière mise à jour : 2026-06-12 (Claude Code/Fable — AUDIT-024 : changement de bruit du 1er mai détecté ; C01/C04/C08 marqués NON REPRODUCTIBLES avec HEAD ; C20 reformulé sur AC@lag50)
+> Dernière mise à jour : 2026-06-12 (Claude Code/Fable — AUDIT-024 détecté ET résolu : CSV pré-mai régénérés avec le code actuel, preprint corrigé (Option A validée Julien) ; C20 reformulé ; C21 révisé)
 >
-> ⚠️ **AUDIT-024 (2026-06-12)** : le commit `818cf67` (1er mai) a introduit le scaling
-> Euler-Maruyama du bruit (×4.47 effectif). Tout CSV généré AVANT le 1er mai n'est plus
-> reproductible avec le code actuel. Effets qualitatifs : tous SURVIVENT (souvent amplifiés).
-> Valeurs chiffrées C01/C04/C08 : à régénérer avant soumission (décision Julien, voir AUDIT_LOG).
+> ✅ **AUDIT-024 RÉSOLU (2026-06-12, Option A validée par Julien)** : le commit `818cf67`
+> (1er mai) avait introduit le scaling Euler-Maruyama du bruit (×4.47 effectif), rendant les
+> CSV pré-mai non reproductibles. **Les 3 CSV canoniques (C01/C04/C08) ont été régénérés avec
+> le code actuel et le preprint corrigé** (abstract, table MI, conclusion, limitations +
+> convention de bruit explicitée dans les Méthodes). Guardian 13/13. Voir AUDIT_LOG AUDIT-024.
 
 ---
 
@@ -15,16 +16,16 @@
 
 | # | Claim | Valeur | Script | Seeds | Dernière exécution | Statut |
 |---|-------|--------|--------|-------|-------------------|--------|
-| C01 | H_stable lattice 10×10 | 4.06 ± 0.08 bits | `experiments/verify_table1_preprint.py` | 10 | 2026-05-06 | ⚠️ AUDIT-024 : re-run HEAD 12/06 (p2_delta_sweep) donne 4.157 (dérive +0.1 bit, limite de tolérance). CSV source du 24/04 = ancien bruit. Voir `figures/c01_rerun_20260612_HEAD.csv` |
+| C01 | H_stable lattice 10×10 | 4.06 ± 0.08 bits (preprint, verify_table1 10 seeds) ; delta sweep δ=0 : 4.157 | `experiments/verify_table1_preprint.py` + `p2_delta_sweep.py` | 10 / 3 | 2026-06-12 | ✅ **RÉGÉNÉRÉ 12/06 (Option A)** : `p2_delta_sweep.csv` refait avec le code actuel (4.157). La valeur preprint 4.06±0.08 vient de verify_table1 (CSV 27/05, code actuel) — elle TIENT, aucune correction preprint nécessaire pour C01 |
 | C02 | H_stable lattice 4×4 | 3.22 ± 0.14 bits | `experiments/verify_table1_preprint.py` | 10 | 2026-05-06 | ✅ vérifié |
 | C03 | H_stable lattice 25×25 | 4.28 ± 0.06 bits | `experiments/verify_table1_preprint.py` | 10 | 2026-05-06 | ✅ vérifié |
-| C04 | sync FULL vs FROZEN (+985%) | FULL=0.067, FROZEN=0.730 | `experiments/p2_sigma_social_ablation.py` | 5 (pas 10 — le script a SEEDS=[42,123,777,456,999]) | 2026-06-12 | 🚨 **AUDIT-024 : TRANCHÉ.** Valeurs publiées = ancien bruit (CSV 26/04). Re-run HEAD 12/06 : FULL=0.0072, FROZEN=0.6513 (ratio ~90×, effet AMPLIFIÉ). Le 0.0072 d'Hermès (03/06) était correct pour le code actuel. À régénérer + preprint à corriger avant soumission (décision Julien). Voir `figures/c04_rerun_20260612.csv` |
+| C04 | sync FULL vs FROZEN (~×90) | FULL=0.0072, FROZEN=0.6513 | `experiments/p2_sigma_social_ablation.py` | 5 | 2026-06-12 | ✅ **RÉGÉNÉRÉ 12/06 (Option A validée Julien)** : CSV canonique refait avec le code actuel ; preprint corrigé (« +985% » → « ~90-fold, 0.007 → 0.651 » dans abstract, conclusion, limitations). Anciennes valeurs 0.067/0.730 = ancien bruit (pré-818cf67). Voir AUDIT-024 |
 | C05 | λ₂_crit midpoint (EBC) | 2.31 (intervalle 2.13–2.50) | `experiments/p2_edge_betweenness.py` (régression logistique sur EBC) | 36 obs | 2026-04-27 | ✅ vérifié — voir note (*) |
 | C06 | α_crit Hopf | 0.295 (preprint claim 0.296, écart 0.3%) | `experiments/reviewer2_linear_stability.py` | 1 | 2026-05-02 | ✅ vérifié |
 | C07 | pairwise synchrony BA m=3 FORCED FULL | 0.031 ± 0.034 | `experiments/ablation_coordination_topology_sweep.py` (BA_m3 FORCED FULL) | 10 | 2026-05-06 | ✅ vérifié — **topologie corrigée** (était "lattice", vraie = BA m=3) |
 | C07b | pairwise synchrony lattice 10×10 FULL | 0.0197 ± 0.0142 | `experiments/verify_table1_preprint.py` (lattice_10x10) | 10 | 2026-05-06 | ✅ vérifié — **valeur réelle lattice** (différente de C07 = BA m=3) |
-| C08 | MI FROZEN_U / FULL ratio (lattice distance=1) | 2.25× (0.870 → 1.958) | `experiments/p2_spatial_mutual_information.py` (lattice) | 5 | 2026-06-12 | ⚠️ **AUDIT-024** : valeur publiée = ancien bruit (CSV 24/04). Re-run HEAD 12/06 : **2.84×** (0.5997 → 1.7012). Le « re-run parasite » du 10/06 (FULL=0.634) était le code actuel — la restauration du CSV commité est à inverser. Voir `figures/c08_rerun_20260612_HEAD.csv` |
-| C08b | MI FROZEN_U / FULL ratio (BA m=3 distance=1) | 1.84× (1.031 → 1.894) | `experiments/p2_spatial_mutual_information.py` (ba_m3) | 4-5 | 2026-06-12 | ⚠️ **AUDIT-024** : re-run HEAD 12/06 : **3.37×** (0.4852 → 1.6361). Même cause que C08 |
+| C08 | MI FROZEN_U / FULL ratio (lattice distance=1) | **2.84×** (0.5997 → 1.7012) | `experiments/p2_spatial_mutual_information.py` (lattice) | 3 | 2026-06-12 | ✅ **RÉGÉNÉRÉ 12/06 (Option A)** : CSV canonique refait avec le code actuel ; table MI + ratios du preprint corrigés. Nuance honnête ajoutée au preprint : NO_SIGMOID ≈ FULL (la décorrélation vient de u, pas du noyau sigmoïde seul) ; decay BA négatifs notés. Ancien : 2.25× (CSV 24/04, ancien bruit) |
+| C08b | MI FROZEN_U / FULL ratio (BA m=3 distance=1) | **3.37×** (0.4852 → 1.6361) | `experiments/p2_spatial_mutual_information.py` (ba_m3) | 3 | 2026-06-12 | ✅ **RÉGÉNÉRÉ 12/06 (Option A)** : preprint corrigé (était 1.84×, ancien bruit). Mappé Guardian (C08b = FROZEN lattice ; ratio BA cité preprint) |
 | C09 | ART hard H_min_post vs V4 | +0.40 bits (3.12 vs 2.72) | `experiments/p2_art_benchmark.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C10 | Combi metacog+compart | +0.49 bits additif, synergie ≈ 0 | `experiments/p2_v5_combination.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C11 | ART soft H_min_post circuit SPICE | ratio SPICE/V4=1.490 = Python/V4=1.490 (accord parfait) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15 | ✅ vérifié |

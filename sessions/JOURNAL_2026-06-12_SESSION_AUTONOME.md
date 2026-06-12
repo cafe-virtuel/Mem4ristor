@@ -179,6 +179,41 @@ Coût : ~1 session (re-runs faits, il reste à écraser les CSV canoniques + éd
 - [ ] Push des commits locaux (décision publication).
 - [ ] Trancher le @DOUBT de topology.py : à D=0, σ_social=0 (actuel) ou node_weights·√N (limite algébrique) ?
 
+### ✅ PHASE 2 (même journée, après validation de Julien) — OPTION A APPLIQUÉE
+
+Julien a validé l'Option A (« oui svp fais le maintenant »). Travaux :
+
+1. **3 CSV canoniques régénérés** avec le code actuel (écrasement volontaire, documenté) :
+   - `p2_sigma_social_ablation.csv` : FULL=0.0072, FROZEN=0.6513 (40 s)
+   - `p2_spatial_mutual_information.csv` : nouveau format (topo/ablation/distance) ;
+     lattice 0.5997→1.7012 (2.84×), BA 0.4852→1.6361 (3.37×) (21 s)
+   - `p2_delta_sweep.csv` : lattice δ=0 → 4.157 (47 s)
+2. **BONNE NOUVELLE — Table 1 TIENT** : `p2_table1_lattice.csv` (27/05, code actuel) donne
+   lattice 10×10 = 4.056±0.085 → le « 4.06 ± 0.08 » du preprint (qui cite verify_table1)
+   est JUSTE. Pas de correction nécessaire pour H_stable. README : aucun chiffre affecté.
+   Le tableau d'ablation tab:ablations (0.031/0.751, +2300%) : vérifié 06/05 = code actuel, tient.
+3. **Preprint corrigé** (6 éditions) :
+   - Abstract : « +985% » → « ∼90-fold (0.007 → 0.651) »
+   - Table MI : 8 valeurs + 8 decay mises à jour (decay BA négatifs = MI croît avec la
+     distance sous conditions décorrélées, effet hub — noté honnêtement)
+   - §MI : ratios 2.84×/3.37×, 3 seeds ; nuance ajoutée : NO_SIGMOID ≈ FULL → la
+     décorrélation vient de u, pas du noyau sigmoïde seul ; « lattice stronger » inversé (BA
+     a maintenant le plus gros ratio)
+   - §Stability : 1.84×/2.25× → 3.37×/2.84×
+   - Conclusion : « +985% » → « ∼90-fold »
+   - Limitations : sync 0.067/0.730 → 0.007/0.651
+   - **Méthodes : convention de bruit Euler-Maruyama explicitée** (σ·√Δt par pas, σ =
+     coefficient de diffusion SDE) — l'équation η_v(t)~N(0,σ²) du papier correspond
+     maintenant exactement au code public.
+4. **claims_mapping.json** : C01 expected 4.080→4.157 ; C04 0.0673→0.0072 ; C08 2.25→2.84
+   (le Guardian calcule le ratio lui-même, cas spécial C08, compatible nouveau format CSV) ;
+   **C08b ajouté** (FROZEN lattice 1.7012, verrouille le numérateur).
+5. **PDF recompilé** : 24 pages, 0 erreur, 0 référence indéfinie.
+6. **Guardian : 13/13 OK** (12 + nouveau C08b).
+7. CSV Table 1 (`p2_table1_lattice.csv`, `p2_table1_sync.csv`) ajoutés à git (source unique).
+
+⚠️ UltraRAG ingest : échec exit 255 (problème qdrant_client, 3e signalement).
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`
