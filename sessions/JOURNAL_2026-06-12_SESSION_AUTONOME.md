@@ -246,6 +246,22 @@ Julien a demandé de traiter l'étage 1 (consolidation pré-soumission) et valid
 6. **PDF recompilé** : 24 pages, 0 erreur. **Guardian 13/13.**
 7. claims_mapping : C08 2.84→2.85, C08b 1.7012→1.7118 (10 seeds).
 
+### ✅ PHASE 4 (même journée) — VAGUE 2 OUVERTE : POC transduction photonique
+
+Julien (« très intéressé par la vague 2 photonic_transduction ») — la revue attendra.
+
+- **Script** : `experiments/photonic_transduction_poc.py` — I_stimulus délivré
+  optiquement : k~Poisson(Λ) par nœud/pas, I=I_nom·k/Λ, bruit relatif 1/√Λ imposé
+  par la physique. BA m=3 + m=5, 10 seeds canoniques, Λ∈{3,10,30,100,300,1000} +
+  contrôle déterministe. 140 runs, 204 s.
+- **RÉSULTAT (favorable)** : fonctionnel (m=3) intact jusqu'à Λ=3 (58 % de bruit !) ;
+  dead zone (m=5) immune (H_cog=0.0000 partout). **Λ_min ≈ 10 photons/nœud/pas** =
+  premier chiffre de dimensionnement du dossier hardware. Interprétation : le bruit
+  intrinsèque E-M (σ_eff≈0.22) domine déjà — le shot noise s'y fond. Prolonge [12].
+- **Livrable** : `docs/hardware/PHOTONIC_PATHWAY.md` — note d'ouverture du dossier
+  (ancrage littérature GST/Feldmann Nature 2019, formule de conversion en puissance,
+  5 prochaines étapes par coût croissant). S05 ajouté au CLAIMS_REGISTER (exploratoire).
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`
