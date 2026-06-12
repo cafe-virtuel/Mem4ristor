@@ -1219,3 +1219,69 @@ nothing to commit, working tree clean (pour ces 2 fichiers)
 
 **Statut**: RESOLU — diagnostic corrige, chemins canoniques intacts,
 backups disponibles pour restaurer les chemins alternatifs si necessaire.
+
+---
+
+### AUDIT-024
+**Date**: 2026-06-12
+**Auditeur**: Claude Code (Fable 5) — session autonome mandatee par Julien
+**Source**: Question ouverte bloquante C04 (SYNAPSE 2026-06-11) : sync_FULL
+  0.0072 (re-run Hermes 03/06) vs 0.0673 (CSV commite + preprint).
+
+**Affirmation auditee**:
+  Le 0.0072 d'Hermes venait du code divergent de GITHUB_REPOSITORY (hypothese
+  de la note claims_mapping C04 du 10 juin).
+
+**Verdict**: HYPOTHESE INFIRMEE — les DEUX repos donnent 0.0072 avec le code
+  post-1er-mai. La vraie cause est un CHANGEMENT DU MODELE DE BRUIT.
+
+**Methode (reproductible)**:
+```
+# Re-run a HEAD (7893e3e) :
+python experiments/c04_rerun_20260612.py        # -> figures/c04_rerun_20260612.csv
+# Bisection par worktrees :
+git worktree add C:\Temp\c04_bisect_<sha> <sha> ; copier le script ; relancer
+# Commits testes : 0fdeee0 OK / 88b9983 OK / 818cf67 PREMIER FAUTIF / 695a403,
+# 3c74dfb, b99d727, HEAD : tous 0.0072
+```
+
+**Cause racine**: commit `818cf67` (2026-05-01, "Hostile Audit Defense") a
+introduit le scaling Euler-Maruyama dans dynamics.py :
+`eta = N(0, sigma_v) / sqrt(dt)`. Avec dt=0.05, bruit effectif x4.47.
+Mathematiquement CORRECT (convention SDE standard, c'etait un fix Reviewer 2),
+mais change la dynamique : sync_FULL 0.067 -> 0.007, H_cog 0.018 -> 0.180.
+
+**Ampleur (re-runs HEAD vs valeurs publiees)**:
+| Claim | CSV commite (date) | Publie | Re-run HEAD 12/06 | Effet qualitatif |
+|---|---|---|---|---|
+| C04 sync FULL/FROZEN | 26/04 | 0.067 / 0.730 (+985%) | 0.0072 / 0.6513 (~x90) | SURVIT, amplifie |
+| C08 MI ratio lattice d=1 | 24/04 | 2.25x | 2.84x (0.5997->1.7012) | SURVIT, amplifie |
+| C08b MI ratio BA m=3 | 24/04 | 1.84x | 3.37x | SURVIT, amplifie |
+| C01 H_cont lattice delta=0 | 24/04 | 4.06±0.08 | 4.157 | derive +0.1 bit, limite tolerance |
+| C05 lambda2_crit (EBC) | 27/04 | 2.31 | CSV EBC identique au commite (diff vide) | INTACT (labels topologiques, pas de bruit) |
+| Dead zone BA m=5 | — | H_cog ~ 0 | H_cog = 0.000 (HEAD et 0fdeee0) | SURVIT dans les 2 codes |
+
+Preuves : figures/c01_rerun_20260612_HEAD.csv, c04_rerun_20260612.csv,
+c08_rerun_20260612_HEAD.csv, experiments/deadzone_check_20260612.py.
+
+**Implication**: le preprint melange deux generations de code. Les valeurs
+C01/C04/C08 datent d'AVANT le fix de bruit et ne sont PAS reproductibles par
+un lecteur qui clone le repo public. Violation de la regle "zero valeur sans
+script reproductible".
+
+**Note connexe**: le "re-run parasite" C08 du 10 juin (MI FULL 0.634 vs 0.870)
+etait en realite le code actuel qui disait la verite. La restauration du CSV
+commite a reinstalle une valeur d'un code disparu. La decision du 10 juin est
+a inverser.
+
+**Decision requise (Julien)** — deux options :
+(A) RECOMMANDEE : regenerer les CSV pre-mai avec HEAD et mettre a jour les
+    valeurs du preprint (les claims qualitatifs se RENFORCENT tous).
+(B) Re-introduire l'ancien bruit derriere un flag config "legacy" — deconseille
+    (l'ancien scaling etait non-standard, et le fix venait d'une defense Reviewer 2).
+
+**Faille separee**: figures/p2_table1_lattice.csv et p2_table1_sync.csv
+(C02/C03/C07b, generes 27/05 avec le code actuel — coherents) ne sont PAS
+commites. Le Guardian verifie des fichiers hors source unique. A committer.
+
+**Statut**: DIAGNOSTIQUE — correction du preprint en attente de decision Julien.

@@ -298,9 +298,18 @@ class Mem4Network:
             l_v = -(self.L @ self.v)
         if self.coupling_norm != 'uniform':
             D = self.model.cfg['coupling']['D']
-            uniform_D_eff = D / np.sqrt(self.N)
-            scale_factors = (self.node_weights * D) / uniform_D_eff
-            l_v = l_v * scale_factors
+            if D > 0:
+                uniform_D_eff = D / np.sqrt(self.N)
+                scale_factors = (self.node_weights * D) / uniform_D_eff
+                l_v = l_v * scale_factors
+            else:
+                # D=0 : pas de courant de couplage, donc pas de signal social.
+                # Avant 2026-06-12 ce cas produisait 0/0=NaN, lessivé en 0 par
+                # dynamics.py (nan_to_num) — même résultat, rendu explicite ici.
+                # @DOUBT — choix de modélisation : la limite algébrique D→0 de
+                # scale_factors est node_weights*sqrt(N) != 0 ; si l'on voulait
+                # que sigma_social survive à D=0, il faudrait ce facteur-là.
+                l_v = np.zeros_like(l_v)
         # Exposer la matrice d'adjacence au modele pour l'ART (non-invasif)
         if not self.use_stencil and self.adjacency_matrix is not None:
             self.model._adj_matrix = self.adjacency_matrix
