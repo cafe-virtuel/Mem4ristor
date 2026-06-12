@@ -147,6 +147,44 @@ mesurée — toute courbe matériau réelle se branche à la place, protocole in
    chaîne optique à la référence électrique DU MÊME code.
 3. [ ] Hérétiques optiques : inversion par interféromètre (Mach-Zehnder) vs
    canal séparé — coût en composants.
-4. [ ] Variabilité de fabrication optique (pertes d'insertion par nœud) —
-   l'équivalent photonique de l'étude de tolérance SPICE existante.
+4. [x] ~~Variabilité de fabrication optique~~ — **FAIT 12/06/2026** (§4quater).
 5. [ ] Mapping `u` ↔ transmittance GST (l'idée directrice, la plus spéculative).
+
+## 4quater. Quatrième résultat : variabilité de fabrication (12/06/2026)
+
+**Question** : des pertes d'insertion statiques différentes par nœud (t_i ~ N(1, σ_fab),
+sur les DEUX canaux du système tout-optique Λ=10) cassent-elles les régimes ?
+Script : `experiments/photonic_fabrication_poc.py` (140 runs, 10 « puces »).
+
+**Résultat — aucun mode de défaillance catastrophique** : jamais de synchronisation
+(sync ≤ 0.012 partout), jamais de mort cognitive. L'effet dominant de la mauvaise
+fabrication est une **hausse de H_cont** (+0.05 à +0.75 bits) : les gains hétérogènes
+agissent comme des quasi-hérétiques structurels — de la diversité « gratuite ».
+Cohérent avec la philosophie du modèle (l'hétérogénéité est une ressource) et avec
+l'étude de tolérance SPICE (dead zone immune au mismatch électrique).
+
+**Spécification en trois zones** :
+| σ_fab | Verdict |
+|---|---|
+| ≤ 5 % | Valeurs nominales reproduites (zone verte) |
+| ≤ 20-30 % | Régimes qualitatifs préservés, point de fonctionnement décalé (recalibrage requis) |
+| ≥ 30 % | La dead zone commence à s'éroder (H_cog : 0 → 0.012 à 0.3, → 0.097 à 0.5) |
+
+La photonique intégrée moderne tient les pertes d'insertion à quelques % de
+dispersion — très confortablement en zone verte.
+
+## Bilan du quatuor des imperfections physiques (12/06/2026)
+
+| Imperfection | Nature | Verdict | Spec |
+|---|---|---|---|
+| Bruit quantique (shot noise) | temporel aléatoire | ✅ | Λ ≥ 10 photons/nœud/pas/canal |
+| Non-linéarité matériau | statique déterministe | ✅ | saturation s ≤ 3 |
+| Inertie matériau | temporel déterministe | ✅ | I_event·(1−exp(−T/τ)) ≥ ~0.5 ; aucune contrainte en stationnaire |
+| Pertes de fabrication | statique aléatoire | ✅ | σ_fab ≤ 5 % nominal, ≤ 20 % qualitatif |
+
+**Conclusion du dossier à ce stade : aucune des quatre familles d'imperfections
+physiques d'un système photonique réel ne détruit les régimes de Mem4ristor aux
+tolérances industrielles courantes.** Le système est nativement compatible avec
+une implémentation photonique imparfaite — par conception, pas par chance : le
+doute calibré (filtre passe-bas temporel) et les hérétiques (hétérogénéité assumée)
+sont précisément les mécanismes qui absorbent ces imperfections.

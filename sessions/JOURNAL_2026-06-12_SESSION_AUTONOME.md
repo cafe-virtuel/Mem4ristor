@@ -327,6 +327,24 @@ Julien : « j'ai envie d'aller plus loin ». Étape 1 du PHOTONIC_PATHWAY exécu
   électrique DU MÊME code.
 - Livrables : pathway 2bis cochée, S08 au registre, [13] flaggé.
 
+### ✅ PHASE 8 (même journée, dernière) — Variabilité de fabrication (étape 4 pathway)
+
+- **Script** : `experiments/photonic_fabrication_poc.py` (140 runs, 216 s) — pertes
+  d'insertion statiques t_i ~ N(1, σ_fab) clippé [0.1,∞), tirées par « puce » (=seed),
+  sur les DEUX canaux du tout-optique Λ=10. σ_fab ∈ {0, 0.05, 0.1, 0.2, 0.3, 0.5}.
+- **RÉSULTAT — le plus beau de la Vague 2** : aucun mode de défaillance catastrophique.
+  Jamais de synchronisation (sync ≤ 0.012), jamais de mort cognitive. L'effet dominant
+  de la mauvaise fabrication est une HAUSSE de H_cont (+0.05 à +0.75 bits) — les gains
+  hétérogènes = quasi-hérétiques structurels, diversité « gratuite ». La philosophie
+  du modèle (imperfection = ressource) vérifiée physiquement.
+- **Nuances honnêtes** : dès σ_fab≥0.1 les valeurs calibrées bougent (recalibrage
+  requis) ; à σ_fab≥0.3 la dead zone s'érode (H_cog 0 → 0.012 → 0.097 à 0.5).
+- **Spec 3 zones** : ≤5 % nominal / ≤20-30 % qualitatif / ≥30 % érosion dead zone.
+  Photonique intégrée courante (quelques %) = zone verte confortable.
+- **LE QUATUOR EST COMPLET** : bruit quantique ✓, non-linéarité ✓, inertie ✓,
+  fabrication ✓ — bilan dans PHOTONIC_PATHWAY. Aucune famille d'imperfection physique
+  ne détruit les régimes aux tolérances industrielles. S09 au registre.
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`
