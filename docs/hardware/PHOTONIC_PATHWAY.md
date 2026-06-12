@@ -131,8 +131,20 @@ mesurée — toute courbe matériau réelle se branche à la place, protocole in
 2. [x] ~~Transduction non-linéaire réaliste (saturation + τ_mat)~~ — **FAIT
    12/06/2026** (§4ter) : 36/36 OK en stationnaire ; spec bande passante = aucune
    pour stimulus stationnaire.
-2bis. [ ] Stimuli DYNAMIQUES à travers la chaîne GST (forcing événementiel type
-   claim [13] / drive sinusoïdal type POC C) → la vraie contrainte τ_mat.
+2bis. [x] ~~Stimuli DYNAMIQUES à travers la chaîne GST~~ — **FAIT 12/06/2026**
+   (`experiments/photonic_event_poc.py`, 80 runs) : l'effet réseau d'un événement
+   (protocole [13] : I=1.5, 150 pas, nœud périphérique, BA m=3) est transmis à
+   ~100 % sur toute la plage τ_mat ∈ [0, 300], y compris quand l'amplitude
+   effective tombe à 0.47 (τ=300). La mesure i_eff_max suit exactement la
+   prédiction analytique 1−exp(−T/τ) (mécanique validée). **Spécification de
+   bande passante : τ_mat ≤ T_event × marge, où la contrainte réelle est
+   I_event·(1−exp(−T/τ)) ≥ seuil topologique (~0.5 observé)** — avec I=1.5,
+   même τ=2·T_event passe. ⚠️ DÉCOUVERTE COLLATÉRALE MAJEURE : la référence
+   électrique re-mesurée avec le code actuel donne dH=−0.76 (le claim [13]
+   d'avril donnait +1.20) — **signe inversé par le changement de bruit
+   (AUDIT-024)**, claim [13] marqué À RE-VÉRIFIER dans PROJECT_STATUS. Le
+   verdict photonique (transmission de l'effet) reste valide : il compare la
+   chaîne optique à la référence électrique DU MÊME code.
 3. [ ] Hérétiques optiques : inversion par interféromètre (Mach-Zehnder) vs
    canal séparé — coût en composants.
 4. [ ] Variabilité de fabrication optique (pertes d'insertion par nœud) —

@@ -306,6 +306,27 @@ Julien : « j'ai envie d'aller plus loin ». Étape 1 du PHOTONIC_PATHWAY exécu
   candidats pour l'étage stimulus.
 - Livrables : PHOTONIC_PATHWAY §4ter + étape 2 cochée + étape 2bis créée ; S07 au registre.
 
+### ✅ PHASE 7 (même journée) — Étape 2bis : événement dynamique à travers la chaîne GST
+
+- **Script** : `experiments/photonic_event_poc.py` (80 runs, 61 s) — protocole du
+  claim [13] (I=1.5, 150 pas, nœud périphérique #35, BA m=3) à travers la chaîne
+  Poisson(10) → saturation s=1 → inertie τ_mat ∈ {0..300}. Prints 100 % ASCII (règle
+  appliquée — aucun crash cette fois).
+- **RÉSULTAT PHOTONIQUE** : effet réseau transmis à ~100 % sur TOUTE la plage τ,
+  même à τ=300 où l'amplitude effective tombe à 0.47. i_eff_max suit exactement
+  la prédiction analytique 1−exp(−T/τ) (mécanique du passe-bas validée).
+  **Spec de bande passante : I_event·(1−exp(−T/τ)) ≥ seuil topologique (~0.5).**
+- **🚨 DÉCOUVERTE COLLATÉRALE (la plus importante)** : la référence ELEC re-mesurée
+  avec le code actuel donne **dH = −0.764 ± 0.320** — le claim [13] d'avril disait
+  **+1.20** : SIGNE INVERSÉ par le changement de bruit (AUDIT-024, 4e victime après
+  C01/C04/C08 et γ sweep). Hypothèse mécanique : baseline déjà riche en entropie
+  (bruit ×4.47) → l'événement structure au lieu d'enrichir. [13] marqué À RE-VÉRIFIER
+  dans PROJECT_STATUS (grille complète amplitudes × durées × hub/périph × m3/m5 à
+  refaire). **Le preprint ne cite pas [13] → soumission NON affectée** (vérifié).
+- Le verdict photonique reste valide : il compare chaîne optique vs référence
+  électrique DU MÊME code.
+- Livrables : pathway 2bis cochée, S08 au registre, [13] flaggé.
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`
