@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+﻿\documentclass[11pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -33,7 +33,7 @@ A Spectral Regime Boundary at Algebraic Connectivity}
 % ABSTRACT (~150 words)
 % ============================================================================
 \begin{abstract}
-While coupled oscillator networks typically synchronize into homogeneous states, we present a mechanism---doubt-modulated coupling---that sustains attractor diversity from homogeneous initial conditions, and we map its limit: a sharp spectral boundary, set by the network's algebraic connectivity, beyond which every local coupling correction fails. In a modified FitzHugh--Nagumo model, a third per-node state variable, \emph{doubt} ($u$), modulates coupling \emph{polarity} through a shifted-tanh kernel $f(u) = \tanh(\pi(0.5-u)) + \delta$: a node couples attractively when its doubt is low and repulsively when it is high. Combined with a fraction $\eta$ of nodes receiving inverted stimulus (\emph{heretic} nodes) and weak noise for symmetry breaking, this sustains multi-state attractors from homogeneous initial conditions. On regular lattices ($N = 100$) the stable spectral entropy reaches $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (10 seeds); ablating the doubt dynamics collapses the network into synchrony (pairwise correlation rising ${\sim}90$-fold, from $0.007$ to $0.651$), identifying $u$ as the primary anti-synchronization mechanism. Degree-normalized coupling extends diversity to sparse scale-free networks, but across twelve topology families the algebraic connectivity $\lambda_2$ sharply separates functional from dead-zone regimes, with \emph{complete linear separation} at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$): beyond this boundary, no local coupling correction---degree normalization included---preserves diversity. Finite-size scaling of the Binder cumulant shows that the entropy loss across this boundary is a \emph{continuous spectral crossover}, not a thermodynamic phase transition---a dichotomy a circuit-level (SPICE) implementation reproduces under analog fabrication tolerances.
+While coupled oscillator networks typically synchronize into homogeneous states, we present a mechanism---doubt-modulated coupling---that sustains attractor diversity from homogeneous initial conditions, and we map its limit: a sharp spectral boundary, set by the network's algebraic connectivity, beyond which every local coupling correction fails. In a modified FitzHugh--Nagumo model, a third per-node state variable, \emph{doubt} ($u$), modulates coupling \emph{polarity} through a shifted-tanh kernel $f(u) = \tanh(\pi(0.5-u)) + \delta$: a node couples attractively when its doubt is low and repulsively when it is high. Combined with a fraction $\eta$ of nodes receiving inverted stimulus (\emph{heretic} nodes) and weak noise for symmetry breaking, this sustains multi-state attractors from homogeneous initial conditions. On regular lattices ($N = 100$) the stable spectral entropy reaches $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (10 seeds); ablating the doubt dynamics collapses the network into synchrony (pairwise correlation rising ${\sim}90$-fold, from $0.007$ to $0.658$), identifying $u$ as the primary anti-synchronization mechanism. Degree-normalized coupling extends diversity to sparse scale-free networks, but across twelve topology families the algebraic connectivity $\lambda_2$ sharply separates functional from dead-zone regimes, with \emph{complete linear separation} at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$): beyond this boundary, no local coupling correction---degree normalization included---preserves diversity. Finite-size scaling of the Binder cumulant shows that the entropy loss across this boundary is a \emph{continuous spectral crossover}, not a thermodynamic phase transition---a dichotomy a circuit-level (SPICE) implementation reproduces under analog fabrication tolerances.
 \end{abstract}
 
 % ============================================================================
@@ -47,7 +47,7 @@ The problem is well characterized: on networks with homogeneous coupling, the la
 
 We propose a mechanism based on \textbf{doubt-modulated coupling} in extended FitzHugh--Nagumo (FHN) networks. Each node carries a third state variable $u \in [0, 1]$ (the \textit{doubt} variable) that continuously modulates the sign and magnitude of inter-node coupling. When $u > 0.5$, coupling becomes repulsive, implementing polarity-modulated anti-synchronization at the single-node level---a mechanism distinct from frustrated synchronization in Kuramoto networks~\cite{odor2024}, where sign reversal is static and network-distributed rather than state-dependent and per-node. Combined with a fraction $\eta$ of nodes receiving inverted external stimulus (\textit{heretic nodes}), this architecture prevents consensus collapse from homogeneous initial conditions without requiring noise as the sole symmetry-breaking mechanism (heretics provide structural asymmetry; noise enables the Cold Start Protocol described in Section~2.3).
 
-Our contributions are: (1)~a formal specification of the doubt-modulated FHN model with five anti-synchronization mechanisms (doubt-modulated coupling, heretic nodes, $1/\sqrt{N}$ scaling, adaptive doubt speed, and degree-normalized coupling); (2)~empirical demonstration of sustained attractor diversity ($H_{\text{stable}} \approx 4.06 \pm 0.08$ bits, 100-bin continuous spectral entropy) on regular lattices; (3)~a sharp topological boundary on the mechanism's reach: across twelve topology families, the algebraic connectivity $\lambda_2$ separates functional from dead-zone regimes with complete linear separation at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, beyond which no local (per-node) coupling correction preserves diversity; and (4)~identification of the optimal power-law exponent $\gamma^*(m)$ for $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ as a function of network density.
+Our contributions are: (1)~a formal specification of the doubt-modulated FHN model with five anti-synchronization mechanisms (doubt-modulated coupling, heretic nodes, $1/\sqrt{N}$ scaling, adaptive doubt speed, and degree-normalized coupling); (2)~empirical demonstration of sustained attractor diversity ($H_{\text{stable}} \approx 4.06 \pm 0.08$ bits, 100-bin continuous spectral entropy) on regular lattices; (3)~a sharp topological boundary on the mechanism's reach: across twelve topology families, the algebraic connectivity $\lambda_2$ separates functional from dead-zone regimes with complete linear separation at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$, beyond which no local (per-node) coupling correction preserves diversity; and (4)~a negative result on power-law degree normalization: no exponent $\gamma \in [0, 1]$ in $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ bridges the dead zone, confirming that the boundary is spectral rather than degree-local in origin.
 
 \textbf{Roadmap.} The remainder of this paper is organized as follows. Section \ref{sec:related} positions our model within the existing literature. Section \ref{sec:model} formally defines the doubt-modulated FitzHugh--Nagumo equations, justifying the choice of hyperparameters and architectural components. Section \ref{sec:metrics} explicitly defines the evaluation metrics ($H_{\text{stable}}$, $U_4$). Section \ref{sec:results} presents our numerical results across regular and scale-free topologies, concluding with the Binder cumulant analysis of the spectral dead zone. Finally, Section \ref{sec:discussion} discusses implications for neuromorphic design and homeostatic coupling regulation.
 
@@ -139,24 +139,7 @@ To quantify the state of the network, we explicitly define two primary metrics:
     \item \textbf{Stable Entropy ($H_{\text{stable}}$)}: The continuous Shannon entropy of the network's activation potential distribution, computed over 100 bins (chosen to balance resolution and statistical robustness for $N=100$ networks), averaged over the last 25\% of the simulation to discard transients. It serves as our primary order parameter, bounded in $[0, \log_2(100)] \approx [0, 6.64]$ bits. A high $H_{\text{stable}}$ indicates diverse attractor states; $H_{\text{stable}} \to 0$ indicates global synchronization.
     \item \textbf{Binder Cumulant ($U_4$)}: A fourth-order statistical measure $U_4 = 1 - \frac{\langle H_{\text{stable}}^4 \rangle}{3\langle H_{\text{stable}}^2 \rangle^2}$ used in finite-size scaling to characterize the spectral dead zone.
 \end{enumerate}
-A legacy 5-state discrete entropy ($H_{\text{cog}}$) using physiological $v$-thresholds (Table~\ref{tab:states}) is retained only for SPICE hardware comparisons; it is not used as a primary metric in Python simulations (see Limitations, Section~\ref{sec:limitations}).
-
-\begin{table}[ht]
-\centering
-\caption{Cognitive state classification by activation potential $v$.}
-\label{tab:states}
-\begin{tabular}{lcc}
-\toprule
-\textbf{State} & \textbf{Range} & \textbf{Interpretation} \\
-\midrule
-1 (Strong negative) & $v < -1.2$ & Strong opposition \\
-2 (Weak negative)   & $-1.2 \leq v < -0.4$ & Mild opposition \\
-3 (Neutral)         & $-0.4 \leq v \leq 0.4$ & Uncertain / Deliberative \\
-4 (Weak positive)   & $0.4 < v \leq 1.2$ & Mild agreement \\
-5 (Strong positive) & $v > 1.2$ & Strong agreement \\
-\bottomrule
-\end{tabular}
-\end{table}
+A legacy 5-state discrete entropy ($H_{\text{cog}}$) using physiological $v$-thresholds (Table~\ref{tab:states}, Appendix~\ref{app:legacy_bins}) is retained only for SPICE hardware comparisons; it is not used as a primary metric in Python simulations (see Limitations, Section~\ref{sec:limitations}).
 
 Reference parameters: $a = 0.7$, $b = 0.8$, $\varepsilon = 0.08$, $D = 0.15$, $\alpha_{\text{self}} = 0.15$, $\sigma_{\text{noise}} = 0.05$, $\sigma_{\text{baseline}} = 0.05$, $\eta = 0.15$ (see Appendix~\ref{app:parameters} for all parameters). Topologies tested: 2D periodic lattice (stencil Laplacian) and Barab\'asi--Albert ($m \in \{1, \ldots, 15\}$, $N = 100$). Watts-Strogatz and Erd\H{o}s--R\'enyi topologies were used during development for qualitative robustness checks but are not systematically reported here. Seeds and repetitions are reported per experiment.
 
@@ -273,22 +256,22 @@ The key claim is that \textbf{only the full model} consistently occupies the str
 \subsection{Doubt as an Active Decorrelator: Spatial Mutual Information}
 \label{sec:mi_analysis}
 
-To characterize the role of $u$ beyond snapshot entropy, we computed the pairwise mutual information MI$(d)$ as a function of graph hop-distance $d$ under four ablation conditions on Lattice ($N=100$) and BA $m=3$ ($N=100$). MI is estimated via 2D joint histograms on $v(t)$ histories post-warmup ($I_{\mathrm{stim}}=0.5$, \texttt{degree\_linear}, 3 seeds).
+To characterize the role of $u$ beyond snapshot entropy, we computed the pairwise mutual information MI$(d)$ as a function of graph hop-distance $d$ under four ablation conditions on Lattice ($N=100$) and BA $m=3$ ($N=100$). MI is estimated via 2D joint histograms on $v(t)$ histories post-warmup ($I_{\mathrm{stim}}=0.5$, \texttt{degree\_linear}, 10 seeds).
 
 \begin{center}
 \begin{tabular}{lcccc}
 \toprule
 Ablation & MI($d=1$) lattice & Decay & MI($d=1$) BA & Decay \\
 \midrule
-FULL       & 0.600 & 0.099 & 0.485 & $-0.226$ \\
-NO\_HERETIC & 1.068 & 0.088 & 0.622 & $-0.494$ \\
-FROZEN\_U  & \textbf{1.701} & 0.046 & \textbf{1.636} & 0.223 \\
-NO\_SIGMOID & 0.557 & 0.068 & 0.459 & $-0.156$ \\
+FULL       & 0.601 & 0.092 & 0.488 & $-0.193$ \\
+NO\_HERETIC & 1.003 & 0.091 & 0.577 & $-0.124$ \\
+FROZEN\_U  & \textbf{1.712} & 0.057 & \textbf{1.662} & 0.306 \\
+NO\_SIGMOID & 0.577 & 0.091 & 0.459 & $-0.174$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The key finding: \textbf{freezing $u$ (FROZEN\_U) sharply raises mutual information}, by $2.84\times$ on the 2D lattice (0.600 $\to$ 1.701 nats) and by $3.37\times$ on BA $m=3$ (0.485 $\to$ 1.636 nats; 3 seeds in both protocols), indicating that the $u$ dynamics actively decorrelate neighboring nodes. The FULL and NO\_SIGMOID conditions yield comparably low MI, so the decorrelation is attributable to the $u$ dynamics themselves rather than to the sigmoid coupling kernel alone. On BA $m=3$, the negative decay coefficients indicate that MI under decorrelated conditions \emph{increases} mildly with hop distance, a hub-mediated effect absent on the regular lattice. This complements the trajectory result of Section~\ref{sec:traj_minimality}: $u$ functions as a dynamic buffering mechanism both in the time domain (preventing phase-locking under forcing) and in the spatial domain (reducing pairwise MI between neighbors).
+The key finding: \textbf{freezing $u$ (FROZEN\_U) sharply raises mutual information}, by $2.85\times$ on the 2D lattice (0.601 $\to$ 1.712 nats) and by $3.41\times$ on BA $m=3$ (0.488 $\to$ 1.662 nats; 10 seeds in both protocols), indicating that the $u$ dynamics actively decorrelate neighboring nodes. The FULL and NO\_SIGMOID conditions yield comparably low MI, so the decorrelation is attributable to the $u$ dynamics themselves rather than to the sigmoid coupling kernel alone. On BA $m=3$, the negative decay coefficients indicate that MI under decorrelated conditions \emph{increases} mildly with hop distance, a hub-mediated effect absent on the regular lattice. This complements the trajectory result of Section~\ref{sec:traj_minimality}: $u$ functions as a dynamic buffering mechanism both in the time domain (preventing phase-locking under forcing) and in the spatial domain (reducing pairwise MI between neighbors).
 
 \subsection{Topological Normalization Regimes}
 \label{sec:topo_regimes}
@@ -328,27 +311,27 @@ The spectral gap $\lambda_2$ (algebraic connectivity of the graph Laplacian) is 
 \subsection{Power-Law Exponent Sweep}
 \label{sec:alpha_sweep}
 
-To test whether an intermediate exponent $\gamma$ in $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ (Eq.~\ref{eq:degree_norm}) can bridge the dead zone identified in Table~\ref{tab:ba_m_sweep}, we sweep $\gamma \in [0, 1]$ across $m \in \{2, 3, 4, 5, 6, 8, 10\}$ (3 seeds, 3000 steps, $I_{\text{stimulus}} = 0$).
+To test whether an intermediate exponent $\gamma$ in $D_{\text{eff}}(i) = D/\deg(i)^\gamma$ (Eq.~\ref{eq:degree_norm}) can bridge the dead zone identified in Table~\ref{tab:ba_m_sweep}, we sweep $\gamma \in [0, 1]$ across $m \in \{2, 3, 4, 5, 6, 8, 10\}$ (10 seeds, 3000 steps, $I_{\text{stimulus}} = 0$). Note that this sweep probes the \emph{endogenous} regime ($I_{\text{stimulus}} = 0$, heretic inversion inactive), a stricter condition than the driven protocol ($I_{\text{stimulus}} = 0.5$) of the main results.
 
 \begin{table}[ht]
 \centering
-\caption{Optimal exponent $\gamma^*$ and maximum achievable entropy by BA attachment parameter. Table~\ref{tab:ba_m_sweep} tests only $\gamma \in \{0, 1\}$; this table sweeps $\gamma$ over $[0, 1]$ in steps of 0.1, revealing that the optimal $\gamma^* < 1$ for $m = 2$.}
+\caption{Optimal exponent $\gamma^*$ and maximum achievable discrete entropy ($H_{\text{cog}}$, 5-bin, Appendix~\ref{app:legacy_bins}) by BA attachment parameter, endogenous regime. Table~\ref{tab:ba_m_sweep} tests only $\gamma \in \{0, 1\}$; this table sweeps $\gamma$ over $[0, 1]$ in steps of 0.1. Source: \texttt{figures/limit02\_alpha\_sweep.csv}.}
 \label{tab:alpha_sweep}
 \begin{tabular}{rrrl}
 \toprule
-$m$ & $\gamma^*$ & $\max H_{\text{stable}}$ & Assessment \\
+$m$ & $\gamma^*$ & $\max H_{\text{cog}}$ & Assessment \\
 \midrule
-2  & 0.7 & 0.99 & Near-optimal diversity \\
-3  & 0.9 & 0.89 & Strong diversity \\
-4  & 1.0 & 0.37 & Below threshold \\
-$\geq 5$ & --- & $< 0.03$ & Complete failure \\
+2  & 1.0 & 0.59 & Moderate diversity \\
+3  & --- & $\leq 0.01$ & Below threshold \\
+4  & --- & $\approx 0$ & Complete failure \\
+$\geq 5$ & --- & $< 0.09$ & Complete failure \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The drop is \textbf{sharp in the discrete attachment parameter $m$}: $H_{\text{stable}}$ falls from 0.89 ($m = 3$) to $< 0.03$ ($m = 5$) with no intermediate plateau among the sampled values---the $m$-grid being coarse near the spectral boundary, where the underlying $\lambda_2$-continuous behavior is a smooth crossover. The optimal $\gamma^*$ decreases with increasing $m$, consistent with the intuition that sparser networks require stronger per-node correction. For $m = 2$, degree-linear ($\gamma = 1.0$) actually \emph{over-corrects}: the optimum at $\gamma = 0.7$ achieves $H = 0.99$, exceeding even lattice performance.
+The drop is \textbf{sharp in the discrete attachment parameter $m$}: in the endogenous regime, $H_{\text{cog}}$ falls from 0.59 ($m = 2$) to $\leq 0.01$ ($m = 3$) with no intermediate plateau among the sampled values---the $m$-grid being coarse near the spectral boundary, where the underlying $\lambda_2$-continuous behavior is a smooth crossover. The continuous entropy $H_{\text{stable}}$ declines more gracefully over the same sweep (from $\approx 3.9$ bits at $m=2$, $\gamma=1.0$, to $\approx 2.3$ bits at $m=10$), confirming that the discrete-bin collapse reflects the loss of multi-state structure rather than of all voltage spread. Under the driven protocol ($I_{\text{stimulus}} = 0.5$, heretics active), functional diversity extends to $m = 3$ (Table~\ref{tab:ba_m_sweep}); the endogenous regime is more fragile, consistent with the heretic mechanism being one of the two jointly necessary ingredients identified in Section~\ref{sec:comp_analysis}.
 
-\textbf{Negative result.} For $m \geq 5$, no $\gamma \in [0, 1]$ achieves $H_{\text{stable}} > 0.03$. Degree-based normalization is fundamentally insufficient when graph connectivity (measured by $\lambda_2$) exceeds $\sim 2$--$3$, because coupling signals bypass locally-corrected hubs through redundant paths.
+\textbf{Negative result.} For $m \geq 3$ in the endogenous regime ($m \geq 5$ in the driven regime), no $\gamma \in [0, 1]$ recovers functional diversity. Degree-based normalization is fundamentally insufficient when graph connectivity (measured by $\lambda_2$) exceeds $\sim 2$--$3$, because coupling signals bypass locally-corrected hubs through redundant paths.
 
 \subsection{Formal Spectral Regression: $\lambda_{2,\mathrm{crit}} = 2.31$}
 \label{sec:lambda2}
@@ -574,7 +557,7 @@ The model uses first-order Euler integration with $\Delta t = 0.05$. A systemati
 
 \subsection{Origin of Sustained Diversity}
 
-The sustained attractor diversity observed in Section~\ref{sec:results_lattice} is structural in origin rather than arising from analytical instability of a synchronized state. At the reference parameterization ($\alpha = 0.15$, sub-Hopf regime), linearization around the synchronized manifold yields Jacobian eigenvalues with negative real parts ($\approx -0.13$), indicating that perfect synchrony would be locally stable in a homogeneous network without heretics. Sustained diversity is instead produced by two mechanisms acting in concert: (1) heretic nodes receiving inverted stimulus ($-I_{\text{stim}}$) provide permanent structural asymmetry that prevents consensus nucleation; (2) the Cold Start Protocol (Gaussian noise at $t=0$, $\sigma_v = 0.1$) breaks the symmetry of homogeneous initial conditions. These two mechanisms — structural heterogeneity and symmetry-breaking initialization — are jointly necessary and sufficient to produce the chimera-like attractors~\cite{abrams2004} reported in Table~\ref{tab:scaling}. The $u$ dynamics then sustain diversity by actively decorrelating neighbours (Section~\ref{sec:mi_analysis}), as confirmed by the $3.37\times$ MI increase under FROZEN\_U ablation on BA $m=3$ ($2.84\times$ on 2D lattice).
+The sustained attractor diversity observed in Section~\ref{sec:results_lattice} is structural in origin rather than arising from analytical instability of a synchronized state. At the reference parameterization ($\alpha = 0.15$, sub-Hopf regime), linearization around the synchronized manifold yields Jacobian eigenvalues with negative real parts ($\approx -0.13$), indicating that perfect synchrony would be locally stable in a homogeneous network without heretics. Sustained diversity is instead produced by two mechanisms acting in concert: (1) heretic nodes receiving inverted stimulus ($-I_{\text{stim}}$) provide permanent structural asymmetry that prevents consensus nucleation; (2) the Cold Start Protocol (Gaussian noise at $t=0$, $\sigma_v = 0.1$) breaks the symmetry of homogeneous initial conditions. These two mechanisms — structural heterogeneity and symmetry-breaking initialization — are jointly necessary and sufficient to produce the chimera-like attractors~\cite{abrams2004} reported in Table~\ref{tab:scaling}. The $u$ dynamics then sustain diversity by actively decorrelating neighbours (Section~\ref{sec:mi_analysis}), as confirmed by the $3.41\times$ MI increase under FROZEN\_U ablation on BA $m=3$ ($2.85\times$ on 2D lattice).
 
 % ============================================================================
 % 6. DISCUSSION
@@ -607,7 +590,7 @@ The dynamics of $u_i$ (Eq.~\ref{eq:du}) are explicitly driven by this conflict s
 
 When a node experiences high conflict with its neighbors (high $|\mathcal{L}_v|_i$), the conflict signal increases, driving $u_i \to 1$. This increase in $u_i$ locally reduces the coupling strength $D_{\text{eff}}$, effectively decoupling the node from the source of the conflict. This dynamic implements homeostatic coupling regulation: the node alters its effective coupling with the network topology to reduce local disagreement, without invoking a generative model or variational inference.
 
-This homeostatic mechanism is not imposed externally, but emerges from the topological self-regulation of the network. As demonstrated by numerical validation of the Kirchhoff-based Autorégulation Topologique (ART; Paper~B, in preparation), the effective algebraic connectivity $\lambda_2$ is not a fixed parameter but a dynamical variable constrained by the Kirchhoff flow. In the functional regime, the ART acts as a homeostatic governor: it maintains $\lambda_2$ below the regime boundary by locally adjusting the weights of conflicted edges, thereby preserving the network's capacity for localized conflict resolution.
+This homeostatic mechanism is not imposed externally, but emerges from the topological self-regulation of the network. Preliminary numerical and circuit-level (SPICE) validation of a Kirchhoff-based topological self-regulation mechanism (ART; scripts and netlists available in the project repository) suggests that the effective algebraic connectivity $\lambda_2$ need not be a fixed parameter but can behave as a dynamical variable constrained by the Kirchhoff flow. Under this mechanism, in the functional regime, $\lambda_2$ is held below the regime boundary by locally adjusting the weights of conflicted edges, preserving the network's capacity for localized conflict resolution. A full characterization of this mechanism is beyond the scope of the present paper.
 
 The homeostatic mechanism also has physical limits: active decoupling is only viable within a bounded region of the state space. When the density of topological constraints overwhelms the dissipative capacity of the local $u_i$-mediated decoupling (i.e., when $\lambda_2$ exceeds the numerically observed regime boundary $\lambda_{2,\mathrm{crit}} \approx 2.31$), the pervasive, non-local influences override the local capacity for regulation. The conflict signal $|\mathcal{L}_v|$ becomes uniformly high across the network, forcing $u_i \to 1$ globally.
 
@@ -623,7 +606,7 @@ The doubt-modulated FHN model was originally motivated by deliberative scenarios
 
 \section{Conclusion}
 
-We have presented a FitzHugh--Nagumo network model in which doubt-modulated coupling---a per-node variable that flips coupling polarity from attractive to repulsive---together with structural heretic nodes sustains attractor diversity from homogeneous initial conditions. On regular lattices ($10\times10$, $I_{\text{stim}}=0.5$) the model reliably achieves $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (10 seeds, reproduced by \texttt{experiments/verify\_table1\_preprint.py}), and component ablation identifies the doubt dynamics as the primary anti-synchronization mechanism: freezing $u$ raises pairwise synchrony ${\sim}90$-fold (from $0.007$ to $0.651$). Degree-normalized coupling extends diversity to sparse scale-free networks ($m \leq 3$, optimal exponent $\gamma^*(m) = 0.7$--$0.9$), and a formal classification across twelve topology families places the regime boundary at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$) with complete linear separation.
+We have presented a FitzHugh--Nagumo network model in which doubt-modulated coupling---a per-node variable that flips coupling polarity from attractive to repulsive---together with structural heretic nodes sustains attractor diversity from homogeneous initial conditions. On regular lattices ($10\times10$, $I_{\text{stim}}=0.5$) the model reliably achieves $H_{\text{stable}} \approx 4.06 \pm 0.08$ bits (10 seeds, reproduced by \texttt{experiments/verify\_table1\_preprint.py}), and component ablation identifies the doubt dynamics as the primary anti-synchronization mechanism: freezing $u$ raises pairwise synchrony ${\sim}90$-fold (from $0.007$ to $0.658$). Degree-normalized coupling extends diversity to sparse scale-free networks ($m \leq 3$ under the driven protocol; no power-law exponent $\gamma$ bridges the dead zone), and a formal classification across twelve topology families places the regime boundary at $\lambda_{2,\mathrm{crit}} \in (2.13, 2.50)$ (midpoint $2.31$) with complete linear separation.
 
 The principal negative result is that for denser networks ($m \geq 5$, $\lambda_2 > \lambda_{2,\mathrm{crit}}$) no degree-based normalization preserves diversity. Finite-size scaling of the Binder cumulant shows that the entropy loss across this boundary is a continuous spectral crossover rather than a thermodynamic phase transition, and a circuit-level SPICE implementation reproduces the same functional/dead-zone dichotomy under analog fabrication tolerances. Unlike adaptive networks that tune coupling \emph{magnitude}, the mechanism here adapts coupling \emph{sign}, locally and per node; the failure of local corrections beyond $\lambda_{2,\mathrm{crit}}$ motivates future work on spectrally-informed normalization that accounts for global path redundancy. More broadly, the boundary suggests a design constraint for neuromorphic and distributed systems: connectivity is not a free resource---past a spectral threshold, additional links erase the very state heterogeneity that local mechanisms are meant to preserve, so architectures that must sustain functional diversity should bound their algebraic connectivity rather than maximize it.
 
@@ -637,11 +620,11 @@ The principal negative result is that for denser networks ($m \geq 5$, $\lambda_
 \begin{itemize}
 \item \textbf{Numerical integration:} All results use first-order Euler integration with $\Delta t = 0.05$. The spectral radius of the linearized Euler step reaches $\max|1 + \lambda_{\max}\,\Delta t| \approx 1.04 > 1$, which is formally outside the von~Neumann stability bound for the linearized system. In practice, the nonlinear restoring forces of the FitzHugh--Nagumo nullclines bound trajectories, preventing divergence. This tension between linear instability and nonlinear stability is a known feature of FHN-type systems. While Runge--Kutta 4 improves precision, Euler is sufficient for stability in our parameter regime ($\Delta t \le 0.05$), as validated by direct comparison ($\max \Delta H_{\text{cog}} < 0.006$).
 \item \textbf{Heretic threshold:} The $\eta = 0.15$ value is empirically effective on 2D lattices ($k = 4$) but has not been validated as optimal across arbitrary topologies.
-\item \textbf{Entropy metric and discretization:} Two entropy metrics are used in this work and must not be conflated. (1)~$H_{\text{stable}}$ (primary metric throughout) is a 100-bin continuous spectral entropy computed on the actual voltage distribution, recalibrated from earlier discrete estimates. (2)~$H_{\text{cog}}$ is a legacy 5-state discrete entropy using physiological bins $\{v < -1.2,\; {-1.2}\text{--}{-0.4},\; {-0.4}\text{--}{0.4},\; {0.4}\text{--}{1.2},\; v > 1.2\}$ inherited from the SPICE voltage scale. Python simulations at default parameters produce voltages predominantly in $[-3.2, -1.3]$, placing all nodes in bin~1 and yielding $H_{\text{cog}} \approx 0$ regardless of actual diversity. This is a calibration artefact, not a diversity collapse: pairwise synchrony ($\text{sync}_{\text{FULL}} = 0.007$ vs.\ $\text{sync}_{\text{FROZEN}} = 0.651$, a ${\sim}90$-fold increase) and $H_{\text{stable}}$ confirm that diversity is real and substantial. $H_{\text{cog}}$ is retained only for compatibility with SPICE benchmarks, where voltage scales match the bin design.
+\item \textbf{Entropy metric and discretization:} Two entropy metrics are used in this work and must not be conflated. (1)~$H_{\text{stable}}$ (primary metric throughout) is a 100-bin continuous spectral entropy computed on the actual voltage distribution, recalibrated from earlier discrete estimates. (2)~$H_{\text{cog}}$ is a legacy 5-state discrete entropy using physiological bins $\{v < -1.2,\; {-1.2}\text{--}{-0.4},\; {-0.4}\text{--}{0.4},\; {0.4}\text{--}{1.2},\; v > 1.2\}$ inherited from the SPICE voltage scale. Python simulations at default parameters produce voltages predominantly in $[-3.2, -1.3]$, placing all nodes in bin~1 and yielding $H_{\text{cog}} \approx 0$ regardless of actual diversity. This is a calibration artefact, not a diversity collapse: pairwise synchrony ($\text{sync}_{\text{FULL}} = 0.007$ vs.\ $\text{sync}_{\text{FROZEN}} = 0.658$, a ${\sim}90$-fold increase) and $H_{\text{stable}}$ confirm that diversity is real and substantial. $H_{\text{cog}}$ is retained only for compatibility with SPICE benchmarks, where voltage scales match the bin design.
 \item \textbf{Doubt time-scale near the phase boundary:} The doubt recovery time constant $\tau_u = 10.0$ (default) was held fixed across all experiments. Near the spectral phase boundary ($\lambda_2 \approx \lambda_{2,\mathrm{crit}}$), the system's ability to sustain functional diversity may depend sensitively on $\tau_u$: a shorter $\tau_u$ could shift the effective transition threshold by allowing faster polarity reassignment, while a longer $\tau_u$ may produce critical-slowing-down signatures analogous to those observed near bifurcations in excitable media. The dependence of $\lambda_{2,\mathrm{crit}}$ on $\tau_u$ has not been characterized and remains an open question.
 \item \textbf{Scale:} The model has been tested up to $N = 2500$. Behavior at $N \gg 10{,}000$ is not validated.
 \item \textbf{Spectral regime transition:} The transition at $m \approx 5$ (or $\lambda_2 \approx 2$--$3$) is empirically observed on $N = 100$ BA networks. Finite-size effects may shift this boundary at larger $N$.
-\item \textbf{Replication count for secondary experiments:} Primary results (Table~\ref{tab:scaling}, component ablation, scale-free topology sweep) use $n = 10$ seeds. Secondary validation experiments---spatial mutual information (\texttt{p2\_spatial\_mutual\_information.py}), stochastic resonance (\texttt{p2\_stochastic\_resonance\_directed.py}, \texttt{p2\_stochastic\_resonance\_topology.py}), and the $\gamma$ sweep (\texttt{limit02\_alpha\_sweep.py})---use $n = 3$--$5$ seeds. These are directional and exploratory results; full replication at $n = 10$ is planned for a future revision.
+\item \textbf{Replication count:} Primary results (Table~\ref{tab:scaling}, component ablation, scale-free topology sweep) and secondary validation experiments (spatial mutual information, stochastic resonance, $\gamma$ sweep) all use $n = 10$ seeds. The spectral regression of Section~\ref{sec:lambda2} uses 3 seeds per topology family (36 configurations total), as each seed contributes an independent binary observation to the regression rather than an averaged estimate.
 \end{itemize}
 
 \subsection{Methodological Transparency}
@@ -741,6 +724,28 @@ This work was developed through a multi-agent collaborative research methodology
 \ENDFOR
 \end{algorithmic}
 \end{algorithm}
+
+\section{Legacy Cognitive State Bins}
+\label{app:legacy_bins}
+
+The 5-state discrete entropy $H_{\text{cog}}$ uses the physiological voltage bins of Table~\ref{tab:states}, inherited from the SPICE voltage scale. It is retained for circuit-level comparisons only (see Limitations, Section~\ref{sec:limitations}).
+
+\begin{table}[ht]
+\centering
+\caption{Cognitive state classification by activation potential $v$.}
+\label{tab:states}
+\begin{tabular}{lcc}
+\toprule
+\textbf{State} & \textbf{Range} & \textbf{Interpretation} \\
+\midrule
+1 (Strong negative) & $v < -1.2$ & Strong opposition \\
+2 (Weak negative)   & $-1.2 \leq v < -0.4$ & Mild opposition \\
+3 (Neutral)         & $-0.4 \leq v \leq 0.4$ & Uncertain / Deliberative \\
+4 (Weak positive)   & $0.4 < v \leq 1.2$ & Mild agreement \\
+5 (Strong positive) & $v > 1.2$ & Strong agreement \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Reference Parameters}
 \label{app:parameters}

@@ -214,6 +214,38 @@ Julien a validé l'Option A (« oui svp fais le maintenant »). Travaux :
 
 ⚠️ UltraRAG ingest : échec exit 255 (problème qdrant_client, 3e signalement).
 
+### ✅ PHASE 3 (même journée, Julien présent) — ÉTAGE 1 : tout à 10 seeds + finitions Grok
+
+Julien a demandé de traiter l'étage 1 (consolidation pré-soumission) et validé les 2 finitions Grok.
+
+1. **5 scripts montés au set canonique 10 seeds** [42,123,777,17,256,1337,99,314,2024,888] :
+   - `p2_spatial_mutual_information.py` (3→10) : ratios TRÈS stables — 2.85× lattice, 3.41× BA.
+     Table MI + texte preprint mis à jour.
+   - `p2_sigma_social_ablation.py` (5→10) : FULL=0.0072 (identique !), FROZEN=0.6582.
+     Preprint : 0.651→0.658 (3 occurrences).
+   - `p2_stochastic_resonance_directed.py` (3→10, S01) : effet directionnel CONFIRMÉ
+     (H_cont 2.88→4.28 monotone) ; baseline plus haute (bruit ×4.47), seuils décalés.
+   - `p2_stochastic_resonance_topology.py` (5→10, S02) : effet qualitatif CONFIRMÉ ;
+     évasion dead zone à σ≥0.3 (était 0.1 avec l'ancien bruit).
+   - `limit02_alpha_sweep.py` (3→10, S03) : voir point 3.
+2. **2 bugs corrigés dans limit02_alpha_sweep.py** : crash UnicodeEncodeError cp1252 (≈/→
+   dans un print) + AUCUNE sortie CSV (violation de la règle « zéro valeur sans script
+   reproductible » — la table du preprint n'avait pas d'artefact). CSV ajouté.
+3. **⚠️ S03 : SEUL RÉSULTAT AFFAIBLI de la journée (assumé honnêtement)** :
+   l'ancien détail « γ*(m=2)=0.7, γ*(m=3)=0.9, sur-correction à m=2 » NE SURVIT PAS au
+   nouveau bruit. Nouveau : m=2 γ*=1.0 H_cog=0.59 ; m≥3 H_cog≤0.01 (régime endogène).
+   Le claim CENTRAL se renforce : aucun γ ne franchit la dead zone (maintenant dès m=3
+   en endogène). Preprint réécrit : table tab:alpha_sweep (+ colonne relabellisée
+   H_cog — elle était mal étiquetée « H_stable » !), narration, contribution (4) → résultat
+   négatif explicite, conclusion sans γ*=0.7–0.9. Distinction endogène/driven explicitée.
+4. **Item Limitations « replication count » réécrit** : tout est à n=10 ; justification
+   propre des 3 seeds de la régression spectrale (observations binaires indépendantes).
+5. **Finitions Grok (validées Julien)** : (a) table H_cog legacy (tab:states) déplacée en
+   appendice `app:legacy_bins` ; (b) « Paper B, in preparation » → formulation autonome
+   (« preliminary validation… available in the project repository… beyond the scope »).
+6. **PDF recompilé** : 24 pages, 0 erreur. **Guardian 13/13.**
+7. claims_mapping : C08 2.84→2.85, C08b 1.7012→1.7118 (10 seeds).
+
 ### Fichiers de cette session
 - Scripts : `experiments/c04_rerun_20260612.py`, `deadzone_check_20260612.py`,
   `poc_c_sweep_v2.py`, `poc5_bruit_v2.py`

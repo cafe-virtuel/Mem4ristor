@@ -39,7 +39,8 @@ N        = 100
 M_BA     = 5          # dead zone cible
 STEPS    = 3000
 WARM_UP  = int(STEPS * 0.25)   # ignore les STEPS premiers
-SEEDS    = [42, 123, 777]
+# 2026-06-12 : 3 -> 10 seeds (set canonique Table 1) — lève le @TODO pré-soumission
+SEEDS    = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]
 I_STIM   = 0.0        # régime endogène (heretics inactive — documented no-op)
 SIGMAS   = [0.0, 0.02, 0.05, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50]
 MODES    = ['ZERO', 'UNIFORM', 'HUB', 'HERETIC']

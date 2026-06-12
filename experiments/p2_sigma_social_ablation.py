@@ -39,7 +39,8 @@ from mem4ristor.metrics import (
 )
 
 # -- Parametres ---------------------------------------------------------------
-SEEDS    = [42, 123, 777, 456, 999]
+# 2026-06-12 : 5 -> 10 seeds (set canonique Table 1) — pré-soumission
+SEEDS    = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]
 I_STIM   = 0.5
 STEPS    = 5000
 WARM_UP  = 1000

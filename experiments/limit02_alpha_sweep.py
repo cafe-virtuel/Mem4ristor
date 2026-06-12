@@ -17,7 +17,8 @@ from mem4ristor.metrics import calculate_cognitive_entropy
 
 N_BA   = 100
 STEPS  = 3000
-SEEDS  = [42, 123, 777]
+# 2026-06-12 : 3 -> 10 seeds (set canonique Table 1) — lève le @TODO pré-soumission
+SEEDS  = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]
 # NOTE: I_STIM = 0.0 means heretic_mask *= -1 is a no-op (I_eff = 0).
 # Heretics are INACTIVE in this regime. Results reflect endogenous dynamics only.
 I_STIM = 0.0
@@ -111,8 +112,9 @@ if __name__ == '__main__':
             row += f"  {h:>6.3f}{star}"
         print(row)
 
-    print("\n[H_cog — 5-bin cognitive entropy, KIMI thresholds ±0.4/1.2]")
-    print("(Expected: H_cog ≈ 0 in endogenous regime, I_stim=0 → heretics inactive)")
+    print("\n[H_cog - 5-bin cognitive entropy, KIMI thresholds +-0.4/1.2]")
+    # 2026-06-12 : caracteres unicode retires (UnicodeEncodeError console cp1252)
+    print("(Expected: H_cog ~ 0 in endogenous regime, I_stim=0 -> heretics inactive)")
     header2 = f"{'alpha':>6}"
     for m in M_TARGETS:
         header2 += f"  {'m='+str(m):>7}"
@@ -125,6 +127,18 @@ if __name__ == '__main__':
             star = "*" if h_cog > 0.3 else " "
             row += f"  {h_cog:>6.3f}{star}"
         print(row)
+
+    # 2026-06-12 : sortie CSV ajoutee (regle "zero valeur sans script reproductible" —
+    # ce script n'ecrivait QUE du stdout, la table du preprint n'avait pas d'artefact)
+    import csv as _csv
+    import pathlib as _pl
+    out = _pl.Path(__file__).resolve().parents[1] / 'figures' / 'limit02_alpha_sweep.csv'
+    with open(out, 'w', newline='') as f:
+        w = _csv.writer(f)
+        w.writerow(['m', 'alpha', 'h_cont_mean', 'h_cont_std', 'h_cog_mean', 'n_seeds'])
+        for (m, alpha), (h_mean, h_std, h_list, h_cog_mean) in sorted(results.items()):
+            w.writerow([m, alpha, h_mean, h_std, h_cog_mean, len(h_list)])
+    print(f"\nCSV : {out}")
 
     # Best alpha per topology (continuous metric)
     print(f"\nOptimal alpha per topology (H_cont):")

@@ -40,7 +40,8 @@ from mem4ristor.metrics import (
 
 # -- Parametres ---------------------------------------------------------------
 SIGMAS  = [0.0, 0.01, 0.03, 0.07, 0.15, 0.30, 0.50, 0.80, 1.20]
-SEEDS   = [42, 123, 777, 456, 999]  # n=5 seeds (publication-ready)
+# 2026-06-12 : 5 -> 10 seeds (set canonique Table 1) — pré-soumission
+SEEDS   = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]
 I_STIM  = 0.5
 STEPS   = 3000
 WARM_UP = 750

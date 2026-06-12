@@ -38,7 +38,8 @@ N_BA    = 100
 M_BA    = 3
 STEPS   = 3000
 WARM_UP = 1000
-SEEDS   = [42, 123, 777]
+# 2026-06-12 : 3 -> 10 seeds (set canonique Table 1) — lève la limitation pré-soumission
+SEEDS   = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]
 I_STIM  = 0.5   # force : heretiques actifs
 
 ABLATIONS = {
