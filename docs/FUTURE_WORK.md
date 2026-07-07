@@ -120,8 +120,24 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     au-dessus du BICAMERAL bruit-driven (2.8). **Le vrai apport du watchdog = internaliser le
     kick dans le cœur, fidèlement** (plus besoin de piloter `u` dehors), pas un mécanisme émergent.
   - **Réserve.** Couverture modeste (~6, pas « infinie ») ; seeds 0-4, lattice 10×10, E=1.0.
-- **Suite ouverte.** Régler le **rythme** (T_FOU/T_SAGE) pour voir jusqu'où la couverture monte
-  et si un optimum existe (`experiments/watchdog_rhythm_sweep.py` — en cours).
+- **Rythme (2026-07-07).** Sweep T_FOU×T_SAGE (`experiments/watchdog_rhythm_sweep.py`, 5 seeds)
+  puis raffinement (`experiments/watchdog_rhythm_refine.py`, 8 seeds, barres d'erreur). Résultat :
+  - **La couverture n'a pas de pic gaussien : c'est une FALAISE.** Elle croît avec T_SAGE (plus
+    on consolide, plus on décide de solutions distinctes) puis **s'effondre d'un coup** quand la
+    validité chute (0.97→0.20). Ce seuil = la **dead zone temporelle** : consolider trop longtemps
+    (`u=0.05` maintenu) synchronise le réseau et tue la structure. C'est le compromis `u` calibré
+    du preprint, transposé du spatial (degré) au **temporel** (durée de consolidation).
+  - **Couplage T_FOU↔T_SAGE** (invisible au maillage grossier) : la falaise arrive **plus tôt
+    quand T_FOU est plus long** (T_FOU=500 → seuil T_SAGE~400 ; T_FOU=300 → ~450). Explorer et
+    consolider tirent en sens inverse.
+  - **Point de fonctionnement recommandé : T_FOU=500, T_SAGE=400** (couverture 7.1±1.5, validité
+    0.99, plateau robuste 350-450). Le max absolu de couverture (7.8) est au bord instable
+    (validité 0.89) — pas rentable.
+  - **Couverture plafonne à ~7-8, jamais près de N_CYCLES=12** : ce n'est **pas l'exploration**
+    qui borne, c'est la falaise. **Aucun rythme ne débloque « une infinité de raisonnements »** :
+    fenêtre étroite avant la mort par sur-consolidation.
+  - **Réserve.** σ≈1.5 sur la couverture (8 seeds) : le message robuste est la falaise + son
+    couplage à T_FOU, pas les valeurs exactes. Grille lattice 10×10, E=1.0.
 
 ### B2 — Un vrai memristor 🧩
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
