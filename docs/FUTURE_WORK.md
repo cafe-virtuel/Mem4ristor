@@ -95,17 +95,33 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 - **Suite.** Enrichir la contrainte (multi-modalité plus riche) + régler le rythme
   (T_FOU/T_SAGE) pour voir jusqu'où la couverture monte. Puis **B1b** (watchdog natif).
 
-### B1b — Watchdog de consolidation dans `dynamics.py` (le chaînon manquant) 🧩
+### B1b — Watchdog de consolidation dans `dynamics.py` (le chaînon manquant) ✅ FAIT + VALIDÉ (2026-07-07)
 - **Pourquoi.** Diagnostic **mesuré** (calibrations 7/07) : le modèle se **verrouille en mode
   FOU** — `u` sature >0.5, les seuils de retour SAGE sont bornés à 0.5 (`dynamics.py:134`),
   donc **~0 bascule FOU→SAGE**. La chambre « consolidation » est structurellement inaccessible.
   C'est la panne **symétrique** de celle qu'Edison avait trouvée (verrouillage SAGE ; sa V5b
   jamais implémentée). Les POCs bicaméraux la contournent en pilotant `u` de l'extérieur.
-- **Comment.** Un watchdog qui, après un temps en FOU, force la consolidation (rabat `u`,
-  bascule FOU→SAGE) puis relâche → cycle natif explore↔consolide. Symétrique de la V5b
-  (voir `D:/ANTIGRAVITY/Mem4ristor/Analyse de KIMI V2.md`). ⚠️ Modification du **cœur** →
-  accord explicite de Julien requis.
-- **Effort.** ~1 session (implémentation + tests + Guardian) une fois le concept validé.
+- **Fait.** Watchdog opt-in ajouté au cœur (`dynamics.py:363`, commit `06cb6a9`) : cycle natif
+  FOU→SAGE avec **KICK** `u=0.9` en début d'exploration (le doute ne remonte pas seul depuis un
+  consensus). Désactivé par défaut, **bit-à-bit identique OFF** (`tests/test_consolidation_watchdog.py`).
+- **Validé.** `experiments/watchdog_multimodal_poc.py` (5 seeds, problème multi-modal, 4e condition
+  WATCHDOG + contrôle BICAMERAL_KICK). Résultats :
+  | Condition | Validité | Couverture (sol. distinctes) |
+  |---|---|---|
+  | WATCHDOG (natif + kick) | **0.97** | **6.0** |
+  | BICAMERAL_KICK (externe + kick) | 1.00 | 6.4 |
+  | BICAMERAL (externe, bruit-driven) | 0.95 | 2.8 |
+  | HASARD | 0.35 | 1.0 |
+  | ATTRACTIF | 0.48 | 3.0 |
+  - **(1) Utile** : le cycle natif tient la validité au niveau du pilotage externe et **écrase le
+    hasard** (0.97 vs 0.35). La question « son utilité reste à prouver » est tranchée : **oui**.
+  - **(2) La couverture ×2 vient du KICK, pas de la « nativité »** : le contrôle BICAMERAL_KICK
+    (externe+kick, 6.4) ≈ WATCHDOG (natif+kick, 6.0), écart 6 % (bruit des seeds), les deux
+    au-dessus du BICAMERAL bruit-driven (2.8). **Le vrai apport du watchdog = internaliser le
+    kick dans le cœur, fidèlement** (plus besoin de piloter `u` dehors), pas un mécanisme émergent.
+  - **Réserve.** Couverture modeste (~6, pas « infinie ») ; seeds 0-4, lattice 10×10, E=1.0.
+- **Suite ouverte.** Régler le **rythme** (T_FOU/T_SAGE) pour voir jusqu'où la couverture monte
+  et si un optimum existe (`experiments/watchdog_rhythm_sweep.py` — en cours).
 
 ### B2 — Un vrai memristor 🧩
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
