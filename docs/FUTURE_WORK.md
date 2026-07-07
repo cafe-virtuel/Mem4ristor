@@ -75,17 +75,37 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 
 ## B. Crédibilité « Grollier » (manques structurels)
 
-### B1 — Une tâche computationnelle 🧩 ⭐ PRIORITÉ 1
-- **Pourquoi.** « Maintenir la diversité » ne dit pas *pour calculer quoi*. Sans fonction
-  démontrée, FROZEN_U prouve que le doute *change* la dynamique, pas qu'il *sert*.
-- **Comment.** Banc reservoir computing minimal : le réseau = réservoir, lecture linéaire
-  (ridge regression) entraînée en sortie. Tâches candidates : **NARMA10** (prédiction,
-  standard), mémoire (capacité de rappel à retard τ), ou classification de séries
-  temporelles simple. Figure clé : **performance vs u** (ou FULL vs FROZEN) montrant un
-  optimum ou un gain du doute. Si le doute améliore une métrique de calcul → changement de
-  statut du projet.
-- **Effort.** 🧩 1-2 semaines (implémenter le banc, choisir la tâche, balayer).
-- **Note.** Commencer petit : NARMA10, N=100, lecture ridge, comparer FULL vs FROZEN_U.
+### B1 — Une tâche computationnelle ⭐ PREMIERS RÉSULTATS (7 juillet 2026)
+- **Pourquoi.** « Maintenir la diversité » ne dit pas *pour calculer quoi*.
+- **Fait — 3 POCs committés, 5 seeds chacun :**
+  - `experiments/reservoir_narma10_poc.py` (`6e9055e`) : le doute **ne bat pas le découplé**
+    (D=0 gagne). Le couplage est un handicap quand la tâche n'exige pas d'intégration inter-nœuds.
+  - `experiments/bicameral_rhythm_poc.py` (`dfb01d4`) : en pilotant un cycle FOU→SAGE **de
+    l'extérieur** (la 2ᵉ chambre que le modèle n'a pas), les solutions deviennent plus
+    **cohérentes** (0.225 vs 0.11 hasard). Qualité, pas quantité.
+  - `experiments/bicameral_multimodal_poc.py` (`7ed080f`) : le doute explore en restant
+    **valide à 95 %** (vs 35 % hasard) par **marche structurée** (dist. consécutive 0.21 vs 0.35).
+- **Caractérisation (résultat honnête).** Le doute **n'est pas** un générateur de diversité
+  brute (le bruit thermique fait mieux en nombre). C'est un **explorateur discipliné** : il
+  visite plusieurs solutions **valides** (respectant les contraintes) par une marche continue,
+  sans les casser. Couverture modeste (~2.8 solutions distinctes, pas « infinie »).
+  → Réponse **nuancée** à la vision « explorer une infinité de raisonnements en gardant chacun ».
+- **Réserve.** Contraste FULL/FROZEN réel mais sur fond de perf. absolue faible ; seed 42 /
+  lattice / petites tailles. Caractérisation solide, chiffres à consolider (multi-seed/topo).
+- **Suite.** Enrichir la contrainte (multi-modalité plus riche) + régler le rythme
+  (T_FOU/T_SAGE) pour voir jusqu'où la couverture monte. Puis **B1b** (watchdog natif).
+
+### B1b — Watchdog de consolidation dans `dynamics.py` (le chaînon manquant) 🧩
+- **Pourquoi.** Diagnostic **mesuré** (calibrations 7/07) : le modèle se **verrouille en mode
+  FOU** — `u` sature >0.5, les seuils de retour SAGE sont bornés à 0.5 (`dynamics.py:134`),
+  donc **~0 bascule FOU→SAGE**. La chambre « consolidation » est structurellement inaccessible.
+  C'est la panne **symétrique** de celle qu'Edison avait trouvée (verrouillage SAGE ; sa V5b
+  jamais implémentée). Les POCs bicaméraux la contournent en pilotant `u` de l'extérieur.
+- **Comment.** Un watchdog qui, après un temps en FOU, force la consolidation (rabat `u`,
+  bascule FOU→SAGE) puis relâche → cycle natif explore↔consolide. Symétrique de la V5b
+  (voir `D:/ANTIGRAVITY/Mem4ristor/Analyse de KIMI V2.md`). ⚠️ Modification du **cœur** →
+  accord explicite de Julien requis.
+- **Effort.** ~1 session (implémentation + tests + Guardian) une fois le concept validé.
 
 ### B2 — Un vrai memristor 🧩
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
