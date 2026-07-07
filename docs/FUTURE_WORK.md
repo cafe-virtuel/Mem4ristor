@@ -172,15 +172,32 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   avoir juste », donc un critère de convergence ne peut structurellement pas se tromper. Le doute
   est censé briller quand **se stabiliser tôt = se tromper** (optimum local trompeur). Non testé.
 
-### B1d — Tâche TROMPEUSE : le seul test loyal du doute 🔜
+### B1d — Tâche TROMPEUSE : le doute gagne ✅ FAIT (2026-07-07)
 - **Pourquoi.** B1c montre que sur une tâche où convergence=correction, le doute ne peut pas
-  gagner. Le doute ne peut ajouter de la valeur que si **converger tôt mène à la mauvaise réponse**
-  et qu'il faut *continuer à douter pour s'échapper* d'un optimum local trompeur.
-- **Comment.** Construire un problème à leurre : une solution « facile » que le réseau atteint vite
-  (v se stabilise) mais qui est FAUSSE, et une solution correcte qui exige de traverser une barrière.
-  Comparer DOUTE vs CONVERGENCE : le doute doit rester haut sur le leurre (désaccord résiduel) et
-  continuer à explorer là où la convergence s'arrête satisfaite (et se trompe).
-- **Effort.** ~1 session. C'est la suite directe de B1c.
+  gagner. Le doute ne peut ajouter de la valeur que si **converger tôt mène à la mauvaise réponse**.
+- **Fait.** `experiments/deceptive_task_poc.py` (12 seeds). Piège **pulsé** : leurre NOMBREUX (26
+  nœuds) + fort, signe −D\*, **retiré après T_pulse** (domine la moyenne globale TÔT → faux) ;
+  vérité PERSISTANTE (14 nœuds), signe +D\* (seule active après le pulse → gagne TARD). Readout
+  différentiel (B1c). DOUTE (`sigma_social` chute <30 %) vs CONVERGENCE (décision stabilisée).
+  *(NB : 1ʳᵉ calibration ratée — vérité nombreuse dominait la moyenne dès le début, tâche « juste
+  tôt » et non trompeuse ; corrigé en rendant le leurre nombreux+pulsé. Diagnostic gravé.)*
+- **Résultats (T_pulse ≥ 350) :**
+  | | acc DOUTE | acc CONVERGENCE | arrêt |
+  |---|---|---|---|
+  | Tâche trompeuse | **0.83** | **0.25** | doute ~380 (après pulse) / conv ~205 (dans le leurre) |
+  - **Le DOUTE bat la convergence de +0.58.** La convergence s'arrête sur le **plateau du leurre**
+    (~205 pas, faux) ; le doute voit la **tension locale** du bras-de-fer persister et tient
+    jusqu'**après la fin du pulse** (~380), quand la vérité reprend → juste.
+  - **Fenêtre nécessaire** : à T_pulse=150 (piège trop court) les deux échouent (0.25) — le doute
+    ne gagne que si le leurre dure assez pour que la convergence s'y engage.
+- **Fil rouge COMPLET (la caractérisation la plus défendable du projet sur le doute)** :
+  - B1c (se stabiliser = juste) → doute **≤** convergence (sur-réfléchit).
+  - B1d (se stabiliser tôt = faux) → doute **>** convergence (+0.58, refuse le faux consensus).
+  - **La valeur du doute est CONDITIONNELLE : elle paie exactement quand converger tôt est un
+    piège.** Ni gadget, ni magie — un mécanisme dont on connaît le domaine d'utilité.
+- **Réserves.** Plafond `acc_FIN=0.75` (tâche pas parfaitement soluble) → comparaison relative ;
+  « flip moy ~2200 » = métrique stricte gonflée par des flips de bruit tardifs, la vraie transition
+  est à la fin du pulse (~350) ; 12 échantillons (0.83=10/12) → direction robuste, valeurs à N modeste.
 
 ### B2 — Un vrai memristor 🧩
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
