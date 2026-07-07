@@ -26,7 +26,9 @@ class Mem4ristorV3:
                       'alpha_surprise': 2.0, 'surprise_cap': 5.0},
             'noise': {'sigma_v': 0.05, 'use_rtn': False, 'rtn_amplitude': 0.1, 'rtn_p_flip': 0.01},
             'hysteresis': {'enabled': True, 'theta_low': 0.35, 'theta_high': 0.65,
-                           'fatigue_rate': 0.0, 'base_hysteresis': 0.15}
+                           'fatigue_rate': 0.0, 'base_hysteresis': 0.15},
+            'consolidation_watchdog': {'enabled': False, 't_explore': 300,
+                                       't_consolidate': 400, 'u_sage': 0.05, 'u_fou': 0.9}
         }
 
         if config is None:
@@ -120,6 +122,8 @@ class Mem4ristorV3:
         self.D_eff = self.cfg['coupling']['D'] / np.sqrt(self.N)
         self.mode_state = np.zeros(self.N, dtype=bool)
         self.time_in_state = np.zeros(self.N, dtype=float)
+        self.watchdog_timer = 0
+        self.watchdog_consolidating = False
 
         # V4: dynamic heretics — counts consecutive steps where u_i >= u_threshold
         self.heretic_counter = np.zeros(self.N, dtype=int)
@@ -355,6 +359,32 @@ class Mem4ristorV3:
 
             # Plancher fixe — toujours actif quand ART enabled (meme sans matrice adj)
             self.u = np.maximum(self.u, u_min_art)
+
+        # Consolidation watchdog (opt-in) : cycle natif explore (FOU) <-> consolidate (SAGE).
+        # Resout le verrouillage en mode FOU (u sature > seuils SAGE bornes a 0.5), diagnostique
+        # le 2026-07-07 -- symetrique de la V5b Edison jamais faite (voir docs/FUTURE_WORK.md B1b).
+        # Desactive par defaut : n'affecte aucun resultat existant tant que enabled=False.
+        wd = self.cfg.get('consolidation_watchdog', {})
+        if wd.get('enabled', False):
+            t_ex = int(wd.get('t_explore', 300))
+            t_co = int(wd.get('t_consolidate', 400))
+            u_sage = float(wd.get('u_sage', 0.05))
+            u_fou = float(wd.get('u_fou', 0.9))
+            self.watchdog_timer += 1
+            if not self.watchdog_consolidating:
+                if self.watchdog_timer >= t_ex:
+                    self.watchdog_consolidating = True
+                    self.watchdog_timer = 0
+            elif self.watchdog_timer >= t_co:
+                self.watchdog_consolidating = False
+                self.watchdog_timer = 0
+                # KICK : reamorce la repulsion en debut d'exploration. Depuis un consensus
+                # (sigma_local~0) le doute ne remonterait pas seul ; le kick le relance, puis
+                # le desaccord qu'il cree entretient u haut jusqu'a la prochaine consolidation.
+                self.u[:] = u_fou
+            if self.watchdog_consolidating:
+                # chambre SAGE forcee -> u bas -> couplage attractif -> consolidation
+                self.u[:] = u_sage
 
         # V4: dynamic heretics — bascule irréversible quand u_i >= u_threshold pendant steps_required steps
         dyn = self.cfg['coupling'].get('dynamic_heretics', {})
