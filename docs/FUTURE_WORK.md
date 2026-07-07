@@ -139,6 +139,49 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   - **Réserve.** σ≈1.5 sur la couverture (8 seeds) : le message robuste est la falaise + son
     couplage à T_FOU, pas les valeurs exactes. Grille lattice 10×10, E=1.0.
 
+### B1c — Le doute comme allocateur de compute (flux d'entrées) ⚠️ RÉSULTAT MITIGÉ (2026-07-07)
+- **Pourquoi.** La vision « explorer tant que le doute persiste » = un flux de problèmes, le
+  doute allouant le compute à chacun (adaptive computation time piloté par le doute). Plus
+  fidèle à la vision que le watchdog interne (B1b).
+- **Fait.** `experiments/doubt_compute_allocation_poc.py` (6 seeds, K=12 : 3 familles ÉVIDENCE /
+  CONTRADICTION / TOPOLOGIE). Substrat = tâche de **décision/consensus** (le réseau tranche un
+  signe global d'après l'évidence nette). Readout **différentiel** (run de référence `stim=0` au
+  même seed → annule le biais du point fixe négatif `v*≈−1.29` ET le bruit). 3 conditions à
+  budget total égal : **DOUTE** (arrêt quand `sigma_social=|L·v|` chute sous 30 % du pic),
+  **UNIFORME** (budget fixe/problème), **CONVERGENCE** (contrôle honnête : arrêt quand la variable
+  de décision cesse de bouger — n'utilise pas le doute).
+- **Résultats (budget serré 0.75×) :**
+  | Condition | Réussite | Coût moyen (pas/pb) |
+  |---|---|---|
+  | DOUTE | 0.92 | 378 |
+  | **CONVERGENCE** | **0.94** | **107** |
+  | UNIFORME | 0.47 | — |
+  - **(1) L'allocation adaptative écrase l'uniforme** (0.92-0.94 vs 0.31-0.74) : répartir le
+    compute selon un critère d'arrêt, ça paie. La thèse ACT tient.
+  - **(2) Le DOUTE ne bat PAS le contrôle trivial** : la convergence-de-décision est aussi
+    précise (0.94 vs 0.92) et **3,5× moins chère** (107 vs 378 pas). Le doute sur-réfléchit.
+  - **(3) Mécanisme** : le désaccord local `|L·v|` **ne retombe jamais sur les topologies sparse/BA**
+    (25 % saturent au budget max, c_doubt=717 vs c_conv=109) → le doute s'y accroche et **affame
+    le budget** du reste du flux. La convergence est robuste à la topologie (~90-123 pas partout).
+  - **Allocation vs difficulté** : corr(compute, oracle)≈0 pour les deux — mais proxy oracle
+    faible (dominé par des flips de bruit tardifs) → **inconcluant**, à ne pas surinterpréter.
+- **Fil rouge** : 3e confirmation (après reservoir NARMA10 D=0, et B1b kick=watchdog) que **la
+  valeur est dans la partie ADAPTATIVE, pas dans le DOUTE en soi**. Le doute reste un explorateur
+  discipliné, pas un mécanisme magique.
+- **RÉSERVE MAJEURE (bridge B1d)** : cette tâche est *piégée contre le doute* — « se stabiliser =
+  avoir juste », donc un critère de convergence ne peut structurellement pas se tromper. Le doute
+  est censé briller quand **se stabiliser tôt = se tromper** (optimum local trompeur). Non testé.
+
+### B1d — Tâche TROMPEUSE : le seul test loyal du doute 🔜
+- **Pourquoi.** B1c montre que sur une tâche où convergence=correction, le doute ne peut pas
+  gagner. Le doute ne peut ajouter de la valeur que si **converger tôt mène à la mauvaise réponse**
+  et qu'il faut *continuer à douter pour s'échapper* d'un optimum local trompeur.
+- **Comment.** Construire un problème à leurre : une solution « facile » que le réseau atteint vite
+  (v se stabilise) mais qui est FAUSSE, et une solution correcte qui exige de traverser une barrière.
+  Comparer DOUTE vs CONVERGENCE : le doute doit rester haut sur le leurre (désaccord résiduel) et
+  continuer à explorer là où la convergence s'arrête satisfaite (et se trompe).
+- **Effort.** ~1 session. C'est la suite directe de B1c.
+
 ### B2 — Un vrai memristor 🧩
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
   utilise des *behavioral sources*, pas un modèle de dispositif. Grollier demandera où est
