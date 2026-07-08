@@ -13,9 +13,10 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 
 ## Priorité recommandée (si on ne fait qu'une chose à la fois)
 
-1. **B1 — une tâche computationnelle** (reservoir computing). Transforme « le système
-   maintient la diversité » en « le doute améliore une performance mesurable ». Plus gros
-   gain de crédibilité par heure investie.
+1. ~~**B1 — une tâche computationnelle**~~ ✅ CONSOLIDÉ (2026-07-08). La caractérisation
+   (doute = explorateur discipliné à **valeur conditionnelle**) est désormais robuste aux seeds
+   et à **3 topologies** (lattice / BA scale-free / ER) avec IC bootstrap. Voir bandeau section B.
+   Reste ouvert : B5 (comparaison SOTA), tâche à perf. absolue plus élevée.
 2. ~~**A2 — remonter FROZEN_U** comme résultat principal du preprint~~ ✅ FAIT (2026-07-08).
 3. ~~**A3 — refaire la régression** de régime avec de vraies simulations~~ ✅ FAIT (2026-07-08).
 4. ~~**A4 — corriger le protocole cold-start**~~ ✅ FAIT (2026-07-08).
@@ -103,7 +104,29 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 
 ## B. Crédibilité « chercheuse de référence en neuromorphique » (manques structurels)
 
-### B1 — Une tâche computationnelle ⭐ PREMIERS RÉSULTATS (7 juillet 2026)
+> **✅ CONSOLIDATION B1 (2026-07-08, Claude Opus 4.8).** Les POCs B1/B1b/B1c/B1d (seed unique
+> ou ≤12 seeds, lattice seul) ont été rejoués sur **30/18 seeds × 3 topologies** (LATTICE régulier,
+> BA m=3 scale-free, ER aléatoire) avec **IC bootstrap**. Scripts :
+> `experiments/b1{d,b,c}_*_consolidation.py` (+ CSV/PNG), capstone
+> `experiments/b1_conditional_synthesis.py` → `docs/b1_conditional_synthesis.md` +
+> `figures/b1_conditional_synthesis.png`. Cœur non touché, Guardian 13/13.
+>
+> | Topologie | Tâche LOYALE (doute−conv) | Tâche TROMPEUSE (doute−conv) | Watchdog (valid−hasard) |
+> |---|---|---|---|
+> | LATTICE | −0.06 [−0.09,−0.02] | +0.67 [+0.43,+0.87] | +0.73 [+0.67,+0.79] |
+> | BA_m3 | −0.48 [−0.56,−0.39] | +0.35 [+0.02,+0.65] | +0.15 [+0.02,+0.29] |
+> | ER_p06 | −0.25 [−0.30,−0.21] | +0.63 [+0.40,+0.83] | +0.74 [+0.69,+0.79] |
+>
+> **Verrouillé.** La **valeur du doute est conditionnelle** (≤0 sur tâche loyale, >0 sur tâche
+> trompeuse), robuste aux seeds et à la topologie. Le watchdog natif est utile partout.
+> **Découverte transversale non prévue :** **BA scale-free est le cas le plus faible des trois
+> expériences** — sur tâche loyale le doute y devient même pire que l'uniforme (sur BA, `|L·v|`
+> ne retombe jamais → saturation, famine de budget). Ce n'est pas la densité (ER ≈ lattice à
+> ⟨k⟩ égal) mais **l'hétérogénéité de degré / les hubs** — même variable que la reformulation
+> λ₂→degré du preprint. Deux fausses alertes de petit échantillon levées par les seeds
+> (watchdog « inutile sur BA » à 2 seeds ; contrôle négatif T_pulse=150 impur sur BA/ER).
+
+### B1 — Une tâche computationnelle ✅ CONSOLIDÉ (30 seeds × 3 topos, 8 juillet 2026)
 - **Pourquoi.** « Maintenir la diversité » ne dit pas *pour calculer quoi*.
 - **Fait — 3 POCs committés, 5 seeds chacun :**
   - `experiments/reservoir_narma10_poc.py` (`6e9055e`) : le doute **ne bat pas le découplé**
