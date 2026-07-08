@@ -1,26 +1,45 @@
 #!/usr/bin/env python3
-# @TODO: n=3 seeds (directional result) — relancer à n=10 avant soumission journal (voir preprint.tex Limitations)
 """
-LIMIT-02 Power-Law Normalization Sweep (v2) - Using core.py degree_power mode.
+LIMIT-02 Power-Law Normalization Sweep -- FUNCTIONAL metrics (A5, 2026-07-08).
 
-Tests D/deg(i)^alpha for alpha in [0, 1] on BA m={3, 5, 10} to find
-if an intermediate exponent bridges the dead zone.
+Teste D/deg(i)^gamma pour gamma in [0,1] sur BA m in {2..10} : un exposant
+intermediaire franchit-il la dead zone ? (resultat negatif du preprint,
+Table tab:alpha_sweep).
 
-Created: 2026-04-10 (Antigravity, v3.2.0 consolidation)
+CHANGEMENT A5 (backlog docs/FUTURE_WORK.md). Avant : le regime etait juge par
+H_cog (5 bins, artefact) et H_cont (100 bins). PROBLEME decouvert le 08/07 :
+en regime endogene H_cont CONFOND diversite fonctionnelle et bruit decorrele
+(a gamma=0 haut m, H_cont monte a ~3.2 avec variance ~0.5 = comportement
+bimodal par seed, pas de la structure). H_cont n'est donc PAS un remplacant
+propre de H_cog ici. On re-mesure le regime sur la metrique FONCTIONNELLE du
+papier : la synchronie de paires (Pearson sur les trajectoires v(t)), deja la
+"primary metric" de tab:ablations et le coeur du resultat FROZEN_U (A2).
+  - synchronie ~ 1  : consensus (dead zone fonctionnelle)
+  - synchronie ~ 0  : trajectoires independantes (diversite maintenue)
+On garde LZ (structured vs chaotic) pour distinguer diversite structuree d'un
+chaos decorrele, et H_cont/H_cog pour reference/continuite.
+
+Protocole : N=100, 10 seeds, 3000 steps, I_stim=0 (endogene, heretiques
+inactifs), COLD START (v=w=0, conforme au protocole revendique, cf. A4/L109).
+Cree : 2026-04-10 (Antigravity). Re-mesure fonctionnelle : 2026-07-08 (Opus 4.8, A5).
 """
-import sys, os, time
+import sys, os, time, csv
 import numpy as np
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from mem4ristor.core import Mem4Network
-from mem4ristor.metrics import calculate_cognitive_entropy
+from mem4ristor.metrics import (
+    calculate_continuous_entropy,
+    calculate_cognitive_entropy,
+    calculate_pairwise_synchrony,
+    calculate_temporal_lz_complexity,
+)
 
 N_BA   = 100
 STEPS  = 3000
-# 2026-06-12 : 3 -> 10 seeds (set canonique Table 1) — lève le @TODO pré-soumission
-SEEDS  = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]
-# NOTE: I_STIM = 0.0 means heretic_mask *= -1 is a no-op (I_eff = 0).
-# Heretics are INACTIVE in this regime. Results reflect endogenous dynamics only.
+TAIL_FRAC = 0.25
+SEEDS  = [42, 123, 777, 17, 256, 1337, 99, 314, 2024, 888]  # n=10 (set canonique)
 I_STIM = 0.0
 ALPHAS = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 M_TARGETS = [2, 3, 4, 5, 6, 8, 10]
@@ -44,108 +63,77 @@ def make_ba(n, m, seed):
 
 def run_experiment(adj, alpha, seed, steps=STEPS):
     net = Mem4Network(
-        adjacency_matrix=adj.copy(),
-        heretic_ratio=0.15,
-        coupling_norm='degree_power',
-        seed=seed,
+        adjacency_matrix=adj.copy(), heretic_ratio=0.15,
+        coupling_norm='degree_power', seed=seed, cold_start=True,
     )
     net.degree_power_alpha = alpha
     net._compute_coupling_weights()
 
-    trace_cont = []
-    v_snapshots = []
+    tail_start = int(steps * (1 - TAIL_FRAC))
+    v_tail = []
     for step in range(steps):
         net.step(I_stimulus=I_STIM)
-        if step % 10 == 0:
-            trace_cont.append(net.calculate_entropy())
-            v_snapshots.append(net.v.copy())
-
-    tail_cont = trace_cont[int(len(trace_cont) * 0.75):]
-    tail_v = v_snapshots[int(len(v_snapshots) * 0.75):]
-    h_cog = np.mean([calculate_cognitive_entropy(v) for v in tail_v])
-    return np.mean(tail_cont), h_cog
+        if step >= tail_start:
+            v_tail.append(net.v.copy())
+    V = np.asarray(v_tail)          # (T_tail=750, N)
+    V_s = V[::10]                    # sous-echantillon pour entropie
+    sync = calculate_pairwise_synchrony(V)
+    lz = calculate_temporal_lz_complexity(V[::5])   # 150 pts, O(n^2) borne
+    h_cont = float(np.mean([calculate_continuous_entropy(v) for v in V_s]))
+    h_cog = float(np.mean([calculate_cognitive_entropy(v) for v in V_s]))
+    return sync, lz, h_cont, h_cog
 
 
 if __name__ == '__main__':
-    print("=" * 90)
-    print("LIMIT-02 POWER-LAW SWEEP: D/deg(i)^alpha")
-    print(f"N={N_BA} | m: {M_TARGETS} | alpha: {ALPHAS} | Seeds={len(SEEDS)}")
-    print("=" * 90)
-
+    print("=" * 92)
+    print("LIMIT-02 gamma-SWEEP -- metriques FONCTIONNELLES (sync/LZ) + entropies")
+    print(f"N={N_BA} | m={M_TARGETS} | gamma={ALPHAS} | {len(SEEDS)} seeds | cold start | I_stim=0")
+    print("=" * 92)
     t0 = time.time()
     results = {}
 
     for m in M_TARGETS:
         print(f"\n--- BA m={m} ---")
-        print(f"  {'alpha':>5}  {'H_cont(100-bin)':>16}  {'H_cog(5-bin)':>13}")
+        print(f"  {'gamma':>5}  {'sync':>14}  {'LZ':>8}  {'H_cont':>8}  {'H_cog':>7}")
         for alpha in ALPHAS:
-            h_cont_list, h_cog_list = [], []
+            syncs, lzs, hconts, hcogs = [], [], [], []
             for seed in SEEDS:
                 adj = make_ba(N_BA, m, seed)
-                h_cont, h_cog = run_experiment(adj, alpha, seed)
-                h_cont_list.append(h_cont)
-                h_cog_list.append(h_cog)
-            h_mean = np.mean(h_cont_list)
-            h_std  = np.std(h_cont_list)
-            h_cog_mean = np.mean(h_cog_list)
-            star = " ***" if h_cog_mean > 0.3 else ""
-            print(f"  alpha={alpha:.1f}  H_cont={h_mean:.4f}±{h_std:.4f}  H_cog={h_cog_mean:.4f}{star}")
-            results[(m, alpha)] = (h_mean, h_std, h_cont_list, h_cog_mean)
+                s, lz, hc, hg = run_experiment(adj, alpha, seed)
+                syncs.append(s); lzs.append(lz); hconts.append(hc); hcogs.append(hg)
+            results[(m, alpha)] = {
+                'sync_mean': float(np.mean(syncs)), 'sync_std': float(np.std(syncs)),
+                'lz_mean': float(np.mean(lzs)), 'lz_std': float(np.std(lzs)),
+                'h_cont_mean': float(np.mean(hconts)), 'h_cont_std': float(np.std(hconts)),
+                'h_cog_mean': float(np.mean(hcogs)),
+            }
+            r = results[(m, alpha)]
+            print(f"  {alpha:>5.1f}  {r['sync_mean']:>7.3f}+/-{r['sync_std']:.3f}"
+                  f"  {r['lz_mean']:>8.3f}  {r['h_cont_mean']:>8.3f}  {r['h_cog_mean']:>7.3f}")
 
-    # Summary
-    elapsed = time.time() - t0
-    print(f"\n{'='*90}")
-    print("SUMMARY: H_stable(m, alpha)")
-    print(f"{'='*90}")
+    # --- CSV ---------------------------------------------------------------
+    out = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'figures',
+                                       'limit02_alpha_sweep.csv'))
+    with open(out, 'w', newline='', encoding='utf-8') as f:
+        w = csv.writer(f)
+        w.writerow(['m', 'alpha', 'sync_mean', 'sync_std', 'lz_mean', 'lz_std',
+                    'h_cont_mean', 'h_cont_std', 'h_cog_mean', 'n_seeds'])
+        for (m, alpha), r in sorted(results.items()):
+            w.writerow([m, alpha, r['sync_mean'], r['sync_std'], r['lz_mean'],
+                        r['lz_std'], r['h_cont_mean'], r['h_cont_std'],
+                        r['h_cog_mean'], len(SEEDS)])
+    print(f"\n[csv] {out}")
 
-    print("\n[H_cont — 100-bin continuous entropy]")
-    header = f"{'alpha':>6}"
+    # --- Verdict fonctionnel : la synchronie MINIMALE atteignable par gamma -
+    # (le regime fonctionnel = synchronie basse ; la dead zone = synchronie haute
+    #  qu'aucun gamma ne fait retomber).
+    print(f"\n{'='*92}")
+    print("VERDICT (metrique fonctionnelle) : synchronie MIN sur gamma par m")
+    print("  regime fonctionnel si un gamma amene sync bas ; dead si sync reste haute")
+    print(f"{'m':>4}  {'min sync (gamma*)':>22}  {'LZ au gamma*':>12}  {'H_cog au gamma*':>15}")
     for m in M_TARGETS:
-        header += f"  {'m='+str(m):>7}"
-    print(header)
-    print("-" * (8 + 9 * len(M_TARGETS)))
-    for alpha in ALPHAS:
-        row = f"{alpha:>6.1f}"
-        for m in M_TARGETS:
-            h = results[(m, alpha)][0]
-            star = "*" if h > 0.5 else " "
-            row += f"  {h:>6.3f}{star}"
-        print(row)
-
-    print("\n[H_cog - 5-bin cognitive entropy, KIMI thresholds +-0.4/1.2]")
-    # 2026-06-12 : caracteres unicode retires (UnicodeEncodeError console cp1252)
-    print("(Expected: H_cog ~ 0 in endogenous regime, I_stim=0 -> heretics inactive)")
-    header2 = f"{'alpha':>6}"
-    for m in M_TARGETS:
-        header2 += f"  {'m='+str(m):>7}"
-    print(header2)
-    print("-" * (8 + 9 * len(M_TARGETS)))
-    for alpha in ALPHAS:
-        row = f"{alpha:>6.1f}"
-        for m in M_TARGETS:
-            h_cog = results[(m, alpha)][3]
-            star = "*" if h_cog > 0.3 else " "
-            row += f"  {h_cog:>6.3f}{star}"
-        print(row)
-
-    # 2026-06-12 : sortie CSV ajoutee (regle "zero valeur sans script reproductible" —
-    # ce script n'ecrivait QUE du stdout, la table du preprint n'avait pas d'artefact)
-    import csv as _csv
-    import pathlib as _pl
-    out = _pl.Path(__file__).resolve().parents[1] / 'figures' / 'limit02_alpha_sweep.csv'
-    with open(out, 'w', newline='') as f:
-        w = _csv.writer(f)
-        w.writerow(['m', 'alpha', 'h_cont_mean', 'h_cont_std', 'h_cog_mean', 'n_seeds'])
-        for (m, alpha), (h_mean, h_std, h_list, h_cog_mean) in sorted(results.items()):
-            w.writerow([m, alpha, h_mean, h_std, h_cog_mean, len(h_list)])
-    print(f"\nCSV : {out}")
-
-    # Best alpha per topology (continuous metric)
-    print(f"\nOptimal alpha per topology (H_cont):")
-    for m in M_TARGETS:
-        best_alpha = max(ALPHAS, key=lambda a: results[(m, a)][0])
-        best_h = results[(m, best_alpha)][0]
-        best_h_cog = results[(m, best_alpha)][3]
-        print(f"  BA m={m}: alpha*={best_alpha:.1f} -> H_cont={best_h:.4f}  H_cog={best_h_cog:.4f}")
-
-    print(f"\nElapsed: {elapsed:.1f}s")
+        best_a = min(ALPHAS, key=lambda a: results[(m, a)]['sync_mean'])
+        r = results[(m, best_a)]
+        print(f"{m:>4}  {r['sync_mean']:>10.3f} (g={best_a:.1f})       "
+              f"{r['lz_mean']:>8.3f}      {r['h_cog_mean']:>10.3f}")
+    print(f"\nElapsed: {time.time()-t0:.1f}s")

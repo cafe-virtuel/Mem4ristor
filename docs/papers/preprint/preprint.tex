@@ -283,33 +283,33 @@ We systematically sweep the Barab\'asi--Albert attachment parameter $m \in \{1, 
 
 \begin{table}[ht]
 \centering
-\caption{Regime map: BA attachment parameter $m$ vs.\ coupling normalization. Values are $H_{\text{cog}}$ (legacy KIMI bins, pre-correction) used as \emph{relative} regime indicators only — ``$\star$'' denotes the functional diversity regime ($H_{\text{cog}} > 0.5$ with pre-correction bins), not an absolute entropy claim. The regime boundary is governed by the coupling degree (Section~\ref{sec:lambda2}); the apparent $\lambda_2 \approx 2.31$ separation on the initial hand-labelled dataset is a correlational proxy, not a causal spectral threshold. Absolute entropy values in this table should not be cited; consult the measured-regime regression (Figure~\ref{fig:regime_degree}) for current metrics.}
+\caption{Regime map (Cold Start Protocol, endogenous $I_{\text{stimulus}}=0$, 10 seeds): BA attachment parameter $m$ vs.\ coupling normalization. $H_{\text{cog}}^{\text{uni/dl}}$ (5-bin, Appendix~\ref{app:legacy_bins}) is a \emph{relative} multi-state indicator, uniform vs.\ degree-linear; absolute values are not cited. The functional co-metrics for degree-linear coupling---continuous entropy $H_{\text{cont}}^{\text{dl}}$ and pairwise synchrony $\bar{r}^{\text{dl}}$---are shown alongside (full uniform columns in the CSV). The regime boundary is governed by the coupling degree (Section~\ref{sec:lambda2}); the apparent $\lambda_2 \approx 2.31$ separation on the initial hand-labelled dataset is a correlational proxy, not a causal spectral threshold. Consult the measured-regime regression (Figure~\ref{fig:regime_degree}) for the primary, binning-independent evidence. Source: \texttt{figures/limit02\_regime\_map\_functional.csv}.}
 \label{tab:ba_m_sweep}
-\begin{tabular}{rrrrl}
+\begin{tabular}{rrrrrrl}
 \toprule
-$m$ & $H_{\text{uniform}}$ & $H_{\text{deg.\ linear}}$ & Spectral gap $\lambda_2$ & Effective normalization \\
+$m$ & $\lambda_2$ & $H_{\text{cog}}^{\text{uni}}$ & $H_{\text{cog}}^{\text{dl}}$ & $H_{\text{cont}}^{\text{dl}}$ & $\bar{r}^{\text{dl}}$ & Regime \\
 \midrule
-1  & $0.86\;\star$ & 0.00 & 0.03 & uniform \\
-2  & 0.03 & $0.69\;\star$ & 0.63 & degree-linear \\
-3  & 0.00 & $0.83\;\star$ & 1.41 & degree-linear \\
-4  & 0.00 & 0.23 & 2.21 & degree-linear (marginal) \\
-5  & 0.02 & 0.00 & 2.99 & neither \\
-6  & 0.04 & 0.00 & 3.92 & neither \\
-7  & 0.08 & 0.00 & 5.05 & neither \\
-8  & 0.15 & 0.00 & 5.86 & uniform (marginal) \\
-10 & 0.21 & 0.00 & 7.70 & uniform (weak) \\
-15 & 0.37 & 0.00 & 12.55 & uniform (weak) \\
+1  & 0.02  & 0.67 & 0.80 & 3.09 & $-0.00$ & both functional \\
+2  & 0.63  & 0.27 & 0.71 & 3.14 & $0.00$  & degree-linear \\
+3  & 1.40  & 0.01 & 0.68 & 3.14 & $0.01$  & degree-linear \\
+4  & 2.23  & 0.00 & 0.62 & 3.20 & $0.03$  & degree-linear \\
+5  & 3.08  & 0.00 & 0.32 & 3.33 & $0.13$  & degree-linear (weak) \\
+6  & 4.01  & 0.00 & 0.03 & 2.85 & $0.10$  & dead-zone onset \\
+7  & 4.91  & 0.00 & 0.00 & 2.60 & $-0.00$ & dead zone \\
+8  & 5.81  & 0.00 & 0.00 & 2.46 & $-0.00$ & dead zone \\
+10 & 7.78  & 0.00 & 0.00 & 2.31 & $-0.00$ & dead zone \\
+15 & 12.58 & 0.00 & 0.00 & 2.09 & $-0.00$ & dead zone \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Two \textbf{regime transitions} are observed:
+Two \textbf{regime transitions} are observed in the multi-state indicator:
 \begin{enumerate}
-\item $m = 1 \to m = 2$: crossover from uniform-dominant (tree topology) to degree-linear-dominant (sparse scale-free).
-\item $m = 4 \to m = 5$: a sharp drop into a dead zone where \emph{neither normalization sustains diversity}.
+\item $m = 1 \to m = 2$: uniform coupling loses functional diversity (tree topology) while degree-linear becomes and stays dominant through the sparse regime.
+\item $m = 5 \to m = 6$: a gradual entry into a dead zone where \emph{neither normalization sustains multi-state diversity}. Under the Cold Start Protocol this onset sits near $m \approx 6$, later than the $m \approx 5$ reported by earlier non-cold-start runs.
 \end{enumerate}
 
-In this Barab\'asi--Albert family the spectral gap $\lambda_2$ tracks the transition closely, but only because it grows monotonically with the attachment parameter $m$ (hence with mean degree); Section~\ref{sec:lambda2} shows by degree-controlled experiments that the causal predictor is the coupling degree, not $\lambda_2$. Degree-linear normalization succeeds only in the sparse, low-degree regime ($m \le 3$).
+In this Barab\'asi--Albert family the spectral gap $\lambda_2$ tracks the transition closely, but only because it grows monotonically with the attachment parameter $m$ (hence with mean degree); Section~\ref{sec:lambda2} shows by degree-controlled experiments that the causal predictor is the coupling degree, not $\lambda_2$. Note that pairwise synchrony $\bar{r}$ remains near zero across the entire sweep (peak $0.13$): the endogenous dead zone is a spatial collapse onto a common fixed point, not a temporal consensus---synchrony discriminates regimes only under external drive (Section~\ref{sec:ablation}).
 
 \subsection{Power-Law Exponent Sweep}
 \label{sec:alpha_sweep}
@@ -318,23 +318,28 @@ To test whether an intermediate exponent $\gamma$ in $D_{\text{eff}}(i) = D/\deg
 
 \begin{table}[ht]
 \centering
-\caption{Optimal exponent $\gamma^*$ and maximum achievable discrete entropy ($H_{\text{cog}}$, 5-bin, Appendix~\ref{app:legacy_bins}) by BA attachment parameter, endogenous regime. Table~\ref{tab:ba_m_sweep} tests only $\gamma \in \{0, 1\}$; this table sweeps $\gamma$ over $[0, 1]$ in steps of 0.1. Source: \texttt{figures/limit02\_alpha\_sweep.csv}.}
+\caption{Sweep of the normalization exponent $\gamma$, endogenous regime ($I_{\text{stimulus}}=0$), Cold Start Protocol, 10 seeds, $\gamma \in [0,1]$ in steps of $0.1$. For each $m$ we report the exponent $\gamma^*$ maximizing the multi-state indicator $H_{\text{cog}}$ (5-bin, Appendix~\ref{app:legacy_bins}), with the functional co-metrics at that $\gamma^*$: continuous spectral entropy $H_{\text{cont}}$ and mean pairwise synchrony $\bar{r}$. No exponent sustains multi-state diversity beyond $m \approx 5$, and the decline is gradual; synchrony stays near zero throughout, i.e.\ the endogenous regime never locks into temporal consensus (see metric note below). Source: \texttt{figures/limit02\_alpha\_sweep.csv}.}
 \label{tab:alpha_sweep}
-\begin{tabular}{rrrl}
+\begin{tabular}{rrrrrl}
 \toprule
-$m$ & $\gamma^*$ & $\max H_{\text{cog}}$ & Assessment \\
+$m$ & $\gamma^*$ & $\max H_{\text{cog}}$ & $H_{\text{cont}}$ & $\bar{r}$ & Assessment \\
 \midrule
-2  & 1.0 & 0.59 & Moderate diversity \\
-3  & --- & $\leq 0.01$ & Below threshold \\
-4  & --- & $\approx 0$ & Complete failure \\
-$\geq 5$ & --- & $< 0.09$ & Complete failure \\
+2  & 0.6 & 0.72 & 3.16 & $-0.00$ & Multi-state diversity \\
+3  & 0.9 & 0.69 & 3.13 & $0.01$  & Multi-state diversity \\
+4  & 1.0 & 0.62 & 3.20 & $0.03$  & Multi-state diversity \\
+5  & 1.0 & 0.32 & 3.33 & $0.13$  & Weak / declining \\
+6  & 1.0 & 0.03 & 2.85 & $0.10$  & Dead-zone onset \\
+8  & --- & $\approx 0$ & 2.49 & $-0.00$ & Dead zone \\
+10 & --- & $\approx 0$ & 2.31 & $-0.00$ & Dead zone \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The drop is \textbf{sharp in the discrete attachment parameter $m$}: in the endogenous regime, $H_{\text{cog}}$ falls from 0.59 ($m = 2$) to $\leq 0.01$ ($m = 3$) with no intermediate plateau among the sampled values---the $m$-grid being coarse near the connectivity boundary, where the underlying degree-continuous behavior is a smooth crossover. The continuous entropy $H_{\text{stable}}$ declines more gracefully over the same sweep (from $\approx 3.9$ bits at $m=2$, $\gamma=1.0$, to $\approx 2.3$ bits at $m=10$), confirming that the discrete-bin collapse reflects the loss of multi-state structure rather than of all voltage spread. Under the driven protocol ($I_{\text{stimulus}} = 0.5$, heretics active), functional diversity extends to $m = 3$ (Table~\ref{tab:ba_m_sweep}); the endogenous regime is more fragile, consistent with the heretic mechanism being one of the two jointly necessary ingredients identified in Section~\ref{sec:comp_analysis}.
+The negative result holds under the continuous metric: \textbf{no exponent $\gamma$ recovers multi-state diversity at high degree}. At the best $\gamma$ for each $m$, $H_{\text{cog}}$ declines gradually (0.72 at $m=2$ to $\approx 0$ by $m \gtrsim 6$)---a smooth crossover, not the abrupt $m=2 \to 3$ collapse reported by earlier non-cold-start runs, which the Cold Start Protocol (Section~\ref{sec:results_lattice}) resolves. The continuous entropy $H_{\text{cont}}$ declines even more gently (from $\approx 3.2$ to $\approx 2.3$ bits), confirming that the loss is one of \emph{multi-state} structure rather than of all voltage spread. Crucially, synchrony $\bar{r}$ stays near zero for every $m$ and $\gamma$ (peak $0.13$, versus $0.75$ for the frozen-doubt ablation of Section~\ref{sec:ablation}): the endogenous dead zone is \emph{not} a temporal consensus but a spatial collapse onto a common fixed point. Under the driven protocol ($I_{\text{stimulus}} = 0.5$, heretics active), functional diversity extends further; the endogenous regime is more fragile, consistent with the heretic mechanism being one of the two jointly necessary ingredients identified in Section~\ref{sec:comp_analysis}.
 
-\textbf{Negative result.} For $m \geq 3$ in the endogenous regime ($m \geq 5$ in the driven regime), no $\gamma \in [0, 1]$ recovers functional diversity. Degree-based normalization is fundamentally insufficient when graph connectivity (measured by $\lambda_2$) exceeds $\sim 2$--$3$, because coupling signals bypass locally-corrected hubs through redundant paths.
+\textbf{Metric note (why $H_{\text{cog}}$ here).} We re-measured this sweep with the paper's functional metrics to check whether the artifact-prone $H_{\text{cog}}$ could be retired. It cannot, for a specific reason: in the endogenous regime no continuous metric cleanly reproduces the multi-state boundary. Pairwise synchrony---the primary metric of the ablation study (Section~\ref{sec:ablation})---is uninformative here because, absent a common drive, nodes never synchronize regardless of degree ($\bar{r} \approx 0$ everywhere). Continuous entropy $H_{\text{cont}}$ is misleading at weak coupling: near-decoupled nodes (low $\gamma$, low $m$) spread widely in voltage and inflate $H_{\text{cont}}$ without forming distinct functional states---at $m=2$, $H_{\text{cont}}$ peaks at $\gamma=0$ while $H_{\text{cog}}$ peaks at $\gamma=1$. The multi-state boundary is therefore intrinsically discrete, and $H_{\text{cog}}$ is retained as a \emph{relative} indicator of it, with absolute values not cited. The robust, binning-independent regime evidence is carried elsewhere: the measured-regime regression of Figure~\ref{fig:regime_degree} (continuous entropy across topologies at comparable coupling) and the synchrony-based ablation of Section~\ref{sec:ablation} under drive.
+
+Why no exponent suffices is developed next: degree-based normalization ($D/\deg^\gamma$) reweights each coupling signal but cannot change the \emph{number} of neighbours averaged into a node's mean-field target---the sampling quantity that actually sets the regime (Section~\ref{sec:lambda2}). Reweighting cannot undo a boundary fixed by how many samples enter the local average.
 
 \subsection{Locating the Boundary: Coupling Degree, not Algebraic Connectivity}
 \label{sec:lambda2}
@@ -361,7 +366,7 @@ The dead zone is thus a real and robust property of the network, but its origin 
 \subsection{Adaptive Coupling Protocol $D(u) = D_{\max} \cdot u$}
 \label{sec:adaptive_coupling}
 
-The degree-normalization failure for $m \geq 5$ raises the question whether a protocol \emph{different in kind}, not merely in weighting, could extend the functional regime. We test an adaptive coupling rule in which the coupling strength itself scales with the local doubt variable:
+The degree-normalization failure at high coupling degree raises the question whether a protocol \emph{different in kind}, not merely in weighting, could extend the functional regime. We test an adaptive coupling rule in which the coupling strength itself scales with the local doubt variable:
 
 \begin{equation}
 D_i(u_i) = D_{\max} \cdot u_i, \qquad D_{\max} = 0.50.
@@ -632,7 +637,7 @@ The principal negative result is that for denser networks no degree-based reweig
 \item \textbf{Entropy metric and discretization:} Two entropy metrics are used in this work and must not be conflated. (1)~$H_{\text{stable}}$ (primary metric throughout) is a 100-bin continuous spectral entropy computed on the actual voltage distribution, recalibrated from earlier discrete estimates. (2)~$H_{\text{cog}}$ is a legacy 5-state discrete entropy using physiological bins $\{v < -1.2,\; {-1.2}\text{--}{-0.4},\; {-0.4}\text{--}{0.4},\; {0.4}\text{--}{1.2},\; v > 1.2\}$ inherited from the SPICE voltage scale. Python simulations at default parameters produce voltages predominantly in $[-3.2, -1.3]$, placing all nodes in bin~1 and yielding $H_{\text{cog}} \approx 0$ regardless of actual diversity. This is a calibration artefact, not a diversity collapse: pairwise synchrony ($\text{sync}_{\text{FULL}} = 0.007$ vs.\ $\text{sync}_{\text{FROZEN}} = 0.658$, a ${\sim}90$-fold increase) and $H_{\text{stable}}$ confirm that diversity is real and substantial. $H_{\text{cog}}$ is retained only for compatibility with SPICE benchmarks, where voltage scales match the bin design.
 \item \textbf{Doubt time-scale near the boundary:} The doubt recovery time constant $\tau_u = 10.0$ (default) was held fixed across all experiments. Near the connectivity boundary, the system's ability to sustain functional diversity may depend sensitively on $\tau_u$: a shorter $\tau_u$ could shift the effective threshold by allowing faster polarity reassignment, while a longer $\tau_u$ may produce critical-slowing-down signatures analogous to those observed near bifurcations in excitable media. The dependence of the critical coupling degree on $\tau_u$ has not been characterized and remains an open question.
 \item \textbf{Scale:} The model has been tested up to $N = 2500$. Behavior at $N \gg 10{,}000$ is not validated.
-\item \textbf{Connectivity regime boundary:} The boundary at $m \approx 5$ is empirically observed on $N = 100$ BA networks; it is governed by the coupling degree (Section~\ref{sec:lambda2}), and the exact critical harmonic degree ($k_{\mathrm{harm}} \approx 6$) depends on the regime metric ($H_{\mathrm{cog}}$) and may shift with parameters or at larger $N$.
+\item \textbf{Connectivity regime boundary:} The boundary at $m \approx 6$ (endogenous, Cold Start Protocol) is empirically observed on $N = 100$ BA networks; it is governed by the coupling degree (Section~\ref{sec:lambda2}), and the exact critical harmonic degree ($k_{\mathrm{harm}} \approx 6$) depends on the regime metric ($H_{\mathrm{cog}}$) and may shift with parameters or at larger $N$.
 \item \textbf{Replication count:} Primary results (Table~\ref{tab:scaling}, component ablation, scale-free topology sweep) and secondary validation experiments (spatial mutual information, stochastic resonance, $\gamma$ sweep) all use $n = 10$ seeds. The regime classification of Section~\ref{sec:lambda2} uses 3 seeds per topology family (36 rows total); as noted there, these labels are assigned per topology type rather than measured per seed, so the row count overstates the number of independent decisions. The causal claim rests on the degree-controlled experiments, not on this classification.
 \end{itemize}
 
