@@ -11,7 +11,7 @@ Historique :
   - n=3 -> n=10 seeds le 2026-05-05 (robustesse de l'ecart-type).
   - 2026-07-08 (backlog A4) : AJOUT de cold_start=True. Avant cette date le
     script tournait en init ALEATOIRE (v in [-1.5,1.5]) alors que le texte
-    revendiquait v=w=0 -- incoherence relevee par l'audit Grollier (06/07).
+    revendiquait v=w=0 -- incoherence relevee par l'audit externe neuromorphique (06/07).
     Le script ECRIT desormais figure/p2_table1_lattice.csv (colonne h_cont_mean
     verifiee par le Guardian, claims C02/C03), pour que la table publiee soit
     reproductible d'un seul run (aucune valeur ecrite a la main).

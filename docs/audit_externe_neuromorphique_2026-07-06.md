@@ -1,4 +1,4 @@
-# Audit externe simulé — posture « J. Grollier » (2026-07-06)
+# Audit externe simulé — posture « chercheuse de référence en neuromorphique » (2026-07-06)
 
 > **Nature du document.** Revue critique conduite par Claude Code (L'Ingénieur) à la
 > demande de Julien Chauvin, en adoptant la posture d'une chercheuse exigeante du

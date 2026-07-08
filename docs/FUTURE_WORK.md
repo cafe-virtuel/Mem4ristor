@@ -2,8 +2,8 @@
 
 > **But.** Ne rien perdre des pistes ouvertes. Chaque entrée est autonome :
 > *Pourquoi / Comment / Effort / Statut*, lisible à froid par un futur agent.
-> **Origine.** Audit externe simulé « posture Grollier » du 2026-07-06
-> ([docs/audit_externe_grollier_2026-07-06.md](audit_externe_grollier_2026-07-06.md))
+> **Origine.** Audit externe simulé « posture d'une chercheuse de référence en neuromorphique » du 2026-07-06
+> ([docs/audit_externe_neuromorphique_2026-07-06.md](audit_externe_neuromorphique_2026-07-06.md))
 > + mandat de réfutation λ₂ du 2026-07-01 (`experiments/lambda2_foundation_20260701/SYNTHESE.md`).
 > **Mise à jour.** 2026-07-06.
 
@@ -101,7 +101,7 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 
 ---
 
-## B. Crédibilité « Grollier » (manques structurels)
+## B. Crédibilité « chercheuse de référence en neuromorphique » (manques structurels)
 
 ### B1 — Une tâche computationnelle ⭐ PREMIERS RÉSULTATS (7 juillet 2026)
 - **Pourquoi.** « Maintenir la diversité » ne dit pas *pour calculer quoi*.
@@ -229,7 +229,7 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 
 ### B2 — Un vrai memristor 🧩
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
-  utilise des *behavioral sources*, pas un modèle de dispositif. Grollier demandera où est
+  utilise des *behavioral sources*, pas un modèle de dispositif. une chercheuse de référence en neuromorphique demandera où est
   la variable d'état physique et à quoi correspond `u`.
 - **Comment.** Choisir un modèle de dispositif (VTEAM, Stanford/ASU RRAM, GST/PCM, ou
   spintronique) ; établir la correspondance `u` ↔ grandeur physique (lacunes d'oxygène,
@@ -256,7 +256,7 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 - **Pourquoi.** Le benchmark actuel bat Kuramoto/Voter/Consensus (modèles-jouets).
   « Mieux que Kuramoto » n'impressionne personne.
 - **Comment.** Comparer sur une tâche standard (via B1) à un echo state network, et surtout
-  aux **oscillateurs spintroniques couplés** (domaine de Grollier). Positionner : avantage
+  aux **oscillateurs spintroniques couplés** (domaine de une chercheuse de référence en neuromorphique). Positionner : avantage
   réel ? parité ? niche ?
 - **Effort.** 🧩 dépend de B1.
 
