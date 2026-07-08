@@ -294,13 +294,22 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 - **Reste (optionnel).** IC sur labels *mesurés* de régime (A3 fait le fournit déjà) ; N > 900 si un
   reviewer l'exige (plateau déjà visible). B4 considéré **clos** pour les résultats-clés.
 
-### B5 — Comparaison à l'état de l'art réel 🧩
+### B5 — Comparaison à l'état de l'art réel 🟡 ESN FAIT (2026-07-08), reste spintronique
 - **Pourquoi.** Le benchmark actuel bat Kuramoto/Voter/Consensus (modèles-jouets).
   « Mieux que Kuramoto » n'impressionne personne.
-- **Comment.** Comparer sur une tâche standard (via B1) à un echo state network, et surtout
-  aux **oscillateurs spintroniques couplés** (domaine de une chercheuse de référence en neuromorphique). Positionner : avantage
-  réel ? parité ? niche ?
-- **Effort.** 🧩 dépend de B1.
+- **✅ Fait — vs Echo State Network sur NARMA10** (`experiments/b5_esn_comparison.py`, commit `3df5cfc`).
+  Comparaison **loyale** (même tâche/split/readout/N=100, chaque modèle avec son balayage
+  d'hyperparamètres), 8 seeds, IC bootstrap. **Résultat honnête et net :**
+  - ESN = **0.351 ± 0.026** NRMSE (reservoir utile, < 1.0) ; Mem4ristor FULL = **1.942 ± 0.302**
+    (> 1.0, pire que prédire la moyenne) ; écart FULL−ESN = **+1.59 CI[+1.36,+1.81]** → **ESN ~5.5× meilleur**.
+  - **Positionnement** : Mem4ristor n'est **PAS** un reservoir NARMA10 compétitif. NARMA10 récompense
+    la **mémoire**, pas la diversité → c'est le **pendant SOTA de B1c/B1d** (tâche loyale : le doute
+    n'aide pas). La contribution du projet est le **mécanisme du doute** (anti-synchro, diversité
+    maintenue), pas la performance mémoire brute. On sait désormais sur quelle tâche **ne pas** le vendre.
+  - **Question ouverte** (lie B1d) : existe-t-il une tâche standard où la diversité/décorrélation
+    *bat* l'ESN (converger tôt = piège, cf. B1d) ? Ce serait la niche défendable — non testé.
+- **Reste (🧩).** Comparaison aux **oscillateurs spintroniques couplés** (domaine neuromorphique
+  de référence) — nécessite un modèle de dispositif (lié B2). Effort : projet de fond.
 
 ### B6 — Prédiction falsifiable / signature expérimentale 💭
 - **Pourquoi.** Tout est auto-référentiel (H, sync, MI calculés sur le même v(t) simulé).
