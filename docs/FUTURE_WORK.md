@@ -19,7 +19,8 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 2. ~~**A2 — remonter FROZEN_U** comme résultat principal du preprint~~ ✅ FAIT (2026-07-08).
 3. ~~**A3 — refaire la régression** de régime avec de vraies simulations~~ ✅ FAIT (2026-07-08).
 4. ~~**A4 — corriger le protocole cold-start**~~ ✅ FAIT (2026-07-08).
-5. Le reste (B2 memristor réel, B3 énergie, B6 prédiction falsifiable) = projets de fond.
+5. ~~A5 — bannir H_cog des résultats primaires~~ ✅ FAIT (2026-07-08, transparence + rétrograder).
+6. Le reste (B2 memristor réel, B3 énergie, B6 prédiction falsifiable) = projets de fond.
 
 ---
 
@@ -76,14 +77,27 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   sont déjà cold, `verify_table1` était l'exception. Une passe systématique cold-start sur
   *tous* les résultats secondaires reste possible (lié B7 repro end-to-end).
 
-### A5 — Bannir H_cog des résultats primaires 🔜
-- **Pourquoi.** H_cog (5 bins) est un artefact reconnu (« valeurs à ne pas citer ») et
-  pourtant il sous-tend toute la cartographie de la dead zone. À réserver strictement au
-  pont SPICE (où l'échelle de tension le justifie).
-- **Comment.** Repasser chaque table/figure de régime sur H_cont ; vérifier que la frontière
-  (k_harm≈6) tient avec la métrique continue (voir C1 ci-dessous — risque : la valeur
-  numérique bouge).
-- **Effort.** ~1 session (re-runs + vérif que les conclusions tiennent).
+### A5 — Bannir H_cog des résultats primaires ✅ FAIT (2026-07-08, résultat nuancé)
+- **Pourquoi.** H_cog (5 bins) est un artefact reconnu, pourtant il sous-tend la
+  cartographie de la dead zone.
+- **Fait** (commit `2e71aab`, choix Julien : transparence + rétrograder + documenter).
+  Re-mesure fonctionnelle (2 scripts, cold start, 10 seeds) : `limit02_alpha_sweep.py`
+  (réécrit, sync+LZ) + `limit02_regime_map_functional.py` (nouveau).
+- **Découverte centrale (résultat négatif méthodo).** AUCUNE métrique fonctionnelle continue
+  ne remplace proprement H_cog en régime **endogène** : (a) la **synchronie** ne montre aucune
+  dead zone (r̄≈0 partout, pic 0.13 vs 0.75 driven) → la dead zone endogène **n'est pas un
+  consensus temporel** mais un effondrement spatial sur un point fixe commun ; (b) **H_cont**
+  récompense le quasi-découplage à faible couplage (à m=2, H_cont max à γ=0, H_cog max à γ=1).
+  La frontière multi-états est **intrinsèquement discrète** → H_cog gardé comme indicateur
+  **relatif** (valeurs absolues non citées), preuve robuste = `fig:regime_degree` (A3) +
+  ablation synchronie driven (A2).
+- **Effet cold-start (lien A4).** La dead zone endogène se décale de m≥3 (artefact non-cold)
+  à **m≥6** ; déclin **graduel** (cohérent A3/Binder crossover).
+- **Livré.** tab:alpha_sweep + tab:ba_m_sweep : colonnes fonctionnelles (H_cont, sync) à côté
+  de H_cog, valeurs cold-start ; note méthodo « why H_cog here » gravée ; explication du
+  résultat négatif reformulée (champ-moyen d'échantillonnage, plus la redondance de chemins).
+  **Lien C1** : la re-mesure H_cont confirme le déclin continu ; la valeur k_harm reste liée
+  à la définition multi-états (H_cog), comme prévu.
 
 ---
 
