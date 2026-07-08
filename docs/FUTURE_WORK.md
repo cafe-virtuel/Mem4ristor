@@ -267,7 +267,7 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   ordre de grandeur énergie/opération ; comparer à un point de référence CMOS/mémristif.
 - **Effort.** 🧩 dépend de B2.
 
-### B4 — Robustesse statistique 🟡 RÉSULTAT CENTRAL FAIT (2026-07-08), reste Table 1 / FSS
+### B4 — Robustesse statistique ✅ FAIT (2026-07-08) — ablation centrale + Table 1 + FSS
 - **Pourquoi.** Résultat central sur peu de seeds, Tableau 1 sur N≤625. La « complete
   separation » esquive l'intervalle de confiance au lieu de le fournir.
 - **✅ Fait — ablation centrale FROZEN_U** (`experiments/b4_ablation_robustness.py`, commit `53736fe`).
@@ -283,9 +283,16 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     **Recommandation** (décision Julien) : dans l'abstract/`sec:ablation`, mener avec
     « rises from 0.007 to 0.658 (complete separation over 30 seeds, Cohen d≈9) » et rétrograder
     le « ~90-fold » (ou le retirer). H_cont s'effondre aussi (diff +0.68 à +0.98 CI).
-- **Reste (🔜).** Étendre l'approche IC bootstrap à **Table 1** (H_cont diversité, ≥30 seeds) et
-  **finite-size scaling** jusqu'à des N pertinents ; IC sur labels *mesurés* (dépend de A3, fait).
-- **Effort restant.** ~1 session de calcul (mécanique).
+- **✅ Fait — Table 1 (diversité H_cont) + finite-size scaling** (`experiments/b4_table1_robustness.py`,
+  commit `182eab5`). 30 seeds × 7 tailles (N = 16…900), IC bootstrap, mesure identique à la Table 1
+  canonique (cold_start, I_stim=0.5, 3000 steps). Supplément (n'écrase pas C02/C03).
+  - **Reproductibilité** : 10×10 30 seeds = 4.095 CI[4.044,4.146] vs canonique 4.086 (preprint ~4.09) ;
+    4×4 = 3.207 vs C02 3.205 → Table 1 confirmée à 30 seeds.
+  - **FSS** : H_cont croît (+0.187 bits/octave) puis **sature** (queue +0.062, ~3× plus lent),
+    plateau ~4.38 bits, **jamais d'effondrement** (min 3.21 ≫ 0 ; plafond binning 6.64). La diversité
+    n'est PAS un artefact de taille finie ; l'IC se resserre avec N (std 0.118 → 0.047).
+- **Reste (optionnel).** IC sur labels *mesurés* de régime (A3 fait le fournit déjà) ; N > 900 si un
+  reviewer l'exige (plateau déjà visible). B4 considéré **clos** pour les résultats-clés.
 
 ### B5 — Comparaison à l'état de l'art réel 🧩
 - **Pourquoi.** Le benchmark actuel bat Kuramoto/Voter/Consensus (modèles-jouets).
