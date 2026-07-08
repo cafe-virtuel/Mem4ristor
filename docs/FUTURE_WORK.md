@@ -306,8 +306,17 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     la **mémoire**, pas la diversité → c'est le **pendant SOTA de B1c/B1d** (tâche loyale : le doute
     n'aide pas). La contribution du projet est le **mécanisme du doute** (anti-synchro, diversité
     maintenue), pas la performance mémoire brute. On sait désormais sur quelle tâche **ne pas** le vendre.
-  - **Question ouverte** (lie B1d) : existe-t-il une tâche standard où la diversité/décorrélation
-    *bat* l'ESN (converger tôt = piège, cf. B1d) ? Ce serait la niche défendable — non testé.
+  - **Question ouverte RÉPONDUE (honnête, nuancée)** — `experiments/b5b_deceptive_exploration.py`,
+    commit `00094d4`. Décision **en ligne** trompeuse (converger tôt = se tromper), doute natif vs
+    ESN de référence, 15 seeds. **(1)** Le doute (0.87) **écrase** le meilleur arrêt *naïf* de l'ESN
+    (0.00, +0.87 CI[+0.67,+1.00]) : l'ESN se fige instantanément sur le leurre (arrêt au plancher
+    t=31-81), le doute `|Lv|` tient jusqu'après le pulse → **horloge de délibération intrinsèque**.
+    **(2)** Mais le doute (0.87) **égale** l'ESN à *meilleur budget fixe* (B=800 > durée du leurre,
+    0.93 ; −0.07 CI[−0.27,+0.13]). **Niche réelle mais étroite** : le doute bat les arrêts naïfs
+    sans rien régler, mais pas un horizon fixe optimal quand l'horizon est **borné** et attendre est
+    **gratuit**. Sa valeur décisive exige un **horizon inconnu/non-borné** OU un **coût d'attente**
+    (cohérent B1c : le doute paie quand le budget est rare). Le cadrage « explorateur, pas mémoire »
+    est validé au niveau des règles d'arrêt, à cette condition près.
 - **Reste (🧩).** Comparaison aux **oscillateurs spintroniques couplés** (domaine neuromorphique
   de référence) — nécessite un modèle de dispositif (lié B2). Effort : projet de fond.
 
