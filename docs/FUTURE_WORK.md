@@ -16,7 +16,7 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 1. **B1 — une tâche computationnelle** (reservoir computing). Transforme « le système
    maintient la diversité » en « le doute améliore une performance mesurable ». Plus gros
    gain de crédibilité par heure investie.
-2. **A2 — remonter FROZEN_U** comme résultat principal du preprint (déjà mesuré, robuste). ⏳ RESTE
+2. ~~**A2 — remonter FROZEN_U** comme résultat principal du preprint~~ ✅ FAIT (2026-07-08).
 3. ~~**A3 — refaire la régression** de régime avec de vraies simulations~~ ✅ FAIT (2026-07-08).
 4. ~~**A4 — corriger le protocole cold-start**~~ ✅ FAIT (2026-07-08).
 5. Le reste (B2 memristor réel, B3 énergie, B6 prédiction falsifiable) = projets de fond.
@@ -30,15 +30,18 @@ Commits `ef5f53c` (preuves) + `eb862f2` (preprint). Titre, abstract, §4.5/4.6/4
 Discussion, Conclusion, Limitations réécrits ; le « 2.31 » requalifié en frontière
 corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.**
 
-### A2 — Faire de FROZEN_U le résultat principal 🔜
+### A2 — Faire de FROZEN_U le résultat principal ✅ FAIT (2026-07-08)
 - **Pourquoi.** L'ablation « geler u → synchronie ×24 (BA m=3) / ×90 (lattice) » est mesurée
   sur la corrélation de Pearson (indépendante du binning) : c'est le résultat le plus
-  robuste et le moins attaquable du papier. Il est aujourd'hui enterré au milieu, tandis
-  que le résultat le plus fragile était en titre.
-- **Comment.** Remonter l'ablation (Table 2 + phase-space) en tête des Results ; réorienter
-  l'abstract/intro pour que « le doute est le moteur d'anti-synchronisation » soit le
-  message n°1, la frontière de degré étant la *limite* de ce mécanisme.
-- **Effort.** Rédaction, ~1 session. Aucune nouvelle simulation.
+  robuste et le moins attaquable du papier. Il était enterré au milieu, tandis que le
+  résultat le plus fragile (λ₂) était en avant.
+- **Fait** (commit `cea081a`, recadrage éditorial, 0 nouvelle simu, 0 chiffre modifié ;
+  choix Julien : garder le titre, recadrer sans déplacer). (a) Abstract mène avec l'ablation
+  FROZEN_U comme résultat central, explicitement « least parameter-sensitive » (Pearson,
+  binning-independent) ; la frontière de degré/λ₂ devient « the limit ». (b) Contribution (2)
+  de l'intro = identification du doute comme mécanisme **primaire** d'anti-synchro. (c)
+  Paragraphe d'ouverture des Results désignant l'ablation comme résultat causal central
+  (label `sec:ablation` ajouté). PDF 26p, Guardian 13/13.
 
 ### A3 — Régression de régime sur de vraies simulations ✅ FAIT (2026-07-08)
 - **Pourquoi.** `p2_edge_betweenness_analysis.py` ne simule pas : il lit un dict `REGIME`
