@@ -267,13 +267,25 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   ordre de grandeur énergie/opération ; comparer à un point de référence CMOS/mémristif.
 - **Effort.** 🧩 dépend de B2.
 
-### B4 — Robustesse statistique 🔜
-- **Pourquoi.** Résultat central sur 3 seeds, Tableau 1 sur N≤625, N≤2500 max. La « complete
+### B4 — Robustesse statistique 🟡 RÉSULTAT CENTRAL FAIT (2026-07-08), reste Table 1 / FSS
+- **Pourquoi.** Résultat central sur peu de seeds, Tableau 1 sur N≤625. La « complete
   separation » esquive l'intervalle de confiance au lieu de le fournir.
-- **Comment.** ≥20-30 seeds sur les résultats-clés ; finite-size scaling jusqu'à des N
-  pertinents ; remplacer la séparation complète par un IC honnête (bootstrap sur des labels
-  *mesurés*, pas assignés — dépend de A3).
-- **Effort.** ~1-2 sessions de calcul (long mais mécanique).
+- **✅ Fait — ablation centrale FROZEN_U** (`experiments/b4_ablation_robustness.py`, commit `53736fe`).
+  30 seeds (10 canoniques + 20 nouveaux) × 2 topos (LATTICE, BA m=3), réutilise
+  `p2_sigma_social_ablation.run_one`. IC bootstrap :
+  - BA m=3 : FULL 0.0088 → FROZEN 0.688, **diff +0.679 CI[+0.653,+0.702], Cohen d=9.4, séparation COMPLÈTE**.
+  - LATTICE : FULL 0.0120 → FROZEN 0.525, **diff +0.513 CI[+0.474,+0.551], Cohen d=4.7, séparation COMPLÈTE**.
+  - **Reproductibilité** : sur les 10 seeds canoniques, BA m=3 reproduit EXACTEMENT le CSV committé
+    (0.0072 → 0.6582, 91×) — le « 0.007→0.658 ~90-fold » de l'abstract est bien le chiffre **BA m=3**.
+  - **⚠️ Findings de cadrage (pour le preprint)** : le **ratio** FROZEN/FULL est une statistique
+    **fragile** (dénominateur FULL ≈ 0, un seed BA donne FULL<0 → ratio ~1e9). Le résultat honnête
+    est un **SAUT** : différence + séparation complète + Cohen d, pas un « ~90-fold ».
+    **Recommandation** (décision Julien) : dans l'abstract/`sec:ablation`, mener avec
+    « rises from 0.007 to 0.658 (complete separation over 30 seeds, Cohen d≈9) » et rétrograder
+    le « ~90-fold » (ou le retirer). H_cont s'effondre aussi (diff +0.68 à +0.98 CI).
+- **Reste (🔜).** Étendre l'approche IC bootstrap à **Table 1** (H_cont diversité, ≥30 seeds) et
+  **finite-size scaling** jusqu'à des N pertinents ; IC sur labels *mesurés* (dépend de A3, fait).
+- **Effort restant.** ~1 session de calcul (mécanique).
 
 ### B5 — Comparaison à l'état de l'art réel 🧩
 - **Pourquoi.** Le benchmark actuel bat Kuramoto/Voter/Consensus (modèles-jouets).
