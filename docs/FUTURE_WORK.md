@@ -16,10 +16,9 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 1. **B1 — une tâche computationnelle** (reservoir computing). Transforme « le système
    maintient la diversité » en « le doute améliore une performance mesurable ». Plus gros
    gain de crédibilité par heure investie.
-2. **A2 — remonter FROZEN_U** comme résultat principal du preprint (déjà mesuré, robuste).
-3. **A3 — refaire la régression** de régime avec de vraies simulations (retire la faille
-   méthodologique centrale).
-4. **A4 — corriger le protocole cold-start** (incohérence code/texte, rapide).
+2. **A2 — remonter FROZEN_U** comme résultat principal du preprint (déjà mesuré, robuste). ⏳ RESTE
+3. ~~**A3 — refaire la régression** de régime avec de vraies simulations~~ ✅ FAIT (2026-07-08).
+4. ~~**A4 — corriger le protocole cold-start**~~ ✅ FAIT (2026-07-08).
 5. Le reste (B2 memristor réel, B3 énergie, B6 prédiction falsifiable) = projets de fond.
 
 ---
@@ -41,26 +40,38 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   message n°1, la frontière de degré étant la *limite* de ce mécanisme.
 - **Effort.** Rédaction, ~1 session. Aucune nouvelle simulation.
 
-### A3 — Régression de régime sur de vraies simulations 🔜
+### A3 — Régression de régime sur de vraies simulations ✅ FAIT (2026-07-08)
 - **Pourquoi.** `p2_edge_betweenness_analysis.py` ne simule pas : il lit un dict `REGIME`
   codé en dur, labellisé par *type* de topologie (12 décisions dupliquées ×3, pas 36
   observations). La « séparation complète » est quasi-tautologique.
-- **Comment.** Pour chaque (topologie, seed) : simuler, mesurer **H_cont** (continu, pas
-  H_cog), étiqueter *par mesure*. Puis régresser le régime sur **k_harm ET λ₂ côte à côte**.
-  Le script `experiments/lambda2_foundation_20260701/bouclage_regime_vs_predicteurs.py` le
-  fait déjà (k_harm 2/70 erreurs vs λ₂ 15/70) — le porter proprement dans le papier avec
-  figure. Transforme la faille en force.
-- **Effort.** ~1-2 sessions (le gros du code existe).
+- **Fait.** `experiments/a3_regime_regression_hcont.py` (commit `0ca04b1`) : 14 topologies
+  × 5 seeds = 70 vraies simulations, régime étiqueté **par mesure en H_cont** (100 bins),
+  pas H_cog. Régression continue : Spearman ρ = **−0.83** (k_harm) / **−0.78** (k_mean) /
+  **−0.52** (λ₂) ; n=70, p<1e-6. Le contrôle H_cog reproduit l'ordre (4/70 vs 8/70 vs 17/70).
+  Figure `fig:regime_degree` remplace `fig:fiedler` (H_cog, n=30, labels par type) dans le
+  preprint ; caption tautologique résiduelle de `tab:ba_m_sweep` requalifiée.
+- **Deux nuances gravées (honnêteté).** (1) En H_cont le régime est un **déclin continu**
+  (~3.9 → ~2.6 bits), pas un effondrement : le « dead zone » est en partie un artefact du
+  H_cog 5 bins, aucun seuil binaire net en continu (5/70 sous le plus grand gap). (2) k_harm
+  ≈ k_mean en H_cont (−0.83 vs −0.78) : la donnée identifie le **degré de couplage** (pas λ₂),
+  mais ne distingue pas nettement k_harm de k_mean (net seulement en H_cog).
+- **Retombée.** Amorce A5 (H_cont adopté dans la figure/régression principale de régime).
 
-### A4 — Corriger le protocole cold-start 🔜
+### A4 — Corriger le protocole cold-start ✅ FAIT (2026-07-08, Option 1 + nuance L109)
 - **Pourquoi.** Le texte revendique « v=w=0, la diversité *émerge* » mais
-  `verify_table1_preprint.py` n'appelle pas `cold_start=True` → init aléatoire
-  v∈[-1.5,1.5] (vérifié : H=4.03 non-cold vs 4.27 cold ; la valeur annoncée 4.06 correspond
-  au non-cold). Contradiction visible par tout reviewer qui relance le script.
-- **Comment.** Option 1 (propre) : passer `cold_start=True`, régénérer le Tableau 1, mettre
-  à jour les chiffres + le CSV + claims_mapping. Option 2 (minimal) : décrire l'init réelle
-  dans le texte et retirer l'argument « not from favorable initialization ».
-- **Effort.** ½ session (option 1 : relancer + Guardian).
+  `verify_table1_preprint.py` n'appelait pas `cold_start=True` → init aléatoire. Contradiction
+  visible par tout reviewer qui relance le script.
+- **Fait** (commit `4e507b8`, Option 1). `cold_start=True` ajouté ; le script **écrit
+  désormais** `figures/p2_table1_lattice.csv` (repro : la table sort d'un seul run). Mesure :
+  à I_stim=0.5 le cold-start change **peu** (u sature ~0.99, l'état oublie l'init) : 4×4
+  3.22→3.21, 10×10 4.06→**4.09**, 25×25 4.28→**4.40** (seul le 25×25 monte, +0.12). La
+  conclusion de Table 1 est donc **robuste à l'init**, et l'argument « émergence depuis v=w=0 »
+  est maintenant littéralement vrai. Table 1 + abstract + benchmark + conclusion à jour
+  (4.06±0.08 → 4.09±**0.19**, la std du 10×10 s'élargit en cold — rapporté). L109 nuancée
+  (« Unless otherwise noted »). Guardian C02=3.205 / C03=4.404 régénérés, 13/13.
+- **Note connexe.** La revendication L109 « All simulations v=w=0 » était globale ; 31 scripts
+  sont déjà cold, `verify_table1` était l'exception. Une passe systématique cold-start sur
+  *tous* les résultats secondaires reste possible (lié B7 repro end-to-end).
 
 ### A5 — Bannir H_cog des résultats primaires 🔜
 - **Pourquoi.** H_cog (5 bins) est un artefact reconnu (« valeurs à ne pas citer ») et
