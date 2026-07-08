@@ -38,6 +38,7 @@ from mem4ristor.graph_utils import make_ba, make_lattice_adj  # noqa: E402
 import p2_sigma_social_ablation as ab  # noqa: E402  (run_one reutilise tel quel)
 
 CSV = ROOT / "figures" / "b4_ablation_robustness.csv"
+SUMMARY_CSV = ROOT / "figures" / "b4_ablation_summary.csv"   # 1 ligne/topo : Cohen d, diff, separation (Guardian)
 PNG = ROOT / "figures" / "b4_ablation_robustness.png"
 
 # 30 seeds : les 10 canoniques (Table 1) + 20 nouveaux -> le sous-ensemble canonique reste
@@ -122,6 +123,7 @@ def main():
               f"{f'{dm:.3f} [{dlo:.3f},{dhi:.3f}]':>22}")
 
     print("\n=== VERDICT B4 (honnete) ===")
+    summary_out = []   # 1 ligne/topo pour le Guardian (Cohen d, diff, separation)
     for topo in TOPOS:
         r = results[topo]; s = summary[topo]
         # separation complete ?
@@ -131,6 +133,8 @@ def main():
         rmed, rlo, rhi = boot_ratio_ci(r["zs"], r["fs"])
         # effondrement de diversite (H_cont)
         dh, dhlo, dhhi = boot_paired_diff_ci(r["zh"], r["fh"])
+        summary_out.append((topo, s["fm"], s["zm"], s["dm"], s["dlo"], s["dhi"],
+                            d, int(sep), max_full, min_froz))
         print(f"\n  [{topo}]")
         print(f"    Synchronie : FULL {s['fm']:.4f} -> FROZEN {s['zm']:.3f} ; "
               f"difference {s['dm']:+.3f} CI[{s['dlo']:+.3f},{s['dhi']:+.3f}] (Cohen d={d:.1f})")
@@ -148,7 +152,13 @@ def main():
         f.write("topo,seed,full_sync,frozen_sync,full_hcont,frozen_hcont\n")
         for r in rows:
             f.write(f"{r[0]},{r[1]},{r[2]:.6f},{r[3]:.6f},{r[4]:.6f},{r[5]:.6f}\n")
-    print(f"\n[csv] {CSV}")
+    with SUMMARY_CSV.open("w", encoding="utf-8") as f:
+        f.write("topo,full_sync_mean,frozen_sync_mean,diff_mean,diff_ci_lo,diff_ci_hi,"
+                "cohen_d,separation_complete,max_full,min_frozen\n")
+        for r in summary_out:
+            f.write(f"{r[0]},{r[1]:.6f},{r[2]:.6f},{r[3]:.6f},{r[4]:.6f},{r[5]:.6f},"
+                    f"{r[6]:.4f},{r[7]},{r[8]:.6f},{r[9]:.6f}\n")
+    print(f"\n[csv] {CSV}\n[csv] {SUMMARY_CSV}")
 
     try:
         import matplotlib; matplotlib.use("Agg")
