@@ -5,7 +5,8 @@
 > **Origine.** Audit externe simulé « posture d'une chercheuse de référence en neuromorphique » du 2026-07-06
 > ([docs/audit_externe_neuromorphique_2026-07-06.md](audit_externe_neuromorphique_2026-07-06.md))
 > + mandat de réfutation λ₂ du 2026-07-01 (`experiments/lambda2_foundation_20260701/SYNTHESE.md`).
-> **Mise à jour.** 2026-07-06.
+> **Mise à jour.** 2026-07-09 (B2/B3/B5/B6 cadrés, voir sections correspondantes).
+
 
 Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs jours/semaines) · 💭 exploratoire.
 
@@ -13,6 +14,12 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 
 ## Priorité recommandée (si on ne fait qu'une chose à la fois)
 
+0. **09/07/2026 — Fond du Volet B cadré (B2/B3/B5/B6)**, choix de Julien : « tout explorer »
+   plutôt qu'un seul dispositif. 3 dossiers de correspondance physique (photonique/
+   spintronique/électrique), énergie comparée, positionnement spintronique qualitatif,
+   proposition falsifiable concrète (réseau STNO couplé, cf. B6). **Aucune simulation
+   physique réelle (LLG/SPICE) — reste un projet de fond.** Aucun fichier public/preprint
+   touché, cœur non modifié, tests 118+2xfail OK, Guardian 14/14.
 1. ~~**B1 — une tâche computationnelle**~~ ✅ CONSOLIDÉ (2026-07-08). La caractérisation
    (doute = explorateur discipliné à **valeur conditionnelle**) est désormais robuste aux seeds
    et à **3 topologies** (lattice / BA scale-free / ER) avec IC bootstrap. Voir bandeau section B.
@@ -21,7 +28,11 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 3. ~~**A3 — refaire la régression** de régime avec de vraies simulations~~ ✅ FAIT (2026-07-08).
 4. ~~**A4 — corriger le protocole cold-start**~~ ✅ FAIT (2026-07-08).
 5. ~~A5 — bannir H_cog des résultats primaires~~ ✅ FAIT (2026-07-08, transparence + rétrograder).
-6. Le reste (B2 memristor réel, B3 énergie, B6 prédiction falsifiable) = projets de fond.
+6. ~~Le reste (B2 memristor réel, B3 énergie, B6 prédiction falsifiable) = projets de fond.~~
+   🟡 **Cadrage fait (09/07/2026)** : 3 dossiers de correspondance physique (B2),
+   comparaison d'énergie (B3), positionnement spintronique qualitatif (B5), proposition
+   falsifiable concrète (B6). **Aucune simulation physique réelle (LLG/SPICE) — reste
+   un projet de fond de plusieurs semaines.** Voir section B ci-dessous.
 
 ---
 
@@ -250,7 +261,7 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   « flip moy ~2200 » = métrique stricte gonflée par des flips de bruit tardifs, la vraie transition
   est à la fin du pulse (~350) ; 12 échantillons (0.83=10/12) → direction robuste, valeurs à N modeste.
 
-### B2 — Un vrai memristor 🧩
+### B2 — Un vrai memristor 🟡 3 dossiers de correspondance ouverts (09/07/2026), simulation physique restante
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
   utilise des *behavioral sources*, pas un modèle de dispositif. une chercheuse de référence en neuromorphique demandera où est
   la variable d'état physique et à quoi correspond `u`.
@@ -258,14 +269,52 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   spintronique) ; établir la correspondance `u` ↔ grandeur physique (lacunes d'oxygène,
   phase, aimantation) avec constantes de temps réelles ; réécrire au moins un étage SPICE
   avec ce modèle. Lien avec la voie photonique déjà explorée (`docs/hardware/PHOTONIC_PATHWAY.md`).
-- **Effort.** 🧩 plusieurs semaines.
+- **✅ Fait (09/07/2026, choix Julien : « tout explorer », pas un seul dispositif).**
+  Calcul dimensionnel reproductible (`experiments/b2_device_physics_mapping.py`
+  → `figures/b2_device_physics_mapping.csv`), ancré sur la pulsation propre mesurée
+  du nœud FHN isolé (`reviewer2_linear_stability.py`, λ=−0.0473±0.2824i → T_node≈22.25
+  unités modèle). **Découverte structurante : les 3 familles ne se substituent pas
+  l'une à l'autre — chacune correspond à un RÔLE différent dans l'architecture**, pas
+  à une réimplémentation complète du modèle :
+  - **Photonique (GST)** → rôle `u` (doute, lent, multi-niveau). §5 ajouté à
+    `docs/hardware/PHOTONIC_PATHWAY.md` (le dossier le plus avancé, quatuor
+    d'imperfections déjà validé le 12/06). Ancrage 100–200 ns (littérature GST
+    vérifiée), énergie de signal 1.28 aJ/pas (plancher théorique, hors overhead).
+  - **Spintronique (STNO à vortex)** → rôle `v` (oscillateur). Nouveau dossier
+    `docs/hardware/SPINTRONIC_PATHWAY.md`. Candidat le plus **direct** (un STNO
+    EST un oscillateur auto-entretenu, contrairement au nœud FHN isolé qui est une
+    spirale stable sous Hopf) et le plus **rapide** des trois (dt physique en
+    picosecondes). Rôle de `u` non résolu physiquement — point le plus faible.
+  - **Électrique** → **deux rôles distincts, deux dispositifs** (nouveau dossier
+    `docs/hardware/ELECTRICAL_PATHWAY.md`) : RRAM/VTEAM filamentaire pour le poids
+    de couplage `D_eff` (statique dans le modèle actuel → énergie payée UNE FOIS,
+    pas par pas, ~10-50 fJ/écriture cas optimiste) ; neuristor Mott NbO2
+    (Pickett et al. 2013, Nature Materials) pour l'oscillateur `v` (seul candidat
+    électrique qui oscille par construction).
+- **Reste (🧩 projet de fond, plusieurs semaines).** Aucune simulation physique
+  réelle (LLG spintronique, VTEAM/neuristor SPICE) n'a été faite — ce sont des
+  calculs dimensionnels de premier ordre sur des paramètres de la littérature,
+  pas des preuves de fonctionnement. Prochaine étape la moins coûteuse : modèle
+  STNO macrospin minimal vérifiant qu'un couplage dépendant du désaccord peut
+  inverser de signe (condition nécessaire au mécanisme du doute).
 
-### B3 — Métriques d'énergie / vitesse / surface 🧩
+### B3 — Métriques d'énergie / vitesse / surface 🟡 cadré (09/07/2026), pas clos
 - **Pourquoi.** En neuromorphique la question est toujours pJ/opération, TOPS/W, latence.
   Le papier n'a aucune unité physique (dt=0.05 sans dimension).
 - **Comment.** Ancrer dt et les tensions dans une échelle physique (via B2) ; estimer un
   ordre de grandeur énergie/opération ; comparer à un point de référence CMOS/mémristif.
-- **Effort.** 🧩 dépend de B2.
+- **✅ Fait (09/07/2026).** `docs/hardware/B3_ENERGY_COMPARISON.md` : tableau des 3
+  familles + référence CMOS (Loihi ~24 pJ/op, TrueNorth ~26 pJ/événement, vérifiés
+  par recherche web). **Résultat qualitatif honnête** : les 3 dispositifs dynamiques
+  convergent vers un ordre de grandeur fJ/pas (3-4 ordres sous Loihi/TrueNorth, mais
+  échelles de comptage différentes — pas une victoire directe) ; le RRAM en rôle de
+  poids statique est structurellement le moins coûteux (énergie payée une fois).
+  **Réserve dominante** : aucune énergie « système complet » (interconnexion, overhead
+  laser/détecteur photonique, etc.) n'a été calculée — B3 reste un cadrage d'ordres de
+  grandeur, pas une preuve de faisabilité énergétique bout en bout.
+- **Reste.** Choisir UNE architecture hybride précise (quel dispositif pour quel rôle,
+  N nœuds, overhead d'interconnexion) et la chiffrer bout en bout — projet de
+  plusieurs semaines.
 
 ### B4 — Robustesse statistique ✅ FAIT (2026-07-08) — ablation centrale + Table 1 + FSS
 - **Pourquoi.** Résultat central sur peu de seeds, Tableau 1 sur N≤625. La « complete
@@ -317,15 +366,41 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     **gratuit**. Sa valeur décisive exige un **horizon inconnu/non-borné** OU un **coût d'attente**
     (cohérent B1c : le doute paie quand le budget est rare). Le cadrage « explorateur, pas mémoire »
     est validé au niveau des règles d'arrêt, à cette condition près.
-- **Reste (🧩).** Comparaison aux **oscillateurs spintroniques couplés** (domaine neuromorphique
-  de référence) — nécessite un modèle de dispositif (lié B2). Effort : projet de fond.
+- **🟡 Reste — positionnement spintronique qualitatif fait (09/07/2026), comparaison
+  quantitative non faite.** `docs/hardware/SPINTRONIC_PATHWAY.md` établit une
+  correspondance candidate `v`↔STNO à vortex (Torrejon et al. 2017 Nature — reservoir
+  computing spoken-digit sur 1 STNO ; Romera et al. 2018 Nature — reconnaissance de
+  voyelles sur 4 STNO couplés). **Ce n'est PAS une comparaison loyale au sens de la
+  comparaison ESN/NARMA10 du 7 juillet** (`b5_esn_comparison.py`, même tâche/split/
+  readout des deux côtés) : aucun benchmark spintronique publié sur NARMA10 n'existe,
+  donc rien à rejouer tête-à-tête. Le positionnement reste littéraire/qualitatif :
+  les deux domaines visent la reconnaissance de motifs par réseau d'oscillateurs
+  couplés, mais sur des tâches différentes (classification vs régression). **Pour
+  aller au-delà du qualitatif** : simuler un réseau STNO macrospin minimal et lui
+  faire rejouer NARMA10 ou la tâche trompeuse de B1d — projet de fond, pas fait.
+  Effort : 🧩 projet de fond (modèle physique requis, cf. B2).
 
-### B6 — Prédiction falsifiable / signature expérimentale 💭
+### B6 — Prédiction falsifiable / signature expérimentale 🟡 proposition concrète (09/07/2026), non testée
 - **Pourquoi.** Tout est auto-référentiel (H, sync, MI calculés sur le même v(t) simulé).
   Manque une prédiction qu'un manip pourrait réfuter.
 - **Comment.** Identifier une signature du doute mesurable sur un dispositif réel, distincte
   d'un système sans doute (ex. réponse spectrale, hystérésis, statistique de commutation).
-- **Effort.** 💭 réflexion + éventuelle campagne SPICE ciblée.
+- **✅ Proposition concrète (09/07/2026).** S'appuyer sur le résultat le plus robuste et
+  le mieux quantifié du projet — l'ablation FROZEN_U (Cohen d≈9 sur 30 seeds, B4,
+  8 juillet) — plutôt que sur une signature énergétique (pas d'équivalent expérimental
+  évident, cf. `docs/hardware/B3_ENERGY_COMPARISON.md` §5). **Prédiction falsifiable
+  proposée** : un petit réseau de STNO physiques couplés, avec un gain de couplage
+  modulé par le désaccord local (`u`, polarité inversée au-delà du seuil), devrait
+  montrer une synchronisation **significativement plus faible** qu'un réseau identique
+  à couplage fixe (contrôle FROZEN_U), mesurable par spectroscopie micro-onde standard
+  (méthode déjà utilisée par Romera et al. 2018 pour caractériser la synchronisation
+  mutuelle de STNO). C'est directement testable sur un dispositif réel, avec un
+  effet-taille de référence (Cohen d≈9) fixé par la simulation — donc falsifiable :
+  un effet nul ou de signe opposé réfuterait le transfert du mécanisme au substrat
+  physique.
+- **Reste (🧩).** Non testé, ni en simulation macrospin ni en circuit réel. Prérequis :
+  le modèle STNO macrospin minimal de B2/B5 (vérifier que le couplage peut changer de
+  signe) avant toute campagne SPICE ou expérimentale ciblée.
 
 ### B7 — Reproductibilité end-to-end des figures 🔜
 - **Pourquoi.** AUDIT-024 a montré que deux générations de code coexistaient sans détection.
@@ -360,5 +435,8 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 ## Dépendances rapides
 - A3 alimente A5 (mesure H_cont per-seed) et B4 (IC sur labels mesurés).
 - B1 débloque B3 (énergie/tâche) et B5 (comparaison SOTA).
-- B2 débloque B3 et B6 (physique du dispositif).
+- B2 débloque B3 et B6 (physique du dispositif). **09/07/2026** : B2 a livré 3 dossiers
+  de correspondance (photonique/spintronique/électrique), débloquant un premier B3
+  (cadré) et un premier B6 (proposition falsifiable) — mais la simulation physique
+  réelle (LLG, SPICE) reste à faire avant que B2 soit clos.
 - C1 dépend de A5 (métrique continue).
