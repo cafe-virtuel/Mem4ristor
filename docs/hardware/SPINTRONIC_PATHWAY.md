@@ -36,7 +36,7 @@ dynamique **rapide** du modèle plutôt qu'à sa dynamique **lente** (`u`, `w`).
 |---|---|---|
 | `v` (activité, oscillateur) | Phase/fréquence d'un STNO à vortex | **Directe** — les deux sont des oscillateurs non-linéaires auto-entretenus (ou quasi, cf. réserve ci-dessous) |
 | Couplage inter-nœuds (D_eff·u_filter·laplacien) | Couplage mutuel micro-onde ou courant de polarisation partagé entre STNO voisins (cf. Romera et al. 2018) | Plausible — le couplage mutuel entre STNO physiques est expérimentalement démontré |
-| `u` (doute, lent) | **Non résolu ici.** Candidat le plus proche : une fenêtre d'intégration/masque temporel comme celle utilisée en reservoir computing à un seul STNO (Torrejon et al. 2017) — mais c'est une construction algorithmique externe dans la littérature citée, pas un état physique interne au dispositif | Spéculatif, plus faible que le mapping `v` |
+| `u` (doute, lent) | **Mathématiquement portable (§7, testé 09/07/2026)** — le mécanisme `u_filter`/`du` transposé tel quel sur un couplage de Kuramoto reproduit l'ablation FROZEN_U/FULL (Cohen d jusqu'à 14.85). **Correspondance physique toujours non résolue** : quel circuit lit le désaccord de phase local et pilote une variable lente en retour ? Candidat le plus proche dans la littérature citée : une fenêtre d'intégration/masque temporel (Torrejon et al. 2017) — mais c'est une construction algorithmique externe, pas un état physique interne au dispositif | Le test mathématique est positif ; le mécanisme physique de lecture reste à trouver |
 
 **Réserve physique importante.** Le nœud FHN isolé du modèle, à ses paramètres par
 défaut (α=0.15), est en régime de **spirale stable** (sous le seuil de Hopf,
@@ -97,13 +97,16 @@ de comptage).
 
 ## 5. Ce que ce dossier ne fait PAS (à ne jamais perdre de vue)
 
-- Aucune simulation LLG (Landau-Lifshitz-Gilbert) ou macrospin d'un réseau de STNO
-  couplés n'a été réalisée. Construire un tel simulateur — et vérifier qu'il
-  reproduit qualitativement le mécanisme du doute (polarité de couplage
-  dépendante de l'état) — est un projet de plusieurs semaines (cf. B2 dans
-  `docs/FUTURE_WORK.md`, effort 🧩).
-- Le rôle de `u` reste non résolu physiquement (§2) — c'est le point le plus
-  faible de ce mapping, plus faible que le mapping GST↔`u` du dossier photonique
+- **§7 (09/07/2026) a testé une réduction phase-oscillateur (Kuramoto/Slavin-Tiberkevich),
+  PAS une simulation LLG (Landau-Lifshitz-Gilbert) ou macrospin complète.** Un vrai
+  macrospin (précession, champ démagnétisant, couple de transfert de spin explicite)
+  reste à construire — projet de plusieurs semaines (cf. B2 dans `docs/FUTURE_WORK.md`,
+  effort 🧩). La réduction phase-oscillateur est le niveau d'abstraction standard de la
+  littérature STNO pour les questions de synchronisation de réseau, pas un raccourci
+  inventé ici — mais elle laisse de côté toute la dynamique d'amplitude/relaxation.
+- Le rôle physique de `u` reste non résolu (§2) — le test §7 montre que le mécanisme
+  *mathématique* se porte, pas qu'un circuit physique réel peut le lire. C'est le point
+  le plus faible de ce mapping, plus faible que le mapping GST↔`u` du dossier photonique
   (lui-même déjà qualifié de « le plus spéculatif »).
 - Aucune tâche de calcul (type NARMA10, vowel recognition) n'a été rejouée avec
   un modèle STNO réel ici — voir `docs/FUTURE_WORK.md` B5 pour un positionnement
@@ -116,11 +119,68 @@ de comptage).
 
 ## 6. Prochaines étapes possibles (par coût croissant)
 
-1. [ ] Modèle STNO macrospin minimal (équation de Slonczewski simplifiée) — vérifier
-   qu'un couplage mutuel dépendant du désaccord de phase peut réellement inverser
-   de signe (condition nécessaire pour porter le mécanisme du doute).
-2. [ ] Reproduire qualitativement l'ablation FROZEN_U/FULL (Cohen d≈9, B4) sur un
-   réseau simulé de STNO couplés — test de portabilité du résultat le plus robuste
-   du projet à un substrat physique différent.
-3. [ ] Si (1) et (2) tiennent : proposer un protocole expérimental réel
-   (cf. `docs/FUTURE_WORK.md` B6, signature falsifiable).
+1. [x] ~~Modèle STNO macrospin minimal~~ — **FAIT 09/07/2026**, voir §7 ci-dessous.
+2. [x] ~~Reproduire qualitativement l'ablation FROZEN_U/FULL~~ — **FAIT 09/07/2026**,
+   voir §7. Résultat positif, avec une réserve honnête importante (calibration du
+   capteur de désaccord).
+3. [ ] Proposer un protocole expérimental réel (cf. `docs/FUTURE_WORK.md` B6,
+   signature falsifiable) — la proposition existe déjà (réseau STNO réel + spectroscopie
+   micro-onde), maintenant appuyée par un résultat en silico, pas seulement une analogie.
+
+## 7. Résultat — le mécanisme se porte, avec une réserve honnête (09/07/2026)
+
+**Script** : `experiments/b2_stno_phase_coupling_poc.py` → `figures/b2_stno_phase_coupling_poc.csv`
+/ `_agg.csv` / `.png`. **Modèle** : réduction phase-oscillateur de Slavin-Tiberkevich
+(le niveau d'abstraction standard pour les questions de synchronisation de réseau STNO,
+pas un simulateur LLG) — équivalente à un Kuramoto en champ local sur graphe, avec le
+**même mécanisme de doute que `dynamics.py`, mêmes constantes, aucun réglage propre**
+(`u_filter = tanh(π(0.5-u))`, `du` avec la même formule d'`epsilon_u_adaptive`, même
+convention de bruit Euler-Maruyama). Ablation FROZEN_U/FULL implémentée à l'identique
+(`sigma_social_override=0` dans l'équation de `u` seulement, pas dans le couplage).
+
+**Calibration honnête (documentée, pas cachée).** Premier essai (capteur de désaccord
+brut, `gain_u=1`) : effet **correct en signe mais modeste** — `u` reste toujours
+<0.19, ne franchit **jamais** le seuil de bascule de polarité `u=0.5` (contrairement
+au modèle FHN où `u` sature régulièrement >0.5, cf. session du 7 juillet « verrouillage
+en mode FOU »). Diagnostic : `sigma_social = |L_φ|` est un couplage de Kuramoto
+**borné** dans [-1,1] par construction (moyenne de `sin(·)`), contrairement au laplacien
+`v` du modèle FHN qui n'est pas borné — le mécanisme ne peut alors montrer que sa
+modulation « douce » (affaiblissement d'amplitude), pas son effet contrarian qualitatif.
+**Correction** : gain appliqué au **capteur** qui alimente `u` (`sigma_social_for_u =
+gain_u·sigma_social`), sans toucher au canal de couplage physique — exactement le
+pattern déjà présent dans le modèle original (`sigma_social_override` découple déjà
+perception du désaccord et force de couplage réelle dans `p2_sigma_social_ablation.py`).
+
+**Résultats (10 seeds canoniques, IC bootstrap, BA m=3 et lattice 10×10 — mêmes
+topologies que B4) :**
+
+| Topologie | Capteur | R_FULL | R_FROZEN_U | diff (IC 95%) | Cohen d |
+|---|---|---|---|---|---|
+| BA m=3 | brut (gain=1) | 0.646±0.082 | 0.826±0.067 | +0.180 [+0.114,+0.247] | **+2.28** |
+| BA m=3 | amplifié (gain=5, `u` franchit 0.5) | 0.079±0.010 | 0.826±0.067 | +0.747 [+0.702,+0.785] | **+14.85** |
+| Lattice 10×10 | brut (gain=1) | 0.296±0.058 | 0.382±0.094 | +0.086 [+0.022,+0.158] | **+1.05** |
+| Lattice 10×10 | amplifié (gain=5) | 0.045±0.007 | 0.382±0.094 | +0.338 [+0.286,+0.400] | **+4.83** |
+
+**Lecture honnête.**
+1. **Le mécanisme se porte, dans les deux régimes** : le doute réduit la
+   synchronisation de Kuramoto sur ce substrat totalement différent, aucun IC ne
+   chevauche zéro, dans les 4 conditions testées.
+2. **« Tel quel » (gain=1), l'effet est réel mais modeste** (Cohen d 1.05–2.28) —
+   c'est le résultat le plus défendable si on refuse d'ajouter un paramètre au
+   modèle. **Une fois le capteur de désaccord calibré pour laisser `u` franchir son
+   propre seuil de bascule (gain=5), l'effet devient massif** (Cohen d 4.83–14.85),
+   du même ordre voire supérieur à celui de l'ablation FHN originale (B4, Cohen d
+   9.4 / 4.7). Ce n'est PAS un résultat retouché pour plaire : le gain est un
+   paramètre de capteur physiquement légitime (une chaîne de détection de phase a
+   son propre gain, indépendant du couplage lui-même), mais c'est un paramètre
+   AJOUTÉ, pas porté depuis le modèle original — à dire clairement.
+3. **Réplication non cherchée, mais notée** : dans les 2 régimes, BA m=3 montre un
+   effet plus fort que lattice — même ordre que l'ablation FHN originale (B4 :
+   Cohen d 9.4 BA vs 4.7 lattice). Cohérent avec le fil rouge B1 (BA scale-free =
+   cas structurellement le plus sensible du projet), mais 2 topologies ne prouvent
+   pas une loi générale — à vérifier sur ER et d'autres tailles avant d'en faire un claim.
+4. **Ce que ça ne prouve pas** : aucune dynamique de phase-amplitude complète
+   (Slavin-Tiberkevich à 2 variables), aucun bruit de phase dérivé d'un vrai spectre
+   de puissance micro-onde mesuré, aucune vérification que le gain de capteur=5 est
+   physiquement réalisable sur un vrai circuit de détection de phase STNO. C'est un
+   test de **portabilité mathématique du mécanisme**, pas une validation physique.

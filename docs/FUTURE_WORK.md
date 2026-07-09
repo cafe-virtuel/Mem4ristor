@@ -284,19 +284,29 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     `docs/hardware/SPINTRONIC_PATHWAY.md`. Candidat le plus **direct** (un STNO
     EST un oscillateur auto-entretenu, contrairement au nœud FHN isolé qui est une
     spirale stable sous Hopf) et le plus **rapide** des trois (dt physique en
-    picosecondes). Rôle de `u` non résolu physiquement — point le plus faible.
+    picosecondes).
   - **Électrique** → **deux rôles distincts, deux dispositifs** (nouveau dossier
     `docs/hardware/ELECTRICAL_PATHWAY.md`) : RRAM/VTEAM filamentaire pour le poids
     de couplage `D_eff` (statique dans le modèle actuel → énergie payée UNE FOIS,
     pas par pas, ~10-50 fJ/écriture cas optimiste) ; neuristor Mott NbO2
     (Pickett et al. 2013, Nature Materials) pour l'oscillateur `v` (seul candidat
     électrique qui oscille par construction).
-- **Reste (🧩 projet de fond, plusieurs semaines).** Aucune simulation physique
-  réelle (LLG spintronique, VTEAM/neuristor SPICE) n'a été faite — ce sont des
-  calculs dimensionnels de premier ordre sur des paramètres de la littérature,
-  pas des preuves de fonctionnement. Prochaine étape la moins coûteuse : modèle
-  STNO macrospin minimal vérifiant qu'un couplage dépendant du désaccord peut
-  inverser de signe (condition nécessaire au mécanisme du doute).
+- **✅ Modèle STNO macrospin minimal FAIT (09/07/2026, suite immédiate)** —
+  `experiments/b2_stno_phase_coupling_poc.py`, voir `SPINTRONIC_PATHWAY.md` §7.
+  Réduction phase-oscillateur (Kuramoto/Slavin-Tiberkevich, le niveau d'abstraction
+  standard de la littérature STNO pour la synchronisation de réseau) portant le
+  mécanisme `u`/`u_filter` **à l'identique** (mêmes constantes que `dynamics.py`).
+  **Le mécanisme se porte** : le doute réduit la synchronisation de Kuramoto sur ce
+  substrat totalement différent (Cohen d 1.05–2.28 « tel quel » ; 4.83–14.85 une fois
+  le capteur de désaccord calibré pour laisser `u` franchir son seuil de bascule à
+  0.5 — un paramètre de capteur ajouté, pas retouché sur le mécanisme lui-même).
+  Ordre BA>lattice répliqué (cohérent B1/B4, non cherché). Réserve : test de
+  portabilité mathématique, pas une simulation LLG ni une validation physique.
+- **Reste (🧩 projet de fond, plusieurs semaines).** Aucune simulation LLG/macrospin
+  complète (précession, champ démagnétisant, couple de transfert de spin explicite)
+  ni SPICE VTEAM/neuristor n'a été faite. Le rôle physique de `u` (quel circuit lit
+  le désaccord et pilote une variable lente) reste non résolu — le test ci-dessus
+  montre que le mécanisme mathématique se porte, pas qu'un dispositif réel peut le lire.
 
 ### B3 — Métriques d'énergie / vitesse / surface 🟡 cadré (09/07/2026), pas clos
 - **Pourquoi.** En neuromorphique la question est toujours pJ/opération, TOPS/W, latence.
@@ -366,41 +376,45 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     **gratuit**. Sa valeur décisive exige un **horizon inconnu/non-borné** OU un **coût d'attente**
     (cohérent B1c : le doute paie quand le budget est rare). Le cadrage « explorateur, pas mémoire »
     est validé au niveau des règles d'arrêt, à cette condition près.
-- **🟡 Reste — positionnement spintronique qualitatif fait (09/07/2026), comparaison
-  quantitative non faite.** `docs/hardware/SPINTRONIC_PATHWAY.md` établit une
-  correspondance candidate `v`↔STNO à vortex (Torrejon et al. 2017 Nature — reservoir
-  computing spoken-digit sur 1 STNO ; Romera et al. 2018 Nature — reconnaissance de
-  voyelles sur 4 STNO couplés). **Ce n'est PAS une comparaison loyale au sens de la
-  comparaison ESN/NARMA10 du 7 juillet** (`b5_esn_comparison.py`, même tâche/split/
-  readout des deux côtés) : aucun benchmark spintronique publié sur NARMA10 n'existe,
-  donc rien à rejouer tête-à-tête. Le positionnement reste littéraire/qualitatif :
-  les deux domaines visent la reconnaissance de motifs par réseau d'oscillateurs
-  couplés, mais sur des tâches différentes (classification vs régression). **Pour
-  aller au-delà du qualitatif** : simuler un réseau STNO macrospin minimal et lui
-  faire rejouer NARMA10 ou la tâche trompeuse de B1d — projet de fond, pas fait.
-  Effort : 🧩 projet de fond (modèle physique requis, cf. B2).
+- **🟡 Positionnement littéraire fait (09/07/2026) + 🆕 test de synchronisation fait
+  (09/07/2026, même jour, suite immédiate) — comparaison de PERFORMANCE (type NARMA10)
+  toujours non faite.** `docs/hardware/SPINTRONIC_PATHWAY.md` établit une correspondance
+  candidate `v`↔STNO à vortex (Torrejon et al. 2017 Nature — reservoir computing
+  spoken-digit sur 1 STNO ; Romera et al. 2018 Nature — reconnaissance de voyelles sur
+  4 STNO couplés). **Ce n'est toujours PAS une comparaison loyale au sens de la
+  comparaison ESN/NARMA10 du 7 juillet** (aucun benchmark spintronique publié sur
+  NARMA10 n'existe) — mais entre-temps, `experiments/b2_stno_phase_coupling_poc.py`
+  a testé directement si le **mécanisme** (pas la performance sur une tâche) se porte :
+  résultat positif, Cohen d jusqu'à 14.85 sur la synchronisation de Kuramoto (voir
+  `SPINTRONIC_PATHWAY.md` §7 et B2 ci-dessus). **Pour aller jusqu'à une vraie
+  comparaison de performance** : faire rejouer NARMA10 ou la tâche trompeuse de B1d à
+  ce même réseau de phase-oscillateurs — pas fait, projet de fond distinct.
+  Effort : 🧩 projet de fond (modèle physique complet requis, cf. B2).
 
-### B6 — Prédiction falsifiable / signature expérimentale 🟡 proposition concrète (09/07/2026), non testée
+### B6 — Prédiction falsifiable / signature expérimentale 🟢 appuyée par un résultat en silico (09/07/2026)
 - **Pourquoi.** Tout est auto-référentiel (H, sync, MI calculés sur le même v(t) simulé).
   Manque une prédiction qu'un manip pourrait réfuter.
 - **Comment.** Identifier une signature du doute mesurable sur un dispositif réel, distincte
   d'un système sans doute (ex. réponse spectrale, hystérésis, statistique de commutation).
-- **✅ Proposition concrète (09/07/2026).** S'appuyer sur le résultat le plus robuste et
-  le mieux quantifié du projet — l'ablation FROZEN_U (Cohen d≈9 sur 30 seeds, B4,
-  8 juillet) — plutôt que sur une signature énergétique (pas d'équivalent expérimental
-  évident, cf. `docs/hardware/B3_ENERGY_COMPARISON.md` §5). **Prédiction falsifiable
-  proposée** : un petit réseau de STNO physiques couplés, avec un gain de couplage
-  modulé par le désaccord local (`u`, polarité inversée au-delà du seuil), devrait
-  montrer une synchronisation **significativement plus faible** qu'un réseau identique
-  à couplage fixe (contrôle FROZEN_U), mesurable par spectroscopie micro-onde standard
-  (méthode déjà utilisée par Romera et al. 2018 pour caractériser la synchronisation
-  mutuelle de STNO). C'est directement testable sur un dispositif réel, avec un
-  effet-taille de référence (Cohen d≈9) fixé par la simulation — donc falsifiable :
-  un effet nul ou de signe opposé réfuterait le transfert du mécanisme au substrat
-  physique.
-- **Reste (🧩).** Non testé, ni en simulation macrospin ni en circuit réel. Prérequis :
-  le modèle STNO macrospin minimal de B2/B5 (vérifier que le couplage peut changer de
-  signe) avant toute campagne SPICE ou expérimentale ciblée.
+- **✅ Proposition concrète (09/07/2026), maintenant appuyée par un test en silico (même
+  jour).** S'appuyer sur le résultat le plus robuste et le mieux quantifié du projet —
+  l'ablation FROZEN_U (Cohen d≈9 sur 30 seeds, B4, 8 juillet) — plutôt que sur une
+  signature énergétique (pas d'équivalent expérimental évident, cf.
+  `docs/hardware/B3_ENERGY_COMPARISON.md` §5). **Prédiction falsifiable proposée** : un
+  petit réseau de STNO physiques couplés, avec un gain de couplage modulé par le
+  désaccord local (`u`, polarité inversée au-delà du seuil), devrait montrer une
+  synchronisation **significativement plus faible** qu'un réseau identique à couplage
+  fixe (contrôle FROZEN_U), mesurable par spectroscopie micro-onde standard (méthode
+  déjà utilisée par Romera et al. 2018). **Le modèle STNO macrospin minimal prévu comme
+  prérequis a été construit et testé le jour même** (`b2_stno_phase_coupling_poc.py`,
+  réduction phase-oscillateur, pas LLG) : le mécanisme réduit bien la synchronisation
+  sur ce substrat (Cohen d 1.05–14.85 selon calibration du capteur de désaccord) — la
+  prédiction falsifiable n'est donc plus une simple analogie, elle est appuyée par un
+  résultat en silico reproductible. Reste falsifiable de la même façon : un effet nul
+  ou de signe opposé sur un vrai dispositif réfuterait le transfert au substrat physique.
+- **Reste (🧩).** Non testé en circuit réel (seulement en silico, réduction
+  phase-oscillateur). Une simulation LLG/macrospin complète resterait un pas
+  intermédiaire plus fidèle avant toute campagne expérimentale réelle.
 
 ### B7 — Reproductibilité end-to-end des figures 🔜
 - **Pourquoi.** AUDIT-024 a montré que deux générations de code coexistaient sans détection.
