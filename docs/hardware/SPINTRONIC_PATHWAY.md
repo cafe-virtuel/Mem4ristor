@@ -126,13 +126,16 @@ de comptage).
 3. [x] ~~Généraliser à un modèle amplitude+phase avec non-isochronicité~~ — **FAIT
    09/07/2026**, voir §8. Julien : « tu m'as mis l'eau à la bouche, je veux voir ce
    que ça donne ». Résultat : le mécanisme survit, robuste à la non-isochronicité.
-4. [ ] Proposer un protocole expérimental réel (cf. `docs/FUTURE_WORK.md` B6,
+4. [x] ~~Vraie simulation macrospin LLGS (vecteur d'aimantation 3D, Slonczewski)~~ —
+   **FAIT 09/07/2026**, voir §9. Vérif matériel faite (RTX 3070 8Go, largement
+   suffisant, pas de GPU nécessaire à ce palier) ; micromagnétisme spatial complet
+   (mumax3) explicitement reporté à une décision séparée (Julien a choisi ce palier-ci).
+5. [ ] Proposer un protocole expérimental réel (cf. `docs/FUTURE_WORK.md` B6,
    signature falsifiable) — la proposition existe déjà (réseau STNO réel + spectroscopie
-   micro-onde), maintenant appuyée par 2 résultats en silico convergents (§7 et §8).
-5. [ ] Vraie simulation LLG/macrospin complète (précession, champ démagnétisant, couple
-   de transfert de spin explicite) ou modèle de Thiele pour la dynamique du cœur de
-   vortex — le palier suivant, encore non franchi (§8 reste une réduction de type
-   auto-oscillateur, pas une résolution spatiale de la texture magnétique).
+   micro-onde), maintenant appuyée par 3 résultats en silico convergents (§7, §8, §9).
+6. [ ] Micromagnétisme spatial complet (mumax3, texture de vortex résolue) ou modèle
+   de Thiele — le palier suivant, non franchi. Nécessite d'installer mumax3/CUDA,
+   projet à part (heures de calcul, pas une suite de session).
 
 ## 8. Généralisation amplitude+phase (Slavin-Tiberkevich) — le mécanisme survit (09/07/2026)
 
@@ -192,6 +195,81 @@ et converge). **Correction : dt=0.005 pour toute la campagne.**
    STNO à vortex non trouvée par recherche web (testée sur une plage, pas une valeur
    affirmée), et le gain de capteur=10 reste un paramètre ajouté à interpréter
    physiquement (§7), pas mesuré sur un vrai circuit.
+
+## 9. Macrospin LLGS complet — le vrai vecteur d'aimantation (09/07/2026)
+
+**Pourquoi ce palier.** Julien, après avoir vu le §8 : « tu m'as mis l'eau à la bouche, je
+veux voir ce que ça donne ». Vérification matérielle faite avant de s'engager (pas de
+supposition) : Ryzen 7 5800H, 32 Go RAM, **RTX 3070 Laptop 8 Go VRAM** — largement
+suffisant pour ce palier (pur Python/numpy, pas de GPU nécessaire ici). Le micromagnétisme
+spatial complet (texture de vortex résolue, à la mumax3) aurait justifié le GPU mais
+demande d'installer un nouvel outil et des campagnes de plusieurs heures — **écarté
+explicitement par Julien** au profit de ce palier-ci, plus proportionné à une session.
+
+**Script** : `experiments/b2_stno_macrospin_llgs_poc.py` → `figures/b2_stno_macrospin_llgs_poc.csv`
+/ `_agg.csv` / `.png`. Contrairement aux §7-8 (réductions phénoménologiques), `m_i` est ici
+un **vrai vecteur unité 3D** intégré par l'équation de **Landau-Lifshitz-Gilbert-Slonczewski**
+explicite (précession + amortissement de Gilbert + couple de spin-transfert de Slonczewski,
+terme "field-like" plus petit omis — simplification assumée). Mécanisme du doute identique.
+
+**Vérifications physiques préalables (avant le réseau, sanity checks)** :
+- Isolé, un tilt initial converge vers un **cône de précession stable** (pas un point fixe,
+  pas un renversement) dès que β dépasse un seuil ; angle continûment ajustable par β
+  (0.6° à β=0.005, ~20° à β=0.025, 133°/renversement à β=0.04) — comportement STT
+  qualitativement correct, régime « oscillateur » bien distinct du régime « commutation ».
+- La fréquence de précession dépend de `H_k·m_z` (1.00 à H_k=0, 1.26 à H_k=0.3, 1.56 à
+  H_k=0.6) : **la non-isochronicité émerge naturellement de l'anisotropie**, sans terme
+  ajouté à la main — bonne nouvelle de cohérence avec le paramètre `N` phénoménologique du §8.
+
+**Découverte de calibration (documentée, pas cachée)** : un test minimal à 2 macrospins
+couplés montre que **cette géométrie de couplage (champ effectif vectoriel, couple
+gyroscopique) verrouille en ANTIPHASE** (`Δφ→π`), pas en phase comme les §7-8 — un phénomène
+réel et documenté pour les oscillateurs gyrotropes couplés (le canal de couplage — dipolaire
+vs électrique — détermine le signe effectif du verrouillage dans la vraie littérature STNO).
+Conséquence : le paramètre d'ordre de Kuramoto standard `R` reste au plancher même à
+verrouillage parfait — il faut mesurer le **2e harmonique** `R2 = |mean(exp(2iφ))|`,
+standard pour détecter un état à 2 clusters (antiphase), vérifié sans ambiguïté sur 2
+oscillateurs (`Δφ=π → R2=1, R=0`).
+
+**Découverte topologique (non cherchée, notée)** : sur **lattice** (graphe **bipartite**,
+compatible avec un damier antiphase globalement cohérent), `R2` atteint 0.83 en FROZEN_U —
+un vrai ordre existe. Sur **BA m=3** (graphe **non bipartite**, cycles impairs), le
+couplage antiphase est **FRUSTRÉ** — `R2` reste bas (~0.15–0.18) dans TOUTES les conditions,
+doute ou pas. **3e mécanisme indépendant** (après B1 et le mapping u↔GST/spintronique du §7-8)
+où BA scale-free se comporte différemment de lattice — cette fois pas comme « cas le plus
+sensible », mais comme « cas où aucun ordre global n'émerge du tout » sous cette géométrie
+de couplage précise.
+
+**Résultats (10 seeds, IC bootstrap) :**
+
+| Topologie | Capteur | R2_FULL | R2_FROZEN_U | Cohen d |
+|---|---|---|---|---|
+| Lattice 10×10 | brut (gain=1) | 0.316±0.090 | 0.832±0.272 | **+2.42** |
+| Lattice 10×10 | calibré (gain=3) | 0.175±0.035 | 0.832±0.272 | **+3.22** |
+| BA m=3 (frustré) | brut (gain=1) | 0.147±0.020 | 0.185±0.024 | **+1.61** |
+| BA m=3 (frustré) | calibré (gain=3) | 0.118±0.011 | 0.185±0.024 | **+3.36** |
+
+**Lecture honnête.**
+1. **Sur lattice (où un ordre réel existe), le mécanisme est net dès le capteur brut**
+   (Cohen d=2.42, IC[+0.311,+0.653]) et se renforce une fois calibré (Cohen d=3.22) — la
+   première fois sur les 3 modèles testés que l'effet brut (non calibré) est déjà fort,
+   pas seulement « correct en signe mais modeste ».
+2. **Sur BA (frustré), un effet statistiquement réel mais de faible amplitude absolue
+   persiste** (diff +0.037 à +0.066, IC ne chevauchant jamais zéro, Cohen d 1.61–3.36 —
+   grand en unités d'écart-type parce que la variance résiduelle est petite, pas parce que
+   l'effet est spectaculaire en absolu). Lecture correcte : le doute réduit encore un peu
+   un système déjà proche du plancher de désordre, il ne « sauve » pas la frustration ni
+   ne la change qualitativement.
+3. **Ce résultat est le plus direct des trois** (§7, §8, §9) : aucune reformulation
+   phénoménologique, la vraie équation vectorielle. Le prix : la géométrie de couplage
+   simplifiée choisie ici (champ effectif « diffusif ») privilégie l'antiphase, alors que
+   les vrais réseaux STNO couplés électriquement (Romera et al. 2018) sont rapportés en
+   littérature comme favorisant plutôt le verrouillage en phase — **canal de couplage
+   différent, pas un artefact**, mais à garder en tête avant de généraliser.
+4. **Ce que ça ne prouve toujours pas** : aucune résolution spatiale de la texture de
+   vortex (le prochain palier serait le micromagnétisme complet, mumax3, ou le modèle de
+   Thiele) ; le canal de couplage électrique réel (courant de polarisation partagé) n'a
+   pas été modélisé explicitement, seulement un champ de couplage générique.
 
 ## 7. Résultat — le mécanisme se porte, avec une réserve honnête (09/07/2026)
 

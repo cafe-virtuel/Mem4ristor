@@ -315,12 +315,32 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   diminue avec la non-isochronicité, cohérent avec la littérature (élargissement de raie).
   Calibration numérique documentée (Euler diverge à dt=0.01/gain=10/N_nonlin≥10, confirmé
   non-physique, corrigé à dt=0.005 — même esprit que le stiffness proof Euler du 1er mai).
-- **Reste (🧩 projet de fond, plusieurs semaines).** Aucune simulation LLG/macrospin
-  complète (précession, champ démagnétisant, couple de transfert de spin explicite,
-  ou modèle de Thiele pour la texture de vortex) ni SPICE VTEAM/neuristor n'a été faite —
-  §8 reste une réduction de type auto-oscillateur, pas une résolution spatiale. Le rôle physique de `u` (quel circuit lit
-  le désaccord et pilote une variable lente) reste non résolu — le test ci-dessus
-  montre que le mécanisme mathématique se porte, pas qu'un dispositif réel peut le lire.
+- **✅ Macrospin LLGS complet FAIT (09/07/2026, palier choisi par Julien après vérif
+  matériel — RTX 3070 8Go/32Go RAM, largement suffisant, pas besoin de GPU ici).**
+  `experiments/b2_stno_macrospin_llgs_poc.py`, voir `SPINTRONIC_PATHWAY.md` §9. Vrai
+  vecteur d'aimantation 3D, équation de Landau-Lifshitz-Gilbert-Slonczewski explicite
+  (pas une réduction phénoménologique comme §7/§8). **Découverte de calibration** : cette
+  géométrie de couplage verrouille en **antiphase** (pas en phase) — phénomène réel pour
+  les oscillateurs gyrotropes couplés — nécessite de mesurer le 2e harmonique de Kuramoto
+  (`R2`), pas `R`. **Découverte topologique non cherchée** : lattice (bipartite) atteint
+  un vrai ordre antiphase (R2=0.83 en FROZEN_U) ; **BA m=3 (non bipartite) est FRUSTRÉ**
+  (R2~0.15-0.18 dans toutes les conditions) — 3e mécanisme indépendant où BA se comporte
+  différemment de lattice. **Résultat sur lattice (où un ordre existe) : le doute réduit
+  R2 nettement, dès le capteur brut** (Cohen d=2.42, IC[+0.31,+0.65]), renforcé calibré
+  (Cohen d=3.22) — première fois sur les 3 modèles que l'effet brut est déjà fort. Sur BA
+  frustré, effet statistiquement réel mais petit en absolu (Cohen d 1.6-3.4, diff
+  +0.04 à +0.07 seulement). Vérifications physiques préalables cohérentes (cône de
+  précession stable et continûment ajustable par β ; non-isochronicité émergeant
+  naturellement de l'anisotropie H_k, sans terme ajouté — valide le §8 a posteriori).
+- **Reste (🧩 projet de fond, plusieurs semaines).** Aucune résolution spatiale de la
+  texture de vortex (micromagnétisme complet type mumax3, ou modèle de Thiele) ni SPICE
+  VTEAM/neuristor n'a été faite — décision explicite de Julien de s'arrêter à ce palier
+  pour cette session. Le canal de couplage électrique réel (courant partagé, Romera et al.
+  2018) n'a pas été modélisé explicitement, seulement un champ de couplage générique qui
+  favorise l'antiphase — les vrais réseaux STNO électriquement couplés sont rapportés
+  comme favorisant plutôt le verrouillage en phase, à garder en tête. Le rôle physique de
+  `u` (quel circuit lit le désaccord et pilote une variable lente) reste non résolu — les
+  3 tests montrent que le mécanisme mathématique se porte, pas qu'un dispositif réel peut le lire.
 
 ### B3 — Métriques d'énergie / vitesse / surface 🟡 cadré (09/07/2026), pas clos
 - **Pourquoi.** En neuromorphique la question est toujours pJ/opération, TOPS/W, latence.
@@ -434,10 +454,20 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   un seul. Réserve inchangée : au capteur brut (non calibré), l'effet est nul dans les
   deux modèles — la prédiction telle que formulée suppose implicitement qu'un vrai
   circuit de détection de désaccord aurait un gain suffisant, hypothèse non vérifiée.
-- **Reste (🧩).** Non testé en circuit réel (seulement en silico, réduction
-  auto-oscillateur). Une simulation LLG/macrospin complète (ou modèle de Thiele pour
-  la texture de vortex) resterait un pas intermédiaire plus fidèle avant toute campagne
-  expérimentale réelle.
+- **✅ Confirmé le jour même par le macrospin LLGS complet** (`b2_stno_macrospin_llgs_poc.py`,
+  cf. B2 et `SPINTRONIC_PATHWAY.md` §9) : la prédiction repose maintenant sur **3 modèles
+  convergents** (Kuramoto, Slavin-Tiberkevich, LLGS vectoriel complet), le dernier étant le
+  plus direct (pas de réduction phénoménologique). **Nuance importante découverte ici** :
+  la géométrie de couplage testée verrouille en **antiphase**, pas en phase — si la
+  prédiction B6 est un jour testée sur un vrai réseau STNO couplé électriquement (le canal
+  réel de Romera et al. 2018), il faudra vérifier quel type de verrouillage ce canal
+  favorise avant d'attendre une réduction de `R` plutôt que de `R2`. La prédiction reste
+  falsifiable, mais sa formulation exacte (quel paramètre d'ordre observer) dépend du canal
+  de couplage physique choisi — à préciser avant toute campagne expérimentale réelle.
+- **Reste (🧩).** Non testé en circuit réel ni en micromagnétisme spatial complet
+  (texture de vortex résolue, mumax3, ou modèle de Thiele) — palier explicitement
+  reporté par Julien à une décision séparée (nécessite d'installer mumax3/CUDA, campagnes
+  de plusieurs heures). Le canal de couplage électrique réel n'a pas été modélisé.
 
 ### B7 — Reproductibilité end-to-end des figures 🔜
 - **Pourquoi.** AUDIT-024 a montré que deux générations de code coexistaient sans détection.
