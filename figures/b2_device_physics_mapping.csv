@@ -1,0 +1,19 @@
+campaign_4000steps_physical_s,device,dt_physical_s,energy_per_step_J,energy_per_write_J,mechanism,power_W,role_candidat,t_node_physical_s,tau_u_physical_s,tau_w_physical_s,unit_model_time_s
+8.987489330625328e-07,photonic_GST_GST_low,2.2468723326563318e-10,,,,,u (etat multi-niveau),1.0000000000000001e-07,4.4937446653126635e-08,5.617180831640829e-08,4.493744665312663e-09
+1.7974978661250655e-06,photonic_GST_GST_high,4.4937446653126637e-10,,,,,u (etat multi-niveau),2.0000000000000002e-07,8.987489330625327e-08,1.1234361663281658e-07,8.987489330625327e-09
+8.987489330625327e-09,spintronic_STNO_STNO_fast,2.246872332656332e-12,,,,,v (oscillateur),1e-09,4.493744665312663e-10,5.617180831640829e-10,4.493744665312663e-11
+8.987489330625327e-08,spintronic_STNO_STNO_slow,2.2468723326563316e-11,,,,,v (oscillateur),1e-08,4.493744665312663e-09,5.6171808316408286e-09,4.493744665312663e-10
+8.987489330625326e-06,electrical_NbO2neuristor_NbO2_fast,2.2468723326563317e-09,,,,,"v (oscillateur, alternative electrique au STNO)",1e-06,4.4937446653126627e-07,5.617180831640829e-07,4.493744665312663e-08
+1.7974978661250653e-05,electrical_NbO2neuristor_NbO2_slow,4.493744665312663e-09,,,,,"v (oscillateur, alternative electrique au STNO)",2e-06,8.987489330625325e-07,1.1234361663281658e-06,8.987489330625326e-08
+,photonic_GST_GST_low,,1.28e-18,,"signal photonique (budget seul, hors pertes/detecteur/laser)",5.696807875535762e-09,,,,,
+,photonic_GST_GST_high,,1.28e-18,,"signal photonique (budget seul, hors pertes/detecteur/laser)",2.848403937767881e-09,,,,,
+,spintronic_STNO_STNO_fast_vortex_typique_qqmW,,6.7406169979689956e-15,,puissance continue (oscillateur libre),0.003,,,,,
+,spintronic_STNO_STNO_fast_lineaire_138uW,,3.100683819065738e-16,,puissance continue (oscillateur libre),0.000138,,,,,
+,spintronic_STNO_STNO_slow_vortex_typique_qqmW,,6.740616997968994e-14,,puissance continue (oscillateur libre),0.003,,,,,
+,spintronic_STNO_STNO_slow_lineaire_138uW,,3.1006838190657377e-15,,puissance continue (oscillateur libre),0.000138,,,,,
+,electrical_NbO2neuristor_NbO2_fast_bas_1pct_de_1nJ,,2.2468723326563317e-14,,"spike Mott (Pickett, relatif au bio, non mesure ici)",1e-05,,,,,
+,electrical_NbO2neuristor_NbO2_fast_haut_1pct_de_10nJ,,2.2468723326563318e-13,,"spike Mott (Pickett, relatif au bio, non mesure ici)",0.0001,,,,,
+,electrical_NbO2neuristor_NbO2_slow_bas_1pct_de_1nJ,,2.2468723326563317e-14,,"spike Mott (Pickett, relatif au bio, non mesure ici)",5e-06,,,,,
+,electrical_NbO2neuristor_NbO2_slow_haut_1pct_de_10nJ,,2.2468723326563318e-13,,"spike Mott (Pickett, relatif au bio, non mesure ici)",5e-05,,,,,
+,electrical_RRAM_coupling_weight_HfO2_10x10nm_optimiste,,,1.0000000000000002e-14,"ecriture UNIQUE du poids (statique, pas par pas)",,,,,,
+,electrical_RRAM_coupling_weight_HfO2_10x10nm_haut,,,5e-14,"ecriture UNIQUE du poids (statique, pas par pas)",,,,,,
