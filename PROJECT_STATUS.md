@@ -1,16 +1,33 @@
-# PROJECT STATUS — Mem4ristor V6.0.0 (arXiv Ready)
-**Dernière mise à jour : 2026-06-12 (Claude Code/Fable — AUDIT-024 changement de bruit 1er mai ; claim [20] révisé → persistance temporelle AC@lag50)**
+# PROJECT STATUS — Mem4ristor V6.0.0 (preprint reformulé, non soumis)
+**Dernière mise à jour : 2026-07-09 (Claude Code/Opus 4.8 — rattrapage après ~5 semaines de dérive : voir §0)**
 **Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
-
-> ⚠️ **AUDIT HERMES M3 — 2026-06-01 (sessions 010-011)**
-> **Statut** : En cours de correction (3 obligatoires, 2 recommandées)
-> **Détails** : voir `sessions/SESSION_010_CARTOGRAPHIE_HERMES.md` et `sessions/SESSION_011_AUDIT_SCIENTIFIQUE.md`
-> **Resume** : 8/12 claims CONFORMES, 1 DISCREPANCY majeure (C07 topologie erronee), 1 CLAIM INFIRMEE (C12 Binder U4 plat), 1 valeur canonique floue (C05 EBC vs combined), 1 avertissement seeds/topologie (C08), 1 finding glassy qualitativement confirme.
 
 > Ce fichier est le point d'entrée pour quiconque (humain ou IA) travaille sur ce projet.
 > Lisez-le en premier. Pour l'historique complet des sessions et investigations :
 > → **[PROJECT_HISTORY.md](PROJECT_HISTORY.md)**
+
+---
+
+## 0. ÉTAT ACTUEL EN UNE MINUTE (2026-07-09)
+
+- **Version** : V6.0.0. Le preprint a été **reformulé** (titre/abstract/résultats) : l'ancien
+  cadrage « transition spectrale » (λ₂_crit) a été **réfuté puis remplacé** par un cadrage
+  **degré de couplage / champ moyen** (voir §3). Le phénomène (dead zone, anti-synchronisation)
+  survit ; seule son explication causale a changé.
+- **Résultat central actuel** : l'ablation **FROZEN_U vs FULL** (geler `u` détruit
+  l'anti-synchronisation) — séparation complète, Cohen d ≈ 9.4 (BA m=3) / 4.7 (lattice),
+  30 seeds. C'est le résultat le plus robuste et le moins attaquable du papier (corrélation
+  de Pearson, indépendant du binning).
+- **Guardian** : 14/14 claims vérifiées automatiquement à chaque commit
+  (`.brain/claims_mapping.json` + `.brain/preprint_guardian.py`, hook pre-commit).
+- **Git** : branche `main`, **51 commits locaux non poussés** vers `cafe-virtuel/Mem4ristor`
+  (décision de publication toujours en attente de Julien). Cœur (`dynamics.py`) stable
+  depuis plusieurs semaines.
+- **Ce fichier était périmé depuis le 12 juin** (5 semaines, ~20 commits substantiels non
+  reflétés ici — voir §3bis pour le résumé condensé de ce qui s'est passé). Repéré et
+  corrigé le 9 juillet à la demande de Julien. Ne PAS laisser ce fichier dériver à nouveau :
+  **à mettre à jour à chaque clôture de session**, même par 2-3 lignes dans §3bis.
 
 ---
 
@@ -20,24 +37,46 @@ Mem4ristor est une implémentation computationnelle de dynamiques FitzHugh-Nagum
 
 Le projet est né au sein du **Café Virtuel**, un laboratoire de collaboration entre un humain et plusieurs IA (Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek). L'historique complet est dans le dépôt Café Virtuel : https://github.com/cafe-virtuel/
 
-Publication : DOI 10.5281/zenodo.19700749 (preprint dans `docs/preprint.pdf`)
+Publication : DOI 10.5281/zenodo.19986042 (V4.0.0 — dernière release Zenodo ; le code a
+évolué depuis, la prochaine release Zenodo portera les valeurs V6.0.0 reformulées).
+Preprint actuel (non soumis, non publié sur Zenodo) : `docs/papers/preprint/preprint.tex`
+→ `preprint.pdf` (26 pages, Guardian 14/14).
 
 ---
 
 ## 2. ARCHITECTURE DU CODE
 
+> **⚠️ Correction 09/07/2026** : cette section décrivait encore `core.py` comme le
+> « moteur V3 canonique » avec 6 modes de coupling_norm. C'est FAUX depuis la
+> refactorisation qui a séparé le moteur en 3 modules (`dynamics.py`/`topology.py`/
+> `metrics.py`) — `core.py` n'est plus qu'une **façade de compatibilité de 25 lignes**
+> qui ré-exporte ces modules (déjà noté comme désynchronisation dans l'ancien §10.4
+> de ce fichier, jamais corrigé jusqu'ici). Table ci-dessous mise à jour sur la base
+> de la structure réelle de `src/mem4ristor/`.
 
 ### Noyau stable (PRODUCTION-READY)
 
 | Fichier | Rôle | État |
 |:--------|:-----|:-----|
-| `src/mem4ristor/core.py` | Moteur V3 canonique (Mem4ristorV3 + Mem4Network). Levitating Sigmoid, meta-doubt adaptatif V4, rewiring topologique V4, **V5 hysteresis** (dead-zone latching + watchdog fatigue), **sparse CSR** auto-détecté pour N > 1000, **6 modes de coupling_norm** dont `spectral` (eigenvector centrality, 2026-04-19) | STABLE |
-| `src/mem4ristor/config.yaml` | Paramètres par défaut | STABLE |
+| `src/mem4ristor/dynamics.py` | **Le moteur réel** : `Mem4ristorV3` (FHN + doute `u` + plasticité + hystérésis + watchdog de consolidation opt-in) | STABLE |
+| `src/mem4ristor/topology.py` | `Mem4Network` : graphe, couplage (laplacien, normalisation par degré), rewiring doute-piloté, **sparse CSR** auto-détecté pour N > 1000 | STABLE |
+| `src/mem4ristor/metrics.py` | `calculate_cognitive_entropy` (H_cog, 5 bins — indicateur relatif legacy), `calculate_continuous_entropy` (H_cont, 100 bins — métrique primaire actuelle), synchronie, MI spatiale | STABLE |
+| `src/mem4ristor/graph_utils.py` | Source unique de vérité pour `make_ba()`, `make_er()`, `make_lattice_adj()` (tous les scripts `experiments/p2_*` importent d'ici, pas de réimplémentation locale) | STABLE |
+| `src/mem4ristor/core.py` | **Façade de compatibilité (25 lignes)**, ré-exporte `dynamics.py`/`topology.py`/`metrics.py` pour les scripts historiques qui font `from mem4ristor.core import ...` | STABLE (facade) |
+| `src/mem4ristor/config.py` + `config.yaml` | Paramètres par défaut | STABLE |
 | `src/mem4ristor/__init__.py` | Exporte Mem4ristorV3, Mem4ristorV2 (alias), Mem4Network | STABLE |
 | `src/mem4ristor/symbiosis.py` | CreativeProjector (Phase 4) + SymbioticSwarm | STABLE |
 | `src/mem4ristor/cortex.py` | LearnableCortex (MLP autoencoder pour consolidation mémoire) | STABLE |
 | `src/mem4ristor/sensory.py` | SensoryFrontend (convolution + projection pour entrées visuelles) | STABLE (lent, voir §5) |
+| `src/mem4ristor/sonification.py` | Conversion des trajectoires en son (exploratoire, 1er mai) | STABLE |
 | `src/mem4ristor/viz.py` | Visualisation : entropy trace, doubt map, phase portrait, state distribution, dashboard | STABLE |
+
+**Le mécanisme du « spectral » n'existe plus en tant que cadrage causal** : le
+`coupling_norm='spectral'` (eigenvector centrality) reste implémenté dans `topology.py`
+mais l'ancien claim « λ₂_crit=2.31 explique la dead zone » a été **réfuté** (mandat du
+1er juillet 2026, voir §3bis) — le mécanisme réel est le **degré de couplage / champ
+moyen**. Ne pas présenter `spectral` comme le mode « validé par la théorie » dans un
+nouveau document — c'est l'inverse qui a été montré.
 
 ### Modules expérimentaux (NON PRODUCTION)
 
@@ -45,49 +84,102 @@ Publication : DOI 10.5281/zenodo.19700749 (preprint dans `docs/preprint.pdf`)
 |:--------|:-----|:-----|
 | `experimental/mem4ristor_king.py` | "Philosopher King" : loi martiale, métacognition | EXPERIMENTAL |
 
+### Dossiers hardware (exploratoires, aucun claim publié n'en dépend)
+
+| Dossier | Contenu | État |
+|:--------|:--------|:-----|
+| `docs/hardware/PHOTONIC_PATHWAY.md` | Voie GST/photonique — quatuor d'imperfections physiques testé (bruit quantique, non-linéarité, inertie, fabrication), mapping `u`↔transmittance | Le plus avancé des 3 |
+| `docs/hardware/SPINTRONIC_PATHWAY.md` | Voie STNO — 3 POCs en escalade (Kuramoto → Slavin-Tiberkevich → macrospin LLGS complet), mécanisme du doute testé et robuste | Ajouté 09/07/2026 |
+| `docs/hardware/ELECTRICAL_PATHWAY.md` | RRAM/VTEAM (poids de couplage) + neuristor Mott NbO₂ (oscillateur) | Ajouté 09/07/2026 |
+| `docs/hardware/B3_ENERGY_COMPARISON.md` | Comparaison d'énergie/vitesse entre les 3 familles + référence CMOS (Loihi/TrueNorth) | Ajouté 09/07/2026 |
+
 ---
 
 ## 3. ÉTAT DES CLAIMS SCIENTIFIQUES
 
-Source : `docs/limitations.md` (table de vérité maintenue avec rigueur)
+**Sources de vérité actuelles** (pas `docs/limitations.md`, périmé) :
+- **`.brain/claims_mapping.json`** + **`.brain/preprint_guardian.py`** — vérification
+  **automatisée** à chaque commit (hook pre-commit), 14 claims (C01–C13 + C08b),
+  **14/14 OK** au 9 juillet 2026.
+- **`docs/CLAIMS_REGISTER.md`** — registre narratif détaillé (valeur, script, seeds,
+  statut) pour chaque claim + claims secondaires/exploratoires (S01-S09).
 
-| Claim | Statut | Détail |
-|:------|:-------|:-------|
-| Levitating Sigmoid élimine la dead zone (LIMIT-01) | RÉSOLU en V3 | `tanh(π(0.5-u)) + δ` remplace `(1-2u)` |
-| Seuil de 15% d'hérétiques universel (LIMIT-02) | **PARTIELLEMENT RÉSOLU — NON UNIVERSEL** | `degree_linear` fonctionne sur BA m=3, HK, WS, ER sparse. Échoue sur BA m=1/5/10, Config Model, ER dense. La normalisation optimale dépend de l'hétérogénéité des degrés ET de la redondance des chemins. Voir §3quinquies + §3sexies |
-| H ≈ 1.94 attractor (LIMIT-05) | **INVESTIGUÉ — FAUX** | Sweep 800+ combos : stable H ≈ 0.92, transitoires jusqu'à 2.31. Voir §3bis |
-| Stabilité long-terme (LIMIT-04) | **INVESTIGUÉ — NUANCÉ** | Le "drift" est un transitoire de convergence, pas une instabilité. dt≤0.05 stable. Voir §3quater |
-| Mapping hardware HfO2 | **VALIDÉ EN SIMULATION (2026-04-19)** | SPICE/Python RMS global ≈ 9.7×10⁻³ (≤1% de \|v\|) sur lattice 4×4. Voir §3septies + §10 P4 |
-| Normalisation spectrale brise la dead zone | **TESTÉ — FAUX (2026-04-19)** | `coupling_norm='spectral'` (1/eigenvector_centrality) implémenté. 0/6 wins sur dead zone. Le problème est dynamique, pas un défaut de pondération. Voir §3octies |
-| Parité cross-platform (MKL) | RÉSOLU | Fix v2.9.1, `NUMPY_MKL_CBWR=COMPATIBLE` |
-| **Nœud isolé instable (claim preprint §3.1)** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Point fixe v*=−1.294, w*=−0.732 est un **spiral stable** (λ=−0.055±0.283i). Hopf à α_crit≈0.296, mais défaut α=0.15. Voir §3octvicies |
-| **H_cog≈0.92 (Python, bins corrigés)** | **🚨 ARTEFACT MÉTRIQUE — AUDIT EXTERNE 2026-04-22** | Avec bins KIMI (±0.4/1.2), H_cog=0 pour TOUTES les configs Python défaut. La valeur 0.92 venait de l'ancienne bin ±1.5 straddlant le cluster consensus. Voir §3octvicies |
-| **Hérétiques actifs à I_stim=0** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | `I_eff[heretic_mask] *= -1` est no-op quand I_stim=0. Les expériences "endogènes" ne testent pas le mécanisme hérétique. Voir §3octvicies |
-| **Verilog-A (v26.va) = Python** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Noyau linéaire (1-2u), τ_u=1.0, pas d'ε_u adaptatif, pas de plasticité, double-comptage I_coup. Voir §3octvicies |
-| **Escape SPICE noise+mismatch (P4.19)** | **✅ CONFIRMÉ sous 3 métriques** | H_cont=4.58 bits à (η=0.5, σ_C=0.5). Survit à la métrique continue et aux bins KIMI. Voir §3quindecies |
-| **Calibration η SPICE ↔ σ Python** | **✅ RÉSOLU (2026-04-25)** | η=0.5 SPICE ↔ σ_equiv=0.0044 Python. Item 10 testait σ=1.2 = 270× l'équivalent. Python reste H_cog≈0 à toutes amplitudes calibrées. Bruit thermique SPICE catégoriquement distinct → claim Paper B RENFORCÉ. Voir §3trigies + `experiments/spice_noise_calibration.py` |
-| **Bins obsolètes dans `spice_dead_zone_test.py`** | **✅ RÉSOLU (2026-04-25)** | Seuils corrigés vers KIMI `[-1.2, -0.4, 0.4, 1.2]`. Conclusion inchangée. Voir §3trigies |
-| **Dynamique u tronquée dans les netlists SPICE** | **✅ DOCUMENTÉ (2026-04-25)** | Limitation explicite ajoutée dans Paper B §2 + commentaires inline. Voir §3trigies |
-| **Duplication make_ba() inter-scripts** | **✅ RÉSOLU (2026-04-25)** | `src/mem4ristor/graph_utils.py` créé. 7 scripts p2_* migrés. Voir §3trigies |
-| **Terminologie : "frustrated synchronization" / "topological phase transition"** | **✅ CORRIGÉ (2026-04-28)** | → "polarity-modulated anti-synchronization" / "spectral phase transition". Distinction fondamentale : la polarité est state-dependent et continue, pas quenched. Voir §3quinquetrigies |
-| **H_cog=0 dans ablation preprint** | **✅ DOCUMENTÉ ET RECENTRÉ (2026-04-28)** | Artefact de binning : voltages Python [-3.2,-1.3] tous en bin 1. Claim recentrée sur H_cont (100-bin) = 3.79±0.14 bits + synchrony FULL=0.031 vs FROZEN=0.751. Voir §3quinquetrigies |
-| **SPICE : validation 50 seeds BA m=5 N=64** | **✅ DOCUMENTÉ DANS PAPER (2026-04-28)** | Résultats préexistants documentés : dead zone H_cont=1.38±0.04, functional H_cont=4.30±0.19. Mismatch CMOS σ_C=0.10 sans effet sur la diversité. Section dédiée ajoutée dans preprint.tex. Voir §3quinquetrigies |
-| **[6] Cohen U3 — non-chevauchement distributions FROZEN_U vs FULL** | **✅ VALIDÉ (2026-04-29)** | U3=100% (empirique et analytique) dans 3 comparaisons. OVL=0.000000 (distributions strictement disjointes). SPICE d=20.78 (n=50) + Python d=13.21 (n=7) + ablation d=11.44 (n=5). Commit 4a0bd62. Voir §3quadragies |
-| **[8] RK4 vs Euler — validation intégrateur (paramètres corrigés)** | **✅ VALIDÉ (2026-04-29)** | Euler dt=0.05 validé sur paramètres alignés config.yaml (sigmoid_steepness=π, SOC_LEAK=0.01, ε_u=0.02, τ_u=10). Plasticité=OFF : Max Δ(H_cog)=0.0018, surge delta=0.3pp. Plasticité=ON (λ_learn=0.05) : Max Δ(H_cog)=0.0053, surge delta=0.1pp. Commits 91a0072 + 4cd7fce sur feat/v4-dynamic-heretics. Voir §3novetrigies |
-| **[7] dt sensitivity — H_cog stable, synchrony dépend de dt (physique Euler)** | **✅ VALIDÉ (2026-04-29)** | H_cog : max_delta < 0.01 sur toutes topologies (seuil 0.05) → claim principale robuste. Synchrony sensible au dt (BA m=3 : 0.751→0.462→0.396 pour dt=0.01/0.05/0.10) mais variation reflète la dissipation numérique Euler, cohérente avec [8]. Les comparaisons relatives FULL vs FROZEN_U restent valides. 60 runs, 3 topos × 4 dt × 5 seeds. CSV : figures/dt_sensitivity.csv. Voir §3quadragies-bis |
-| **[11] LZ par nœud — hubs plus structurés dans FULL, corrélation absente dans FROZEN_U** | **✅ VALIDÉ (2026-04-29)** | FULL Forcé : LZ_mean=1.101 (BA m=3) / 1.123 (BA m=5). FROZEN_U Forcé : LZ_mean=1.619 / 1.679 (+47-50%). **Finding clé : corrélation degré ↔ LZ dans FULL** : r=-0.564 (BA m=3) / r=-0.716 (BA m=5) — les hubs ont des trajectoires plus structurées. Dans FROZEN_U : r≈0 (p>0.5) — corrélation absente. 40 runs, 22s. CSV : figures/lz_per_node.csv. Voir §3quinquagies |
-| **[12] Bruit Matern spatialement corrélé — escape dead zone à η=0.1, structure spatiale non-discriminante** | **✅ VALIDÉ (2026-04-30)** | Tous les types de bruit (non-corrélé / Matern exp ℓ=1 / ℓ=3 / Gauss ℓ=3) brisent la dead zone dès η=0.1 (H_cont : ~1.40 → ~3.3-3.7 bits). La structure spatiale du bruit ne modifie pas le seuil d'escape — c'est l'amplitude qui compte. Bonne nouvelle hardware : les corrélations naturelles des memristors physiques n'empêchent pas l'escape par bruit. 80 runs, 39s. CSV : figures/matern_noise.csv. Voir §3quinquagies-bis |
-| **[13] Transition de phase événementielle — nœud périphérique, bifurcation irréversible de l'attracteur** | **⚠️ À RE-VÉRIFIER (2026-06-12, AUDIT-024)** — le re-run de référence du POC photonique 2bis (`photonic_event_poc.py`, condition ELEC, code actuel, 10 seeds) donne dH=**−0.764±0.320** pour I=1.5 / T=150 / périphérique / BA m=3 : **le signe s'inverse** avec le bruit Euler-Maruyama (le claim datait du 30/04 = ancien bruit). Hypothèse mécanique : la baseline bruitée est déjà riche en entropie → l'événement structure au lieu d'enrichir. La grille complète (amplitudes × durées × hub/périph × m3/m5) est à refaire avec le code actuel avant toute réutilisation de ce claim. Statut d'origine ci-après pour traçabilité : ✅ VALIDÉ (2026-04-30) | Idée originale : Julien Chauvin (analogie demande en mariage dans un restaurant). Un nœud périphérique forçant à I≥0.8 pendant ≥50 steps produit dH=+1.20 bits sur BA m=3 (bifurcation positive, "elle dit oui"). Le périphérique fait MIEUX que le hub (I=1.5 T=50 : périph dH=+1.03 vs hub dH=+0.21). Sur BA m=5 (dead zone) : tous les forcings produisent dH<0 — le réseau se dégrade quelle que soit l'amplitude. Le seuil de bifurcation positive n'est pas dans l'amplitude — il est dans la topologie. Classe de phénomène distincte de la dead zone structurelle : transition de phase déclenchée par événement (event-driven phase transition). 240 runs, 155s. Commit 667a2a9. CSV : figures/event_phase_transition.csv. Voir §3quinquagies-ter |
-| **[14] U clamping avec u_clamp=0.6 — effet NOCIF sur la synchronie** | **✅ AUDITÉ + CORRIGÉ (2026-05-30)** | Le clamping u=0.6 donne H=4.00 (+0.66 bits) mais RE-SYNCHRONISE le reseau (sync=0.53). C'est NOCIF sur la metrique robuste. Le gain H_cont est un artefact du binning accompagne d'un retour au consensus. Scripts : adaptive_D_conclusive_test.py. Voir AUDIT_LOG.md AUDIT-008 + AUDIT-011 |
-| **[15] U saturation — mécanisme des deux attracteurs élucidé** | **✅ AUDITÉ (2026-05-30)** | La dynamique u a deux attracteurs stables : D=0 → u→~0.05, D>0 → u→~0.999. La fenêtre "optimale" 0.575-0.625 est instable sans clamping. Mécanisme : feedback négatif sigma_social ↔ sigmoid(u). Script : u_saturation_profile.py. Voir AUDIT_LOG.md AUDIT-007 |
-| **[16] D(u) = D_max * u — SWEET SPOT CONFIRMÉ (nuance)** | **✅ AUDIT-015 (2026-05-31)** | D=0.50*u abaisse le seuil FUNCTIONAL a m>=6 (vs m>=7 avec D=0.15). C'est le meilleur protocole: LZ=0.58, H=3.17 a m=10. D=0.15 est suboptimal. D=0 ne produit jamais FUNCTIONAL. Voir AUDIT_LOG.md AUDIT-015 |
-| **[17] Transition de phase topologique — seuil PROTOCOLE-DEPENDANT** | **✅ AUDIT-015 (2026-05-31) + DZ2 sweep (2026-06-03) + preprint integrated** | LZ76 desambiguise sync=0: D=0.15 -> seuil m>=7; D=0.50*u -> seuil m>=6 (LZ=0.66 a m=6). D=0 ne produit jamais FUNCTIONAL (LZ~1.1). Le seuil n'est PAS un invariant topologique. **MAJ DZ2 (2026-06-03) :** D=0.50*u ameliore aussi m=1 (frontiere dead zone) : sync=0.72, H=3.70 vs D=0.15 sync=0.51 — meilleur resultat sur tout m. Mais a m>=6 : H->0, sync->-0.01 (collapse total, pas functional). Le mecanisme est optimal POUR LES TOPOLOGIES INTERMEDIAIRES (m=1-5), pas pour les denses. **Preprint mis a jour (2026-06-03)** : nouvelle subsection §3.4.1 "Adaptive Coupling Protocol D(u)=D_max * u" avec table de donnees et recommendation operative. Voir figures/dz2_topological_sweep_agg.csv |
-|| **[18] V5 FINAL: D(u)=0.50*u + alpha_meta=-4.0 SWEET SPOT — RESTREINT AUX TOPOLOGIES DENSES** | **✅ AUDIT-018 ARRET (2026-05-31)** | Combination optimale D(u) adaptive + metacognition freeze (alpha=-4.0) — MAINTENANT QUALIFIEE: le mecanisme est LEGITIME pour m>=7 (zone morte V4) mais CHAOTICgenic pour m<=5 (LZ monte a 0.86-0.94). Gains vs V4 D=0.15: m=3 (LZ=0.942 CHAOTIC, pas de structure), m=5 (LZ=0.862 CHAOTIC), m=7 (LZ=0.560 FUNCTIONAL, gain legitime +1.47), m=10 (LZ=0.510 FUNCTIONAL, gain legitime +0.84). Sync safe everywhere (|sync|<0.016). **Le SWEET SPOT est optimal POUR LES TOPOLOGIES DENSES (m>=7), pas universellement.** SECTION BINDER DU PREPRINT INVALIDEE (AUDIT-017) + CHEMIN B ABANDONNE (AUDIT-018). Le manuscrit重构 autour de la depression H_stable (crossover progressif) et de la baisse LZ — pas d'une transition de phase thermodynamique. Scripts: experiments/p2_v5_final_best.py. CSV: figures/p2_v5_final_best.csv. Voir AUDIT_LOG.md AUDIT-017 + AUDIT-018 |
-|| **[19] OPTION B COHERENCE FIX + EDISON REVIEW (2026-06-01): Glassy dynamics fingerprint + Active Inference overclaim** | **NEW (2026-06-01)** | (a) Var(H_stable) peaks at critical zone (0.544 vs 0.379 sparse / 0.265 dense). Var(LZ) increases monotonically with lambda2 (0.056 -> 0.076 -> 0.090). Diverging variance pattern = glassy dynamics fingerprint. Not documented in preprint. See docs/papers/recommendations/EDISON_REVIEW_FINDINGS_20260601.md. (b) Section 6.3 claims Active Inference / Friston FEP but admits no generative model (line 450). FEP components absent: no generative model, no variational inference, no free energy minimization. Mechanism = feedback control / homeostatic regulation. "Active Inference" framing is a rhetorical stretch. See EDISON_REVIEW_FINDINGS_20260601.md. **MAJ 2026-06-07 — Extended Binder cartography (Bloc arXiv) :** Cartographie FSS etendue m={1,2,5,7}, N={100,200}, lambda2 dans [0.5, 10.0], 701 runs valides (6 seeds/config). Resultat : U4 reste plat a 2/3 sur TOUTE la plage (amplitude max 0.012, aucun crossing). H_stable decroit monotonement avec lambda2, signature d'un crossover spectral graduel (pas d'une transition de phase au sens thermodynamique). Le diagnostic d'ordre de transition par Binder U4 est abandonne pour ce systeme ; H_stable est adopte comme parametre d'ordre primaire. Section 4.7 du preprint enrichie + nouvelle Figure 3 (fig:binder_cartography). Scripts : `experiments/v6_binder_cumulant_dryrun_extended.py`. CSVs : `figures/v6_binder_dryrun_extended_raw.csv`, `figures/v6_binder_dryrun_extended_U4.csv`. Figure : `figures/v6_binder_dryrun_extended.png`. |
-| **[20] PERSISTANCE TEMPORELLE ENDOGÈNE (révisé 2026-06-12 — était « Intrinsic Oscillator »)** | **⚠️ RÉVISÉ (2026-06-12) après contre-expertise 2026-06-03** — claim restreint à AC@lag50 = +0.57 à +0.74 sans drive (5 seeds × 2 topos × 3 D, script `poc1_absence_v2.py`). Retirés : fréquence f~0.01 (réel f_fft≈0.002) et LZ spontané (mesuré sur v_mean, incomparable). Voir CLAIMS_REGISTER C20. Historique ci-dessous conservé pour traçabilité : | 7 POCs adversariaux executés pour tester le reframe "doute = phase de resolution" (DOUBT-REFRAME-001 de Claude Cowork). Resultat central : le reseau Mem4ristor est un **oscillateur endogene a bande etroite** avec frequence intrinseque f ~ 0.01 cycles/step (periode ~70-100 pas), reproductible sur 5 seeds x 2 topologies (m=3, m=6) x 3 protocoles de couplage (D=0, 0.15, 0.5*u). LZ spontane > 1.0 partout (la "structured dead zone" LZ<0.85 du claim [17] n'est PAS un regime spontane, c'est une REPONSE a l'excitation I_stim=0.5). POC #1 (absence) : AC@lag50 = +0.6 a +0.7, periode stable. POC #4 (menteur) : le reseau ignore ou suit le menteur a m=6 D=0.15 (FOLLOW_LIAR reproduitible, diff=-1.43, marqueur de frontiere). POC B (2 frequences) : INTRINSIC gagne 6/6. POC C (10 pivots) : F_DRIVE gagne 3/6 conditions — seuil de bascule identifie entre 1 et 10% de noeuds pilotes. POC D (hub) : INTRINSIC 6/6, la centralite topologique n'aide PAS. POC #5 (bruit) : PASSIVE 6/6. **Reformulation recommandee** : remplacer le reframe "doute = resolution" par "doute = mecanisme de resistance aux inputs externes, avec seuil de bascule en nombre de porteurs". Le claim [20] est testable, falsifiable, et defendable. Scripts : `experiments/poc1_test_of_absence.py`, `experiments/poc245_batch.py`. CSVs : `figures/poc1_absence_agg.csv`, `figures/poc245_raw.csv`. Write-up : `sessions/SESSION_013_REFRAMING_DOUTE.md`. |
+> ⚠️ **Incohérence connue, découverte le 09/07/2026, non corrigée** : les deux fichiers
+> ci-dessus utilisent **la même étiquette `C13` pour deux claims différents**.
+> `claims_mapping.json` (celui que le Guardian vérifie) : C13 = « Cohen d ablation
+> FROZEN_U vs FULL, BA m=3, 30 seeds » (ajouté 08/07/2026). `CLAIMS_REGISTER.md` : C13 =
+> « LZ76 regime classification (adaptive D(u)) » (un claim plus ancien, mai 2026).
+> Aucun des deux fichiers n'a été retouché pour éviter la collision. À trancher
+> (renuméroter l'un des deux) avant tout usage externe des deux registres ensemble.
 
+### Résultats scientifiques actuels (résumé, voir CLAIMS_REGISTER.md pour le détail)
 
-> Détail de chaque investigation : voir **PROJECT_HISTORY.md** § Investigations scientifiques.
+- **Résultat central : ablation FROZEN_U vs FULL** — geler `u` détruit
+  l'anti-synchronisation. Séparation complète, **Cohen d = 9.4 (BA m=3) / 4.7 (lattice)**,
+  30 seeds, IC bootstrap (C13 dans `claims_mapping.json`). Mesure indépendante du binning
+  (corrélation de Pearson) — c'est le résultat le moins attaquable du papier.
+- **Le mécanisme causal n'est PAS spectral** : λ₂_crit≈2.31 a été **réfuté** comme
+  mécanisme (mandat du 1er juillet 2026) — c'est un artefact de corrélation avec le
+  **degré de couplage / champ moyen** (k_harm≈6), pas la connectivité algébrique. Preprint
+  reformulé en conséquence (titre, abstract, §4.5-4.7). Le phénomène (dead zone) survit,
+  seule la cause a changé.
+- **Table 1 (diversité H_cont) + finite-size scaling** : robuste à 30 seeds, sature à
+  ~4.38 bits (jamais d'effondrement de taille finie), std se resserre avec N.
+- **Comparaison SOTA** : bat Kuramoto/Voter/Consensus (faible barre) ; perd contre un
+  **Echo State Network réel sur NARMA10** (~5.5× moins bon — Mem4ristor n'est **pas** une
+  mémoire, c'est un explorateur/anti-synchroniseur — positionnement assumé).
+- **H_cog (5 bins) est un indicateur legacy relatif**, pas une métrique primaire — les
+  valeurs absolues ne doivent pas être citées (voir A5, reformulation du 08/07).
+- Environ 30 claims antérieurs (avril-mai 2026, incluant tous les items LIMIT-01 à
+  LIMIT-05 et [1] à [20]) sont **archivés avec leur détail complet** dans
+  `PROJECT_HISTORY.md` §13 — retirés d'ici pour lisibilité, pas supprimés.
+
+---
+
+## 3bis. SESSIONS RÉCENTES (12 juin → 9 juillet 2026, condensé)
+
+> Résumé volontairement condensé — chaque ligne pointe vers l'entrée complète dans
+> `ARCHIVES_INDEX.md` (racine `D:\ANTIGRAVITY`) et/ou `.brain/claude_contexts/MEM4RISTOR.md`
+> (contexte privé de travail) pour le détail narratif complet. Ordre chronologique.
+
+- **12/06 (soir)** — Triage de l'audit « regard neuf » d'Hermès : aucune des 4 découvertes
+  ne touchait un chiffre publié, décision de Julien de laisser tel quel.
+- **12/06** — **AUDIT-024, découverte majeure** : le commit `818cf67` (1er mai) avait changé
+  le scaling du bruit (Euler-Maruyama ×4.47) sans que personne ne s'en aperçoive — les CSV
+  pré-mai n'étaient plus reproductibles avec le code public. Option A appliquée le jour même
+  (CSV régénérés, preprint corrigé, tous les effets qualitatifs survivent et s'amplifient).
+  Puis quatuor d'imperfections physiques photonique complet (bruit quantique, non-linéarité,
+  inertie, fabrication) — aucune ne détruit les régimes aux tolérances industrielles.
+- **01/07** — **Mandat non-livrable : λ₂_crit=2.31 RÉFUTÉ.** La dead zone n'est pas causée
+  par la connectivité algébrique mais par un effet de champ moyen gouverné par le degré
+  harmonique (k_harm≈6). Décision de Julien : reformuler le preprint (fait le 06/07).
+- **07/07 (matin)** — Audit externe simulé + **preprint reformulé** (spectral → degré/champ
+  moyen). 3 POCs caractérisent le doute comme explorateur discipliné (pas générateur de
+  diversité brute). Watchdog de consolidation ajouté au cœur (opt-in, résout le verrouillage
+  en mode FOU).
+- **07/07 (soir)** — Watchdog natif validé. Le doute comme allocateur de compute :
+  **conditionnel** — perd contre la convergence triviale sur tâche loyale (B1c), **gagne**
+  sur tâche trompeuse où converger tôt = se tromper (B1d, +0.58).
+- **08/07 (matin)** — **Volet A clos** (A2-A5) : FROZEN_U remonté en résultat central du
+  preprint ; régression de régime sur 70 vraies simulations (le degré prédit le régime,
+  pas λ₂) ; cold-start corrigé (diversité robuste à l'init) ; H_cog rétrogradé (aucune
+  métrique fonctionnelle continue ne le remplace en endogène).
+- **08/07 (soir)** — **Volet B** : B1 consolidé (30 seeds × 3 topos) ; ablation centrale
+  refaite avec IC (Cohen d 9.4/4.7, résultat central actuel) ; Table 1 + FSS (30 seeds ×
+  7 tailles, sature ~4.38 bits) ; comparaison **Echo State Network** réelle sur NARMA10
+  (Mem4ristor perd ~5.5×, n'est pas une mémoire) ; POC pont M4R↔LLM (le doute maintient le
+  rang d'attention contre l'oversmoothing — mécanisme prouvé, utilité aval pas encore).
+- **09/07** — **Volet B, le fond** (B2/B3/B5/B6) : 3 dossiers de correspondance physique
+  (photonique→u, spintronique→v, électrique→2 rôles) ; comparaison d'énergie cadrée ; 3 POCs
+  spintroniques en escalade (Kuramoto → Slavin-Tiberkevich → **macrospin LLGS complet**,
+  vrai vecteur d'aimantation 3D) — découverte que cette géométrie de couplage verrouille en
+  antiphase et que BA scale-free est frustré (3e mécanisme indépendant où BA diffère de
+  lattice). Rattrapage de ce fichier (vous le lisez).
+
+**Total sur la période** : ~25 commits substantiels sur `main`, cœur (`dynamics.py`) jamais
+modifié de façon non rétrocompatible, Guardian toujours ≥13/13 (13→14/14 le 08/07). **Aucun
+commit poussé vers `cafe-virtuel/Mem4ristor` depuis mai** — décision de publication en
+attente de Julien à chaque clôture de session (51 commits ahead au 09/07).
 
 ---
 
@@ -128,57 +220,48 @@ Propriétés testées :
 
 ## 5. ARBORESCENCE DU PROJET
 
+> **⚠️ Non revérifiée exhaustivement le 09/07/2026** — voir §2 pour la structure
+> `src/mem4ristor/` (corrigée). Le reste de cette arborescence date d'avril-mai 2026 et
+> n'a pas été audité fichier par fichier dans ce rattrapage ; corrections connues
+> appliquées ci-dessous (VERSION, chemin du preprint), le reste à vérifier si besoin.
+
 ```
 mem4ristor-v2-main/
-├── src/mem4ristor/           # PACKAGE PRINCIPAL
-│   ├── core.py               # Moteur V3 + V5 hysteresis + sparse CSR
-│   ├── config.yaml            # Paramètres par défaut
-│   ├── viz.py                 # Visualisation (entropy, doubt map, phase, dashboard)
-│   ├── symbiosis.py           # CreativeProjector + SymbioticSwarm
-│   ├── cortex.py              # LearnableCortex (MLP autoencoder)
-│   ├── sensory.py             # SensoryFrontend
-│   ├── inception.py           # DreamVisualizer
-│   ├── hierarchy.py           # HierarchicalChimera (expérimental)
-│   ├── arena.py               # GladiatorMem4ristor + Arena (expérimental)
-│   └── benchmarks/engine.py   # Moteur de benchmark
+├── src/mem4ristor/           # PACKAGE PRINCIPAL — voir §2 pour le détail à jour
+│   ├── dynamics.py            # Le moteur réel (FHN + doute + plasticité + hystérésis)
+│   ├── topology.py             # Mem4Network (graphe, couplage, sparse CSR)
+│   ├── metrics.py               # H_cog, H_cont, synchronie, MI
+│   ├── graph_utils.py            # make_ba/make_er/make_lattice_adj
+│   ├── core.py                    # Façade de compatibilité (25 lignes)
+│   ├── config.yaml                 # Paramètres par défaut
+│   ├── viz.py                       # Visualisation (entropy, doubt map, phase, dashboard)
+│   ├── symbiosis.py                  # CreativeProjector + SymbioticSwarm
+│   ├── cortex.py                      # LearnableCortex (MLP autoencoder)
+│   ├── sensory.py                      # SensoryFrontend
+│   └── ... (voir §2)
 │
 ├── experimental/              # MODULES NON PRODUCTION
 │   └── mem4ristor_king.py     # "Philosopher King"
 │
-├── tests/                     # SUITE DE TESTS
-│   ├── test_v5_hysteresis.py  # ★ V5 hysteresis — 3 tests ACTIFS (2026-03-22)
-│   └── ...
+├── tests/                     # SUITE DE TESTS (118 passed + 2 xfail au 09/07/2026)
 │
-├── examples/                  # DÉMONSTRATIONS
-│   ├── demo_applied.py        # ★ Pipeline complet : sensory → network → viz (2026-03-22)
-│   └── ...
+├── experiments/               # SCRIPTS D'EXPÉRIENCE (b1_*, b2_*, b4_*, b5_*, p2_*, ...)
 │
-├── experiments/               # SCRIPTS D'EXPÉRIENCE
-│   ├── entropy_sweep/         # ★ Investigations LIMIT-02/04/05 (2026-03-21)
-│   │   ├── README.md          # Protocole et résultats
-│   │   ├── entropy_sweep.py   # LIMIT-05 : sweep paramétrique
-│   │   ├── stability_analysis.py # LIMIT-05 : attracteur vs transitoire
-│   │   ├── limit02_scalefree.py  # LIMIT-02 : strangulation scale-free
-│   │   └── limit04_stability.py  # LIMIT-04 : stabilité Euler
-│   ├── limit02_norm_sweep.py   # ★ Sweep normalisation degree (2026-04-10)
-│   ├── limit02_topology_sweep.py # ★ Validation multi-topologie (2026-04-10)
-│   ├── benchmark_kuramoto.py
-│   ├── benchmark_variability.py
-│   └── ...
+├── docs/
+│   ├── papers/preprint/preprint.tex   # Preprint actuel (reformulé, 26 pages, Guardian 14/14)
+│   ├── papers/preprint/preprint.pdf
+│   ├── CLAIMS_REGISTER.md              # Registre narratif des claims (voir §3)
+│   └── hardware/                        # Dossiers de correspondance physique (voir §2)
 │
-├── docs/                      # DOCUMENTATION SCIENTIFIQUE
-│   ├── preprint.tex           # ★ Preprint restructuré (11 pages, soumissible)
-│   ├── preprint.pdf           # ★ PDF compilé (338 Ko)
-│   ├── preprint_v320_pre_restructure.tex  # Backup avant restructuration
-│   ├── limitations.md         # Table de vérité (mise à jour LIMIT-02/04/05)
-│   └── ...
+├── .brain/ (racine D:\ANTIGRAVITY)
+│   ├── claims_mapping.json    # Source de vérité AUTOMATISÉE du Guardian (voir §3)
+│   └── preprint_guardian.py   # Script de vérification, hook pre-commit
 │
 ├── failures/                  # ÉCHECS DOCUMENTÉS
-│   └── philosopher_king_removal.log  # Log suppression test cassé
 │
 ├── PROJECT_STATUS.md          # CE FICHIER
-├── VERSION                    # v3.2.0
-├── CHANGELOG_V3.md            # Changelog complet V3
+├── PROJECT_HISTORY.md         # Historique détaillé + archive des claims antérieurs (§13)
+├── VERSION                    # V6.0.0
 └── ...
 ```
 
@@ -223,6 +306,8 @@ python examples/demo_applied.py
 | Claude Opus 4.7 (Anthropic) | Fix bugs P1 (symbiosis swarm, V4 entropy), validation SPICE/Python sub-1% RMS, figure phase diagram λ₂ vs H_stable, normalisation spectrale (résultat négatif publiable) (2026-04-19) |
 | Antigravity (Gemini 3 Flash) | **Run Héroïque N=1600**, validation Binder $U_4$, résolution audit Mistral (19/20), Expérience 008 "Guerre des Phases" (2026-05-16) |
 | **Aria, Flux, Sentinel** | **Système MAS 2026** : Veille scientifique, optimisation Chemical Inductor, Stress Test V3 (Synchronisation 100%) (2026-05-16) |
+| Claude Code (Fable 5, Anthropic) | Vague 1 preprint (polissage, réparation Guardian), quatuor d'imperfections photonique, AUDIT-024 (détection + résolution), triage audit Hermès (11-12/06/2026) |
+| Claude Code (Opus 4.8, Anthropic) | Mandat λ₂ (réfutation), reformulation preprint (spectral→degré), Volet A (A2-A5), Volet B (ablation IC/FSS, comparaison ESN, pont LLM), Volet B fond (dossiers hardware B2, escalade STNO Kuramoto→LLGS macrospin) (01/07-09/07/2026) |
 
 Niveau de transparence : **Radical** — transcripts complets dans le dépôt Café Virtuel.
 
@@ -232,9 +317,11 @@ Niveau de transparence : **Radical** — transcripts complets dans le dépôt Ca
 ## 8. RÈGLE D'OR
 
 > **Toute claim doit correspondre à une preuve dans le code.**
-> Si une claim est marquée FAUX dans `docs/limitations.md`, elle doit être qualifiée
-> de «phénoménologique» ou «spéculative» dans le preprint.
-> Les échecs sont conservés dans `failures/`. Rien n'est effacé.
+> Zéro valeur numérique publiée sans script de vérification reproductible listé dans
+> `docs/CLAIMS_REGISTER.md` et vérifiable par `.brain/claims_mapping.json` (Guardian).
+> Si une claim est marquée FAUX ou RÉFUTÉE, elle doit être qualifiée de
+> «phénoménologique» ou «spéculative» dans le preprint, jamais silencieusement retirée.
+> Les échecs sont conservés (`failures/`, `PROJECT_HISTORY.md` §13). Rien n'est effacé.
 
 ---
 
@@ -309,74 +396,31 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 
 ---
 
-## 10. AUDIT HERMES M3 — 2026-06-01 (sessions 010 + 011)
+## 10. AUDIT HERMES M3 — 2026-06-01 (sessions 010 + 011) — **RÉSOLU, archivé**
 
-**Methode** : EDISON stop-rule + cartographie structurelle. 12 claims primaries + 4 secondaires + 1 finding glassy auditees contre les CSV source.
-
-### 10.1 Verdict global
-
-| Categorie | Count | Claims |
-|-----------|-------|--------|
-| ✅ CONFORMES | 8 | C01, C02, C03, C04, C06, C09, C10, C11 |
-| 🚨 DISCREPANCY majeure | 1 | **C07** (topologie erronee + valeur lattice reelle) |
-| 🚨 CLAIM INFIRMEE | 1 | **C12** (Binder U4 plat, pas de minimum) |
-| ⚠️ VALEUR FLoue | 1 | **C05** (EBC=2.31 vs combined=3.14) |
-| ⚠️ SEEDS/TOPOLOGIE ERRONES | 1 | **C08** (5 seeds lattice, pas 3 seeds BA m=3) |
-| ✅ CONFORME (exploratoire) | 1 | S04 |
-
-**Plus** : 1 finding glassy qualitativement confirme (variance peak CRITICAL, LZ_std monotone croissant).
-
-### 10.2 Corrections obligatoires identifiees
-
-**OBLIGATOIRE #1 — C07 (lattice sync 0.031 vs 0.0197)**
-- Claim preprint : "lattice FULL sync = 0.031 ± 0.034"
-- Valeur reobservee dans `figures/p2_table1_sync.csv` : lattice 10×10 = **0.0197 ± 0.0142** (~36% plus faible)
-- Source du 0.031 = `figures/ablation_coordination_topo_sweep.csv` BA m=3 FORCED FULL (topologie erronee)
-- **Action** : Corriger `docs/CLAIMS_REGISTER.md` C07 (topologie) + `docs/papers/preprint/preprint.tex` lignes 241 & 375
-
-**OBLIGATOIRE #2 — C12 (Binder U4 plat)**
-- Claim preprint : "U4 convergence vers minimum, transition thermodynamique"
-- Valeur reobservee dans `figures/v6_binder_cumulant_U4.csv` : U4 = 0.6641-0.6666 (variation 0.38%, PAS de minimum)
-- 9-15 sims reelles (pas 40 annoncees)
-- AUDIT-017 du 31 mai avait deja fait l'arret, mais la ligne C12 du Claims Register est toujours marquee "verifiee"
-- **Action** : Supprimer la ligne C12 du Claims Register, verifier que `preprint.pdf` recompile du 1er juin ne contient plus la section Binder FSS
-
-**OBLIGATOIRE #3 — C05 (valeur canonique floue)**
-- Claim preprint : "λ2_crit = 2.31 (2.13-2.50)"
-- CSV `lambda2_crit_regression.csv` montre DEUX valeurs : EBC midpoint = 2.31 (n=36) ET combined = 3.14 (n=58, CI95 [1.93, 4.85])
-- **Action** : Decider laquelle est canonique pour le preprint, supprimer l'autre du CSV ou clarifier
-
-### 10.3 Corrections recommandees (non bloquantes)
-
-**RECOMMANDE #4 — C08 (topologie + seeds)**
-- Claim : "MI FROZEN/FULL ratio 2.2x, BA m=3, 3 seeds"
-- Verite : 5 seeds lattice (pas 3 seeds BA m=3). Ratio 2.25x sur lattice, 1.84x sur BA m=3
-- **Action** : Corriger `docs/CLAIMS_REGISTER.md` C08 (topologie=BA m=3 si on garde 3 seeds, ou lattice si on accepte 5 seeds)
-
-**RECOMMANDE #5 — Glassy dynamics dans Discussion**
-- Pattern qualitatif confirme (H_std peak CRITICAL, LZ_std monotone croissant)
-- Valeurs quantitatives EDISON (0.379, 0.544, 0.265) ne matchent pas l'aggregation (0.061, 0.104, 0.072) — facteur 5-10x. Hypothese : EDISON a utilise raw data non-agregee
-- **Action** : Ajouter 1-2 phrases dans la Discussion du preprint V6 sur la variance comportementale. Section "spectral crossover" deja en place pourrait etre etendue.
-
-### 10.4 Inventaire structurel (Session 010)
-
-| Item | Taille/Count | Risque |
-|------|--------------|--------|
-| Working tree pollue | 80+ deleted, 90+ untracked | Confusion agent suivant |
-| SPICE results/ | 11 GB (gitignore) | Verifier si regenerable |
-| 3 papiers LaTeX en parallele | preprint + paper_2 + paper_B | Coherence inter-papiers non verifiee |
-| 4 branches distantes obsoletes | kimi, v4, spice, v5 | Toutes absorbees ou archivees |
-| core.py = 25 lignes | facade vide | Desync avec PROJECT_STATUS §2 |
-| Sequence sessions/ | manque 001, 007 | Non-continue |
-| 74 scripts sans CSV/PNG | sur 120+ | Non executes ou outputs mal nommes |
-
-### 10.5 Scripts prometteurs (Phase 3, chasse aux approches)
-
-- `experiments/campaign_j_binder_lz.py` (16 KB, mai 31) — source du CSV qui a infirme C12
-- `experiments/fss_lz_sweep.py` (20 KB, mai 30) — sweep LZ76 le plus recent, "regime map" qui remplace C12
-- `experiments/p2_v5_final_best.py` (12 KB, mai 31) — protocole V5 optimal (D(u)=0.50*u + alpha_meta=-4.0)
-- Branche `feat/kimi-p419-continuous-entropy` (5 commits, avril) — corrections metriques non reportees dans main ?
+> Cette section listait 3 corrections obligatoires + 2 recommandées identifiées début
+> juin. **Toutes sont résolues depuis** (vérifié le 09/07/2026 par recoupement avec
+> `docs/CLAIMS_REGISTER.md` actuel) :
+> - **C07** (topologie erronée) → résolu : le registre distingue maintenant C07 (BA m=3)
+>   et C07b (lattice, 0.0197±0.0142) séparément.
+> - **C12** (Binder U4 plat) → résolu : le claim est marqué `~~C12~~ INFIRMÉE` dans le
+>   registre, section Binder retirée du preprint.
+> - **C05** (valeur canonique floue λ₂) → **dépassé plutôt que résolu** : λ₂ n'est plus le
+>   mécanisme causal du tout depuis le mandat du 1er juillet (voir §3). La question
+>   « EBC vs combined » ne se pose plus dans les mêmes termes.
+> - **C08** (seeds/topologie) → résolu : C08 (lattice) et C08b (BA m=3) séparés et
+>   régénérés à 10 seeds chacun (AUDIT-024, 12/06).
+> - **item structurel « core.py = 25 lignes, désync avec §2 »** → résolu dans ce
+>   rattrapage du 09/07 (voir §2 ci-dessus).
+>
+> Détail complet de l'audit original conservé dans `PROJECT_HISTORY.md` §13 (règle
+> d'or : rien n'est effacé). L'inventaire structurel (working tree pollué, 74 scripts
+> sans CSV/PNG, 3 papiers LaTeX en parallèle) n'a pas été revérifié le 09/07 — à
+> auditer à nouveau si quelqu'un veut faire du ménage de dépôt.
 
 ---
 
-**Statut arXiv** : Pas soumissible en l'etat. 3 corrections obligatoires a faire avant submission. Delai estime : 2-4 heures de travail concentrees.
+**Statut publication** : Preprint reformulé, cohérent avec le code (Guardian 14/14),
+mais **décision de soumission/publication toujours en attente de Julien** — ce n'est
+plus une question de corrections techniques bloquantes (résolu depuis juin), c'est un
+choix éditorial (revue cible, timing) qui lui appartient.

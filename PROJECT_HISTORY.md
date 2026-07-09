@@ -2885,3 +2885,55 @@ Legitime: "critical divergence" x1 en negation ("plutot qu'une divergence critiq
 **Statut**: Resultat nouveau, complète [17]. Mis à jour dans PROJECT_STATUS.md [17].
 
 **Fichiers**: figures/dz2_topological_sweep.csv, figures/dz2_topological_sweep_agg.csv, figures/dz2_topological_sweep.png
+
+---
+
+## 13. ARCHIVE — ancienne table de claims de PROJECT_STATUS.md §3 (avant rattrapage du 09/07/2026)
+
+> **Contexte.** `PROJECT_STATUS.md` a dérivé du 12 juin au 9 juillet 2026 (~5 semaines,
+> ~20 commits substantiels non reflétés). Au rattrapage du 9 juillet, la table de claims
+> ci-dessous (couvrant grosso modo avril-mai 2026, claims [1] à [20] + items LIMIT-01 à
+> LIMIT-05) a été retirée de PROJECT_STATUS.md §3 pour la remplacer par une version
+> courte pointant vers les sources de vérité actuelles (`.brain/claims_mapping.json`,
+> `docs/CLAIMS_REGISTER.md`). Conservée ici intégralement (règle d'or : rien n'est
+> effacé) — c'est un instantané figé au 12 juin 2026, **plusieurs de ces claims ont été
+> révisés depuis** (notamment [13] marqué « à re-vérifier » y est déjà, et le [20] y est
+> déjà révisé ; mais tout ce qui touche λ₂/spectral a été réfuté le 1er juillet — voir
+> `experiments/lambda2_foundation_20260701/SYNTHESE.md` et ARCHIVES_INDEX.md).
+
+| Claim | Statut | Détail |
+|:------|:-------|:-------|
+| Levitating Sigmoid élimine la dead zone (LIMIT-01) | RÉSOLU en V3 | `tanh(π(0.5-u)) + δ` remplace `(1-2u)` |
+| Seuil de 15% d'hérétiques universel (LIMIT-02) | **PARTIELLEMENT RÉSOLU — NON UNIVERSEL** | `degree_linear` fonctionne sur BA m=3, HK, WS, ER sparse. Échoue sur BA m=1/5/10, Config Model, ER dense. La normalisation optimale dépend de l'hétérogénéité des degrés ET de la redondance des chemins. |
+| H ≈ 1.94 attractor (LIMIT-05) | **INVESTIGUÉ — FAUX** | Sweep 800+ combos : stable H ≈ 0.92, transitoires jusqu'à 2.31. |
+| Stabilité long-terme (LIMIT-04) | **INVESTIGUÉ — NUANCÉ** | Le "drift" est un transitoire de convergence, pas une instabilité. dt≤0.05 stable. |
+| Mapping hardware HfO2 | **VALIDÉ EN SIMULATION (2026-04-19)** | SPICE/Python RMS global ≈ 9.7×10⁻³ (≤1% de \|v\|) sur lattice 4×4. |
+| Normalisation spectrale brise la dead zone | **TESTÉ — FAUX (2026-04-19)** | `coupling_norm='spectral'` (1/eigenvector_centrality) implémenté. 0/6 wins sur dead zone. Le problème est dynamique, pas un défaut de pondération. |
+| Parité cross-platform (MKL) | RÉSOLU | Fix v2.9.1, `NUMPY_MKL_CBWR=COMPATIBLE` |
+| **Nœud isolé instable (claim preprint §3.1)** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Point fixe v*=−1.294, w*=−0.732 est un **spiral stable** (λ=−0.055±0.283i). Hopf à α_crit≈0.296, mais défaut α=0.15. |
+| **H_cog≈0.92 (Python, bins corrigés)** | **🚨 ARTEFACT MÉTRIQUE — AUDIT EXTERNE 2026-04-22** | Avec bins KIMI (±0.4/1.2), H_cog=0 pour TOUTES les configs Python défaut. La valeur 0.92 venait de l'ancienne bin ±1.5 straddlant le cluster consensus. |
+| **Hérétiques actifs à I_stim=0** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | `I_eff[heretic_mask] *= -1` est no-op quand I_stim=0. Les expériences "endogènes" ne testent pas le mécanisme hérétique. |
+| **Verilog-A (v26.va) = Python** | **🚨 FAUX — AUDIT EXTERNE 2026-04-22** | Noyau linéaire (1-2u), τ_u=1.0, pas d'ε_u adaptatif, pas de plasticité, double-comptage I_coup. |
+| **Escape SPICE noise+mismatch (P4.19)** | **✅ CONFIRMÉ sous 3 métriques** | H_cont=4.58 bits à (η=0.5, σ_C=0.5). Survit à la métrique continue et aux bins KIMI. |
+| **Calibration η SPICE ↔ σ Python** | **✅ RÉSOLU (2026-04-25)** | η=0.5 SPICE ↔ σ_equiv=0.0044 Python. Bruit thermique SPICE catégoriquement distinct → claim Paper B RENFORCÉ. |
+| **Bins obsolètes dans `spice_dead_zone_test.py`** | **✅ RÉSOLU (2026-04-25)** | Seuils corrigés vers KIMI `[-1.2, -0.4, 0.4, 1.2]`. Conclusion inchangée. |
+| **Dynamique u tronquée dans les netlists SPICE** | **✅ DOCUMENTÉ (2026-04-25)** | Limitation explicite ajoutée dans Paper B §2 + commentaires inline. |
+| **Duplication make_ba() inter-scripts** | **✅ RÉSOLU (2026-04-25)** | `src/mem4ristor/graph_utils.py` créé. 7 scripts p2_* migrés. |
+| **Terminologie : "frustrated synchronization" / "topological phase transition"** | **✅ CORRIGÉ (2026-04-28)** | → "polarity-modulated anti-synchronization" / "spectral phase transition" (elle-même réfutée depuis, voir note ci-dessus). |
+| **H_cog=0 dans ablation preprint** | **✅ DOCUMENTÉ ET RECENTRÉ (2026-04-28)** | Artefact de binning. Claim recentrée sur H_cont (100-bin) = 3.79±0.14 bits + synchrony FULL=0.031 vs FROZEN=0.751. |
+| **SPICE : validation 50 seeds BA m=5 N=64** | **✅ DOCUMENTÉ DANS PAPER (2026-04-28)** | dead zone H_cont=1.38±0.04, functional H_cont=4.30±0.19. Mismatch CMOS σ_C=0.10 sans effet sur la diversité. |
+| **[6] Cohen U3 — non-chevauchement distributions FROZEN_U vs FULL** | **✅ VALIDÉ (2026-04-29)** | U3=100%, OVL=0.000000. SPICE d=20.78 (n=50) + Python d=13.21 (n=7) + ablation d=11.44 (n=5). Commit 4a0bd62. |
+| **[8] RK4 vs Euler — validation intégrateur** | **✅ VALIDÉ (2026-04-29)** | Euler dt=0.05 validé. Plasticité=OFF : Max Δ(H_cog)=0.0018. Plasticité=ON : Max Δ(H_cog)=0.0053. Commits 91a0072 + 4cd7fce. |
+| **[7] dt sensitivity** | **✅ VALIDÉ (2026-04-29)** | H_cog : max_delta < 0.01 sur toutes topologies (seuil 0.05). Synchrony sensible au dt mais reflète la dissipation numérique Euler. |
+| **[11] LZ par nœud** | **✅ VALIDÉ (2026-04-29)** | Corrélation degré ↔ LZ dans FULL (r=-0.564 à -0.716) — hubs plus structurés. Dans FROZEN_U : r≈0. |
+| **[12] Bruit Matern spatialement corrélé** | **✅ VALIDÉ (2026-04-30)** | Tous les types de bruit brisent la dead zone dès η=0.1. La structure spatiale ne discrimine pas — l'amplitude seule compte. |
+| **[13] Transition de phase événementielle** | **⚠️ À RE-VÉRIFIER (2026-06-12, AUDIT-024)** — signe inversé (dH=−0.764 vs +1.20 original) avec le bruit Euler-Maruyama post-1er-mai. Grille complète à refaire. Preprint ne cite pas [13] — soumission non affectée. |
+| **[14] U clamping u_clamp=0.6** | **✅ AUDITÉ + CORRIGÉ (2026-05-30)** | Le clamping re-synchronise le réseau (sync=0.53) — NOCIF, gain H_cont = artefact. |
+| **[15] U saturation — deux attracteurs** | **✅ AUDITÉ (2026-05-30)** | D=0 → u→~0.05, D>0 → u→~0.999. Mécanisme : feedback négatif sigma_social ↔ sigmoid(u). |
+| **[16] D(u) = D_max·u — sweet spot** | **✅ AUDIT-015 (2026-05-31)** | D=0.50·u abaisse le seuil FUNCTIONAL à m≥6 (vs m≥7 avec D=0.15). |
+| **[17] Transition topologique — seuil protocole-dépendant** | **✅ AUDIT-015 + DZ2 (2026-06-03)** | Le seuil n'est PAS un invariant topologique. D=0.50·u optimal pour m=1-5, collapse total à m≥6. |
+| **[18] V5 final : D(u)+alpha_meta=-4.0** | **✅ AUDIT-018 ARRÊT (2026-05-31)** | Optimal restreint aux topologies denses (m≥7) ; chaoticgène sur m≤5. Section Binder du preprint invalidée. |
+| **[19] Glassy dynamics + Active Inference overclaim** | **NEW (2026-06-01), étendu 2026-06-07** | Var(H_stable) pic en zone critique = signature glassy. Cartographie Binder étendue (701 runs) : U4 plat sur toute la plage — **diagnostic d'ordre de transition par Binder abandonné**, H_stable adopté comme paramètre d'ordre primaire. |
+| **[20] Persistance temporelle endogène** | **⚠️ RÉVISÉ (2026-06-12)** | Restreint à AC@lag50 = +0.57 à +0.74. Retirés : fréquence f~0.01 (artefact) et LZ spontané (métrique incomparable). « Intrinsic oscillator » abandonné. |
+
+> Détail complet de chaque investigation ci-dessus : voir §1 « INVESTIGATIONS SCIENTIFIQUES DÉTAILLÉES » de ce même fichier (sections §3bis à §3quinquagies-ter référencées dans la table).
