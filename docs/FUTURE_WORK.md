@@ -302,9 +302,23 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   0.5 — un paramètre de capteur ajouté, pas retouché sur le mécanisme lui-même).
   Ordre BA>lattice répliqué (cohérent B1/B4, non cherché). Réserve : test de
   portabilité mathématique, pas une simulation LLG ni une validation physique.
+- **✅ Généralisation amplitude+phase FAIT (09/07/2026, suite immédiate — Julien : « je
+  veux voir ce que ça donne »).** `experiments/b2_stno_amplitude_phase_poc.py`, voir
+  `SPINTRONIC_PATHWAY.md` §8. Le Kuramoto pur ci-dessus est le cas limite **isochrone**
+  d'un modèle plus fidèle (Slavin-Tiberkevich, dérivé de LLGS) : amplitude ET phase
+  dynamiques, **décalage de fréquence non-linéaire** (non-isochronicité, la signature
+  physique la plus caractéristique des STNO, absente du Kuramoto pur). **Résultat :
+  au capteur brut (gain=1), l'effet devient NUL** (Cohen d 0.01–0.09, plus net que le
+  Kuramoto pur) ; **une fois calibré (gain=10), le mécanisme est robuste sur toute la
+  plage de non-isochronicité testée** (Cohen d 4.41–5.49 BA m=3, 1.79–2.60 lattice,
+  N_nonlin 0→10, aucun effondrement). Vérification indépendante rassurante : `R_FROZEN_U`
+  diminue avec la non-isochronicité, cohérent avec la littérature (élargissement de raie).
+  Calibration numérique documentée (Euler diverge à dt=0.01/gain=10/N_nonlin≥10, confirmé
+  non-physique, corrigé à dt=0.005 — même esprit que le stiffness proof Euler du 1er mai).
 - **Reste (🧩 projet de fond, plusieurs semaines).** Aucune simulation LLG/macrospin
-  complète (précession, champ démagnétisant, couple de transfert de spin explicite)
-  ni SPICE VTEAM/neuristor n'a été faite. Le rôle physique de `u` (quel circuit lit
+  complète (précession, champ démagnétisant, couple de transfert de spin explicite,
+  ou modèle de Thiele pour la texture de vortex) ni SPICE VTEAM/neuristor n'a été faite —
+  §8 reste une réduction de type auto-oscillateur, pas une résolution spatiale. Le rôle physique de `u` (quel circuit lit
   le désaccord et pilote une variable lente) reste non résolu — le test ci-dessus
   montre que le mécanisme mathématique se porte, pas qu'un dispositif réel peut le lire.
 
@@ -412,9 +426,18 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   prédiction falsifiable n'est donc plus une simple analogie, elle est appuyée par un
   résultat en silico reproductible. Reste falsifiable de la même façon : un effet nul
   ou de signe opposé sur un vrai dispositif réfuterait le transfert au substrat physique.
+- **✅ Renforcé le jour même par la généralisation amplitude+phase** (`b2_stno_amplitude_phase_poc.py`,
+  cf. B2 et `SPINTRONIC_PATHWAY.md` §8) : le mécanisme reste robuste (Cohen d 1.79–5.49)
+  quand on ajoute la non-isochronicité — la signature physique la plus caractéristique
+  des vrais STNO, absente du premier test. La prédiction falsifiable repose maintenant
+  sur 2 modèles convergents (Kuramoto pur et auto-oscillateur Slavin-Tiberkevich), pas
+  un seul. Réserve inchangée : au capteur brut (non calibré), l'effet est nul dans les
+  deux modèles — la prédiction telle que formulée suppose implicitement qu'un vrai
+  circuit de détection de désaccord aurait un gain suffisant, hypothèse non vérifiée.
 - **Reste (🧩).** Non testé en circuit réel (seulement en silico, réduction
-  phase-oscillateur). Une simulation LLG/macrospin complète resterait un pas
-  intermédiaire plus fidèle avant toute campagne expérimentale réelle.
+  auto-oscillateur). Une simulation LLG/macrospin complète (ou modèle de Thiele pour
+  la texture de vortex) resterait un pas intermédiaire plus fidèle avant toute campagne
+  expérimentale réelle.
 
 ### B7 — Reproductibilité end-to-end des figures 🔜
 - **Pourquoi.** AUDIT-024 a montré que deux générations de code coexistaient sans détection.

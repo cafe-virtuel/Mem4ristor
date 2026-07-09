@@ -123,9 +123,75 @@ de comptage).
 2. [x] ~~Reproduire qualitativement l'ablation FROZEN_U/FULL~~ — **FAIT 09/07/2026**,
    voir §7. Résultat positif, avec une réserve honnête importante (calibration du
    capteur de désaccord).
-3. [ ] Proposer un protocole expérimental réel (cf. `docs/FUTURE_WORK.md` B6,
+3. [x] ~~Généraliser à un modèle amplitude+phase avec non-isochronicité~~ — **FAIT
+   09/07/2026**, voir §8. Julien : « tu m'as mis l'eau à la bouche, je veux voir ce
+   que ça donne ». Résultat : le mécanisme survit, robuste à la non-isochronicité.
+4. [ ] Proposer un protocole expérimental réel (cf. `docs/FUTURE_WORK.md` B6,
    signature falsifiable) — la proposition existe déjà (réseau STNO réel + spectroscopie
-   micro-onde), maintenant appuyée par un résultat en silico, pas seulement une analogie.
+   micro-onde), maintenant appuyée par 2 résultats en silico convergents (§7 et §8).
+5. [ ] Vraie simulation LLG/macrospin complète (précession, champ démagnétisant, couple
+   de transfert de spin explicite) ou modèle de Thiele pour la dynamique du cœur de
+   vortex — le palier suivant, encore non franchi (§8 reste une réduction de type
+   auto-oscillateur, pas une résolution spatiale de la texture magnétique).
+
+## 8. Généralisation amplitude+phase (Slavin-Tiberkevich) — le mécanisme survit (09/07/2026)
+
+**Pourquoi ce palier.** Le §7 utilisait un Kuramoto pur (phase seule, amplitude figée à 1)
+— le cas limite **isochrone** d'un modèle plus complet et plus fidèle à la littérature
+STNO : l'**oscillateur auto-entretenu non-linéaire de Slavin & Tiberkevich** (IEEE Trans.
+Magn. 2009), qui dérive formellement de l'équation LLGS complète et qui EST le modèle que
+le domaine utilise pour les questions de synchronisation de réseau. Sa signature physique
+centrale, absente du §7 : le **décalage de fréquence non-linéaire** (non-isochronicité)
+`ω(p) = ω0 + N·p` où `p=|a|²` est la puissance d'oscillation — précisément ce que
+Slavin-Tiberkevich identifient comme LA différence qualitative entre un STNO et un
+oscillateur conventionnel. Tester sans ce terme, c'est tester un cas particulier, pas le
+régime STNO réel.
+
+**Script** : `experiments/b2_stno_amplitude_phase_poc.py` → `figures/b2_stno_amplitude_phase_poc.csv`
+/ `_agg.csv` / `.png`. Amplitude complexe `a_i` par nœud, `da_i/dt = [croissance/saturation
++ i·ω(p_i)]·a_i + K·u_filter_i·S_i + bruit`, `S_i` = couplage complexe (généralise `sin(Δφ)`
+du §7, porte à la fois la partie réactive et dissipative). Mécanisme du doute **identique**
+à `dynamics.py`, aucun réglage propre.
+
+**Calibration numérique documentée (comme le stiffness proof Euler du 1er mai)** : à
+dt=0.01, gain de capteur=10 et non-isochronicité≥10 font **diverger** l'intégration Euler
+explicite (overflow) — confirmé non-physique par test à dt décroissant (dt≤0.005 reste fini
+et converge). **Correction : dt=0.005 pour toute la campagne.**
+
+**Résultats (10 seeds, IC bootstrap, BA m=3 et lattice 10×10, N_nonlin ∈ {0, 3, 10}) :**
+
+| Topologie | N_nonlin | Capteur | R_FULL | R_FROZEN_U | Cohen d |
+|---|---|---|---|---|---|
+| BA m=3 | 0 | brut (gain=1) | 0.613±0.092 | 0.620±0.090 | **+0.08** (nul) |
+| BA m=3 | 0 | calibré (gain=10) | 0.258±0.055 | 0.620±0.090 | **+4.59** |
+| BA m=3 | 3 | calibré (gain=10) | 0.230±0.032 | 0.481±0.052 | **+5.49** |
+| BA m=3 | 10 | calibré (gain=10) | 0.135±0.015 | 0.270±0.039 | **+4.41** |
+| Lattice | 0 | calibré (gain=10) | 0.166±0.039 | 0.342±0.084 | **+2.55** |
+| Lattice | 3 | calibré (gain=10) | 0.149±0.034 | 0.272±0.086 | **+1.79** |
+| Lattice | 10 | calibré (gain=10) | 0.111±0.017 | 0.176±0.029 | **+2.60** |
+
+**Lecture honnête.**
+1. **Au capteur brut (gain=1), l'effet est cette fois NUL** (Cohen d 0.01–0.09, IC
+   chevauchant toujours zéro) — plus net que le §7 (qui montrait un effet modeste mais
+   réel à gain=1). `u` reste collé à ~0.06 (quasi identique au FROZEN_U figé à 0.05) :
+   dans ce modèle plus riche, le couplage complexe near-synchronisé laisse encore moins
+   de désaccord perceptible au capteur brut. Résultat assumé tel quel, pas arrondi.
+2. **Une fois le capteur calibré (gain=10, `u` franchit 0.5), le mécanisme est robuste
+   à la non-isochronicité** : Cohen d reste dans [4.41, 5.49] sur BA m=3 et [1.79, 2.60]
+   sur lattice à travers TOUTE la plage testée (N_nonlin 0→10) — **aucun effondrement**
+   à mesure que le paramètre le plus caractéristique des STNO augmente. C'est le test de
+   robustesse que l'honnêteté scientifique imposait avant de faire confiance au résultat
+   du §7 (qui n'avait testé que N_nonlin=0).
+3. **Vérification physique indépendante (bon signe)** : `R_FROZEN_U` diminue lui-même
+   avec `N_nonlin` (0.62→0.48→0.27 sur BA ; 0.34→0.27→0.18 sur lattice), cohérent avec la
+   littérature (la non-isochronicité élargit la raie spectrale / réduit la cohérence d'une
+   population d'oscillateurs) — le modèle se comporte comme la physique le prédit
+   indépendamment du mécanisme du doute, ce qui renforce la confiance dans le reste.
+4. **Ce que ça ne prouve toujours pas** : aucune résolution spatiale de la texture de
+   vortex (modèle de Thiele ou LLGS complet), valeur de non-isochronicité pour un vrai
+   STNO à vortex non trouvée par recherche web (testée sur une plage, pas une valeur
+   affirmée), et le gain de capteur=10 reste un paramètre ajouté à interpréter
+   physiquement (§7), pas mesuré sur un vrai circuit.
 
 ## 7. Résultat — le mécanisme se porte, avec une réserve honnête (09/07/2026)
 
