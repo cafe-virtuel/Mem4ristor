@@ -148,7 +148,9 @@ mesurée — toute courbe matériau réelle se branche à la place, protocole in
 3. [ ] Hérétiques optiques : inversion par interféromètre (Mach-Zehnder) vs
    canal séparé — coût en composants.
 4. [x] ~~Variabilité de fabrication optique~~ — **FAIT 12/06/2026** (§4quater).
-5. [ ] Mapping `u` ↔ transmittance GST (l'idée directrice, la plus spéculative).
+5. [x] ~~Mapping `u` ↔ transmittance GST~~ — **FAIT 09/07/2026** (§5 ci-dessous) :
+   correspondance candidate + ancrage dt physique, calcul dimensionnel seul (pas
+   de circuit simulé).
 
 ## 4quater. Quatrième résultat : variabilité de fabrication (12/06/2026)
 
@@ -188,3 +190,53 @@ tolérances industrielles courantes.** Le système est nativement compatible ave
 une implémentation photonique imparfaite — par conception, pas par chance : le
 doute calibré (filtre passe-bas temporel) et les hérétiques (hétérogénéité assumée)
 sont précisément les mécanismes qui absorbent ces imperfections.
+
+## 5. Mapping `u` ↔ transmittance GST + ancrage dt physique (09/07/2026)
+
+> **Nature de ce travail : calcul dimensionnel de premier ordre, reproductible
+> (`experiments/b2_device_physics_mapping.py` → `figures/b2_device_physics_mapping.csv`),
+> PAS une simulation de circuit GST.** Ne prouve aucune compatibilité physique
+> réelle — montre que les ordres de grandeur ne sont pas absurdes. Voir aussi
+> `docs/hardware/SPINTRONIC_PATHWAY.md` et `docs/hardware/ELECTRICAL_PATHWAY.md`
+> (même exercice pour les deux autres familles de dispositifs, B2 "tout explorer").
+
+**Correspondance candidate.** `u` (variable de doute, [0,1]) ↔ **fraction amorphe**
+d'une cellule GST : `u→0` = cristallin (transmittance haute, "certain"), `u→1` =
+amorphe (transmittance basse, "douteux"). Les états multi-niveaux gradués (fraction
+amorphe intermédiaire, transmittance stable) sont établis expérimentalement pour le
+stockage optique GST (au-delà de Feldmann et al. 2019, cf. littérature sur la
+mémoire optique multi-niveau GST). Le seuil de polarité `u=0.5` correspondrait à un
+état mi-cristallin — plausible mais **non testé en circuit**.
+
+**Mécanisme de relaxation (spéculatif, non construit).** La dynamique de `u`
+(relaxation vers `sigma_baseline` + excursion pilotée par `sigma_social`) demanderait
+physiquement qu'un désaccord local perçu pilote une amorphisation graduelle
+(via des pulses partiels), et qu'une dérive/recuit thermique lent ramène vers l'état
+cristallin de repos. Aucun circuit de ce type n'a été construit ni simulé ici —
+c'est l'idée directrice du dossier, restée « la plus spéculative » (cf. version
+précédente de cette section), et elle le reste après ce calcul : seul l'ancrage
+temporel/énergie a avancé, pas le mécanisme d'écriture.
+
+**Ancrage dt physique.** Le nœud FHN isolé a une pulsation propre mesurée
+(`experiments/reviewer2_linear_stability.py`, 1er mai 2026, α=0.15) : spirale stable
+λ = −0.0473 ± 0.2824i → période propre `T_node = 2π/Im(λ) ≈ 22.25` unités de temps
+modèle (≈ 445 pas d'intégration à dt=0.05). En ancrant `T_node` sur le temps de
+réponse d'amorphisation/cristallisation GST documenté (**~100–200 ns**, pulses UV
+nanoseconde, cristallisation pleine >180 ns — Structural Transitions in Ge2Sb2Te5
+..., PMC7254329) :
+
+| Ancrage | dt physique | τ_u physique | Campagne (4000 pas) |
+|---|---|---|---|
+| T_GST = 100 ns | 225 ps/pas | 44.9 ns | 0.90 µs |
+| T_GST = 200 ns | 449 ps/pas | 89.9 ns | 1.80 µs |
+
+**Énergie (signal seul, hors overhead).** Au budget nominal Λ=10 photons/nœud/pas
+(§3), l'énergie de signal par pas est **indépendante de dt** : `10 × E_photon(1550nm)
+≈ 1.28×10⁻¹⁸ J/nœud/pas`. Rapportée à dt physique ci-dessus : puissance **≈ 2.8–5.7
+nW/nœud**. **Réserve non négociable** : ceci ignore les pertes d'insertion, le
+rendement du photodétecteur et le wall-plug du laser — le budget réel d'un système
+photonique complet se compte en pJ–nJ par événement (cf. Feldmann et al. 2019 et la
+littérature sur les accélérateurs photoniques), pas en aJ. Le chiffre aJ n'est valide
+que comme *plancher théorique du signal*, pas comme consommation système. Voir
+`docs/hardware/B3_ENERGY_COMPARISON.md` pour la mise en regard avec les deux autres
+familles et la référence CMOS (Loihi/TrueNorth).
