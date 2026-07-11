@@ -5,7 +5,12 @@
 > **Origine.** Audit externe simulé « posture d'une chercheuse de référence en neuromorphique » du 2026-07-06
 > ([docs/audit_externe_neuromorphique_2026-07-06.md](audit_externe_neuromorphique_2026-07-06.md))
 > + mandat de réfutation λ₂ du 2026-07-01 (`experiments/lambda2_foundation_20260701/SYNTHESE.md`).
-> **Mise à jour.** 2026-07-09 (B2/B3/B5/B6 cadrés, voir sections correspondantes).
+> **Mise à jour.** 2026-07-11 (genèse 5 états consolidée D1, pont LLM tâche aval D2,
+> [13] révisé au code actuel, B5-STNO NARMA10 fait — voir sections correspondantes).
+> **Réservoir d'idées complémentaire** (écartées trop tôt, jamais tentées, garde-fou des
+> impasses) : [PISTES_POUR_LA_SUITE_2026-07-12.md](PISTES_POUR_LA_SUITE_2026-07-12.md)
+> — le legs de Fable, 14 pistes sourcées (bicaméral V5b, MoE par certitude, usure/drift,
+> graphes dirigés, abstention calibrée, u∈ℂ dans le cœur…).
 
 
 Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs jours/semaines) · 💭 exploratoire.
@@ -410,20 +415,22 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     **gratuit**. Sa valeur décisive exige un **horizon inconnu/non-borné** OU un **coût d'attente**
     (cohérent B1c : le doute paie quand le budget est rare). Le cadrage « explorateur, pas mémoire »
     est validé au niveau des règles d'arrêt, à cette condition près.
-- **🟡 Positionnement littéraire fait (09/07/2026) + 🆕 test de synchronisation fait
-  (09/07/2026, même jour, suite immédiate) — comparaison de PERFORMANCE (type NARMA10)
-  toujours non faite.** `docs/hardware/SPINTRONIC_PATHWAY.md` établit une correspondance
-  candidate `v`↔STNO à vortex (Torrejon et al. 2017 Nature — reservoir computing
-  spoken-digit sur 1 STNO ; Romera et al. 2018 Nature — reconnaissance de voyelles sur
-  4 STNO couplés). **Ce n'est toujours PAS une comparaison loyale au sens de la
-  comparaison ESN/NARMA10 du 7 juillet** (aucun benchmark spintronique publié sur
-  NARMA10 n'existe) — mais entre-temps, `experiments/b2_stno_phase_coupling_poc.py`
-  a testé directement si le **mécanisme** (pas la performance sur une tâche) se porte :
-  résultat positif, Cohen d jusqu'à 14.85 sur la synchronisation de Kuramoto (voir
-  `SPINTRONIC_PATHWAY.md` §7 et B2 ci-dessus). **Pour aller jusqu'à une vraie
-  comparaison de performance** : faire rejouer NARMA10 ou la tâche trompeuse de B1d à
-  ce même réseau de phase-oscillateurs — pas fait, projet de fond distinct.
-  Effort : 🧩 projet de fond (modèle physique complet requis, cf. B2).
+- **✅ Comparaison de PERFORMANCE spintronique FAITE (11/07/2026)** —
+  `experiments/b5_stno_narma10_poc.py` (commit `9abd12c`) : NARMA10 sur un réseau de 100
+  oscillateurs Slavin-Tiberkevich (harness/tâche/seeds STRICTEMENT ceux de la comparaison
+  ESN du 08/07 ; entrée = modulation du gain par courant STT ; lecture = puissance moyenne
+  par symbole ; doute identique à dynamics.py, gain calibré ; dt=0.005 vérifié en pré-vol ;
+  fairness : chaque condition choisit iscale/K_SUB/N_nonlin par seed). **Hiérarchie mesurée :
+  ESN 0.362 < STNO_DECOUPLE 0.831 < STNO_FROZEN 0.920 ≈ STNO_FULL 0.926 << M4R-FHN 1.811.**
+  (1) Doute **NEUTRE** (+0.006 IC[−0.017,+0.026]) — il maintient pourtant un rang effectif
+  bien plus haut (~78 vs ~52) : la diversité ne se convertit pas en mémoire. (2) Le
+  **découplé gagne** (+0.095 IC[+0.062,+0.139]) — réplication du pattern FHN du 07/07 sur
+  un 2e substrat. (3) **Le substrat STNO divise l'erreur du FHN par 2 et passe SOUS
+  NRMSE=1.0 (reservoir UTILE dans l'absolu)** — la physique du substrat compte plus que le
+  mécanisme sur cette tâche. (4) L'ESN reste devant (+0.56). Contexte littérature :
+  Torrejon 2017 / Romera 2018 (protocoles différents, single-node time-multiplexé — assumé
+  dans la docstring). Reste éventuel : la tâche trompeuse B1d sur ce substrat (le terrain
+  du doute), 💭 1 session.
 
 ### B6 — Prédiction falsifiable / signature expérimentale 🟢 appuyée par un résultat en silico (09/07/2026)
 - **Pourquoi.** Tout est auto-référentiel (H, sync, MI calculés sur le même v(t) simulé).
@@ -496,6 +503,46 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 - **Comment.** Isoler la contribution de la queue de distribution des degrés ; tester des
   familles à hétérogénéité contrôlée.
 - **Effort.** 💭 ~1 session exploratoire.
+
+---
+
+## D. Fils exploratoires hors preprint
+
+### D1 — Genèse 5 états (ψ∈ℂ⁴ + Oracle) ✅ CONSOLIDÉ statistiquement (11/07/2026), piste requalifiée
+- **Pourquoi.** Mem4ristor est né (Session 1 du Café, 19/08/2025) comme 5 états cognitifs ;
+  9 mois de rigueur l'ont réduit au scalaire u. Premier jouet le 10/07 (Labo de l'Absurde,
+  60 essais sans IC) : tendance apparente « moins linéaire = mieux ».
+- **✅ Fait (11/07/2026)** — `experiments/genesis_five_states_poc.py` (commit `cb36b4a`),
+  1000 essais, IC Wilson + bootstrap apparié, **gate de réplication exacte** des seeds du 10/07.
+  **La tendance du 10/07 était du bruit** (lecture locale ~50-52 % partout) ; le hop
+  multiplicatif fait pire que le hasard (38.1 %) ; l'Oracle actuel n'est pas un marqueur de
+  réussite. **MAIS : l'interférence (moyenne complexe) préserve l'info de parité sur un
+  plateau stable 73.9 % (t=20→150) et, lue globalement (produit des phases dominantes),
+  bat le vote : +5.5 pts IC[+3.5,+7.5] p<1e-4.** Le goulot du 10/07 = la lecture locale
+  (−21.4 pts), pas le réseau.
+- **Prochaines marches (si la piste revient).** Readout local *appris* (le plateau est-il
+  lisible localement ?) ; N>5 ; tâche où la phase compte sans prior de parité dans le readout.
+  Réserve : le readout global encode un prior de tâche — le mérite démontré est la
+  *préservation*, pas le calcul spontané.
+- **Effort.** 💭 1 session par marche.
+
+### D2 — Pont M4R↔LLM (anti-effondrement de rang) ✅ TÂCHE AVAL FAITE (11/07/2026), niche conditionnelle confirmée
+- **Pourquoi.** Idée de Julien (08/07) : le couplage modulé par le doute contre
+  l'oversmoothing/rank collapse. POC rang concluant le 08/07 (`llm_doubt_rank_poc.py`),
+  réserve explicite : utilité aval non prouvée.
+- **✅ Fait (11/07/2026)** — `experiments/llm_doubt_downstream_poc.py` (commit `d119604`),
+  tâche double loyale (débruitage de groupe = exige le mélange ; identité individuelle =
+  punit la fusion), contrôles de loyauté, 10 seeds, profondeur d'arrêt par validation pour
+  TOUTES les conditions. **(1)** Avec early-stop réglé : l'attention pure à l=1-2 bat le
+  doute de 0.8 pts — le budget fixe reste devant (pattern B5b). **(2)** Sans réglage
+  (L=40 fixe, régime réel d'un transformer) : **le doute domine — groupe +4.6, identité
+  +33.7 pts** ; fenêtre fragile (85→52 %) vs plateau stable (~85 %). **Utilité aval réelle
+  mais conditionnelle = 3e réplication du positionnement B1d/B5b** (le doute paie quand
+  l'horizon/la profondeur ne peut pas être réglé d'avance).
+- **Prochaines marches.** Se mesurer à une mitigation *standard* (résiduel+MLP) sur la même
+  tâche ; puis un petit transformer réel. Le doute doit être compétitif *dans la famille*
+  anti-effondrement, pas seulement meilleur que la pathologie nue.
+- **Effort.** 💭→🧩 selon la marche.
 
 ---
 
