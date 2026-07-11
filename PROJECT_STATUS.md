@@ -372,7 +372,7 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 
 | Fichier | Expérience | Résultat | Statut |
 |---------|-----------|---------|--------|
-| event_phase_transition.png / .csv / _summary.csv | [13] Transition de phase événementielle | Nœud périphérique I>=0.8 pendant >=50 steps → dH=+1.20 bits (BA m=3). Périphérique > Hub. | Confirmé, commit 667a2a9 |
+| event_phase_transition*.csv + _rerun_20260711* | [13] Transition de phase événementielle | ⚠️ **RÉVISÉ 11/07/2026** : le « dH=+1.20, périphérique > hub » d'avril NE se reproduit PAS au code actuel (AUDIT-024, bruit ×4.47) — grille complète rejouée : 0/9 configs du claim positives, l'événement DÉGRADE H_cont (≈−1.0) sur BA m=3, hub comme périphérique ; effet ~nul sur la dead zone m=5. Claim d'avril = artefact de l'ancien bruit. CSV d'avril préservés. | RÉVISÉ (rerun 2026-07-11, `event_phase_transition_rerun_20260711.py`) |
 | matern_noise.png / .csv / _summary.csv | [12] Bruit Matern spatialement corrélé | Tous types de bruit (i.i.d., Matern exp/Gauss) brisent la dead zone à eta=0.1+. Amplitude seule compte. | Confirmé, commit a8d6ba4 |
 | v4_dynamic_heretics_emergence.csv | V4 Dynamic Heretics | Loi linéaire t_first = steps_required + 130 * u_threshold (R²~1). Cascade quasi-inévitable pour u_thr <= 0.8. | Confirmé, commit 88b9983 |
 | exp_008_guerre_phases.png | Expérience 008 | La minorité organisée (15%) crée une oscillation perpétuelle à l'interface. | Confirmé (Shadow Lab) |
