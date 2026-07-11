@@ -1,0 +1,7 @@
+model,nrmse_mean,nrmse_std,n_seeds,source
+STNO_FULL,0.926240,0.053931,5,this_script
+STNO_FROZEN_U,0.920381,0.051627,5,this_script
+STNO_DECOUPLE,0.830817,0.015135,5,this_script
+ESN,0.362186,0.021246,5,b5_esn_comparison_20260708
+M4R_FULL,1.811032,0.287682,5,b5_esn_comparison_20260708
+M4R_DECOUPLE,1.646037,0.316811,5,b5_esn_comparison_20260708
