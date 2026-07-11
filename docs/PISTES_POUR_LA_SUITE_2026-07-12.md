@@ -103,14 +103,21 @@
   doute est exactement là (horizon inconnu, monde trompeur). Prérequis scientifique
   jamais mesuré non plus : **u est-il CALIBRÉ ?** (quand u_final=0.7, le réseau
   se trompe-t-il vraiment ~70 % du temps ?)
-- **Test minimal.** (a) Reliability diagram de u sur les tâches de décision
-  existantes (B1d : accuracy conditionnée à u_final, 10 bins) — si la courbe est
-  monotone, u est un estimateur de confiance utilisable. (b) Sélective prediction :
-  refuser de décider quand u > seuil → l'accuracy sur le reste doit monter plus vite
-  que le taux de refus (courbe risque-couverture vs baseline aléatoire). (c) Ensuite
-  seulement, le backtest 0 € du PEPIT_LOG (datasets préenregistrés, jamais d'argent réel).
-- **Effort.** (a)+(b) 🔜 1 session sur données existantes ; (c) 🧩. **Risque.** Si u
-  n'est pas calibré, le dire — un garde-fou mal calibré est pire que pas de garde-fou.
+- **✅ (a) FAIT le 12/07/2026, dans la foulée du legs** (`experiments/doubt_calibration_poc.py`,
+  commit `04ea50a`, 120 essais loyaux+piégés, confiance à budget fixe, critères pré-fixés).
+  **Verdict : u n'est PAS naïvement calibré — il est INVERSÉ** (r=−0.29 à B=800 : u haut
+  → 75-96 % de réussite, u bas → 42-54 %). **Le doute M4R détecte le CONFLIT, pas
+  l'erreur** — sous tromperie, le conflit = la vérité qui résiste, et le consensus
+  rapide est le suspect. Le fil rouge du projet, répliqué au niveau du signal de
+  confiance. Le capteur brut |Lv| à décision précoce PASSE, lui, le critère
+  (abstention@50 % : 89.2→100 %, +10.8 pts). ⚠️ Collatéral à trancher avant (b/c) :
+  l'accuracy globale se dégrade avec le budget (89→72→36 % de B=400 à 1600) — dérive
+  du readout différentiel ou sur-délibération réelle ?
+- **Reste.** (b) construire l'abstention avec le compas INVERSÉ (s'abstenir quand le
+  consensus est venu vite et sans conflit) + signal composite (u, |Lv|, temps) ;
+  (c) le backtest 0 € du PEPIT_LOG. **Effort.** (b) 🔜 1 session ; (c) 🧩.
+  **Risque.** L'inversion est mesurée sur UNE tâche (B1d) — vérifier qu'elle tient
+  sur une famille loyale avant d'en faire une règle.
 
 ### P7 — L'inducteur chimique de l'expérience 008 (le Labo a produit un mécanisme) 🧪
 - **Trace.** `_SHADOW_LAB\laboratoire_absurde\experience_008_v2_chemical_inductor.py`
