@@ -28,7 +28,11 @@ class Mem4ristorV3:
             'hysteresis': {'enabled': True, 'theta_low': 0.35, 'theta_high': 0.65,
                            'fatigue_rate': 0.0, 'base_hysteresis': 0.15},
             'consolidation_watchdog': {'enabled': False, 't_explore': 300,
-                                       't_consolidate': 400, 'u_sage': 0.05, 'u_fou': 0.9}
+                                       't_consolidate': 400, 'u_sage': 0.05, 'u_fou': 0.9},
+            # P10 (2026-07-12, accord explicite de Julien) : doute COMPLEXE opt-in.
+            # enabled=False par defaut => bit-a-bit identique a l'ancien coeur
+            # (test de non-regression dans tests/test_complex_doubt.py).
+            'complex_doubt': {'enabled': False, 'gamma_int': 0.15, 'omega_u': 0.0}
         }
 
         if config is None:
@@ -103,6 +107,9 @@ class Mem4ristorV3:
             self.w = self.rng.uniform(0.0, 1.0, self.N)
 
         self.u = np.full(self.N, self.cfg['doubt']['sigma_baseline'])
+        # P10 : etat complexe du doute (|u_c| = self.u, arg = direction).
+        # Toujours initialise (cout negligeable) ; jamais lu si complex_doubt off.
+        self.u_c = self.u.astype(complex)
 
         hr = self.cfg['coupling'].get('heretic_ratio', 0.15)
         if hr <= 0:
@@ -303,12 +310,19 @@ class Mem4ristorV3:
         epsilon_u_adaptive = self.cfg['doubt']['epsilon_u'] * np.clip(
             1.0 + alpha_s * sigma_social_safe, 1.0, self.cfg['doubt'].get('surprise_cap', 5.0)
         )
-        du = (epsilon_u_adaptive * (self.cfg['doubt']['k_u'] * sigma_social_for_u +
-              self.cfg['doubt']['sigma_baseline'] - self.u)) / self.cfg['doubt']['tau_u']
+        # P10 : fork opt-in du doute complexe. Chemin OFF = code historique intact.
+        complex_doubt_on = bool(self.cfg.get('complex_doubt', {}).get('enabled', False))
+        if not complex_doubt_on:
+            du = (epsilon_u_adaptive * (self.cfg['doubt']['k_u'] * sigma_social_for_u +
+                  self.cfg['doubt']['sigma_baseline'] - self.u)) / self.cfg['doubt']['tau_u']
 
         self.v += dv * self.dt
         self.w += (dw + dw_learning) * self.dt
-        self.u += du * self.dt
+        if complex_doubt_on:
+            self._step_complex_doubt(laplacian_v, sigma_social_for_u,
+                                     sigma_social_override, epsilon_u_adaptive)
+        else:
+            self.u += du * self.dt
 
         # Alarme de divergence : au lieu de cacher l'explosion, on l'annonce.
         if np.any(np.abs(self.v) > 100.0) or np.any(np.abs(self.w) > 100.0):
@@ -398,6 +412,74 @@ class Mem4ristorV3:
             if np.any(newly_heretic):
                 self.heretic_mask |= newly_heretic
                 self.dynamic_heretic_count += int(np.sum(newly_heretic))
+
+    def _step_complex_doubt(self, laplacian_v, sigma_social_for_u,
+                            sigma_social_override, epsilon_u_adaptive):
+        """P10 (2026-07-12, accord explicite de Julien) : le doute COMPLEXE.
+
+        |u_c| = intensite du doute -- reste self.u, la variable lue par tout le
+        reste du coeur (u_filter, hysteresis, ART, watchdog, heretics).
+        arg(u_c) = direction du doute. Trois ingredients :
+          1. Cible locale SIGNEE : k_u * laplacian_v + baseline -- la direction
+             naturelle du desaccord (au-dessus / en-dessous du consensus local),
+             la ou le chemin scalaire prend |laplacian_v| et detruit le signe.
+             Si sigma_social_override est fourni (hook d'ablation), on retombe
+             sur le module pur (un override n'a pas de signe).
+          2. INTERFERENCE sociale : gamma_int * (moyenne complexe des u_c des
+             voisins - u_c) -- le canal nouveau de P10 : deux doutes voisins de
+             directions opposees se neutralisent dans le champ social au lieu
+             de s'additionner (la genese, 11/07 : la moyenne complexe preserve
+             ce que la moyenne des modules detruit). Necessite _adj_matrix
+             (pose par Mem4Network.step, comme pour l'ART) ; sinon terme nul.
+          3. Rotation propre optionnelle omega_u (defaut 0.0 : u_c reste sur
+             l'axe reel, phases {0, pi} -- la porte vers les phases continues
+             de la genese est posee, pas encore ouverte).
+        Invariant restaure a CHAQUE pas : |u_c| adopte self.u en preservant la
+        phase (self.u peut avoir ete modifie par ART / watchdog / clip / guards
+        depuis le dernier pas). Ecrit self.u_c puis self.u = |u_c| (clamp du
+        module, phase preservee).
+        """
+        cd = self.cfg.get('complex_doubt', {})
+        gamma_int = float(cd.get('gamma_int', 0.15))
+        omega_u = float(cd.get('omega_u', 0.0))
+        k_u = self.cfg['doubt']['k_u']
+        baseline = self.cfg['doubt']['sigma_baseline']
+        tau_u = self.cfg['doubt']['tau_u']
+        u_hi = self.cfg['doubt']['u_clamp'][1]
+
+        if not hasattr(self, 'u_c') or np.shape(self.u_c) != np.shape(self.u):
+            self.u_c = self.u.astype(complex)
+        mag = np.abs(self.u_c)
+        safe = mag > 1e-12
+        phase = np.ones(self.N, dtype=complex)
+        phase[safe] = self.u_c[safe] / mag[safe]
+        self.u_c = self.u * phase
+
+        if sigma_social_override is not None:
+            signed_drive = np.clip(sigma_social_for_u, 0.0, 100.0)
+        else:
+            signed_drive = np.clip(laplacian_v, -100.0, 100.0)
+        target_c = k_u * signed_drive + baseline
+
+        adj = getattr(self, '_adj_matrix', None)
+        if adj is not None and gamma_int != 0.0:
+            deg = np.asarray(adj.sum(axis=1)).flatten()
+            deg_safe = np.where(deg > 0, deg, 1.0)
+            s_u = (adj @ self.u_c) / deg_safe
+            interference = gamma_int * (s_u - self.u_c)
+        else:
+            interference = 0.0
+
+        du_c = ((epsilon_u_adaptive * (target_c - self.u_c)) / tau_u
+                + interference / tau_u
+                + 1j * omega_u * self.u_c)
+        self.u_c = self.u_c + du_c * self.dt
+
+        mag = np.abs(self.u_c)
+        over = mag > u_hi
+        if np.any(over):
+            self.u_c[over] *= u_hi / mag[over]
+        self.u = np.abs(self.u_c)
 
     def solve_rk45(self, t_span, I_stimulus=0.0, adj_matrix=None):
         """
