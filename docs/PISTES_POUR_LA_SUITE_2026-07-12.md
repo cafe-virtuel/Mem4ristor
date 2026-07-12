@@ -67,12 +67,23 @@
   testé — et c'est peut-être la propriété la plus vendable du substrat : **u comme
   alarme d'entrée corrompue, sans entraînement supplémentaire** (le capteur de
   désaccord existe déjà dans la dynamique).
-- **Test minimal.** Séries d'entrées normales vs corrompues (bruit structuré, motifs
-  contradictoires injectés — réutiliser le générateur de tâches trompeuses de B1d) ;
-  tracer la courbe ROC de u_mean(réseau) comme score d'anomalie vs une baseline
-  simple (z-score de l'entrée). Si AUC(u) > AUC(baseline) : détection gratuite.
-- **Effort.** 🔜 1 session. **Risque.** u peut réagir au simple *volume* de nouveauté
-  plutôt qu'à la corruption — inclure un contrôle « nouveau mais propre ».
+- **❌ RÉFUTÉ le 12/07/2026 — et le sens est INVERSÉ, pour une raison qui boucle avec
+  le cœur du projet** (`experiments/p3_anomaly_detector_poc.py`, 100 épisodes
+  normal/corrompu/nouveau-propre, critères pré-fixés, baseline forte incluse).
+  **u(corrompu)=0.74 < u(normal)=0.84 < u(nouveau-propre)=0.96 → AUC=0.003.**
+  Mécanisme : le couplage **champ moyen** (celui-là même du 01/07) moyenne à zéro
+  les poussées contradictoires entre voisins — le réseau FILTRE la corruption
+  haute-fréquence au lieu de s'en alarmer, et son désaccord vit surtout aux bords
+  des réponses collectives fortes. « Le Fou sentira que quelque chose cloche » est
+  faux dans ce protocole : le Fou sent l'ampleur de la réponse structurée, pas
+  l'incohérence de l'entrée. Le garde-fou prévu s'est réalisé (u s'alarme au max
+  sur le nouveau-propre). La baseline forte (laplacien STATIQUE de l'entrée,
+  |L·x|) fait AUC 1.000/1.000 — trivialement meilleure. Prédiction pré-écrite
+  fausse à corriger : le z-score N'est PAS aveugle à la corruption (mu du train
+  > 0, le signe compte) mais confond bien nouveauté et corruption (novelty AUC=0).
+  Si on veut un jour une « alarme M4R », le candidat n'est PAS u-haut mais
+  éventuellement « réponse collective anormalement FAIBLE pour l'énergie d'entrée
+  reçue » (−u avait AUC 0.997 ici) — protocole-dépendant, à ne pas survendre.
 
 ### P4 — L'usure et le drift : la 5e imperfection (et le doute qui vieillit bien) ⏳
 - **Trace.** `D:\ANTIGRAVITY\Mem4ristor\MEM4_WEAR_MODULE.py` + `MEM4_WEAR_SIMULATION.py`
