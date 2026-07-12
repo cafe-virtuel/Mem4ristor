@@ -1,0 +1,6 @@
+rule,best_param_global,success_easy,success_trap,success_all,mean_stop_iter,mean_network_node_steps
+TOL,0.02,1.0,0.0,0.5,50.5,0.0
+PATIENCE,1600,1.0,1.0,1.0,2000.0,0.0
+FIXED,1600,1.0,1.0,1.0,1600.0,0.0
+M4R_U,(10; 0.7),1.0,1.0,1.0,1618.0,1618000.0
+M4R_SIG,(2; 0.5),1.0,0.0,0.5,72.20833333333333,14441.666666666666

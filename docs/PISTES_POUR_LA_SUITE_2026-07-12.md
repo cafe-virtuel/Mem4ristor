@@ -232,13 +232,27 @@
   UNIVERSEL (solveurs itératifs, chaînes MCMC, raffinement de réponses LLM,
   early-exit). Personne n'a testé le signal M4R comme critère d'arrêt d'un système
   TIERS.
-- **Test minimal.** Un solveur itératif jouet sur problèmes à difficulté variable
-  (certains convergent vite, d'autres ont des plateaux trompeurs) ; coupler le
-  résidu au réseau M4R en side-car, arrêter quand u retombe. Vs arrêt à tolérance
-  fixe et à budget fixe. Le side-car doit gagner sur la famille « plateaux trompeurs »
-  et ne pas perdre ailleurs — exactement le pattern déjà mesuré 3 fois.
-- **Effort.** 🔜 1-2 sessions. **Risque.** Le side-car ajoute un coût — le compter
-  honnêtement (leçon B1c : le doute sur-réfléchit quand c'est facile).
+- **✅ FAIT le 12/07/2026** (`experiments/p11_universal_stopping_poc.py`, 12 faciles +
+  12 trompeurs à plateau plat/rampes douces, hyperparamètre GLOBAL par règle, critères
+  pré-fixés, 3 lancements documentés — 2 recalibrations de structure : plateaux
+  d'abord pas assez profonds, puis enjambés par le pas discret). **Première fois que
+  le signal M4R arrête un système TIERS. Verdict en 4 lignes :**
+  1. La **tolérance naïve est piégée** (0.00 sur les trompeurs, tout seuil global) ;
+     le **capteur rapide |Lv| est piégé pareil** (proxy du résidu, prédit d'avance).
+  2. L'**early stopping standard (patience) est piégé** à K < durée de plateau, et
+     à K assez long (1600) il ne survit qu'en n'arrêtant JAMAIS (coût 2000 = budget
+     max déguisé).
+  3. **L'horloge u réussit 100 % partout** (easy et trap) : sa mémoire lente
+     analogique traverse les plateaux. Elle **bat TOL (+0.500 IC[+0.29,+0.71]) et
+     bat PATIENCE en coût à succès égal (1618 vs 2000)**.
+  4. Mais elle **égale le meilleur budget fixe (1618 vs 1600) — 4e réplication du
+     pattern B5b**, cette fois hors de M4R. Et le side-car n'est jamais gratuit :
+     ~1.6M nœuds-pas de réseau par problème, et u trop lent pour s'arrêter tôt sur
+     les faciles (pas d'adaptativité par problème sur cette grille — la leçon B1c
+     prédite s'est réalisée).
+  **La recette transportable** : ce qui traverse un plateau trompeur, c'est une
+  mémoire longue avec un seuil relatif au pic — u en est une implémentation
+  analogique ; sa supériorité sur la patience est son économie, pas sa capacité.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
