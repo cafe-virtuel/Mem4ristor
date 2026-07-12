@@ -25,12 +25,25 @@
   V5b (timeout + exploration forcée ε-greedy) n'a JAMAIS été implémentée. Le watchdog
   natif du cœur (commit `06cb6a9`, 07/07) résout le verrouillage FOU — mais personne
   n'a vérifié s'il immunise aussi contre l'étouffement SAGE.
-- **Test minimal.** Rejouer l'attaque d'Edison (oscillation contrôlée de σ_social dans
-  la bande morte) contre le cœur actuel avec `consolidation_watchdog` activé : le cycle
-  FOU↔SAGE survit-il à un adversaire qui pilote le désaccord ? Si non → implémenter le
-  timeout V5b dans le watchdog (3 lignes) et re-tester.
-- **Effort.** 🔜 1 session. **Risque.** Faible — c'est un test de sécurité, tout
-  résultat est une information.
+- **✅ FAIT le 12/07/2026** (`experiments/p1_edison_smothering_poc.py`, 4 conditions ×
+  5 seeds, 12 000 pas, critères pré-fixés ; lancement 1 à 3000 pas invalidé par le
+  pré-fixé lui-même — la dynamique de u est lente, τ_eff ≈ 3000-5000 pas, u n'avait
+  pas encore atteint la bande morte). **Trois verdicts :**
+  1. **L'attaque d'Edison est RÉELLE sur le cœur actuel** : σ(t)=0.45+0.10·sin(2πt/200)
+     maintient u dans la bande morte, le Fou n'est JAMAIS activé (12 000 pas, 5/5
+     seeds), pendant que le contrôle honnête (σ=1.0) bascule FOU à t≈3055. Le
+     verrouillage SAGE prédit en février est reproduit au code d'aujourd'hui.
+  2. **La défense « fatigue » dormante (fatigue_rate, présente depuis V4) n'immunise
+     PAS** — son clamp arrête les seuils effectifs à 0.5 et l'adversaire vise juste
+     dessous (u filtré passe-bas ≈ 0.50 exactement). Elle RÉTRÉCIT la bande exploitable
+     ([0.35, 0.65] → [0.35, 0.5)) sans l'éliminer.
+  3. **Le watchdog natif du 07/07 IMMUNISE : la V5b d'Edison n'a plus besoin d'être
+     implémentée.** Kick à t=701 (comme calculé), u forcé à 0.9 ≥ θ_high → FOU, et
+     l'hystérésis MAINTIENT le mode FOU toute l'exploration (u redescend vers 0.5 mais
+     reste > θ_low=0.35) : fou_frac = 0.41 sous attaque adverse continue (≈ t_explore/
+     cycle, la valeur théorique). Aucune modification du cœur nécessaire.
+  Note : sous override, u est déterministe (identique entre seeds) — la variabilité
+  des seeds ne porte que sur le bruit de v, qui ne touche pas le trigger.
 
 ### P2 — Le MoE par certitude : M4R comme routeur physique ⚡
 - **Trace.** `D:\ANTIGRAVITY\Mem4ristor\MEM4_MOE_CONCEPT.md` + `MEM4_MOE_*.py`
