@@ -113,11 +113,35 @@
   (abstention@50 % : 89.2→100 %, +10.8 pts). ⚠️ Collatéral à trancher avant (b/c) :
   l'accuracy globale se dégrade avec le budget (89→72→36 % de B=400 à 1600) — dérive
   du readout différentiel ou sur-délibération réelle ?
-- **Reste.** (b) construire l'abstention avec le compas INVERSÉ (s'abstenir quand le
-  consensus est venu vite et sans conflit) + signal composite (u, |Lv|, temps) ;
-  (c) le backtest 0 € du PEPIT_LOG. **Effort.** (b) 🔜 1 session ; (c) 🧩.
-  **Risque.** L'inversion est mesurée sur UNE tâche (B1d) — vérifier qu'elle tient
-  sur une famille loyale avant d'en faire une règle.
+- **✅ (b) FAIT le 12/07/2026, même session** (`experiments/p6b_abstention_poc.py`,
+  mêmes 120 essais, labels reconstruits au readout LISSÉ, composite en validation
+  croisée groupée par seed, critères pré-fixés). **Trois verdicts :**
+  1. **Le collatéral est TRANCHÉ : artefact de readout, pas sur-délibération.**
+     La réponse FHN à un courant constant est ADAPTATIVE (transitoire +3.2/nœud
+     sur les leurres, puis rebond sous la baseline en ~300-400 pas) et le signal
+     en régime (~−0.03) est de l'ordre du bruit de décorrélation net/ref (±0.05) :
+     la lecture instantanée de P6a donnait des labels à moitié aléatoires.
+  2. **L'« inversion » de P6a NE TIENT PAS sur labels propres** (r(u)=+0.12 vs
+     r(1−u)=−0.12 à B=800, aucun ne passe le seuil 0.15) — elle était gonflée par
+     les labels bruités. La vérité plus fine : u marche dans le sens NAÏF à budget
+     court (r=+0.74 à B=400 : conflit = piège actif), et seul il n'est plus un
+     compas à budget moyen. La lignée se corrige elle-même — c'est le but.
+  3. **La Couche d'Abstention EXISTE et elle est forte** : composite (u, |Lv|,
+     t_consensus, stabilité) en CV : **+38.3 pts à B=400 (46.7→85.0 %) et
+     +25.0 pts à B=800 (68.3→93.3 %) à 50 % de couverture** ; +22.1 pts à 70 %.
+     **L'intuition qualitative de Julien est validée en isolation : « un consensus
+     venu vite est suspect » (t_consensus) donne à lui seul r=+0.45 et +16.7 pts
+     à B=800.** Limite honnête : à B=1600 les labels eux-mêmes restent corrompus
+     (décorrélation lente) — aucun compas ne compense un label pourri ; le readout
+     long-budget de la tâche B1d-FHN est un problème ouvert.
+  ⚠️ Réserve de propagation : les POCs antérieurs B1d/B5b (07-08/07) utilisaient le
+  readout INSTANTANÉ — leurs comparaisons *relatives* entre règles d'arrêt (mêmes
+  traces) restent probablement robustes, mais leurs accuracies absolues sont
+  bruitées. Une re-vérification au readout lissé serait saine avant toute citation.
+- **Reste.** (c) le backtest 0 € du PEPIT_LOG (paris/LLM/investissement virtuel),
+  avec le compas COMPOSITE (pas u seul). **Effort.** 🧩.
+  **Risque.** Compas mesuré sur UNE tâche (B1d) — le composite doit être re-appris
+  par domaine ; ne transporter que la recette (signaux + CV), pas les poids.
 
 ### P7 — L'inducteur chimique de l'expérience 008 (le Labo a produit un mécanisme) 🧪
 - **Trace.** `_SHADOW_LAB\laboratoire_absurde\experience_008_v2_chemical_inductor.py`

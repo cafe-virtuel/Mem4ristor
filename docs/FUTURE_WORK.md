@@ -581,6 +581,28 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   anti-effondrement, pas seulement meilleur que la pathologie nue.
 - **Effort.** 💭→🧩 selon la marche.
 
+### D3 — Couche d'Abstention Calibrée (idée de Julien, PEPIT 11/06) ✅ (a)+(b) FAITS (12/07/2026), compas composite validé
+- **Pourquoi.** « Ne décide pas, décide quand ne pas décider » : u au-dessus d'un modèle
+  prédictif quelconque. Prérequis jamais mesuré : u est-il calibré ?
+- **✅ (a) Calibration (12/07)** — `experiments/doubt_calibration_poc.py` (commit `04ea50a`) :
+  u n'est pas naïvement calibré ; verdict initial « inversé » (r=−0.29 à B=800).
+- **✅ (b) Abstention (12/07, même session)** — `experiments/p6b_abstention_poc.py` :
+  le collatéral de (a) est tranché — **artefact de readout** (réponse FHN adaptative :
+  transitoire fort puis rebond sous baseline ; signal en régime ~−0.03 vs décorrélation
+  net/ref ±0.05 → labels instantanés à moitié aléatoires). Labels reconstruits au readout
+  LISSÉ (W=200) : **l'« inversion » de (a) ne tient pas** (r(u)=+0.12 à B=800) — u seul
+  n'est pas un compas ; il marche dans le sens naïf à budget court (r=+0.74 à B=400).
+  **La Couche d'Abstention, elle, existe : composite (u, |Lv|, t_consensus, stabilité)
+  en validation croisée groupée par seed : +38.3 pts à B=400 (46.7→85.0 %) et +25.0 pts
+  à B=800 (68.3→93.3 %) à 50 % de couverture.** L'intuition de Julien « un consensus venu
+  vite est suspect » validée en isolation (t_consensus : r=+0.45, +16.7 pts à B=800).
+  Limite : à B=1600 les labels restent corrompus (décorrélation lente) — readout
+  long-budget = problème ouvert. ⚠️ Réserve de propagation : B1d/B5b (07-08/07) utilisaient
+  le readout instantané ; comparaisons relatives probablement robustes, accuracies absolues
+  bruitées — re-vérification au readout lissé saine avant citation.
+- **Reste.** (c) le backtest 0 € (paris préenregistrés / réponses LLM / investissement
+  virtuel) avec la RECETTE composite (signaux + CV), pas les poids. **Effort.** 🧩.
+
 ---
 
 ## Dépendances rapides
