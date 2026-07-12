@@ -241,13 +241,32 @@
   doute, couplage des doutes voisins par moyenne complexe (interférence).
   Hypothèse : le réseau gagne une mémoire de phase — deux nœuds également douteux
   mais « en désaccord de direction » ne se neutralisent plus en moyenne floue.
-- **Test minimal.** Fork opt-in de la dynamique u (flag config, bit-à-bit identique
-  OFF, comme le watchdog) ; re-jouer l'ablation canonique + une tâche où le
-  *contexte* compte (la parité du jouet genèse portée en stimulus FHN). Comparer
-  u-scalaire vs u-complexe à coût égal.
-- **Effort.** 🧩 2-3 sessions (toucher au cœur = accord explicite de Julien +
-  non-régression bit-à-bit). **Risque.** C'est le pari le plus spéculatif — mais
-  c'est la genèse qui rentre à la maison par la porte de la mesure.
+- **✅ V1 AU CŒUR le 12/07/2026, avec l'accord explicite de Julien** (commit du cœur :
+  `_step_complex_doubt` dans dynamics.py, opt-in `complex_doubt.enabled=False` par
+  défaut, **bit-à-bit identique éteint** — 5 tests dédiés dont l'interférence
+  destructive unitaire, suite 128 passed + 2 xfail, Guardian 14/14 après le commit).
+  Contenu V1 : cible locale SIGNÉE (k_u·Lv au lieu de k_u·|Lv|), interférence
+  sociale (γ_int·(moyenne complexe des u_c voisins − u_c)), porte ω_u posée
+  (rotation, défaut 0 → phases {0, π}). POC : `experiments/p10_complex_doubt_poc.py`.
+  **Deux verdicts francs :**
+  1. **La capacité nouvelle EXISTE — mémoire directionnelle dans la phase** :
+     après un pulse signé, Re(u_c) décode la direction à 100 % (D≤200 pas), puis
+     0.85-0.95 de D=900 à 2400 pas (~12 τ_u) — pendant que le u scalaire est au
+     hasard dès D=400 (0.53) et que v oscille et s'estompe (0.72). Fenêtre aveugle
+     D=400-600 (le rebond adaptatif FHN inverse transitoirement la cible — la
+     dynamique du rebond est à caractériser). Convention de signe documentée :
+     b est gravé en −Re(u_c[stim]) (le désaccord laplacien d'un nœud au-dessus
+     du consensus est négatif).
+  2. **Le coût est réel et EXPLIQUÉ — critère d'ablation ÉCHOUÉ tel quel** :
+     sync(COMPLEX)=0.35 > 0.5·sync(FROZEN)=0.28 (scalaire : 0.25). Cause double,
+     mesurée par ablation γ_int=0 (0.32) : l'interférence ET la cible signée.
+     Racine mathématique : par Jensen, |filtré(signé)| ≤ filtré(|signé|) — le
+     doute complexe est structurellement plus PETIT que le scalaire → couplage
+     plus attractif. **La mémoire directionnelle se paie en anti-synchronisation.**
+- **Reste (la marche suivante).** ω_u > 0 + lecture globale de phase → la parité
+  multiplicative du jouet genèse (une dynamique relaxante à phases {0, π} ne peut
+  pas la porter, documenté dans le POC) ; caractériser le rebond D=400-600 ;
+  explorer le compromis γ_int (mémoire vs anti-sync). **Effort.** 🧩 1-2 sessions.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
