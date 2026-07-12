@@ -429,8 +429,35 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   NRMSE=1.0 (reservoir UTILE dans l'absolu)** — la physique du substrat compte plus que le
   mécanisme sur cette tâche. (4) L'ESN reste devant (+0.56). Contexte littérature :
   Torrejon 2017 / Romera 2018 (protocoles différents, single-node time-multiplexé — assumé
-  dans la docstring). Reste éventuel : la tâche trompeuse B1d sur ce substrat (le terrain
-  du doute), 💭 1 session.
+  dans la docstring). ~~Reste éventuel : la tâche trompeuse B1d sur ce substrat (le terrain
+  du doute), 💭 1 session.~~
+- **✅ Tâche trompeuse B1d sur substrat STNO FAITE (12/07/2026, piste P12 du legs)** —
+  `experiments/b1d_stno_deceptive_poc.py` (12 seeds × 4 T_pulse × 2 substrats, règles
+  d'arrêt à hyperparamètre GLOBAL, critères pré-fixés, 5 lancements documentés dans la
+  docstring — 2 recalibrations de STRUCTURE avant de comparer quoi que ce soit). **Trois
+  faits physiques, aucun n'est celui qu'on espérait :**
+  1. **Le piège B1d ne se lit pas naïvement sur ce substrat** : le couplage entre
+     oscillateurs désaccordés est une dissipation (~K·u_filter≈0.27 comparable au gain net
+     0.2) → le réseau couplé vit sous le seuil effectif, jamais à l'équilibre en 6000 pas ;
+     et la lecture différentielle contre un réseau de référence sans stimulus confond
+     « doute monté » avec « évidence positive » (cicatrice u). Réparé loyalement par un
+     readout en **paire différentielle** (+stim/−stim, même bruit) : 100 % de bascule sur
+     FROZEN, tâche loyale.
+  2. **La cicatrice u RETARDE la sortie de tromperie** : flip FULL = 5275 pas vs FROZEN =
+     3467 (+52 % ; +~2500 pas ≈ 1.25 τ_u aux pulses longs ; à T_pulse=4500, 2/12 problèmes
+     ne basculent plus dans le budget 9000). Le conflit fait monter u → couplage coupé →
+     la trace du leurre se verrouille au lieu de s'effacer. **Sur STNO, le doute-dans-la-
+     dynamique est un handicap pour la décision trompeuse** (avec le capteur calibré
+     gain=10 du 09/07 ; dépendance au gain non balayée).
+  3. **L'horloge de délibération de B5b ne se transpose PAS** : |S| aveugle (désaccord de
+     phase permanent), |L·p| fond permanent (chute de 12 % seulement), u aveugle (piloté
+     par |S|), et même le désaccord d'évidence entre les bras de la paire (lissé court ou
+     long) ne bat pas le budget fixe (DOUBT_PAIRL s'arrête réellement sur FROZEN aux longs
+     pulses, 7631 pas en moyenne, mais FIXED global fait 6600 à accuracy égale 1.00).
+     **Le pattern conditionnel gagne une dimension : la valeur du doute dépend du SUBSTRAT,
+     pas seulement de la tâche** — sur FHN (contractant, le désaccord retombe à la
+     résolution) l'horloge est gratuite ; sur STNO (oscillant, bruité, désaccord permanent)
+     elle est noyée et le meilleur arrêt reste le budget fixe.
 
 ### B6 — Prédiction falsifiable / signature expérimentale 🟢 appuyée par un résultat en silico (09/07/2026)
 - **Pourquoi.** Tout est auto-référentiel (H, sync, MI calculés sur le même v(t) simulé).
@@ -471,6 +498,16 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   favorise avant d'attendre une réduction de `R` plutôt que de `R2`. La prédiction reste
   falsifiable, mais sa formulation exacte (quel paramètre d'ordre observer) dépend du canal
   de couplage physique choisi — à préciser avant toute campagne expérimentale réelle.
+- **⚠️ Nuancé le 12/07/2026 par P12 (tâche trompeuse B1d sur STNO, cf. B5)** : au niveau
+  de la DÉCISION (pas de la synchronisation), le couplage modulé par le désaccord
+  **retarde** la récupération post-leurre (+52 % de temps de flip vs couplage figé) au
+  lieu de l'améliorer. La prédiction falsifiable B6 gagne donc un **second volet,
+  au signe inversé et tout aussi testable** : « dans un réseau de STNO à couplage
+  modulé par le désaccord, la synchronisation est réduite (volet 1, confirmé sur 3
+  modèles) ET la récupération après un leurre transitoire est retardée d'environ τ_u
+  par rapport au même réseau à couplage fixe (volet 2, P12) ». Un labo qui mesurerait
+  une récupération plus RAPIDE réfuterait le volet 2. Ne pas vendre B6 comme « le doute
+  améliore les décisions du dispositif » — ce n'est pas ce que la simulation dit.
 - **Reste (🧩).** Non testé en circuit réel ni en micromagnétisme spatial complet
   (texture de vortex résolue, mumax3, ou modèle de Thiele) — palier explicitement
   reporté par Julien à une décision séparée (nécessite d'installer mumax3/CUDA, campagnes

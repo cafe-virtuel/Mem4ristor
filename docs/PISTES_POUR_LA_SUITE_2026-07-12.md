@@ -193,12 +193,20 @@
   LÀ sur le substrat physique, la proposition falsifiable B6 devient complète :
   « un réseau de STNO à couplage modulé par le désaccord prend de meilleures
   décisions sous tromperie » — testable par un labo avec son matériel existant.
-- **Test minimal.** Porter le protocole B1d (leurre pulsé/vérité persistante) sur
-  le modèle Slavin-Tiberkevich du 11/07 (readout puissance). Déjà noté au backlog —
-  je le répète ici parce que c'est MON premier choix pour la suite.
-- **Effort.** 🔜 1 session (tout existe). **Risque.** Aucun de méthode ; le résultat
-  peut être négatif (le substrat oscillant change l'horloge du doute) — information
-  quand même.
+- **✅ FAIT le 12/07/2026, dans la foulée du legs** (`experiments/b1d_stno_deceptive_poc.py`,
+  12 seeds × 4 T_pulse × 2 substrats, critères pré-fixés, 5 lancements documentés).
+  **Le risque annoncé s'est réalisé, en plus intéressant : le résultat est négatif
+  DEUX fois, et informatif trois fois.** (1) Le doute-dans-la-dynamique RETARDE la
+  sortie de tromperie (+52 % de temps de flip FULL vs FROZEN — la « cicatrice u » :
+  le conflit coupe le couplage et verrouille la trace du leurre). (2) L'horloge de
+  délibération (la niche B5b) ne se transpose pas : tous les signaux internes sont
+  noyés par le désaccord permanent du substrat oscillant ; le meilleur arrêt reste le
+  budget fixe. (3) En chemin, deux faits physiques : le couplage désaccordé est une
+  dissipation qui met le réseau sous le seuil effectif, et la lecture différentielle
+  loyale exige une paire ±stim (le readout net-vs-référence confond doute et
+  évidence). **B6 reformulée en deux volets (cf. FUTURE_WORK.md) — le volet décision
+  a le signe INVERSE de la promesse initiale.** La valeur du doute dépend du
+  SUBSTRAT, pas seulement de la tâche.
 
 ### P13 — La hiérarchie de doute : qui doute des douteurs ? 🏛️
 - **Pourquoi.** Toute la science M4R est à UN niveau. Or l'écosystème entier de
