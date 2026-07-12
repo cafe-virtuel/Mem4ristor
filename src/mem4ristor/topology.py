@@ -229,7 +229,18 @@ class Mem4Network:
     def get_spectral_gap(self) -> float:
         if self.use_stencil:
             return 0.0
+        # Safety guard (2026-07-12, P5a — Planck Wall report, attack 1):
+        # eigh/eigsh below ASSUME a symmetric Laplacian. On a directed graph
+        # the result would be silently wrong (809% error demonstrated in
+        # PLANCK_WALL_REPORT.md). Refuse loudly instead of lying quietly.
+        # No-op on every graph the project currently builds (all undirected).
         if self._is_sparse:
+            if (self.L != self.L.T).nnz != 0:
+                raise ValueError(
+                    "get_spectral_gap: Laplacian is not symmetric (directed "
+                    "graph?). eigsh assumes symmetry and would return a "
+                    "silently wrong value. Use scipy.linalg.eig on the full "
+                    "matrix and define which spectral quantity you mean.")
             try:
                 from scipy.sparse.linalg import eigsh as sparse_eigsh
                 vals = sparse_eigsh(self.L.astype(float), k=2, which='SM', return_eigenvectors=False)
@@ -237,6 +248,12 @@ class Mem4Network:
             except Exception:
                 return 0.0
         else:
+            if not np.allclose(self.L, np.asarray(self.L).T):
+                raise ValueError(
+                    "get_spectral_gap: Laplacian is not symmetric (directed "
+                    "graph?). eigh assumes symmetry and would return a "
+                    "silently wrong value. Use scipy.linalg.eig on the full "
+                    "matrix and define which spectral quantity you mean.")
             from scipy.linalg import eigh
             vals = eigh(self.L, eigvals_only=True)
             return vals[1] if len(vals) > 1 else 0.0

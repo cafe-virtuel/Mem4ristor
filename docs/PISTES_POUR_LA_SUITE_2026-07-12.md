@@ -88,11 +88,16 @@
   réelle : tous les résultats M4R (dead zone, champ moyen, k_harm) vivent en NON-dirigé,
   alors que les réseaux d'intérêt (neurones, influence sociale) sont dirigés — et le
   désaccord perçu y devient **asymétrique** (je te lis, tu ne me lis pas).
-- **Test minimal.** (a) Garde-fou immédiat : assert de symétrie ou bascule `eig`
-  complet dans `topology.py` (30 min). (b) Science : lattice/BA dirigés (chaque
-  arête garde un seul sens), re-mesurer dead zone et ablation FROZEN_U — quel degré
-  gouverne le champ moyen (entrant ? harmonique entrant ?). Prédiction à écrire avant.
-- **Effort.** (a) trivial ; (b) 🔜 1-2 sessions. **Risque.** Faible ; le cadre
+- **✅ (a) FAIT le 12/07/2026** : garde-fou de symétrie dans `get_spectral_gap`
+  (`topology.py`, branches dense ET sparse) — un Laplacien non symétrique lève
+  désormais une `ValueError` explicite au lieu de retourner une valeur
+  silencieusement fausse. No-op vérifié sur les graphes actuels (test de
+  non-régression avec valeur de référence indépendante + test du refus,
+  `tests/test_directed_guard.py` ; suite complète 123 passed + 2 xfail).
+- **Reste.** (b) Science : lattice/BA dirigés (chaque arête garde un seul sens),
+  re-mesurer dead zone et ablation FROZEN_U — quel degré gouverne le champ moyen
+  (entrant ? harmonique entrant ?). Prédiction à écrire avant.
+- **Effort.** (b) 🔜 1-2 sessions. **Risque.** Faible ; le cadre
   champ-moyen du 01/07 donne la grille de lecture d'avance.
 
 ### P6 — La Couche d'Abstention Calibrée (l'idée de Julien, backtest à 0 €) 🎯
