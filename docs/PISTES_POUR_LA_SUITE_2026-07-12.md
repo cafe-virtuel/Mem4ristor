@@ -195,10 +195,33 @@
   « Euler formellement instable mais validé empiriquement » + interdiction
   RK45+bruit (`dynamics.py`). Lever cette réserve ferme définitivement la porte du
   reviewer numérique.
-- **Test minimal.** Bruit d'Ornstein-Uhlenbeck à τ court interpolé, RK45 dessus,
-  comparer aux résultats Euler canoniques (Table 1, ablation) à τ→0.
-- **Effort.** 🔜 1 session technique. **Risque.** Changer le bruit change les chiffres
-  (leçon AUDIT-024 !) — c'est une VALIDATION croisée, jamais un remplacement silencieux.
+- **🟡 FAIT AUX TROIS QUARTS le 12/07/2026** (`experiments/p8_colored_noise_rk45_poc.py`,
+  bruit OU exact interpolé calibré à même densité spectrale S(0)=σ_v², RHS répliqué
+  depuis `solve_rk45` du cœur avec **gate de fidélité 6×10⁻¹⁵**, τ ∈ {0.4, 0.1,
+  0.025, 0.00625}, 4 seeds, FULL/FROZEN, critères pré-fixés ; périmètre = la
+  dynamique réduite que le cœur lui-même déclare intégrable par RK45, PAS le
+  pipeline step() complet ; aucun chiffre canonique touché). **Verdict :**
+  1. **H_cont converge exactement** : RK45+OU(τ=0.00625) = 1.6214 vs Euler+blanc
+     1.6223 en FULL (dH=−0.0009, bien dans 2sd) ; idem FROZEN. L'observable de la
+     famille Table 1 ne dépend ni de la couleur du bruit ni de l'intégrateur.
+  2. **La sync du réseau VIVANT converge monotonement** (0.121→0.093→0.079→0.077
+     vs 0.072) mais garde un résidu **+6.6 %** au τ le plus fin — le critère strict
+     (2sd inter-seeds = 0.0018, très serré) n'est PAS atteint. Bruit additif ⇒
+     Itô=Stratonovich, la convergence exacte est attendue théoriquement ; la
+     fermeture demanderait τ ≤ 0.0016 (coût ×4 par étape) ou une analyse d'ordre.
+  3. **L'ablation centrale survit dans les 18 configurations** (sync FROZEN >
+     FULL partout) — le résultat central est robuste à tout ce qui a été varié.
+  4. **Fait quantifié en passant** : Euler à dt=0.05 sur un bruit τ<dt est
+     ALIASÉ (H_cont 2.25 au lieu de 1.62 !) — un intégrateur à pas fixe déforme
+     un bruit plus rapide que son pas ; c'est exactement l'artefact que la
+     réserve craignait, et il vit du côté « bruit trop rapide », pas du côté
+     des paramètres canoniques (τ_blanc effectif = dt).
+  Sensibilité réelle découverte : le réseau vivant (FULL) est sensible à la
+  couleur du bruit (τ=0.4 : sync +65 %) — le gelé non. À retenir pour le hardware
+  (le bruit physique n'est jamais blanc).
+- **Reste.** Fermer le résidu sync-FULL (τ plus fin ou ordre de convergence) ;
+  étendre au pipeline step() complet (hysteresis/plasticité) si la Table 1 doit
+  un jour être certifiée RK45. **Effort.** 🧩.
 
 ### P9 — Visualisation des flux d'entropie (le TODO le plus ancien) 📊
 - **Trace.** Roadmap V5 point 6 (jamais fait) + reco Manus 3. Voir la décision se
