@@ -475,6 +475,51 @@
   crosstalk (Partie 2). Encore une instance du fil rouge du projet : un
   mecanisme n'aide pas dans l'absolu, il aide **quand les choses se
   compliquent**.
+- **ROTATION PAR GROUPE / GAMMA_INT REPARE LE CROSSTALK, FAIT le 13/07/2026,
+  meme jour** (`experiments/p10_gamma_int_crosstalk_poc.py`, accord de
+  Julien : « oui continuons svp »). Relie deux fils de la meme journee : ce
+  matin, `p10_next_steps_poc.py` avait trouve gamma_int=0 (interference
+  sociale coupee) MEILLEUR que le defaut 0.15 pour la memoire a UN SEUL
+  pulse (memoire egale, anti-sync meilleur). Le crosstalk mesure cet
+  apres-midi passe-t-il PAR ce meme canal ? Sweep gamma_int in
+  {0, 0.05, 0.15 (defaut), 0.3, 0.5}, D=1200, omega_B=0, readouts
+  INTERFERENCE et VOTE en parallele. **Reponse nette : OUI.**
+
+  | gamma_int | solo A (int/vote) | A+B actif (int/vote) | crosstalk (int/vote) |
+  |---|---|---|---|
+  | **0.0**   | 0.925 / 0.925 | 0.958 / 0.896 | **+0.033 / -0.029** (nul) |
+  | 0.05      | 0.950 / 0.975 | 0.854 / 0.771 | -0.096 / -0.204 |
+  | 0.15 (def)| 0.900 / 0.925 | 0.812 / 0.729 | -0.088 / -0.196 |
+  | 0.3       | 0.825 / 0.900 | 0.750 / 0.771 | -0.075 / -0.129 |
+  | 0.5       | 0.850 / 0.800 | 0.750 / 0.688 | -0.100 / -0.113 |
+
+  - **gamma_int=0 est le SEUL point ou A+B actif n'est pas degrade par
+    rapport a A seul** (les deux readouts s'accordent : crosstalk quasi nul,
+    la ou TOUT gamma_int>0 teste montre une degradation systematique et
+    reproductible ~-0.08 a -0.20 pts). Confirme mecaniquement l'hypothese :
+    gamma_int (moyenne complexe des u_c VOISINS, y compris inter-groupes
+    sur le lattice) est bien le canal par lequel un groupe actif perturbe
+    son voisin -- pas le couplage spatial direct v/w, qui reste identique
+    a tout gamma_int.
+  - **Troisieme confirmation independante que gamma_int=0 domine le defaut
+    0.15 pour un usage memoire** (apres la memoire seule et l'anti-sync
+    ce matin) : ici, en plus d'annuler le crosstalk, la parite VOTE bondit
+    de 0.542 (defaut) a 0.729 (gamma=0) -- la lecture la plus fragile est
+    celle qui beneficie le plus de couper le canal qui la corrompait.
+    Parite INTERFERENCE : 0.812 -> 0.854, amelioration reelle mais plus
+    modeste (le readout deja robuste avait moins a gagner).
+  - **Reserve.** gamma_int=0 desactive ENTIEREMENT le canal d'interference
+    sociale de P10 (le "canal nouveau" introduit le 12/07) -- ce n'est pas
+    un reglage fin, c'est l'eteindre. Cela n'invalide pas P10 V1 (la memoire
+    directionnelle de base ne depend pas de gamma_int), mais suggere que
+    le couplage social entre doutes voisins, tel qu'implemente, est un
+    COUT net pour toute tache de memoire/multiplexage testee a ce jour
+    (single-pulse ce matin, crosstalk cet apres-midi) -- sa valeur reste a
+    trouver ailleurs (peut-etre la synchronisation/consensus, jamais
+    testee comme benefice direct de gamma_int>0).
+  **Marche suivante possible (non tentee) :** re-tester la separation de
+  frequence (omega_B>0) A gamma_int=0 -- p10_group_rotation_poc.py l'avait
+  refutee au defaut 0.15, jamais essayee sur un canal deja assaini.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
