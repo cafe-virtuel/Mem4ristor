@@ -60,6 +60,20 @@
 - **Effort.** 🔜 1-2 sessions (tout existe : substrat, tâches, harness).
   **Risque.** Le seuil d'escalade est un hyperparamètre — le calibrer par validation,
   sinon on refait le piège du budget fixe à l'envers.
+- **🟡 FAIT AUX TROIS QUARTS le 13/07/2026** (`experiments/p2_moe_certainty_router_poc.py`,
+  tâche B1d canonique + compas COMPOSITE de P6b réutilisés tels quels, split
+  CALIB=18 seeds/HOLDOUT=6 seeds pour éviter exactement le piège annoncé, sweep
+  rho=coût_coûteux/B_cheap ∈ {2..100}, critère pré-fixé : domine ALWAYS-CHEAP en
+  accuracy ET ALL-EXPENSIVE en coût à accuracy≥90 % sur HOLDOUT jamais vu au choix
+  du seuil). **Le mécanisme est réel et stable, mais plafonne sous la barre
+  auto-imposée.** Sur le split original : HOLDOUT acc=86.7 % (cible 90 %), domine
+  ALWAYS-CHEAP de +46.7 pts (86.7 vs 40.0 %) et bat ALL-EXPENSIVE en coût à tout
+  ratio ≥2. **Contrôle de robustesse (9 splits aléatoires indépendants)** :
+  accuracy HOLDOUT stable à 87.0 %±2.9 pts, bat ALWAYS-CHEAP dans 9/9 cas, mais
+  n'atteint la cible 90 % que dans 2/9 — un plafond REPRODUCTIBLE, pas un artefact
+  d'échantillonnage. Le routage par certitude fonctionne (le signal composite de
+  P6b transporte hors de son harness d'origine) ; le critère à 90 % était sévère
+  et n'est pas atteint tel quel.
 
 ### P3 — Le détecteur d'anomalies gratuit (résilience adversariale) 🛡️
 - **Trace.** Section « Résilience » de `MEM4_MOE_CONCEPT.md` : « si le Sage est dupé
@@ -101,6 +115,24 @@
 - **Effort.** 🔜 1-2 sessions (patron du quatuor réutilisable tel quel).
   **Risque.** Choisir ν et l'échelle de temps honnêtement (littérature GST), sinon
   résultat cosmétique.
+- **❌ RÉFUTÉ le 13/07/2026** (`experiments/p4_wear_drift_poc.py`, extension du
+  quatuor photonique 12/06 avec drift multiplicatif (t/t_ref)^(-ν) sur la
+  transmission GST ET sur D_eff (proxy RRAM), ν∈{0.05, 0.10} plage littérature
+  PCM (Ielmini & Lacaita 2008), elapsed_hours 1→10⁶, ablation FULL/FROZEN_U
+  standard du projet, critère pré-fixé : FULL dévie plus tard que FROZEN_U à
+  m=3). **PAS DE VIEILLISSEMENT GRACIEUX — c'est l'inverse qui est vrai.** À
+  m=3 (fonctionnel), FULL dévie PLUS TÔT que FROZEN_U aux deux ν testés
+  (ν=0.05 : FULL h=100 vs FROZEN_U h=10 000 ; ν=0.10 : FULL h=10 vs FROZEN_U
+  h=100). Mécanisme identifié : le doute adaptatif RÉAGIT au drift — H_cont
+  dérive de façon monotone et croissante avec les heures écoulées (+0.24 à
+  +0.62 bits à h=10⁶) — alors qu'un u figé maintient un filtre de couplage
+  constant et voit sa dérive de H_cont rester contenue plus longtemps, avant
+  d'être finalement rattrapé par la désynchronisation (dsync jusqu'à −0.65 à
+  h=10⁶). Nuance à ne pas survendre : à m=5 (dead zone) et ν=0.10, le sens
+  s'inverse (FULL dévie à h=100, FROZEN_U à h=10) — hors du critère pré-fixé
+  (qui ciblait m=3). Résultat négatif honnête : l'adaptation du doute
+  n'amortit pas le vieillissement lent en régime fonctionnel, elle
+  l'AMPLIFIE.
 
 ### P5 — M4R sur graphes DIRIGÉS (et la mine `eigh` à désamorcer) ➡️
 - **Trace.** `D:\ANTIGRAVITY\Mem4ristor\Claude mur de planck\PLANCK_WALL_REPORT.md`
@@ -123,6 +155,28 @@
   (entrant ? harmonique entrant ?). Prédiction à écrire avant.
 - **Effort.** (b) 🔜 1-2 sessions. **Risque.** Faible ; le cadre
   champ-moyen du 01/07 donne la grille de lecture d'avance.
+- **✅ (b) FAIT le 13/07/2026** (`experiments/p5b_directed_graphs_poc.py`,
+  conversion lattice/BA en dirigés — convention vérifiée dans le code même
+  (`_rebuild_laplacian`) : A[i,j]=1 signifie "i écoute j" —, test contrastif
+  HUBS_LISTEN vs HUBS_BROADCAST à topologie fixée + corrélation globale
+  k_harm_in/k_harm_out vs H_cont sur 150 runs dirigés, ablation FROZEN_U/FULL,
+  vérification du garde-fou P5a). **Prédiction confirmée sur le fond, réfutée
+  sur le mécanisme anticipé.** Corrélation globale : H_cont vs k_harm_in
+  rho=−0.884 (p=1e-50) contre k_harm_out rho=−0.168 (p=0.04) — **le degré
+  ENTRANT domine massivement**, exactement comme prédit (seule l'équation de
+  couplage d'un nœud dépend de qui IL écoute). Mais le test contrastif
+  directionnel est RÉFUTÉ : HUBS_LISTEN a un H_cont plus HAUT (4.204) que
+  HUBS_BROADCAST (3.790) à m=3 — l'inverse de l'intuition "les hubs qui
+  écoutent beaucoup moyennent davantage". Mécanisme réel découvert a
+  posteriori : HUBS_LISTEN prive la majorité des nœuds périphériques de leur
+  droit d'écoute (41 % de nœuds totalement SOURDS, in-degree=0, contre 1.2 %
+  sous HUBS_BROADCAST) — ces nœuds sourds deviennent des oscillateurs FHN NON
+  COUPLÉS, ce qui AUGMENTE la diversité globale malgré la forte intégration
+  des quelques hubs restants ; le k_harm_in bas de HUBS_LISTEN (2.07 vs 2.78)
+  reflète cette population majoritairement sourde et reste cohérent avec la
+  corrélation globale. Garde-fou P5a vérifié OK (ValueError levée comme
+  prévu). Ablation FROZEN_U/FULL : **le résultat central SURVIT en dirigé**
+  (sync FROZEN_U ≫ FULL à m=3 : 0.105 vs 0.024 ; à m=5 : 0.274 vs 0.015).
 
 ### P6 — La Couche d'Abstention Calibrée (l'idée de Julien, backtest à 0 €) 🎯
 - **Trace.** `PEPIT_LOG.md` ligne 66 (11/06/2026, idée de Julien, statut [À tester]) :
