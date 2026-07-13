@@ -752,6 +752,47 @@
   **La recette transportable** : ce qui traverse un plateau trompeur, c'est une
   mémoire longue avec un seuil relatif au pic — u en est une implémentation
   analogique ; sa supériorité sur la patience est son économie, pas sa capacité.
+- **✅ WARM START CONTINU FAIT le 13/07/2026** (`experiments/p11_warm_start_poc.py`,
+  idée de Julien après une longue discussion honnête sur ce que M4R fait vraiment :
+  « imaginons que dès le départ M4R donne la direction... warm start continu,
+  j'aurais dû te donner ça en premier »). Différent de P11 (QUAND arrêter un
+  solveur qui démarre toujours au même point connu) : ici la cible du solveur est
+  **ambiguë en signe** (b∈{-1,+1} inconnu a priori) — le vrai test d'un démarrage
+  informé. Réutilise le grad/h EXACT de P11 (même dérivation h_min/w_flat), cible
+  et plateau mis en miroir par b. BLIND (x0=0, aucune info) doit toujours traverser
+  le plateau. WARM (M4R) : lecture bon marché (30 nœuds, pulse signé, readout
+  interférence déjà établi aujourd'hui) → devine b, démarre AU-DELÀ du plateau côté
+  deviné — si juste, l'évite entièrement ; si faux, pénalité honnête (démarre du
+  MAUVAIS côté, doit tout traverser en plus).
+  **Résultat, répliqué sur 2 plages de graines disjointes (0-29 et 100-129,
+  intégré dès le premier lancement — leçon du Condorcet du même jour)** :
+  lecture M4R accuracy=1.00 sur les deux plages ; économie **+1458 et +1507
+  itérations** (~97 % de moins que BLIND ~1500-1550) — **identique aux deux
+  graines, pas un artefact isolé.**
+  **Deux vérifications avant de croire ce chiffre** (le 100 % d'accuracy sentait
+  le cas trop favorable — aucune des 60 estimations n'était fausse, la pénalité
+  n'avait jamais été exercée) : (1) **pénalité vérifiée manuellement** — une
+  mauvaise estimation forcée coûte bien PLUS que BLIND (ex. seed 0 : blind=1369,
+  warm_faux=1380) — pas de repas gratuit si M4R se trompe, le mécanisme est honnête.
+  (2) **lecture volontairement affaiblie** (T_READ 300→30, B_E 0.8→0.3, un cas
+  bien plus dur et réaliste) : accuracy tombe à **0.875** (12,5 % d'erreurs
+  réelles) — et l'économie **tient quand même** : blind=1497, warm (mélange
+  vrai/faux)=265, soit **+1232 (−82 %)**. Le petit coût des erreurs occasionnelles
+  est largement dominé par le gain massif des bonnes estimations.
+  **Verdict : le warm start continu fonctionne, honnêtement vérifié dans les deux
+  sens (le cas où ça marche ET le cas où ça coûte), sur cette classe de problème**
+  (solveur itératif piégé par un plateau trompeur symétrique en signe). Différence
+  qualitative avec P11 (qui égalait seulement le meilleur budget fixe) : ici le
+  gain est net et large, parce que le rôle n'est plus de rivaliser avec un budget
+  déjà bien réglé mais d'éviter un piège que TOUT solveur non informé doit
+  traverser. **Réserve honnête** : testé sur un seul type de piège (plateau
+  symétrique par construction) ; le coût de la lecture M4R (300 ou 30 pas-réseau)
+  n'est pas converti en une unité comparable aux itérations solveur — la
+  pertinence réelle dépend du rapport de coût entre un pas M4R et une itération
+  solveur dans un système matériel reste à définir. Idée de Julien pour la suite
+  (non testée) : chaîner ce warm start avec un raffinement itératif (retour du
+  solveur → nouvelle lecture M4R plus précise → nouveau warm start) — le seul
+  maillon de cette chaîne encore jamais testé.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
