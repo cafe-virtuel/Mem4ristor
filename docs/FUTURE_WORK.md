@@ -265,6 +265,29 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
 - **Réserves.** Plafond `acc_FIN=0.75` (tâche pas parfaitement soluble) → comparaison relative ;
   « flip moy ~2200 » = métrique stricte gonflée par des flips de bruit tardifs, la vraie transition
   est à la fin du pulse (~350) ; 12 échantillons (0.83=10/12) → direction robuste, valeurs à N modeste.
+- **✅ ÉCONOMIE D'ÉCHELLE TESTÉE (13/07/2026)** — `experiments/b1d_scale_economy_poc.py`. Après
+  une discussion honnête avec Julien sur ce que M4R fait réellement (« meilleur en recherche pure
+  sans contrainte de temps, pire que tout sous contrainte » — confirmé par la journée entière de
+  tests gamma_int et par B5/context-reinjection), question posée sur un AUTRE axe que la
+  performance brute : **l'avantage du doute (B1d) survit-il avec beaucoup MOINS de nœuds** ? En
+  matériel réel, N = nombre de dispositifs physiques — si le gain tient à N petit, c'est un
+  argument d'économie matérielle plausible ; s'il s'effondre, ça borne la réponse.
+  Protocole IDENTIQUE à B1d (même piège pulsé, mêmes seuils), seul SIDE varie (N=9/25/49/100,
+  N_DISTRACT/N_TRUE gardés aux MÊMES proportions que l'original). **Résultat : le gain SURVIT à
+  toutes les tailles testées** — N=100 : +0.58 ; N=49 : +0.75 ; **N=25 : +0.75** ; N=9 : +0.58
+  (mais `acc_FIN`=0.58 à N=9, sous le seuil 0.6 de régime trompeur fiable — réserve honnête, la
+  tâche elle-même devient moins résoluble à cette taille extrême, à distinguer du mécanisme
+  doute-vs-convergence qui reste positif). **Réplication FAITE avec 20 graines DISJOINTES**
+  (200-219, avant de conclure quoi que ce soit — la leçon du Condorcet du même jour) :
+  N=25 → gain +0.400 (vs +0.75 initial, magnitude plus modeste mais direction et signe
+  confirmés) ; N=100 → gain +0.500 (vs +0.58, très proche). **Contrairement au résultat
+  Condorcet (mort à la réplication le même jour), celui-ci tient : direction et ordre de
+  grandeur confirmés sur graines indépendantes.** Verdict : **une réduction de N par 4
+  (100→25) ne coûte quasiment rien à l'avantage du doute** — le mécanisme ne dépend pas d'une
+  grande population de nœuds, ce qui soutient (sans le prouver au niveau matériel réel, cf. B3)
+  l'hypothèse d'une économie de composants sur la niche déjà établie (décision sous incertitude
+  à horizon inconnu), distincte de la question de performance brute (déjà tranchée : non,
+  cf. B5).
 
 ### B2 — Un vrai memristor 🟡 3 dossiers de correspondance ouverts (09/07/2026), simulation physique restante
 - **Pourquoi.** Le projet s'appelle Mem4ristor mais le modèle est un FHN abstrait ; le SPICE
