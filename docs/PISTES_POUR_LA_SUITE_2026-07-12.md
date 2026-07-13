@@ -552,6 +552,45 @@
   nettement sous l'accuracy de GROUPE (0.81-0.96 en interference, 0.73-0.90
   en vote) -- attendu, un seul noeud est un estimateur bien plus bruite
   que 30 combines (cf. la marche vote-vs-interference).
+- **SAGESSE DES FOULES (le test le plus favorable a gamma_int) FAIT le
+  13/07/2026, meme jour** (`experiments/p10_sagesse_foules_poc.py`).
+  Verdict de Julien apres 3 tests defavorables : « la flemme ne rapporte
+  rien et detruit tout -- comme une personne qui aurait la flemme d'aller
+  bosser : pas de travail, pas d'argent, pas d'argent, vie difficile ».
+  Avant de valider cette conclusion SANS reserve, un point de methode :
+  les 3 tests precedents opposaient tous des voisins en DESACCORD (bits
+  opposes) -- copier un voisin qui pense le contraire coute, forcement.
+  Le cas jamais teste, le plus favorable possible a gamma_int : des voisins
+  qui PARTAGENT le meme bit vrai mais avec une confiance individuelle
+  inegale (sagesse des foules -- un noeud a signal faible/ambigu qui
+  capte la moyenne de voisins confiants ET D'ACCORD ne devrait rien
+  perdre a le faire). Protocole : 1 groupe de 30 noeuds, bit b_a PARTAGE
+  par tous, 15 noeuds a stimulus FORT (echelle 1.0), 15 a stimulus FAIBLE
+  (echelle 0.15, quasi noye dans le bruit sigma_v=0.05), interleaves sur le
+  lattice. Sweep gamma_int in {0, 0.05, 0.15, 0.3, 0.5}, D=1200, 40
+  problemes/gamma_int (20 seeds x 2 signes), lecture par noeud (metrique
+  primaire pre-enregistree) ET par sous-groupe (vote/interference).
+  **Verdict, metrique primaire (noeud faible individuel) : AUCUN gain net.**
+  gamma_int=0 -> 0.537 ; meilleur point (gamma_int=0.15) -> 0.583
+  (+0.047, largement sous le bruit d'echantillonnage a n=40, SE~0.08).
+  Le noeud fort ne bouge pas non plus de facon coherente (0.590-0.643,
+  aucune tendance). **Nuance honnete (metrique secondaire, non pre-
+  enregistree, a ne pas survendre)** : le VOTE du sous-groupe faible
+  montre un pic suggestif a gamma_int=0.15 (0.575 -> 0.675 -> 0.725 puis
+  redescend a 0.625/0.500 aux gamma_int plus eleves) -- mais ce pic NE SE
+  REPLIQUE PAS sur l'INTERFERENCE du meme sous-groupe (0.450/0.350/0.550/
+  0.550/0.575, aucun motif clair, souvent proche ou sous 0.5). Deux
+  lectures du meme phenomene qui ne s'accordent pas = signal probablement
+  bruite, pas confirme. **Conclusion : sur les 4 tests du 13/07 (memoire,
+  crosstalk, diffusion, sagesse des foules -- y compris le cas le PLUS
+  favorable a gamma_int qu'on pouvait construire), gamma_int>0 n'a JAMAIS
+  rapporte de gain net et confirme.** L'intuition de Julien tient : ce
+  canal, tel qu'implemente, est un cout sans contrepartie mesuree a ce
+  jour. Sa valeur (si elle existe) reste a chercher hors du registre
+  memoire/decodage -- peut-etre la synchronisation/consensus pur (jamais
+  teste comme benefice), domaine que P10 cherche justement a REDUIRE, ce
+  qui expliquerait pourquoi gamma_int n'a jamais eu l'occasion de payer
+  dans un projet dont l'objectif est l'anti-synchronisation.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
