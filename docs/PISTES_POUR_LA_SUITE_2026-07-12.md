@@ -438,6 +438,43 @@
   PRECIS -- et la raison de l'echec du point 3 est elle-meme un resultat :
   agreger avant de comparer detruit exactement le mecanisme qu'on voulait
   tester.
+- **✅ VOTE vs INTERFERENCE FAIT le 13/07/2026, meme jour** (`experiments/p10_vote_vs_interference_poc.py`,
+  accord de Julien : « oui decodage par noeuds c'est interessant »). Reprend
+  le vrai mecanisme relu dans `genesis_five_states_poc.py` (pas de memoire) :
+  R2 (global) = signe(cos(SOMME des phases dominantes)) = produit des
+  phaseurs, la definition meme de la parite ; le "vote" de la genese est la
+  majorite des N=5 BITS INDIVIDUELS, structurellement plafonnee (68.75% a
+  N=5, fait mathematique). Notre reseau n'a pas 5 unites-un-bit-chacune ; il
+  a 30 noeuds redondants portant chacun une estimation bruitee du MEME bit --
+  question differente mais legitime : moyenner-puis-seuiller (interference)
+  bat-il seuiller-chaque-noeud-puis-voter (vote) ? Premiere fois que cette
+  comparaison est reellement isolee (le POC precedent agregeait deja des
+  DEUX cotes de la comparaison, ce qui l'annulait par construction).
+  *(Un bug de convention de signe a d'abord donne 10% d'accuracy en Partie 1 --
+  `mask - idle` au lieu du `idle - mask` etabli par V1 ; corrige, verifie
+  contre le POC precedent avant de conclure quoi que ce soit.)*
+  **Deux resultats, une explication qui tient :**
+  1. **Solo (1 bit, 1 groupe, 40 problemes, D=1200) : AUCUNE difference.**
+     VOTE=0.925±0.042, INTERFERENCE=0.900±0.048 (delta −0.025, sous le
+     bruit). En regime propre (pas de crosstalk), les deux methodes
+     saturent deja pres du plafond -- rien pour les departager.
+  2. **Parite (2 groupes simultanes, 48 problemes, omega_B=0) : INTERFERENCE
+     bat VOTE nettement.** VOTE=0.542±0.073 (a peine au-dessus du hasard),
+     INTERFERENCE=0.812±0.057 (delta +0.271, tres au-dela de 2 SE). Retro-
+     calcul : l'accuracy PAR GROUPE sous VOTE en regime crosstalk tombe a
+     ~0.645 (contre 0.812 pour INTERFERENCE au meme point, cf. marche
+     precedente) -- le seuillage dur PAR NOEUD jette de l'info (magnitude,
+     confiance) que le crosstalk a deja abimee, et cette perte se compose
+     MULTIPLICATIVEMENT une fois qu'on prend le produit de deux decisions
+     dures. L'interference (moyenne complexe, un seul seuillage final)
+     retarde la decision et absorbe une partie du bruit avant de trancher.
+  **Bilan.** Le mecanisme de la genese (combiner avant de seuiller) SE
+  TRANSFERE au reseau physique, mais **conditionnellement au regime** --
+  invisible en decode propre (Partie 1, comme B1c/B1d l'avaient deja montre
+  pour le doute scalaire), decisif des que le signal est degrade par le
+  crosstalk (Partie 2). Encore une instance du fil rouge du projet : un
+  mecanisme n'aide pas dans l'absolu, il aide **quand les choses se
+  compliquent**.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
