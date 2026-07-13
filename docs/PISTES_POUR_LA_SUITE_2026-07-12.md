@@ -643,6 +643,55 @@
   tout Mem4ristor) -- mais rien dans ce projet n'est construit pour
   valoriser ce cas, ce qui pourrait expliquer honnetement pourquoi
   gamma_int n'a jamais eu l'occasion de payer ici.
+- **LE VRAI TEST DE CONSENSUS (Condorcet) FAIT le 13/07/2026, meme jour**
+  (`experiments/p10_vrai_consensus_poc.py`, demande de Julien : « peux-tu
+  tester cette question justement ? » -- la question laissee ouverte par
+  la batterie large). Corrige le defaut de la Partie 2 precedente (signal
+  HOMOGENE, aucun desaccord initial a reconcilier) par le vrai protocole
+  du theoreme du jury de Condorcet : chaque noeud d'un groupe de 30 tire
+  INDEPENDAMMENT son propre signe (Bernoulli p_correct pour le bon signe,
+  erreur de MESURE individuelle -- pas des menteurs deliberes). Sweep
+  gamma_int in {0, 0.05, 0.15, 0.3, 0.5} x p_correct in {0.6, 0.7, 0.8},
+  D=1200, 40 problemes/point.
+  **PREMIER RESULTAT POSITIF NET DE LA JOURNEE :**
+  | p_correct | gamma_int=0 (interference) | meilleur point | gain |
+  |---|---|---|---|
+  | 0.6 (bruite) | 0.550 | **0.600** (gamma=0.15, vote: **0.725**, +0.175) | +0.050 (int) / **+0.175 (vote)** |
+  | 0.7 (bruite) | 0.625 | **0.750** (gamma=0.3, vote: **0.775**, +0.125) | **+0.125 (int)** / +0.125 (vote) |
+  | 0.8 (fiable) | 0.775 | 0.775 (gamma=0.0) | +0.000 (aucun gain) |
+  - **gamma_int MODERE (0.15-0.3) aide REELLEMENT le consensus de groupe,
+    mais SEULEMENT quand les individus sont BRUITES** (p_correct=0.6-0.7,
+    30-40% d'erreur individuelle) -- gain +0.125 a +0.175 pts, coherent
+    sur les DEUX lectures (vote ET interference) et sur les DEUX niveaux
+    de bruit testes. **Quand les individus sont deja fiables (p_correct=0.8),
+    le gain disparait totalement** (0.000) -- rien a corriger, gamma_int
+    n'apporte rien de plus que le vote brut.
+  - **A gamma_int=0.5 (trop de conformite), l'effondrement est SYSTEMATIQUE
+    a TOUS les niveaux de bruit** (vote : 0.475/0.525/0.725, tous EN
+    DESSOUS de leur propre gamma_int=0 -- meme a p_correct=0.8 ou gamma_int
+    plus modeste ne faisait aucun mal). La courbe est un **sweet spot en
+    cloche inversee**, pas une droite : trop peu ne corrige rien, trop
+    detruit le signal correct de la majorite elle-meme.
+  - **Minorite initialement fausse (par tirage) "corrigee" ?** Petit effet
+    positif et REMARQUABLEMENT constant a gamma_int=0.05 sur les 3 niveaux
+    de bruit (+0.075 partout, 0.500->0.575, 0.500->0.575, 0.525->0.600) --
+    mais s'effondre nettement SOUS le hasard a gamma_int=0.5 (0.325, 0.250,
+    0.350) -- meme mecanisme de sweet-spot, a une echelle plus fine.
+  **VERDICT DE LA QUESTION OUVERTE : OUI, gamma_int a une vraie niche.**
+  Elle n'est ni dans la memoire, ni dans l'anti-crosstalk, ni dans
+  l'homogeneisation sous signal partage propre -- elle est dans la
+  CORRECTION D'ERREUR DE MESURE INDIVIDUELLE INDEPENDANTE quand le bruit
+  individuel est substantiel (30-40%) et le gamma_int reste MODERE.
+  Aucun des 8 tests precedents de la journee n'avait ce bruit-la (signal
+  partage PROPRE, ou conflit de groupes, ou signal nul) -- c'est
+  exactement pourquoi gamma_int n'avait jamais eu sa chance avant ce test.
+  **Le fil rouge du projet, une fois de plus** : la valeur d'un mecanisme
+  est conditionnelle -- gamma_int perd partout ou il n'y a rien a moyenner
+  honnetement (conflit, signal propre, silence), et gagne exactement la
+  ou le theoreme de Condorcet dit qu'il devrait gagner (bruit individuel
+  independant sur un signal partage). Reserve : n=40/point, gains a la
+  limite de 2 SE, a repliquer avec plus de seeds avant de citer hors
+  contexte exploratoire.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
