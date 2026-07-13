@@ -815,10 +815,43 @@
   le meilleur budget fixe) : ici, même après correction, le gain net attribuable
   à M4R reste large et clair. **Réserve inchangée** : un seul type de piège
   testé ; coût de la lecture M4R non converti en unité comparable aux
-  itérations solveur. Idée de Julien pour la suite (non testée) : chaîner ce
-  warm start avec un raffinement itératif (retour du solveur → nouvelle
-  lecture M4R plus précise → nouveau warm start) — le seul maillon de cette
-  chaîne encore jamais testé.
+  itérations solveur.
+- **✅ LE DERNIER MAILLON — RAFFINEMENT ITÉRATIF — TESTÉ le 13/07/2026, même
+  jour** (`experiments/p11_refinement_scar_poc.py`, Julien : « ah oui c'est
+  vrai je l'ai oublié celui-là »). Seul maillon jamais testé de la chaîne
+  complète décrite par Julien (direction → solveur → veille → retour du
+  calcul → **raffinement** → direction plus précise → solveur). **Motif de
+  méfiance posé AVANT de tester** : P12 (12/07, substrat STNO) avait déjà
+  trouvé une **cicatrice** — un conflit antérieur retarde la sortie de
+  tromperie (+52 % de temps de flip). Le raffinement pourrait donc être
+  compromis par cette même inertie.
+  **Test le plus dur** : simule une PREMIÈRE lecture FAUSSE de M4R (T1=200
+  pas de stimulus faible dans le mauvais sens), PUIS une preuve corrective
+  (T2 pas de stimulus fort dans le bon sens, réseau continu) — compare
+  contre un réseau FRAIS qui reçoit la MÊME preuve corrective sans avoir
+  eu de fausse impression à désapprendre.
+  | T2 (pas de correction) | accuracy PRIME_FAUX | accuracy FRAIS | coût cicatrice |
+  |---|---|---|---|
+  | 50  | 0.067 | 0.700 | **+0.633** (quasi bloqué) |
+  | 150 | 0.667 | 0.933 | +0.267 (encore réel) |
+  | 300 | 1.000 | 1.000 | **0.000** (refermée) |
+  | 600 | 1.000 | 1.000 | 0.000 |
+  **La cicatrice de P12 EXISTE AUSSI ici, sur FHN+lattice (pas seulement
+  STNO)** — 3e contexte où elle apparaît, ce qui la solidifie comme
+  propriété générale de M4R plutôt qu'un artefact de substrat. Une première
+  impression fausse résiste réellement à la correction (à T2=50, le réseau
+  primé-faux reste trompé 93 % du temps contre 30 % pour un réseau frais).
+  **MAIS elle se referme COMPLÈTEMENT avec assez de temps correctif**
+  (quelque part entre T2=150 et 300 ici) — accuracy identique au réseau
+  frais, aucun résidu permanent.
+  **Verdict du maillon manquant : le raffinement FONCTIONNE, mais n'est ni
+  instantané ni gratuit.** Une architecture qui l'utiliserait devrait
+  budgétiser un temps de correction suffisant après une mauvaise direction
+  initiale — pas juste "renvoyer un signal plus fort et repartir tout de
+  suite". **Chaîne complète de Julien, bilan final** : direction (✅ P10),
+  solveur+veille (✅ P11 original + warm start), raffinement (✅ ici, avec
+  coût temporel caractérisé) — les trois maillons sont maintenant testés,
+  aucun n'est gratuit, aucun n'est cassé.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
