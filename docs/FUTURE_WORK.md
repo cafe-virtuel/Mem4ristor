@@ -438,6 +438,24 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     à cette tâche précise), pas seulement d'ABSENCE de mémoire externe à réinjecter. Cohérent
     avec le cadrage établi (M4R = explorateur, pas mémoire) — mais precise maintenant *pourquoi*
     au niveau mécanique, pas seulement au niveau du score final.
+  - **✅ QUI EST RESPONSABLE ? TRANCHÉ (13/07/2026, même jour)** —
+    `experiments/b5_context_conditions_poc.py`. Le contexte seul (0.829) bat M4R FULL —
+    est-ce le DOUTE qui abîme l'info, ou l'architecture FHN+lattice elle-même ? Test des
+    3 conditions déjà définies par B1 (`reservoir_narma10_poc.py`) contre le contexte seul :
+    **les TROIS battent — perdent, plutôt — contre le contexte seul, sans exception.**
+    FULL = 1.942 (delta +1.113 CI[+0.90,+1.31]) ; **FROZEN_U = 2.273, le PIRE des trois**
+    (delta +1.445 CI[+1.03,+1.90] — geler le doute n'aide PAS, ça aggrave même légèrement) ;
+    **DECOUPLE (nœuds FHN isolés, AUCUN couplage, AUCUN doute) = 1.697** (delta +0.868
+    CI[+0.61,+1.11]) — **le meilleur des trois, mais toujours nettement pire que le
+    contexte seul.** **Verdict : le problème n'est ni le doute (FROZEN_U ne fait pas
+    mieux, il fait pire) ni le couplage spatial (DECOUPLE reste perdant même sans lui)
+    — il remonte au NŒUD FHN INDIVIDUEL lui-même.** Un seul neurone FHN isolé, piloté par
+    le signal brut, produit un état v(t) qu'un readout linéaire exploite MOINS BIEN que
+    les entrées brutes elles-mêmes. Hypothèse mécanique à vérifier plus tard (hors
+    session) : la relaxation rapide/lente (type spike) du FHN pourrait saturer/compresser
+    l'amplitude plutôt que préserver un mélange non-linéaire graduel exploitable, contrairement
+    au tanh lisse d'un ESN. Le doute et le couplage ne sont donc pas la cause du désavantage
+    NARMA10 de M4R — ils s'ajoutent à un déficit déjà présent dans le nœud de base.
   - **Question ouverte RÉPONDUE (honnête, nuancée)** — `experiments/b5b_deceptive_exploration.py`,
     commit `00094d4`. Décision **en ligne** trompeuse (converger tôt = se tromper), doute natif vs
     ESN de référence, 15 seeds. **(1)** Le doute (0.87) **écrase** le meilleur arrêt *naïf* de l'ESN
