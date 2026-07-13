@@ -70,3 +70,15 @@ experiments/spice/results/*.cir
 
 # Demo output
 demo_chimera_output.png
+
+# Local Session, Archive, and Work Logs (V6.0.0 cleanup)
+archives/
+sessions/
+results/
+docs/AVANCEE_A_REPRENDRE.md
+docs/TESTS_GUIDE.md
+docs/TEST_HERMES.md
+docs/papers/preprint/preprint_pg-*.png
+.commit-msg-pending.md
+uv.lock
+*.bak

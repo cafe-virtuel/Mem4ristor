@@ -109,3 +109,45 @@ def make_lattice_adj(size: int, periodic: bool = True) -> np.ndarray:
                 adj[node, ni * size + nj] = 1.0
 
     return adj
+
+
+def make_directed(adj_undirected: np.ndarray, rule: str, rng: np.random.RandomState) -> np.ndarray:
+    """
+    Convertit une matrice d'adjacence non-dirigée en une matrice d'adjacence dirigée
+    en orientant chaque arête selon une règle spécifique.
+
+    Paramètres
+    ----------
+    adj_undirected : np.ndarray
+        La matrice d'adjacence non-dirigée.
+    rule : str
+        La règle d'orientation : 'RANDOM', 'HUBS_LISTEN' ou 'HUBS_BROADCAST'.
+    rng : np.random.RandomState
+        Générateur de nombres aléatoires pour résoudre les cas d'égalité ou pour RANDOM.
+
+    Retourne
+    --------
+    adj_directed : np.ndarray (n, n)
+        La matrice d'adjacence dirigée.
+    """
+    n = adj_undirected.shape[0]
+    total_deg = adj_undirected.sum(axis=1)
+    A = np.zeros((n, n), dtype=float)
+    ii, jj = np.where(np.triu(adj_undirected, k=1) > 0)
+    for i, j in zip(ii, jj):
+        if rule == 'RANDOM':
+            listener = i if rng.rand() < 0.5 else j
+        elif rule == 'HUBS_LISTEN':
+            if total_deg[i] == total_deg[j]:
+                listener = i if rng.rand() < 0.5 else j
+            else:
+                listener = i if total_deg[i] > total_deg[j] else j
+        elif rule == 'HUBS_BROADCAST':
+            if total_deg[i] == total_deg[j]:
+                listener = i if rng.rand() < 0.5 else j
+            else:
+                listener = i if total_deg[i] < total_deg[j] else j
+        else:
+            raise ValueError(f"Unknown rule: {rule}")
+        A[listener, (j if listener == i else i)] = 1.0
+    return A
