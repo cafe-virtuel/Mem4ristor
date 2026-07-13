@@ -298,6 +298,19 @@
 - **Reste.** Fermer le résidu sync-FULL (τ plus fin ou ordre de convergence) ;
   étendre au pipeline step() complet (hysteresis/plasticité) si la Table 1 doit
   un jour être certifiée RK45. **Effort.** 🧩.
+- **🟡 MARCHE FAITE le 13/07/2026** (`experiments/p8_closure_poc.py`, un 5e point
+  τ=0.0025 (RK45_OU, 4 seeds × 2 ablations, ~2,5× plus fin que le précédent) +
+  analyse d'ordre log-log sur les 5 points désormais disponibles). **FROZEN_U
+  ferme** (résidu +0.0003 < tolérance 0.0246). **FULL toujours HORS tolérance**
+  (résidu +0.0028 vs 2sd=0.0018) mais la régression log-log est PROPRE sur les
+  5 points (ordre ajusté p=0.56, R²=0.976 — la "décélération" apparente vue à 4
+  points au 12/07 était du bruit d'échantillonnage, pas un plancher). Extrapolation
+  à τ=1e-5 : résidu prédit ~0.00012, bien sous tolérance. **Verdict : pas encore
+  fermé, mais l'analyse d'ordre confirme que c'est une question de budget de
+  calcul (τ≤0.0016 comme prévu, coût ×4/pas), pas un biais structurel entre le
+  RHS réduit et Euler+blanc.** Reste : pousser à τ≤0.0016 (coûteux) ou accepter
+  la fermeture par extrapolation documentée ; étendre au pipeline step() complet
+  reste non fait.
 
 ### P9 — Visualisation des flux d'entropie (le TODO le plus ancien) 📊
 - **Trace.** Roadmap V5 point 6 (jamais fait) + reco Manus 3. Voir la décision se
@@ -352,6 +365,31 @@
   multiplicative du jouet genèse (une dynamique relaxante à phases {0, π} ne peut
   pas la porter, documenté dans le POC) ; caractériser le rebond D=400-600 ;
   explorer le compromis γ_int (mémoire vs anti-sync). **Effort.** 🧩 1-2 sessions.
+- **✅ MARCHE FAITE le 13/07/2026** (`experiments/p10_next_steps_poc.py`, coeur
+  déjà accordé le 12/07 — γ_int et ω_u sont déjà des clés de config exposées,
+  AUCUNE nouvelle modification de dynamics.py). **Trois résultats :**
+  1. **Compromis γ_int : le défaut (0.15) n'était PAS optimal.** Sweep
+     γ_int∈{0, 0.05, 0.15, 0.3, 0.5, 1.0} à D=1200 fixe : **γ_int=0 (interférence
+     éteinte, cible signée seule) donne la MEILLEURE mémoire (0.88, égale au
+     défaut) ET le MEILLEUR ratio d'anti-sync (0.579 vs 0.633 au défaut)** —
+     cohérent avec le diagnostic COMPLEX_NOINT de V1 (le surplus de sync venait
+     de l'interférence). À γ_int=1.0, tout s'effondre (mémoire 0.58, ratio→1.0,
+     plus d'anti-sync du tout).
+  2. **Le rebond D=400-600 EXPLIQUÉ** : trace fine autour du pulse — v change de
+     signe dès t=243 (rebond adaptatif massif, creux à ~−0.6), traverse zéro à
+     nouveau vers t~780 ; **Re(u_c) reste POSITIF tout du long de la fenêtre
+     aveugle** (+0.177 à t=600, +0.066 à t=800) — la mémoire de phase ne suit
+     PAS le rebond de v, elle en est mécaniquement indépendante. C'est
+     exactement pourquoi PHASE_UC survit là où V_STATE échoue.
+  3. **ω_u global (test PARTIEL, périmètre explicitement limité)** : sweep
+     ω_u∈{0, 0.005, 0.02, 0.05, 0.1} sur la mémoire à 4 délais — **aucune
+     amélioration** (les valeurs élevées dégradent fortement, ex. D=600 chute
+     à 0.04-0.12). Confirme l'attente de la piste : une rotation GLOBALE
+     (même vitesse pour tous les nœuds) ne porte pas plus d'info qu'un doute
+     réel à phases {0,π}. **La parité multiplicative complète resterait hors
+     de portée sans rotation PAR GROUPE — une extension du cœur au-delà du
+     fork actuel, donc un NOUVEL accord explicite de Julien serait requis
+     avant de la tenter.**
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
