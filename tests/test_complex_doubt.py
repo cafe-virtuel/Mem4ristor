@@ -89,3 +89,73 @@ def test_interference_destructive():
     assert mag_checker < mag_aligned - 0.05, (
         f"interference attendue : module moyen damier ({mag_checker:.3f}) "
         f"devrait etre nettement sous le module aligne ({mag_aligned:.3f})")
+
+
+def test_omega_scalar_equals_uniform_array():
+    """P10 (13/07) : omega_u accepte desormais un array de taille N en plus du
+    scalaire. Le chemin scalaire doit rester bit-a-bit identique -- un array
+    UNIFORME (meme valeur partout) doit reproduire EXACTEMENT le resultat du
+    scalaire equivalent."""
+    def run(omega_value):
+        net = fresh_net(4)
+        m = net.model
+        m.cfg['complex_doubt']['enabled'] = True
+        m.cfg['complex_doubt']['omega_u'] = omega_value
+        for _ in range(300):
+            net.step(I_stimulus=STIM)
+        return m.v.copy(), m.w.copy(), m.u.copy(), m.u_c.copy()
+
+    v_s, w_s, u_s, uc_s = run(0.03)
+    v_a, w_a, u_a, uc_a = run(np.full(100, 0.03))
+    assert np.allclose(v_s, v_a, atol=1e-12)
+    assert np.allclose(w_s, w_a, atol=1e-12)
+    assert np.allclose(u_s, u_a, atol=1e-12)
+    assert np.allclose(uc_s, uc_a, atol=1e-12)
+
+
+def _circular_mean(angles):
+    return np.angle(np.mean(np.exp(1j * angles)))
+
+
+def _circular_gap(phase, mask):
+    a = _circular_mean(phase[mask])
+    b = _circular_mean(phase[~mask])
+    return abs(np.angle(np.exp(1j * (a - b))))  # difference d'angle repliee dans [-pi, pi]
+
+
+def test_omega_per_group_diverges():
+    """Rotation PAR GROUPE (13/07, extension du coeur, accord explicite de
+    Julien) : deux groupes a des omega_u distincts doivent developper des
+    phases differentes -- l'array n'est pas juste tolere, il fait quelque
+    chose de nouveau par rapport a un omega_u uniforme. Stimulus NEUTRE
+    (symetrique, pas de structure spatiale) pour isoler l'effet de omega_u ;
+    ecart mesure en moyenne CIRCULAIRE (les angles s'enroulent autour de
+    +/-pi, une moyenne arithmetique naive fausse la mesure). Bruit stochastique
+    (sigma_v, defaut 0.05) coupe : sur 100 noeuds/50 par groupe le bruit i.i.d.
+    fait deriver gap_uniform de facon non monotone (verifie manuellement), ce
+    test isole le mecanisme DETERMINISTE omega_u, pas une propriete statistique
+    -- cf. B1/B4 pour les comparaisons multi-seeds avec bruit."""
+    def run(omega_array):
+        net = fresh_net(6)
+        m = net.model
+        m.cfg['noise']['sigma_v'] = 0.0
+        m.cfg['complex_doubt']['enabled'] = True
+        m.cfg['complex_doubt']['omega_u'] = omega_array
+        m.u = np.full(100, 0.5)
+        m.u_c = np.full(100, 0.5 + 0.3j)
+        neutral_stim = np.full(100, 0.2)
+        for _ in range(400):
+            net.step(I_stimulus=neutral_stim)
+        return np.angle(m.u_c)
+
+    group = np.zeros(100, dtype=bool)
+    group[50:] = True  # groupe B = seconde moitie du lattice 10x10
+
+    phase_uniform = run(np.zeros(100))
+    phase_grouped = run(np.where(group, 0.02, 0.0))
+
+    gap_uniform = _circular_gap(phase_uniform, group)
+    gap_grouped = _circular_gap(phase_grouped, group)
+    assert gap_grouped > gap_uniform + 0.15, (
+        f"ecart de phase inter-groupe attendu sous omega_u distinct : "
+        f"grouped={gap_grouped:.3f} devrait depasser uniform={gap_uniform:.3f}")

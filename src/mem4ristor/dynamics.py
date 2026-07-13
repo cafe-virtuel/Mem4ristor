@@ -432,8 +432,13 @@ class Mem4ristorV3:
              ce que la moyenne des modules detruit). Necessite _adj_matrix
              (pose par Mem4Network.step, comme pour l'ART) ; sinon terme nul.
           3. Rotation propre optionnelle omega_u (defaut 0.0 : u_c reste sur
-             l'axe reel, phases {0, pi} -- la porte vers les phases continues
-             de la genese est posee, pas encore ouverte).
+             l'axe reel, phases {0, pi}). omega_u accepte un SCALAIRE (rotation
+             globale, identique pour tous les noeuds, comportement V1 du 12/07
+             inchange) OU un ARRAY de taille N (rotation PAR NOEUD/GROUPE,
+             13/07, marche suivante -- accord explicite de Julien) : des
+             groupes a des vitesses de rotation distinctes se separent en
+             phase au cours du temps, la porte vers la parite multiplicative
+             de la genese (moyenne/produit de phases par groupe) est ouverte.
         Invariant restaure a CHAQUE pas : |u_c| adopte self.u en preservant la
         phase (self.u peut avoir ete modifie par ART / watchdog / clip / guards
         depuis le dernier pas). Ecrit self.u_c puis self.u = |u_c| (clamp du
@@ -441,7 +446,9 @@ class Mem4ristorV3:
         """
         cd = self.cfg.get('complex_doubt', {})
         gamma_int = float(cd.get('gamma_int', 0.15))
-        omega_u = float(cd.get('omega_u', 0.0))
+        # scalaire -> array 0-d, broadcast identique bit-a-bit a l'ancien float ;
+        # array de taille N -> rotation par noeud/groupe (13/07, extension du coeur).
+        omega_u = np.asarray(cd.get('omega_u', 0.0), dtype=float)
         k_u = self.cfg['doubt']['k_u']
         baseline = self.cfg['doubt']['sigma_baseline']
         tau_u = self.cfg['doubt']['tau_u']
