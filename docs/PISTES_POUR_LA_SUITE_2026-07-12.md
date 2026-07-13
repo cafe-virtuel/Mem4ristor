@@ -591,6 +591,58 @@
   teste comme benefice), domaine que P10 cherche justement a REDUIRE, ce
   qui expliquerait pourquoi gamma_int n'a jamais eu l'occasion de payer
   dans un projet dont l'objectif est l'anti-synchronisation.
+- **BATTERIE LARGE (« pousse au maximum, meme sur des criteres hors de
+  propos ») FAITE le 13/07/2026, meme jour**
+  (`experiments/p10_gamma_int_batterie_large_poc.py`). 4 criteres
+  GENUINEMENT DIFFERENTS des precedents, pas une repetition plus profonde :
+  1. **Rejet de menteurs** (5/30 noeuds recoivent le stimulus INVERSE, la
+     vraie sagesse des foules classique -- different du "signal faible"
+     deja teste). Vote : decline MONOTONE avec gamma_int (0.933 -> 0.733).
+     Interference : pic NON-monotone a gamma_int=0.3 (0.733 -> 0.833,
+     +0.100) -- **seul hint positif de toute la journee**, mais n=30/point,
+     SE~0.07, gap ~1.4 SE, ET contredit par le VOTE sur les MEMES donnees
+     (qui decline). Signal ambigu, pas confirme.
+  2. **Spread final sous stimulus PARTAGE** (le terrain natif litteral de
+     gamma_int -- reduire la dispersion aurait du etre son point fort par
+     construction). Bug de protocole trouve et corrige en route (l'etat
+     initial demarrait a u=0.05 IDENTIQUE pour tous les noeuds -- le
+     "consensus" etait deja atteint avant toute dynamique ; corrige par un
+     etat initial u_c RANDOMISE). Decouverte apres correction : le spread
+     ne DECROIT jamais vers un seuil bas (il CROIT depuis l'init, 0.29 ->
+     jusqu'a 0.75 selon le point du temps) -- la metrique "temps jusqu'au
+     consensus" ne s'applique pas, remplacee par le spread a horizon fixe
+     (1500 pas). **Resultat : spread croit LEGEREMENT avec gamma_int**
+     (0.360 a 0 -> 0.319 a 0.05 -> 0.349 -> 0.377 -> 0.399 a 0.5) --
+     **meme sur son PROPRE terrain, gamma_int n'homogeneise pas mieux, il
+     homogeneise plutot MOINS** au-dela d'un leger creux a 0.05.
+  3. **Bruit environnemental amplifie** (sigma_v x4=0.20, x8=0.40 -- le
+     regime ou la moyenne statistique a le plus de marge theorique pour
+     aider). AUCUN gain a AUCUN niveau de bruit : gamma_int=0 reste le
+     meilleur point a sigma_v=0.05 (1.000), 0.20 (0.667) ET 0.40 (0.600),
+     et la degradation avec gamma_int croissant reste presente a chaque
+     niveau (ex. sigma_v=0.40 : 0.600 -> 0.433 -> 0.267 -> 0.200 -> 0.233).
+     Plus de bruit ambiant ne donne PAS plus de raisons a gamma_int d'aider.
+  4. **Topologie BA scale-free (m=3)** au lieu du lattice (le maillon
+     faible connu du projet depuis B1/B4/B5). AUCUN gain net : gamma_int=0
+     (0.875) egale le meilleur point (gamma_int=0.3, aussi 0.875), avec un
+     creux entre les deux (0.708 a 0.15) -- meme motif "pas d'amelioration,
+     parfois un creux" que sur lattice.
+  **BILAN DE LA JOURNEE SUR GAMMA_INT (8 tests, 4 ce matin/debut
+  d'apres-midi + 4 ici) : sur AUCUN des 8 criteres testes -- memoire,
+  anti-sync, crosstalk de groupe, diffusion locale, sagesse des foules par
+  signal faible, rejet de menteurs, homogeneisation sous stimulus partage,
+  bruit amplifie, topologie BA -- gamma_int>0 n'a produit un gain
+  CONFIRME et REPLIQUE.** Le seul hint (menteurs, lecture interference)
+  est contredit par l'autre lecture (vote) des memes donnees. L'intuition
+  de Julien (« la flemme ne rapporte rien ») est la lecture la plus
+  defendable de la journee entiere. Question qui reste GENUINEMENT
+  ouverte (non testee, hors de portee du temps de la session) : un
+  benefice pourrait exister sur une tache de VRAI consensus distribue
+  (ou l'objectif EST de converger vite vers une reponse partagee, contexte
+  differents des taches de memoire/decodage/anti-sync qui structurent
+  tout Mem4ristor) -- mais rien dans ce projet n'est construit pour
+  valoriser ce cas, ce qui pourrait expliquer honnetement pourquoi
+  gamma_int n'a jamais eu l'occasion de payer ici.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
