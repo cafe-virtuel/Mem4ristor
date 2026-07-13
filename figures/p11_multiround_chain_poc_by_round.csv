@@ -1,0 +1,9 @@
+condition,round,accuracy
+fresh,1,0.800000
+fresh,2,0.725000
+fresh,3,0.650000
+fresh,4,0.675000
+persistent,1,0.800000
+persistent,2,0.475000
+persistent,3,0.625000
+persistent,4,0.700000
