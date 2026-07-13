@@ -390,6 +390,54 @@
      de portée sans rotation PAR GROUPE — une extension du cœur au-delà du
      fork actuel, donc un NOUVEL accord explicite de Julien serait requis
      avant de la tenter.**
+- **ROTATION PAR GROUPE FAITE le 13/07/2026, accord explicite de Julien
+  (« P10 svp »)** — extension du coeur, une seule ligne (`_step_complex_doubt` :
+  `omega_u = np.asarray(cd.get('omega_u', 0.0), dtype=float)` au lieu de
+  `float(...)`). Un scalaire garde le comportement V1 **bit-a-bit identique**
+  (`test_omega_scalar_equals_uniform_array`) ; un array de taille N permet une
+  vitesse de rotation PAR NOEUD/GROUPE, teste en isolation deterministe
+  (`test_omega_per_group_diverges`, sigma_v=0 pour couper le bruit stochastique
+  qui masquait sinon l'effet). Suite 130 passed + 2 xfail, Guardian 14/14
+  apres commit. POC : `experiments/p10_group_rotation_poc.py`. Protocole :
+  2 groupes de 30 noeuds pulses SIMULTANEMENT (bits b_A, b_B independants),
+  groupe A ancre sur le canal V1 (omega_A=0), groupe B recoit
+  omega_B in {0, 0.02, 0.05} et un readout DE-ROTATE (`Re(u_c . e^{-i omega_B T})`).
+  **Trois resultats, aucun arrondi :**
+  1. **Crosstalk REEL, NON repare par la separation de frequence.** A seul :
+     accuracy 1.000 (D=1200). A+B simultanes, meme canal (omega_B=0) : 0.812
+     (-0.188). Separer les frequences ne repare PAS ce crosstalk dans la
+     plage testee -- omega_B=0.02 -> 0.771, omega_B=0.05 -> 0.792, toujours
+     sous le canal partage. L'hypothese « la frequence protege du melange »
+     est REFUTEE ici : l'interference sociale gamma_int melange les voisins
+     par la TOPOLOGIE, pas par la frequence -- deux groupes adjacents sur le
+     lattice se perturbent quelle que soit leur vitesse de rotation respective.
+  2. **Decode B non monotone en omega_B** : 0.833 (omega_B=0, readout brut)
+     -> 0.938 (omega_B=0.02, meilleur point) -> 0.750 (omega_B=0.05, degrade).
+     Pas de regle simple « plus de rotation = mieux decode » -- coherent avec
+     une dynamique qui n'est PAS un rotor libre (le rappel vers la cible reelle
+     rivalise avec la rotation, cf. le rebond adaptatif documente au-dessus).
+  3. **Parite globale (le test genese) : AUCUN gain, et ce n'est pas un
+     hasard -- c'est structurel.** A chaque omega_B teste, `parite_separee` et
+     `parite_globale` sont IDENTIQUES (0.812/0.812 au meilleur point). Raison
+     mathematique trouvee apres coup : quand chaque groupe est d'abord reduit
+     a UN SEUL angle agrege (moyenne sur 30 noeuds), `signe(cos theta_A) . signe(cos theta_B)`
+     et `signe(cos(theta_A+theta_B))` sont une IDENTITE des que theta_A, theta_B
+     sont proches de {0, pi} -- pas une question empirique. Le gain de la genese
+     (11/07, moyenne complexe bat le vote +5.5 pts) venait de combiner N=5
+     unites individuellement bruitees PAR INTERFERENCE AVANT tout seuillage, pas
+     de comparer deux angles deja agreges. **Ce test-ci n'a donc pas isole le
+     bon mecanisme** -- la vraie marche suivante serait un decode PAR NOEUD (30
+     votes individuels par groupe) comparant majorite-de-signes vs
+     interference-complexe-avant-signe, la structure exacte de la genese,
+     jamais tentee sur le reseau physique. Non lance cette session (nouveau
+     perimetre, a proposer).
+  **Bilan honnete de la marche.** Le coeur fait ce qu'on lui demande (rotation
+  par groupe verifiee, mecaniquement saine, tests + Guardian intacts). Les
+  DEUX hypotheses pratiques testees (crosstalk repare par frequence ; parite
+  mieux lue globalement) sont refutees ou non concluantes SUR CE PROTOCOLE
+  PRECIS -- et la raison de l'echec du point 3 est elle-meme un resultat :
+  agreger avant de comparer detruit exactement le mecanisme qu'on voulait
+  tester.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
