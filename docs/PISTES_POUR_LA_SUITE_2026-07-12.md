@@ -925,6 +925,68 @@
   testé ; la vérification rapide est ICI un seuil simple sur la position
   du solveur, pas un composant appris ou général — sa forme exacte
   dépendrait du problème réel.
+- **⚠️ LE BILAN MATÉRIEL COMPLET — LE −96 % NE SURVIT PAS TEL QUEL, FAIT le
+  13/07/2026, même soir** (`experiments/p11_material_budget_poc.py`, Julien
+  après le récapitulatif de la journée : « il faut connaître le bilan
+  matériel avant d'aller plus loin »). Le −96 % du couplage ne comptait que
+  les itérations solveur — jamais le coût de la lecture M4R elle-même
+  (construction du réseau 100 nœuds + 30 pas d'intégration). Mesuré
+  honnêtement (temps CPU réel, wall-clock, chemin de code exact du
+  pipeline) : **une seule lecture M4R coûte 15 ms, soit l'équivalent de
+  ~63 000 itérations du solveur-jouet (0,24 µs chacune)** — le budget BLIND
+  complet (1475 itérations) ne coûte que 0,35 ms, 43× moins cher qu'une
+  seule lecture. **En temps réel, WARM et COUPLED sont ~42× PLUS LENTS que
+  BLIND**, pas 96 % plus rapides. Mécanisme non affecté (accuracy toujours
+  0,817) — la cause est le choix du solveur-cible : un problème scalaire à
+  1 dimension, gratuit par construction, jamais calibré pour un bilan
+  économique face à un système FHN+doute à 100 dimensions couplées.
+- **✅ PISTE 1 — À QUELLE TAILLE DE PROBLÈME LE −96 % REDEVIENT-IL RÉEL ?
+  FAIT le 13/07/2026, même soir** (`experiments/p11_realistic_solver_scaling_poc.py`,
+  Julien : « on part sur la piste 1 »). Sweep du coût par itération via un
+  produit matrice-vecteur DENSE D×D (état auxiliaire couplé, cas le plus
+  coûteux plausible), D de 1 à 10 000, sans retoucher le mécanisme (mêmes
+  comptes d'itérations BLIND/WARM/COUPLED déjà mesurés). **Seuil de
+  rentabilité trouvé empiriquement à D*≈300** (13,4 µs/itération),
+  **cohérent avec le seuil analytique dérivé indépendamment** (10,63 µs/itération
+  = coût lecture / économie d'itérations — cross-check qui tient). Au-delà,
+  le gain croît vite : ×7,6 à D=1000, ×27 à D=10 000. Deux réserves posées
+  explicitement avant de conclure : (1) ce test isole le COÛT seul, le
+  mécanisme n'a pas été revérifié en vraie dimension D ; (2) le matvec dense
+  est le cas le plus cher plausible — un solveur à structure creuse
+  repousserait D* plus loin.
+- **✅ RÉSERVE 1 FERMÉE — le mécanisme tient nativement en D réellement
+  couplé, FAIT le 13/07/2026, même soir** (`experiments/p11_native_coupled_mechanism_poc.py`,
+  Julien : « je voudrais avoir une idée claire de l'ensemble »). Piège
+  D=10 000-dimensionnel GENUINEMENT couplé (matrice creuse tridiagonale,
+  x[0] contaminé par ses voisins directs, pas un sous-système parallèle
+  décoratif) ; pré-vol vérifié (le plateau reste soluble ET piégeux) pour
+  coupling_scale ∈ {0, 0,02, 0,05, 0,1} — 4/4 valides. **Accuracy de
+  lecture M4R INCHANGÉE (0,817) à toutes les échelles de couplage testées**
+  (attendu : la lecture ne dépend pas de la dimension du solveur). **Gain
+  réel mesuré NATIVEMENT (aucun modèle de coût séparé) : +63 à +72 % vs
+  blind** — cohérent avec ce que le modèle de coût de la réserve 2 prédit à
+  un D juste au-dessus du seuil, un cross-check indépendant supplémentaire
+  qui tient.
+- **✅ RÉSERVE 2 FERMÉE — le seuil dense (D*≈300) était optimiste, FAIT le
+  13/07/2026, même soir** (`experiments/p11_sparse_cost_reserve_poc.py`).
+  Même sweep que la piste 1, matvec DENSE remplacé par un matvec CREUX
+  tridiagonal (bande=3, O(D) au lieu de O(D²) — la structure la plus
+  courante en pratique, type Laplacien 1D discrétisé/PDE). **Le seuil se
+  déplace à D*≈10 000 (×33 par rapport au cas dense)**, mais reste dans une
+  plage plausible pour de nombreux solveurs PDE/systèmes linéaires réels
+  (maillages à quelques dizaines de milliers d'inconnues).
+  **BILAN HONNÊTE DE TOUT LE FIL** (le mur, les deux pistes, les deux
+  réserves) : le −96 % initial était un artefact du solveur-jouet, trop bon
+  marché pour constituer une vraie mesure. Le bilan matériel complet,
+  vérifié de bout en bout par trois scripts indépendants qui se recoupent
+  numériquement, est un **gain réel mais nettement plus modeste (+63 à
+  +72 %, pas −96 %)**, et **conditionnel** : il exige que le solveur cible
+  ait un coût par itération dépassant un seuil qui dépend fortement de sa
+  propre structure de couplage (dense : D~300 ; creux/réaliste : D~10 000)
+  — plausible pour beaucoup de solveurs réels, à vérifier au cas par cas,
+  jamais garanti universellement. Rien de tout ça n'a été laissé de côté :
+  le mur, sa cause exacte, et sa résolution partielle sont tous committés
+  avec le même niveau de détail que les résultats positifs.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
