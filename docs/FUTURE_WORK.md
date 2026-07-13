@@ -404,6 +404,40 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     la **mémoire**, pas la diversité → c'est le **pendant SOTA de B1c/B1d** (tâche loyale : le doute
     n'aide pas). La contribution du projet est le **mécanisme du doute** (anti-synchro, diversité
     maintenue), pas la performance mémoire brute. On sait désormais sur quelle tâche **ne pas** le vendre.
+  - **✅ L'ANALOGIE LLM TESTÉE (13/07/2026)** — `experiments/b5_context_reinjection_poc.py`.
+    Question de Julien : un LLM n'a pas de mémoire entre deux requêtes non plus, c'est la
+    **reprise du contexte** (le prompt re-injecte l'historique) qui fait le travail — la même
+    analogie s'applique-t-elle à M4R ? **Nuance posée avant de tester** : un LLM redémarre à
+    ZÉRO entre appels (mémoire purement externe) ; M4R a déjà un état interne CONTINU (v, w,
+    u, u_c ne sont jamais réinitialisés) — son problème n'est pas « pas de mémoire du tout »,
+    c'est « l'état persistant n'encode pas ce qu'il faut pour NARMA10 ». Mais la SOLUTION de
+    l'analogie (réinjecter explicitement l'historique brut plutôt que compter sur la mémoire
+    interne) reste testable telle quelle : NARMA10 dépend explicitement de u[t−9] et u[t], donc
+    on ajoute cette fenêtre brute de 10 valeurs au readout — EXACTEMENT ce qu'un contexte de
+    LLM fournirait — de M4R ET de l'ESN (même augmentation aux deux, pour isoler ce qui est
+    spécifique à M4R), + un contrôle « contexte SEUL, aucun réservoir ». Aucune nouvelle
+    simulation réseau (le contexte s'ajoute au niveau du readout, pas de la dynamique).
+    **Trois résultats, aucun arrondi :**
+    1. **M4R ne gagne RIEN de significatif** (1.942→1.880, CI[−0.156,+0.253] couvre 0) — donner
+       à M4R le même historique explicite qu'un contexte de LLM ne répare PAS son désavantage.
+    2. **L'ESN, lui, gagne un peu** (0.351→0.335, CI[+0.011,+0.023] exclut 0, ~5%) — le contexte
+       aide un modèle qui sait DÉJÀ exploiter la mémoire ; ce n'est pas un effet spécifique à la
+       faiblesse de M4R, c'est une aide générale marginale.
+    3. **L'écart M4R-ESN NE se referme PAS** (+1.59 sans contexte → +1.55 avec, quasi inchangé)
+       — **même avec le MÊME historique explicite que l'ESN, M4R reste ~5,5× pire.** Le
+       problème n'est donc PAS (ou pas seulement) la mémoire au sens LLM du terme.
+    **Découverte annexe, la plus parlante** : une régression linéaire sur le CONTEXTE SEUL
+    (aucun réservoir, juste u[t−9..t] brut) fait NRMSE=**0.829** — **MEILLEUR que M4R avec OU
+    sans contexte** (1.88-1.94) ! Le réservoir FHN+doute de M4R fait donc **pire que ne rien
+    faire** sur cette tâche précise : sa propre dynamique (l'exploration/anti-synchronisation)
+    ne préserve pas l'information brute, elle la **brouille** activement au-delà de ce qu'une
+    lecture linéaire directe des entrées récupérerait seule. **Verdict de la question de
+    Julien : l'analogie LLM ne sauve PAS M4R ici** — pas parce que la reprise de contexte ne
+    marche jamais (elle aide l'ESN), mais parce que le déficit de M4R sur NARMA10 est un
+    problème de TRAITEMENT (la dynamique du doute transforme l'info dans un sens défavorable
+    à cette tâche précise), pas seulement d'ABSENCE de mémoire externe à réinjecter. Cohérent
+    avec le cadrage établi (M4R = explorateur, pas mémoire) — mais precise maintenant *pourquoi*
+    au niveau mécanique, pas seulement au niveau du score final.
   - **Question ouverte RÉPONDUE (honnête, nuancée)** — `experiments/b5b_deceptive_exploration.py`,
     commit `00094d4`. Décision **en ligne** trompeuse (converger tôt = se tromper), doute natif vs
     ESN de référence, 15 seeds. **(1)** Le doute (0.87) **écrase** le meilleur arrêt *naïf* de l'ESN
