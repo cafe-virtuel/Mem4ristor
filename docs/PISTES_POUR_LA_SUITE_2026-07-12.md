@@ -852,6 +852,45 @@
   solveur+veille (✅ P11 original + warm start), raffinement (✅ ici, avec
   coût temporel caractérisé) — les trois maillons sont maintenant testés,
   aucun n'est gratuit, aucun n'est cassé.
+- **⚠️ COMPARÉ À UNE SOLUTION TRADITIONNELLE le 13/07/2026, même jour**
+  (`experiments/p11_refinement_vs_traditional_poc.py`, Julien : « il finit
+  par se stopper lui-même mais il a coûté en compute avant cela — est-il
+  possible de faire la même expérience avec les solutions traditionnelles
+  pour voir ce qu'il coûte par rapport à eux ? »). Candidat traditionnel le
+  plus simple et le moins généreux : un **accumulateur naïf** — une
+  moyenne mobile exponentielle (EMA) du signal brut reçu, AUCUN réseau,
+  AUCUN doute. Même séquence exacte (T1=200 pas faux, puis T2 pas
+  correctifs). Sweep de la constante de temps tau_ema∈{5,10,20,50} (la
+  plage encadre tau_u=10 du cœur M4R, pour ne favoriser personne).
+  **Résultat, net et défavorable à M4R sur CE point précis** :
+  | | correction complète (accuracy≥0.99) |
+  |---|---|
+  | EMA tau=5   | T2≥30 |
+  | EMA tau=10  | T2≥50 |
+  | EMA tau=20  | T2≥100 |
+  | EMA tau=50  | T2≥100 |
+  | **M4R (FHN+lattice+doute)** | **entre T2=150 et T2=300** |
+  **L'accumulateur naïf corrige PLUS VITE à TOUS les réglages testés** —
+  même le plus lent (tau=50, 5× la constante de temps propre de M4R)
+  corrige à T2=100, quand M4R a besoin d'au moins 150. **Pour CE sous-
+  problème précis (suivre rapidement « quelle est la meilleure estimation
+  actuelle de la direction »), la dynamique FHN+doute de M4R coûte PLUS
+  cher qu'une simple moyenne mobile — pas moins.**
+  **Ce que ça implique pour l'architecture de Julien** : ce résultat ne
+  contredit PAS le warm start (validé séparément, avec sa propre valeur
+  ajoutée mesurée au-delà du hasard) ni la veille P11 (M4R bat la patience
+  sur un solveur tiers) — mais il précise où NE PAS utiliser M4R dans une
+  chaîne complète. Si le maillon « suivre/corriger rapidement une
+  estimation » doit être RAPIDE, un accumulateur simple le fait mieux ;
+  M4R garde sa valeur propre ailleurs (la lecture initiale au-dessus du
+  hasard, la surveillance d'un solveur tiers). **Cohérent avec la
+  conclusion de Julien du même jour** (« il ne peut pas le faire tout
+  seul, c'est l'un des composants pas le seul ») — précisée encore : même
+  DANS la chaîne, certains maillons sont mieux servis par une solution
+  traditionnelle que par M4R lui-même. Réserve : comparaison sur CE
+  readout scalaire seul (direction binaire), pas sur la tâche complète
+  (crosstalk, multiplexage) où M4R a montré d'autres propriétés
+  aujourd'hui.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
