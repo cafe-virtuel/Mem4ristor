@@ -1,0 +1,14 @@
+test,metric,value
+hasard_vs_m4r,econ_hasard,718.3666666666667
+hasard_vs_m4r,pct_hasard,48.7011739715038
+hasard_vs_m4r,econ_m4r,1430.05
+hasard_vs_m4r,pct_m4r,96.94925595742518
+hasard_vs_m4r,added_value,711.6833333333333
+hasard_vs_m4r,excess_acc,0.4833333333333333
+position_incertaine,accuracy,1.0
+position_incertaine,n_inside,15
+position_incertaine,n_total,60
+position_incertaine,blind,2325.6
+position_incertaine,warm,1251.1
+position_incertaine,econ,1074.5
+position_incertaine,pct,46.203130374957006

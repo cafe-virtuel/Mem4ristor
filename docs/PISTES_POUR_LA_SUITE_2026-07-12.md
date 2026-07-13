@@ -779,20 +779,46 @@
   réelles) — et l'économie **tient quand même** : blind=1497, warm (mélange
   vrai/faux)=265, soit **+1232 (−82 %)**. Le petit coût des erreurs occasionnelles
   est largement dominé par le gain massif des bonnes estimations.
-  **Verdict : le warm start continu fonctionne, honnêtement vérifié dans les deux
-  sens (le cas où ça marche ET le cas où ça coûte), sur cette classe de problème**
-  (solveur itératif piégé par un plateau trompeur symétrique en signe). Différence
-  qualitative avec P11 (qui égalait seulement le meilleur budget fixe) : ici le
-  gain est net et large, parce que le rôle n'est plus de rivaliser avec un budget
-  déjà bien réglé mais d'éviter un piège que TOUT solveur non informé doit
-  traverser. **Réserve honnête** : testé sur un seul type de piège (plateau
-  symétrique par construction) ; le coût de la lecture M4R (300 ou 30 pas-réseau)
-  n'est pas converti en une unité comparable aux itérations solveur — la
-  pertinence réelle dépend du rapport de coût entre un pas M4R et une itération
-  solveur dans un système matériel reste à définir. Idée de Julien pour la suite
-  (non testée) : chaîner ce warm start avec un raffinement itératif (retour du
-  solveur → nouvelle lecture M4R plus précise → nouveau warm start) — le seul
-  maillon de cette chaîne encore jamais testé.
+  **Verdict initial : le warm start continu fonctionne**, vérifié dans les deux
+  sens (le cas où ça marche ET le cas où ça coûte), sur cette classe de problème
+  (solveur itératif piégé par un plateau trompeur symétrique en signe).
+  **⚠️ DEUX CONTRE-ÉPREUVES FAITES le 13/07/2026, même jour** (`experiments/p11_warm_start_stress_poc.py`,
+  demande explicite de Julien : « bien sûr que l'on pousse au max de ce qui peut
+  être testé et on fait aussi tout pour le prendre en défaut »). **Le « +97 % »
+  pris seul était trompeur — corrigé ici.**
+  1. **Le hasard fait DÉJÀ la moitié du travail.** Une devinette PILE OU FACE
+     (aucune information de M4R) économise déjà **+49 %** (+718 itérations) —
+     parce que le piège est très asymétrique : bien deviner est quasi gratuit
+     (~45 pas), mal deviner coûte à peine plus cher que ne rien faire (+11 à
+     +37 pas sur ~1000-1700). **La vraie contribution de M4R, au-delà du
+     hasard, est de +712 itérations supplémentaires** (de 49 % à 97 %),
+     portée par son excès de justesse de **+48,3 points** sur le hasard
+     (accuracy M4R=1.00 vs hasard=0.517). Réel et substantiel, mais la moitié
+     du chiffre brut vient de la structure du piège, pas de M4R — à toujours
+     présenter comme (part structure + part M4R), jamais comme un chiffre unique.
+  2. **Le warm start dégrade GRACIEUSEMENT, ne s'effondre pas, si la position
+     du piège est moins prévisible.** X_WARM=1.5 avait été choisi pour être
+     TOUJOURS au-delà du piège dans la plage testée (x_p_mag∈[0.9,1.3]) — un
+     choix qui suppose de connaître cette plage à l'avance. En élargissant à
+     [0.9,1.9] (le warm start atterrit alors DANS le piège 15/60 fois,
+     vérifié explicitement), l'économie descend à **+46 %** (au lieu de
+     +97 %) mais reste largement positive et substantielle — pas
+     d'effondrement, dégradation proportionnée au nombre de cas où
+     l'hypothèse de distance sûre est violée.
+  **Bilan honnête complet** : le mécanisme est réel, mais le narratif correct
+  n'est PAS « M4R économise 97 % » — c'est « sur ce type de piège asymétrique,
+  N'IMPORTE QUELLE heuristique de direction économise déjà ~49 %, et la
+  justesse mesurée de M4R (bien au-dessus du hasard) ajoute ~48 points
+  supplémentaires, à condition que l'hypothèse de distance sûre du warm start
+  tienne — et si elle ne tient qu'à moitié, le gain se dégrade proportionnellement
+  sans disparaître ». Différence qualitative avec P11 (qui égalait seulement
+  le meilleur budget fixe) : ici, même après correction, le gain net attribuable
+  à M4R reste large et clair. **Réserve inchangée** : un seul type de piège
+  testé ; coût de la lecture M4R non converti en unité comparable aux
+  itérations solveur. Idée de Julien pour la suite (non testée) : chaîner ce
+  warm start avec un raffinement itératif (retour du solveur → nouvelle
+  lecture M4R plus précise → nouveau warm start) — le seul maillon de cette
+  chaîne encore jamais testé.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
