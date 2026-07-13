@@ -1,5 +1,0 @@
-signal,auc_normal_vs_corrupt,auc_novel_vs_corrupt,mean_normal,mean_corrupt,mean_novel
-u_final,0.0025,0.0000,0.841440,0.741202,0.957375
-sig_mean,0.0125,0.0000,2.751682,2.387466,3.232320
-z_score,1.0000,0.0000,0.814117,1.156398,1.898646
-lap_input,1.0000,1.0000,0.044559,0.394016,0.063630

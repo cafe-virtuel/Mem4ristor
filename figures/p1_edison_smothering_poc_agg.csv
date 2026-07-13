@@ -1,5 +1,0 @@
-condition,fou_frac_time_mean,pct_nodes_ever_fou_mean,never_fou_all_seeds
-HONEST_HIGH,0.745500,1.000000,False
-ATTACK,0.000000,0.000000,True
-ATTACK_FATIGUE,0.000000,0.000000,True
-ATTACK_WATCHDOG,0.408333,1.000000,False

@@ -1,5 +1,0 @@
-p_correct,gamma_int,acc_vote,acc_vote_ref,d_vote,lo_vote,hi_vote,verdict_vote,acc_int,acc_int_ref,d_int,lo_int,hi_int,verdict_int
-0.600000,0.150000,0.675000,0.600000,0.075000,-0.062500,0.212500,non confirme (IC couvre 0),0.562500,0.525000,0.037500,-0.075000,0.150000,non confirme (IC couvre 0)
-0.600000,0.300000,0.575000,0.600000,-0.025000,-0.175000,0.125000,non confirme (IC couvre 0),0.575000,0.525000,0.050000,-0.075000,0.175000,non confirme (IC couvre 0)
-0.700000,0.150000,0.762500,0.825000,-0.062500,-0.175000,0.050000,non confirme (IC couvre 0),0.675000,0.687500,-0.012500,-0.112500,0.100000,non confirme (IC couvre 0)
-0.700000,0.300000,0.662500,0.825000,-0.162500,-0.300000,-0.037500,REFUTE (pire),0.712500,0.687500,0.025000,-0.100000,0.150000,non confirme (IC couvre 0)

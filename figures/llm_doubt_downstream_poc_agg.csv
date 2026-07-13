@@ -1,7 +1,0 @@
-condition,acc_group,acc_ident,min_dilemme,depths_picked
-ATTRACTIVE,0.6590,0.7734,0.6590,"[1, 2]"
-DOUBT,0.6511,0.8330,0.6511,"[2, 3]"
-NO_UPDATE,0.6412,0.8503,0.6412,"[0]"
-"DOUBT - ATTRACTIVE(best depth)",-0.0079,-0.0109,-0.0045
-"DOUBT - NO_UPDATE",0.0099,0.0089,0.0108
-"ATTRACTIVE - NO_UPDATE",0.0177,0.0138,0.0214

@@ -1,6 +1,0 @@
-readout,acc_test,ci_lo,ci_hi
-L1 strict-local appris,0.6233,0.5673,0.6763
-L2 paires appris,0.6233,0.5673,0.6763
-R2_global (prior parite),0.7233,0.6701,0.7709
-vote,0.6633,0.6081,0.7144
-R1_local_fixe,0.5467,0.4901,0.6021
