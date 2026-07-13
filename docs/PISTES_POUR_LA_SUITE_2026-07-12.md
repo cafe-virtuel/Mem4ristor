@@ -520,6 +520,38 @@
   **Marche suivante possible (non tentee) :** re-tester la separation de
   frequence (omega_B>0) A gamma_int=0 -- p10_group_rotation_poc.py l'avait
   refutee au defaut 0.15, jamais essayee sur un canal deja assaini.
+- **"LA FLEMME" (intuition de Julien) TESTEE le 13/07/2026, meme jour**
+  (`experiments/p10_flemme_frontiere_poc.py`, accord : « on continue » +
+  caracterisation textuelle « ce gamma_int c'est la flemme en quelque
+  sorte »). Lecture proposee : au lieu de calculer honnetement sa propre
+  cible locale (k_u . laplacian_v, le desaccord REEL avec SES voisins v),
+  un noeud a gamma_int>0 se cale PARTIELLEMENT sur la moyenne de ses
+  voisins u_c, quelle que soit la pertinence de ce qu'ils portent --
+  "flemme" au sens propre : copier plutot que calculer.
+  **Prediction posee AVANT de lancer** : si la flemme est un effet de
+  PROXIMITE, le cout de gamma_int devrait etre concentre aux noeuds A LA
+  FRONTIERE directe entre A et B (voisins lattice en desaccord de bit),
+  et nul aux noeuds INTERIEURS (les 4 voisins lattice tous dans le meme
+  groupe/idle -- copier un voisin d'accord ne coute rien).
+  **REFUTEE TELLE QUELLE.** Lecture par noeud (2880 noeuds-problemes,
+  gamma_int in {0.15, 0.0}) : accuracy INTERIEUR et FRONTIERE quasi
+  identiques a chaque gamma_int (0.653 vs 0.658 au defaut ; 0.632 vs 0.670
+  a gamma=0 -- ecarts dans le bruit, ±0.02 SE, aucune tendance coherente).
+  Le cout de gamma_int N'EST PAS un effet de premier voisin.
+  **Explication qui tient** : gamma_int s'applique a CHAQUE pas pendant
+  1400 pas (B_PULSE+DELAY) ; sur un lattice periodique de diametre ~10,
+  la contamination a largement le temps de DIFFUSER a tout le reseau par
+  sauts successifs -- un noeud sans aucun voisin direct dans l'autre
+  groupe est quand meme touche des que SON voisin a ete lui-meme influence
+  par un voisin plus loin. "La flemme" de Julien est confirmee au niveau
+  MECANISME (couper gamma_int repare le crosstalk, section precedente) et
+  au niveau GROUPE (le vote/l'interference du groupe entier en patissent),
+  mais elle n'est pas contagieuse par CONTACT -- elle est contagieuse par
+  DIFFUSION GLOBALE, le temps d'exposition (nombre de pas) comptant plus
+  que la distance topologique au groupe adverse. Cout par noeud (~0.65)
+  nettement sous l'accuracy de GROUPE (0.81-0.96 en interference, 0.73-0.90
+  en vote) -- attendu, un seul noeud est un estimateur bien plus bruite
+  que 30 combines (cf. la marche vote-vs-interference).
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
