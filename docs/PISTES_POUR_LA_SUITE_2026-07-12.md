@@ -692,6 +692,38 @@
   independant sur un signal partage). Reserve : n=40/point, gains a la
   limite de 2 SE, a repliquer avec plus de seeds avant de citer hors
   contexte exploratoire.
+- **REPLICATION FAITE le 13/07/2026, meme jour -- LE RESULTAT NE TIENT
+  PAS.** (`experiments/p10_condorcet_replication_poc.py`, demande de
+  Julien : « 1 et une fois trouve on passera a 2 » -- ici la piste 2,
+  repliquer avant de generaliser). Meme protocole EXACT, mais 40 seeds
+  (n=80/point au lieu de 40) sur une plage de graines DISJOINTE (100-139
+  vs 0-19 du test original) -- une vraie replication independante, pas un
+  re-run. Restreint aux 2 points qui comptaient (p_correct=0.6/0.7) x
+  3 gamma_int (0, 0.15, 0.3).
+  **VERDICT : 0/8 comparaisons confirmees.** Les 4 gains rapportes par le
+  premier test (vote +0.175 et +0.125 a p_correct=0.6/0.7 gamma=0.15 ;
+  interference +0.125 a p_correct=0.7 gamma=0.3) s'effondrent TOUS a des
+  IC bootstrap couvrant 0 sur ce nouvel echantillon (deltas +0.075, -0.062,
+  +0.050, +0.025 -- direction meme pas coherente d'un test a l'autre). PIRE :
+  un point part significativement dans le sens INVERSE -- p_correct=0.7,
+  gamma_int=0.3, VOTE : delta=-0.163 CI[-0.300,-0.037], gamma_int=0.3 est
+  ici SIGNIFICATIVEMENT PIRE que gamma_int=0 (l'oppose exact de ce que le
+  premier test semblait montrer a ce meme point).
+  **Le "premier resultat positif de la journee" etait du BRUIT
+  d'echantillonnage a n=40, pas un effet reel.** C'est exactement ce qu'un
+  gate de replication est cense attraper (meme pratique que la genese du
+  11/07 : "la tendance d'hier etait du bruit"). **Verdict final, corrige :
+  sur les 9 tests de gamma_int menes le 13/07 (memoire, anti-sync,
+  crosstalk, diffusion, sagesse des foules, menteurs, homogeneisation,
+  bruit amplifie, topologie BA, ET desormais Condorcet), AUCUN gain net
+  pour gamma_int n'a survecu a une replication independante.** L'intuition
+  de Julien (« la flemme ne rapporte rien ») ressort de la journee ENCORE
+  PLUS solide qu'avant ce test -- pas malgre la replication, GRACE a elle :
+  le seul contre-exemple apparent s'est demonte lui-meme des qu'on lui a
+  donne une vraie chance de tenir. La piste #2 initialement prevue
+  (tester Condorcet sur BA/ER) est donc ABANDONNEE -- generaliser un
+  resultat qui ne replique meme pas sur la MEME topologie n'aurait aucun
+  sens.
 
 ### P11 — L'horloge de délibération comme module universel d'arrêt ⏱️
 - **Pourquoi.** B5b a montré que |Lv| est une « horloge de délibération
