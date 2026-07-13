@@ -987,6 +987,56 @@
   jamais garanti universellement. Rien de tout ça n'a été laissé de côté :
   le mur, sa cause exacte, et sa résolution partielle sont tous committés
   avec le même niveau de détail que les résultats positifs.
+- **⚠️ CHAÎNAGE À PLUSIEURS TOURS — bilan matériel confirmé, question
+  mémoire/cicatrice INCONCLUSE au premier essai, FAIT le 13/07/2026, même
+  soir** (`experiments/p11_multiround_chain_poc.py`, Julien : « j'aimerais
+  bien aborder le chaînage multi tours »). Dernière pièce jamais testée de
+  l'architecture : K=4 pièges trompeurs successifs, FRESH (réseau
+  reconstruit à chaque tour) vs PERSISTENT (état conservé), même groupe
+  physique dans les deux conditions. **Le bilan matériel cumulé tient sur
+  toute la chaîne** (COUPLED ~238-250 itérations vs BLIND 5861 sur 4 tours,
+  taux de gain stable, pas de dégradation cumulative) et **PERSISTENT
+  économise ~23 % du temps de lecture** (pas de reconstruction réseau sur
+  3/4 tours). Mais la question scientifique centrale — la mémoire
+  directionnelle de P10 aide-t-elle, ou la cicatrice (trouvée 3× déjà)
+  nuit-elle sur une vraie séquence ? — **reste OUVERTE à ce stade** : IC
+  bootstrap apparié sur l'accuracy binaire (n=40 chaînes) couvre 0 dans les
+  deux sens (delta accuracy FRESH/PERSISTENT et drift tour1→tour4 pour
+  chaque condition). Une première lecture des deltas bruts avant le calcul
+  d'IC suggérait à tort une « cicatrice confirmée » — l'IC a corrigé cette
+  lecture avant qu'elle soit rapportée.
+- **✅ MÉMOIRE ET CICATRICE, LES DEUX CONFIRMÉES — MÊME MÉCANISME, FAIT le
+  13/07/2026, même soir, clôture de ce fil** (`experiments/p11_continuous_memory_scar_poc.py`,
+  Julien : « on lance B »). Question réglée en lisant le signal CONTINU de
+  `Re(u_c)` (méthode de `p10_complex_doubt_poc.py`, 12/07) plutôt que la
+  décision binaire bruitée — même n=40 chaînes, résultat net cette fois.
+  Deux séquences de signes contrôlées : **SAME** (signe identique répété 4
+  fois, terrain de la mémoire) et **FLIP** (signe inversé à chaque tour,
+  terrain de la cicatrice).
+  | | tour 1 | tour 2 | tour 3 | tour 4 |
+  |---|---|---|---|---|
+  | SAME/FRESH | +0,017 | +0,013 | +0,015 | +0,013 |
+  | **SAME/PERSISTENT** | +0,017 | +0,051 | +0,090 | **+0,128** |
+  | FLIP/FRESH | +0,017 | +0,012 | +0,015 | +0,013 |
+  | **FLIP/PERSISTENT** | +0,017 | **−0,033** | +0,048 | **−0,053** |
+  **Mémoire confirmée** (SAME) : PERSISTENT croît de façon monotone et
+  cumulative (×7,5 entre tour 2 et tour 4) pendant que FRESH reste plat —
+  delta=+0,076 CI[+0,059,+0,093]. **Cicatrice confirmée** (FLIP) :
+  PERSISTENT oscille et devient NÉGATIF sur les tours de conflit pendant
+  que FRESH reste stable et positif — delta=−0,026 CI[−0,033,−0,020].
+  **Contrôle qui referme la boucle** : sans aucune mémoire possible (FRESH
+  seul), SAME et FLIP donnent EXACTEMENT le même résultat (delta=0,000,
+  IC quasi nul) — ce n'est pas FLIP qui est intrinsèquement plus dur, c'est
+  la persistance de l'état qui produit l'effet dans les deux sens.
+  **Mémoire et cicatrice ne sont pas deux phénomènes séparés — c'est le
+  MÊME mécanisme (la persistance de `u_c` d'un tour à l'autre), qui
+  renforce quand le monde reste cohérent et résiste quand il change.**
+  Nouvelle instance, démontrée cette fois dans une seule expérience
+  contrôlée plutôt qu'à travers des POCs séparés, du fil rouge du projet :
+  la valeur du doute (ici, de sa mémoire) est conditionnelle au régime.
+  **Implication pour l'architecture** : PERSISTENT est le bon choix si les
+  décisions successives sont corrélées ; FRESH est plus sûr si elles sont
+  indépendantes ou peuvent s'inverser sans prévenir.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
