@@ -891,6 +891,40 @@
   readout scalaire seul (direction binaire), pas sur la tâche complète
   (crosstalk, multiplexage) où M4R a montré d'autres propriétés
   aujourd'hui.
+- **✅ LE COUPLAGE DES TROIS FAIT le 13/07/2026, même jour, clôture de ce
+  fil** (`experiments/p11_coupled_pipeline_poc.py`, Julien : « un couplage
+  des trois éléments justement »). Assemble tout ce qui a été mesuré
+  séparément aujourd'hui, chaque pièce à sa vraie place : **M4R** pour la
+  lecture initiale bon marché (imparfaite mais mieux que le hasard) ;
+  **une vérification rapide et bon marché** (l'esprit de l'accumulateur —
+  quelques dizaines de pas, pas 150-300) pour détecter vite si le guess de
+  M4R semblait faux, plutôt que d'attendre la correction interne lente de
+  M4R ; **le solveur** pour le calcul précis. Protocole : lecture M4R
+  RÉALISTE (T_READ=30, B_E=0.3, accuracy mesurée 0.817 sur 60 essais — pas
+  le cas facile à 100 %), warm start, fenêtre de diagnostic de 50 pas,
+  bascule immédiate de côté si le solveur ne s'approche pas de la cible
+  supposée.
+  | Stratégie | itérations moyennes | vs BLIND |
+  |---|---|---|
+  | BLIND (aucune aide) | 1475 | — |
+  | Warm start SEUL (sans vérification) | 336 | −77 % |
+  | **COUPLÉ (M4R + vérification rapide)** | **54** | **−96 %** |
+  **Le couplage ajoute +282 itérations d'économie au-delà du warm start
+  seul** — et surtout, **sur les 11/60 cas précis où M4R s'est trompé** :
+  warm start seul en subit le plein coût (1631 itérations, pire que
+  blind, conforme à la pénalité déjà mesurée) ; le pipeline couplé
+  **rattrape 94 % de cette perte** (95 itérations), parce que la
+  vérification rapide détecte l'erreur en 50 pas au lieu des 150-300 pas
+  que la correction interne de M4R aurait exigés (`p11_refinement_scar_poc.py`).
+  **C'est la démonstration complète de la conclusion de Julien de toute la
+  journée** : M4R n'est ni le calculateur, ni le correcteur rapide — c'est
+  la source de direction bon marché, câblée à côté d'une vérification
+  simple (pour la vitesse) et d'un solveur (pour la précision), chacun
+  à la tâche qui lui convient. Aucune pièce seule n'atteint ce résultat ;
+  ensemble, elles le font. Réserve inchangée : un seul type de piège
+  testé ; la vérification rapide est ICI un seuil simple sur la position
+  du solveur, pas un composant appris ou général — sa forme exacte
+  dépendrait du problème réel.
 
 ### P12 — La tâche trompeuse B1d sur substrat STNO (la niche sur un corps) 🧲
 - **Pourquoi.** NARMA10 (11/07) était le terrain de la *mémoire* — le doute y est
