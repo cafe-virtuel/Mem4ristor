@@ -225,6 +225,17 @@
   avec le compas COMPOSITE (pas u seul). **Effort.** 🧩.
   **Risque.** Compas mesuré sur UNE tâche (B1d) — le composite doit être re-appris
   par domaine ; ne transporter que la recette (signaux + CV), pas les poids.
+- **✅ (c) FAIT le 13/07/2026** (`experiments/p6c_backtest_poc.py`, domaine
+  « investissement virtuel » synthétique aux statistiques GENUINEMENT différentes
+  de B1d — paramètres de marché (forces, effectifs, durée du faux breakout) TIRÉS
+  par essai plutôt que fixes —, 60 épisodes, même critère de succès que P6b :
+  r_pb>0.15 ET gain@50 %>+3 pts). **La recette transporte, largement.**
+  ALWAYS-TRADE=63.3 % ; COMPOSITE_CV ré-appris ici : **+30.0 pts @50 % couverture
+  (63.3→93.3 %), r_pb=+0.463** — le meilleur résultat d'abstention du projet à ce
+  jour, au-delà même de P6b. Le signal individuel gagnant de B1d (conf_u_inv)
+  transporté TEL QUEL fonctionne aussi ici (+13.3 pts) mais nettement moins bien
+  que le composite ré-appris — la recette (signaux + CV) ajoute une vraie valeur
+  au-delà d'un signal figé, même quand les deux « marchent ».
 
 ### P7 — L'inducteur chimique de l'expérience 008 (le Labo a produit un mécanisme) 🧪
 - **Trace.** `_SHADOW_LAB\laboratoire_absurde\experience_008_v2_chemical_inductor.py`
@@ -241,6 +252,17 @@
   change-t-elle la niche du doute (elle pourrait allonger l'horloge de délibération) ?
 - **Effort.** 💭 1 session de lecture + 1 de POC. **Risque.** Peut n'être qu'une
   curiosité de jouet — l'extraire seulement si les équations tiennent debout.
+- **❌ PARITÉ (négatif honnête) le 13/07/2026** (`experiments/p7_chemical_inductor_poc.py`,
+  mécanisme extrait de 008 — un filtre passe-bas dL/dt=β(signal−L), débarrassé du
+  décor majorité/minorité — appliqué EN POST-TRAITEMENT au signal side-car M4R_SIG
+  du harness P11 (aucune modification du cœur), β∈{0.01, 0.03, 0.1, 0.3}, mêmes
+  24 problèmes/protocole que P11). **M4R_L = M4R_SIG exactement** (succès trap
+  0.00 pour les deux, TOUS les β testés) : l'inertie appliquée au signal RAPIDE
+  (|Lv| lissé) ne récupère PAS la robustesse du signal LENT natif (M4R_U : succès
+  trap 1.00). L'« inductance chimique » de 008 ne substitue pas à l'intégration
+  temporelle propre de u (ε_u adaptatif, τ_u) — un simple filtre passe-bas externe
+  n'équivaut pas au mécanisme natif. Résultat négatif honnête, mécanisme du Labo
+  n'apporte rien ici tel quel.
 
 ### P8 — Le bruit coloré pour intégrateur adaptatif (dette numérique) 🔧
 - **Trace.** Rapport Manus (01/05/2026, `🚀 Rapport de Validation…V5.md`, reco
@@ -281,6 +303,15 @@
 - **Trace.** Roadmap V5 point 6 (jamais fait) + reco Manus 3. Voir la décision se
   prendre (flux d'information entre régions/couches au fil du temps).
 - **Effort.** 💭 1 session, valeur = compréhension et communication (labo, vidéo).
+- **✅ FAIT le 13/07/2026** (`experiments/p9_entropy_flow_viz_poc.py`, réutilise
+  `calculate_transfer_entropy` déjà établie du projet — défenses Reviewer2, « TE
+  causalité de u » — pour visualiser un FLUX SPATIAL au cours du temps plutôt
+  qu'un chiffre unique de causalité globale). Stimulus injecté dans un quadrant
+  Q1 d'un lattice 10×10 ; kymographes spatiaux + courbes TE(Q1→Qi) glissantes +
+  graphe de flux à 3 instants. Vérification de cohérence physique (pas un
+  claim) : les voisins directs (Q2, Q3) reçoivent plus de flux tôt que la
+  diagonale (Q4) — cohérent. Valeur = communication/compréhension (labo,
+  vidéo), la voie qui manquait depuis la Roadmap V5.
 
 ---
 
@@ -384,6 +415,19 @@
   distribuée ; comparer plat (90 nœuds) vs hiérarchique à coût égal.
 - **Effort.** 🧩 2 sessions. **Risque.** Beaucoup de degrés de liberté — figer
   l'architecture AVANT de regarder les résultats (garde-fou du 07/07).
+- **❌ RÉSULTAT NÉGATIF HONNÊTE le 13/07/2026** (`experiments/p13_doubt_hierarchy_poc.py`,
+  architecture figée avant résultats : 3 sous-réseaux BA(N=30) + méta-désaccord
+  injecté via `sigma_social_override` — hook d'ablation déjà existant, aucune
+  modification du cœur —, comparé à FLAT (BA N=90 poolé) et HIER_VOTE (3
+  sous-réseaux sans méta-couplage), à coût égal, 20 essais avec hétérogénéité de
+  tromperie locale entre sous-réseaux). **Les trois conditions obtiennent
+  EXACTEMENT la même accuracy (0.85) et le MÊME résultat trial par trial.**
+  Contrôle : le terme méta a un effet numérique réel et non nul sur le signal de
+  décision (jusqu'à ±0.13) mais jamais assez fort pour inverser un signe de
+  décision sur les 20 essais testés à γ_meta=0.5. « Qui doute des douteurs »
+  reste une question ouverte — le premier essai discipliné ne tranche pas ; le
+  risque annoncé (trop de degrés de liberté) ne s'est pas concrétisé en biais,
+  juste en absence de signal détectable à ce réglage.
 
 ### P14 — Le pont LLM, étape 3 : se mesurer à la famille standard 🌉
 - **Pourquoi.** Déjà au backlog (D2) — répété ici pour la complétude du legs :
@@ -393,6 +437,31 @@
 - **Effort.** 🧩. **Risque.** Le résiduel est un adversaire fort ; prédiction
   honnête : le doute ne le battra pas en brut, mais pourrait à profondeur extrême
   ou sous distribution shift — chercher LÀ.
+- **✅ FAIT le 13/07/2026 — le résultat le plus riche des 5 pistes du jour**
+  (`experiments/p14_llm_bridge_residual_poc.py`, condition RESIDUAL_MLP ajoutée
+  au harness EXACT du 11/07 : attention+résidu PUIS bloc MLP par token avec sa
+  propre connexion résiduelle, poids fixes par seed non entraînés — cohérent avec
+  le reste du jouet où rien n'est appris sauf le readout). **Les trois terrains
+  prédits, trois réponses différentes :**
+  1. **Standard (profondeur choisie par validation) : PARITÉ** (+0.2 pts, ns) —
+     ni gagne ni perd contre le vrai adversaire (mieux que la prédiction
+     « perd probablement »).
+  2. **Profondeur extrême (L=120, 3× le max standard) : DOUBT GAGNE nettement**
+     (+12.1 pts, IC[+11.3,+13.0]) — RESIDUAL_MLP finit par s'effondrer comme
+     ATTRACTIVE (identité : 86 %→50 %, quasi-hasard) alors que DOUBT stabilise
+     (86 %, proche du plafond NO_UPDATE=85 %). La mitigation standard échoue
+     elle aussi à très grande profondeur ; le doute non.
+  3. **Distribution shift (bruit de test 3.5 vs entraînement 2.0, mêmes poids de
+     lecture) : RESIDUAL_MLP légèrement devant** (−0.5 pts, SIGNIF mais petit
+     effet) — la seule prédiction qui ne s'est PAS confirmée.
+  **Bonus non prédit** : à L=40 FIXE (sans early-stop), DOUBT écrase déjà
+  RESIDUAL_MLP (+10.5 pts groupe / +35.0 pts identité) — la mitigation standard
+  décroche bien avant la profondeur extrême dès qu'aucun early-stop ne la
+  secourt. Le fil rouge du projet se réplique une fois de plus, avec la
+  précision la plus fine à ce jour : conditionnel à la profondeur, et étendu
+  maintenant au véritable adversaire (pas seulement l'attention nue).
+  **Reste** : « un petit GPT réel » (entraîné, pas seulement structurel) — non
+  fait cette session, effort dédié à part entière.
 
 ---
 
