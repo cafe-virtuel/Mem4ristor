@@ -164,42 +164,44 @@ pytest tests/test_scientific_regression.py
 
 ### Experiments — `experiments/`
 
-**Paper 1 experiments** (produce CSV + PNG in `figures/`):
+**Note:** Historical, exploratory, and verification scripts have been organized into the `experiments/scratch/` directory to keep the root clean and maintain focus on the core modules.
+
+**Paper 1 experiments** (produce CSV + PNG in `figures/`, located in `experiments/scratch/`):
 
 | Script | Produces | Description |
 |---|---|---|
-| `p2_sigma_social_ablation.py` | `p2_sigma_social_ablation.*` | FULL / SS_NOISE / SS_STATIC / FROZEN_U ablation (n=5 seeds) |
-| `p2_spatial_mutual_information.py` | `p2_spatial_mutual_information.*` | I(v_i; v_j) vs hop distance, 4 conditions |
-| `p2_tau_u_bifurcation.py` | `p2_tau_u_bifurcation.*` | tau_u sweep, forced regime (n=5 seeds) |
-| `p2_tau_u_bifurcation_endogenous.py` | `p2_tau_u_bifurcation_endogenous.*` | tau_u sweep, I_stim=0 |
-| `p2_stochastic_resonance_topology.py` | `p2_stochastic_resonance_topology.*` | SR curve by topology |
-| `p2_finite_size_scaling.py` | `p2_finite_size_scaling.*` | N=25 to 1600 scaling |
-| `p2_edge_betweenness_analysis.py` | `p2_edge_betweenness.*` | Edge betweenness vs diversity |
-| `p2_delta_sweep.py` | `p2_delta_sweep.*` | delta offset sweep (Levitating Sigmoid) |
-| `p2_doubt_community_detection.py` | `p2_doubt_community_detection.*` | NMI between structural and u-functional partitions |
-| `p2_art_benchmark.py` | `p2_art_benchmark.*` | ART benchmark under sustained cognitive load |
-| `p2_v5_combination.py` | `p2_v5_combination.*` | Metacognitive plasticity + compartments combined |
-| `p2_compartments.py` | `p2_compartments.*` | Compartimentalised dynamics exploration |
-| `p2_nonlocal_coupling.py` | `p2_nonlocal_coupling.*` | Non-local coupling by doubt similarity |
+| `experiments/scratch/p2_sigma_social_ablation.py` | `p2_sigma_social_ablation.*` | FULL / SS_NOISE / SS_STATIC / FROZEN_U ablation (n=5 seeds) |
+| `experiments/scratch/p2_spatial_mutual_information.py` | `p2_spatial_mutual_information.*` | I(v_i; v_j) vs hop distance, 4 conditions |
+| `experiments/scratch/p2_tau_u_bifurcation.py` | `p2_tau_u_bifurcation.*` | tau_u sweep, forced regime (n=5 seeds) |
+| `experiments/scratch/p2_tau_u_bifurcation_endogenous.py` | `p2_tau_u_bifurcation_endogenous.*` | tau_u sweep, I_stim=0 |
+| `experiments/scratch/p2_stochastic_resonance_topology.py` | `p2_stochastic_resonance_topology.*` | SR curve by topology |
+| `experiments/scratch/p2_finite_size_scaling.py` | `p2_finite_size_scaling.*` | N=25 to 1600 scaling |
+| `experiments/scratch/p2_edge_betweenness_analysis.py` | `p2_edge_betweenness.*` | Edge betweenness vs diversity |
+| `experiments/scratch/p2_delta_sweep.py` | `p2_delta_sweep.*` | delta offset sweep (Levitating Sigmoid) |
+| `experiments/scratch/p2_doubt_community_detection.py` | `p2_doubt_community_detection.*` | NMI between structural and u-functional partitions |
+| `experiments/scratch/p2_art_benchmark.py` | `p2_art_benchmark.*` | ART benchmark under sustained cognitive load |
+| `experiments/scratch/p2_v5_combination.py` | `p2_v5_combination.*` | Metacognitive plasticity + compartments combined |
+| `experiments/scratch/p2_compartments.py` | `p2_compartments.*` | Compartimentalised dynamics exploration |
+| `experiments/scratch/p2_nonlocal_coupling.py` | `p2_nonlocal_coupling.*` | Non-local coupling by doubt similarity |
 
-**SPICE validation** (Paper B):
-
-| Script | Description |
-|---|---|
-| `spice_mismatch_50seeds.py` | 50-seed MC campaign, BA m=5, Cohen's d validation |
-| `spice_noise_calibration.py` | Derives eta=0.5 equivalence to sigma_equiv |
-| `spice_mismatch_sweep.py` | RMS error sweep vs sigma_noise |
-| `spice_validation.py` | SPICE vs Python side-by-side on 4x4 lattice |
-| `spice_art_kirchhoff.py` | Kirchhoff law validation of ART in SPICE |
-| `spice_p420_hfo2_memristor.py` | HfO2 memristor SPICE characterization |
-
-**Binder cumulant / Finite-size scaling** (V6):
+**SPICE validation** (Paper B, located in `experiments/scratch/`):
 
 | Script | Description |
 |---|---|
-| `v6_binder_cumulant_u4.py` | Binder U4 cumulant FSS for spectral phase transition |
-| `run_heroic_1600.py` | Large-scale validation N=1600 |
-| `run_heroic_800.py` | Medium-scale validation N=800 |
+| `experiments/scratch/spice_mismatch_50seeds.py` | 50-seed MC campaign, BA m=5, Cohen's d validation |
+| `experiments/scratch/spice_noise_calibration.py` | Derives eta=0.5 equivalence to sigma_equiv |
+| `experiments/scratch/spice_mismatch_sweep.py` | RMS error sweep vs sigma_noise |
+| `experiments/scratch/spice_validation.py` | SPICE vs Python side-by-side on 4x4 lattice |
+| `experiments/scratch/spice_art_kirchhoff.py` | Kirchhoff law validation of ART in SPICE |
+| `experiments/scratch/spice_p420_hfo2_memristor.py` | HfO2 memristor SPICE characterization |
+
+**Binder cumulant / Finite-size scaling** (V6, located in `experiments/scratch/`):
+
+| Script | Description |
+|---|---|
+| `experiments/scratch/v6_binder_cumulant_u4.py` | Binder U4 cumulant FSS for spectral phase transition |
+| `experiments/scratch/run_heroic_1600.py` | Large-scale validation N=1600 |
+| `experiments/scratch/run_heroic_800.py` | Medium-scale validation N=800 |
 
 ### Scientific documents — `docs/`
 
@@ -232,14 +234,14 @@ All figures are auto-generated by their corresponding experiment script. Key fil
 
 | Figure | Generated by |
 |---|---|
-| `p2_sigma_social_ablation.png` | `experiments/p2_sigma_social_ablation.py` |
-| `p2_tau_u_bifurcation.png` | `experiments/p2_tau_u_bifurcation.py` |
-| `fiedler_phase_diagram.png` | `experiments/fiedler_phase_diagram.py` |
-| `spice_50seeds_validation.png` | `experiments/spice_mismatch_50seeds.py` |
-| `p2_doubt_community_detection.png` | `experiments/p2_doubt_community_detection.py` |
-| `v6_binder_cumulant.png` | `experiments/v6_binder_cumulant_u4.py` |
-| `p2_art_benchmark.png` | `experiments/p2_art_benchmark.py` |
-| `spice_art_kirchhoff.png` | `experiments/spice_art_kirchhoff.py` |
+| `p2_sigma_social_ablation.png` | `experiments/scratch/p2_sigma_social_ablation.py` |
+| `p2_tau_u_bifurcation.png` | `experiments/scratch/p2_tau_u_bifurcation.py` |
+| `fiedler_phase_diagram.png` | `experiments/scratch/fiedler_phase_diagram.py` |
+| `spice_50seeds_validation.png` | `experiments/scratch/spice_mismatch_50seeds.py` |
+| `p2_doubt_community_detection.png` | `experiments/scratch/p2_doubt_community_detection.py` |
+| `v6_binder_cumulant.png` | `experiments/scratch/v6_binder_cumulant_u4.py` |
+| `p2_art_benchmark.png` | `experiments/scratch/p2_art_benchmark.py` |
+| `spice_art_kirchhoff.png` | `experiments/scratch/spice_art_kirchhoff.py` |
 
 ## :scroll: Citation
 
