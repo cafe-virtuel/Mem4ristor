@@ -191,19 +191,7 @@ Figure: \href{https://github.com/cafe-virtuel/Mem4ristor/blob/main/figures/lz_pe
 \vspace{0.5em}
 
 \begin{finding}
-\textbf{[4] The Event-Driven Phase Transition}\\
-Forcing a \textit{peripheral} node produces $+1.20$ bits on BA $m=3$. Forcing a \textit{hub}:
-$+0.21$ bits. Counter-intuitive. The bifurcation threshold is not in amplitude --- it is in
-topological position. On BA $m=5$ (dead zone): all forcings degrade the network.
-
-\result{$\rightarrow$ $\Delta H$ peripheral $= +1.20$ bits vs.\ hub $= +0.21$ bits (BA $m=3$). Original design by Julien Chauvin.}\\
-Figure: \href{https://github.com/cafe-virtuel/Mem4ristor/blob/main/figures/event_phase_transition.png}{\texttt{event\_phase\_transition.png}}
-\end{finding}
-
-\vspace{0.5em}
-
-\begin{finding}
-\textbf{[5] Chimeras --- a mechanistically distinct class}\\
+\textbf{[4] Chimeras --- a mechanistically distinct class}\\
 Abrams-Strogatz (2004): chimera by fixed non-local coupling (\textit{quenched}). Mem4ristor: chimera
 by dynamic polarity modulation via $u(t)$, on a scale-free network without imposed symmetry.
 $R = 0.141$ (deep desynchronization) vs.\ $R = 0.766$ for AS. Both are chimeras. They are not the
@@ -241,7 +229,7 @@ Travelling wave or chaos? & Max-TLCC temporal lag & Max-TLCC$=0.410$ --- spatiot
 We initially searched for the critical exponents of the spectral transition, yielding $\beta \approx 0$ ($R^2 = -0.002$). 
 The power law did not hold, initially suggesting an abrupt, first-order transition. We documented this negative result transparently.
 
-However, pushed by our own AI "Red Team" to provide definitive thermodynamic proof, we executed a massive finite-size scaling campaign ($N \in \{100, 200, 400, 800, 1600\}$) computing the \textbf{Binder cumulant $U_4$}. This exhaustive "heroic run" ($1600 \times 1600$ dense matrices) conclusively demonstrated that the transition is \textbf{continuous (second-order)}. The $U_4$ minimum broadens and shifts, converging precisely on the mean coupling boundary at the thermodynamic limit. 
+However, pushed by our own AI "Red Team" to provide definitive thermodynamic proof, we executed a massive finite-size scaling campaign ($N \in \{100, 200, 400, 800, 1600\}$) computing the \textbf{Binder cumulant $U_4$}. This exhaustive "heroic run" ($1600 \times 1600$ dense matrices) conclusively demonstrated that the transition is a \textbf{continuous crossover rather than a thermodynamic phase transition}. The Binder cumulant $U_4$ remains essentially flat at the Gaussian reference value of $2/3$ across all system sizes, ruling out a critical thermodynamic transition at the boundary. 
 
 An honest negative result led to a rigorous methodological correction, ultimately proving the exact nature of the phase transition.
 
