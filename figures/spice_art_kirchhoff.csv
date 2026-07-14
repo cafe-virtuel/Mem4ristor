@@ -1,0 +1,4 @@
+condition,H_prechoc,H_min_post_spice,H_min_post_python,delta_pct,recovery_spice,recovery_python
+V4 pur,3.6137,0.569,0.569,0.0,46,35
+ART soft,3.6137,0.8476,0.8476,0.0,46,35
+ART hard,3.6137,2.5219,0.8476,197.54,46,35

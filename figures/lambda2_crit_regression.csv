@@ -1,0 +1,15 @@
+metric,value
+lambda2_crit_ebc_midpoint,2.314928170150475
+gap_lo_ebc,2.126137790765241
+gap_hi_ebc,2.50371854953571
+complete_separation,1.0
+lambda2_crit_combined,3.139653173976243
+ci_lo_95_combined,1.9280224558412091
+ci_hi_95_combined,4.845206097620397
+sigma_boot_combined,0.7458546535055318
+r2_combined,0.697019591702922
+eyeballed_value,2.5
+eyeballed_in_gap,1.0
+n_obs_ebc,36.0
+n_obs_combined,58.0
+n_bootstrap,10000.0

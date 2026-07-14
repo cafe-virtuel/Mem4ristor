@@ -84,3 +84,11 @@ uv.lock
 *.bak
 experiments/scratch/
 figures/scratch/
+COMPENDIUM.pdf
+paper_B.pdf
+*.log
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
