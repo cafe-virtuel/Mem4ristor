@@ -1,8 +1,44 @@
+> # ⛔ DRAFT RETIRÉ — NE PAS INTÉGRER AU PREPRINT / WITHDRAWN DRAFT — DO NOT INTEGRATE
+> **Date de retrait : 2026-07-17.**
+>
+> Ce brouillon est conservé pour la traçabilité, **pas comme position du projet**. Il
+> contredit la science corrigée du preprint sur trois points, et sa mention
+> « Validée par la Red Team » (ci-dessous) est **factuellement fausse** :
+>
+> 1. **Binder / ordre de la transition.** Ce texte affirme une « continuous (second-order)
+>    phase transition ». Le preprint (§ Binder, `preprint.tex`) et le COMPENDIUM corrigé
+>    (commit `7057ac8`, 2026-07-14) concluent l'**inverse** : U₄ plat ≈ 2/3 → **crossover
+>    lisse, PAS une transition thermodynamique**. C'est aussi la lignée du β≈0 (mai 2026).
+> 2. **λ₂ causal.** Ce texte réintroduit λ₂_crit ≈ 2.31 comme seuil causal gouverné par une
+>    « Kirchhoff ART ». La réfutation du 2026-07-01 (`experiments/scratch/lambda2_foundation_20260701/`)
+>    et la reformulation du 2026-07-06 ont établi que le mécanisme est le **champ moyen /
+>    degré harmonique (k_harm≈6)** ; 2.31 est une **frontière corrélationnelle**, pas causale.
+> 3. **ART présentée comme gouverneur du régime.** L'ART (Kirchhoff) est **opt-in et
+>    `enabled: false` par défaut** (`src/mem4ristor/config.yaml`) ; les mesures canoniques de
+>    la dead zone tournent **sans elle**. Elle ne peut pas être le « homeostatic governor »
+>    du régime fonctionnel.
+>
+> **La vraie Red Team avait déjà rejeté cette thèse** : AUDIT-020 (Hermès/EDISON, 2026-06-01,
+> `AUDIT_LOG.md`) — « CONFIRMED... The mechanism is feedback control / homeostatic
+> regulation », recommandation « retirer Active Inference, dégrader §6.3 ». Le preprint a
+> suivi cette recommandation (§6.3 retirée ; Friston reste en bibliographie seulement).
+>
+> **Si Friston doit un jour être évoqué :** paragraphe de Discussion *explicitement
+> analogique* (« la boucle u ressemble à de l'inférence active au sens faible »), SANS λ₂
+> causal, SANS second ordre, avec le mécanisme dans le bon sens — OU une dérivation formelle
+> complète (u̇ ∝ −∂F/∂u pour une énergie libre variationnelle explicite), qui n'existe pas
+> à ce jour.
+>
+> ---
+> *Le texte original du brouillon suit, inchangé, à titre d'archive.*
+
+---
+
 # Draft V2 : Thermodynamic Viability and Active Inference (Friston Free Energy)
 
-## [PROPOSITION D'INTÉGRATION - Validée par la Red Team]
+## [PROPOSITION D'INTÉGRATION - ⚠️ étiquette d'origine ERRONÉE, voir bandeau de retrait ci-dessus]
 
-*Ce texte est destiné à être intégré dans la Section 5 (Discussion) du preprint, potentiellement comme une nouvelle sous-section 5.5 ou 6.X.*
+*Ce texte était destiné à être intégré dans la Section 5 (Discussion) du preprint. Retiré le 2026-07-17 — voir bandeau.*
 
 ---
 
