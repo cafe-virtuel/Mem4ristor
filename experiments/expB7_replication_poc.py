@@ -32,7 +32,7 @@ deux = ECHEC de replication, et la phrase "la lire coute" ne doit pas etre
 citee. Le gate de solvabilite du volet 2 s'applique aussi aux graines neuves.
 
 SORTIES : figures/expB7_replication_poc.csv + .png
-Cree : 2026-07-27 (Claude Opus 5, L'Ingenieur) -- suite de expB7 volet 3.
+Cree : 2026-07-26 (Claude Opus 5, L'Ingenieur) -- suite de expB7 volet 3.
 """
 from __future__ import annotations
 

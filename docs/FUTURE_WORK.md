@@ -5,7 +5,10 @@
 > **Origine.** Audit externe simulé « posture d'une chercheuse de référence en neuromorphique » du 2026-07-06
 > ([docs/audit_externe_neuromorphique_2026-07-06.md](audit_externe_neuromorphique_2026-07-06.md))
 > + mandat de réfutation λ₂ du 2026-07-01 (`experiments/lambda2_foundation_20260701/SYNTHESE.md`).
-> **Mise à jour.** 2026-07-26 (audit externe « DeepMind » SOLDÉ en entier — voir section E ;
+> **Mise à jour.** 2026-07-26, soir (question du `std(v)` **soldée** — voir E5 : le signal
+> d'arrêt ne tire aucun bénéfice de la topologie, et l'effet « la lire coûte » entrevu en
+> chemin est mort à son gate de réplication).
+> Précédente : 2026-07-26, jour (audit externe « DeepMind » SOLDÉ en entier — voir section E ;
 > cadrage « bon marché » corrigé ; B3 complété par le pont opérations↔énergie).
 > Précédente : 2026-07-11 (genèse 5 états consolidée D1, pont LLM tâche aval D2,
 > [13] révisé au code actuel, B5-STNO NARMA10 fait — voir sections correspondantes).
@@ -21,19 +24,21 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 
 ## Priorité recommandée (si on ne fait qu'une chose à la fois)
 
-**26/07/2026 — CE QUI RESTE VRAIMENT.** Les trois critiques de l'audit externe « DeepMind »
-sont soldées (section E). Le backlog de tête est vide : tout ce qui reste ci-dessous est
-soit un **projet de fond de plusieurs semaines** (B2 SPICE, couplage électrique réel,
+**26/07/2026 (soir) — CE QUI RESTE VRAIMENT.** Les trois critiques de l'audit externe
+« DeepMind » sont soldées (section E), **et la première des deux questions nouvelles
+également** (E5, le `std(v)`). Le backlog de tête est vide : tout ce qui reste ci-dessous
+est soit un **projet de fond de plusieurs semaines** (B2 SPICE, couplage électrique réel,
 micromagnétisme mumax3 — ce dernier réservé par Julien à une session **en personne**),
-soit de la **théorie** (C1 k_harm analytique, C2 hétérogénéité), soit deux **questions
-nouvelles nées le 26/07** et de taille normale :
+soit de la **théorie** (C1 k_harm analytique, C2 hétérogénéité), soit :
+  - ✅ ~~pourquoi `std(v)` égale `mean(|L·v|)`~~ **RÉPONDU le 26/07 au soir — voir E5.**
+    Le signal d'arrêt ne tire **aucun** bénéfice de la topologie : sur sept mesures
+    indépendantes, l'écart est toujours ≤ 0 et jamais une fois en faveur du désaccord
+    local. **5ᵉ rétrécissement de la revendication, et le mieux tenu des cinq.**
   - le **mécanisme par nœud** de la cascade topologique (deux explications proposées et
     réfutées le jour même : ni l'amplitude du champ reçu, ni la variance de la cible
-    locale — le degré garde ρ partiel −0.37 après contrôle) ;
-  - **pourquoi un simple `std(v)` égale le désaccord local `mean(|L·v|)`** comme signal
-    d'arrêt (−0.07, IC [−0.17, +0.00]) alors que tout signal purement temporel échoue
-    catastrophiquement (0.03). L'arrêt a besoin du spatial, pas de la topologie : le
-    comprendre toucherait au cœur de ce que le doute apporte.
+    locale — le degré garde ρ partiel −0.37 après contrôle). **Seule question nouvelle
+    encore ouverte.** Effort : 1 session.
+  - la **dette de méthode B5b** (E4) : ~1 h, à faire avant toute citation au chiffre.
 
 0. **09/07/2026 — Fond du Volet B cadré (B2/B3/B5/B6)**, choix de Julien : « tout explorer »
    plutôt qu'un seul dispositif. 3 dossiers de correspondance physique (photonique/
@@ -738,9 +743,11 @@ sur graines **disjointes**.
   instant fixe le réseau est à 0.40 — il sait **quand** lire. L'arrêt vaut **+0.49 à +0.61**,
   et bat de loin des instants de même distribution tirés sans lien au run (0.46-0.57).
   **Latence : 4.4× moins de pas**, y compris depuis l'intérieur de la fenêtre trompeuse.
-- **Reste ouvert** : ce signal d'arrêt exige du **spatial** mais **pas la topologie** — un
-  `std(v)` égale voire dépasse `mean(|L·v|)` (−0.07, IC [−0.17, +0.00]). Comprendre
-  pourquoi toucherait au cœur du mécanisme. Effort : 1 session.
+- ~~**Reste ouvert**~~ ✅ **SOLDÉ le 26/07 au soir → voir E5.** ⚠️ La formulation
+  « égale **voire dépasse** » écrite ici et dans le commit `a4b4e76` était **plus forte que
+  les chiffres** : l'intervalle touche zéro (−0.07, IC [−0.17, **+0.00**]). Ce qui est
+  établi, c'est que `std(v)` **n'est pas moins bon**, pas que le désaccord local soit moins
+  bon. Corrigé, pas réécrit.
 
 ### E3 — « L'entrée en dead zone sur BA est-elle une cascade initiée par les hubs ? » ✅ FAIT (26/07/2026)
 `experiments/expA_ba_cascade_poc.py` (160 runs) + `expA_mechanism_drive_poc.py`.
@@ -774,6 +781,62 @@ qui n'ajuste rien.
   biais y joue **en faveur de l'ESN**, donc **contre** M4R : la conclusion de B5b en sort
   *conservative*, pas invalidée. **À refaire avec sélection train/test avant toute citation
   au chiffre.** Effort : 1 h.
+
+### E5 — « Pourquoi un simple `std(v)` égale-t-il le désaccord local ? » ✅ FAIT (26/07/2026, soir)
+
+Question née de E2, traitée en quatre volets (`expB7_*`, commits `cb3dc1c`, `7c6c30c`,
+`a866eac`). **Réponse : le signal d'arrêt ne tire aucun bénéfice de la topologie.**
+
+- **Volet 1 — le diagnostic** (`expB7_spatial_structure_diagnostic_poc.py`). Les deux
+  signaux sont **une seule lecture** : r = 0.981 IC[0.976, 0.985] sur les signaux
+  **normalisés par leur pic** — c'est-à-dire sur exactement ce que voit la règle d'arrêt.
+  Et la tâche n'a **aucune structure spatiale** à exploiter : Moran's I du champ de
+  stimulus = **−0.010** IC[−0.039, +0.021] (lu dans le code de la tâche, pas deviné :
+  `deceptive_task_poc.make_deceptive` disperse les 26 leurres et 14 vérités par
+  `rng.choice` sur le tore, donc être voisin ne dit rien de ce qu'un nœud mesure). Le
+  réseau n'en fabrique pas non plus : Moran's I de `v` ≤ **0.022** à tous les instants
+  sondés. ⚠️ Une explication « d'échelle » a été proposée puis **réfutée** : les deux
+  signaux déclenchent à 39 pas d'écart, mais retarder le natif du décalage exact — estimé
+  sur graines d'entraînement à partir des seuls **instants d'arrêt**, jamais de la justesse
+  — ne lui fait rien gagner (0.90 → 0.90).
+- **Volet 2 — le test décisif** (`expB7_contiguous_sources_poc.py`). Même tâche, mêmes
+  effectifs, mêmes amplitudes, même graphe : seules les **positions** changent (sources
+  groupées en patchs, Moran's I du stimulus **+0.382**, porté par le champ `v` à +0.125).
+  **Rien ne change** : interaction (LAP−STD)_structuré − (LAP−STD)_dispersé = **+0.02**
+  IC[−0.08, +0.12]. Le contrôle est **structurel** : permuter les étiquettes de nœuds du
+  monde groupé redonne exactement le monde dispersé, qui en est donc le null de permutation.
+  ⚠️ Premier essai **échoué à son propre gate** et conservé : un bloc unique par rôle
+  (Moran's I +0.675) ne durcit pas la tâche, il la **casse** (acc_final 0.50 = hasard, contre
+  0.78) — concentrées, les sources de vérité saturent leur région et ne remontent plus dans
+  le readout global `mean(v)`. **Fait utile au passage : structure spatiale et solvabilité
+  sont en tension sur ce readout.**
+- **Volet 3 — la contre-épreuve du plafond** (`expB7_ceiling_control_poc.py`). `std(v)`
+  marquait 1.00 : une baseline saturée ne peut pas révéler une supériorité du natif. Tâche
+  durcie sur ses deux leviers, **aucun niveau écarté après coup**. Deux faits de méthode :
+  (a) le plafond ne bloque que la détection d'une **supériorité** — une infériorité reste
+  mesurable, donc le critère de lecture est le **signe** de l'écart ; (b) **allonger le
+  leurre ne durcit rien** du point de vue de l'arrêt (les arrêts tombent vers 270-310 pas,
+  bien avant sa fin — T=1200 reproduit T=700 à l'identique). Seule la **force** du leurre
+  est un levier.
+- **Volet 4 — le gate de réplication** (`expB7_replication_poc.py`), obligatoire ici parce
+  que les récits topologiques ont déjà cassé deux fois ([13] révisé, P3 réfuté). Le volet 3
+  avait fait apparaître un −0.30 IC[−0.45, −0.17] suggérant que **lire la topologie coûte**.
+  Rejoué sur **deux groupes de graines jamais touchées et disjoints** (0-59 étant consommées),
+  chacun avec son propre réglage de seuil : **0/2 confirment** (+0.00 IC[−0.07, +0.07] et
+  −0.03 IC[−0.12, +0.05]). **L'effet est mort** — même motif que le Condorcet du 13/07.
+
+**Ce qui survit, et c'est solide.** Sur **sept mesures indépendantes** (3 niveaux lisibles
+au volet 3, 4 cellules au volet 4, graines disjointes, seuils réglés séparément), l'écart
+`mean(|L·v|) − std(v)` est **toujours ≤ 0 et pas une seule fois** en faveur du désaccord
+local. L'amplitude est instable ; **le signe ne l'est pas**. Formulation défendable :
+
+> Le signal d'arrêt ne tire **aucun bénéfice de la topologie**. Il exige de l'information
+> **spatiale** — un signal purement temporel s'effondre à 0.03 — mais une simple dispersion
+> globale, aveugle à qui est voisin de qui, fait aussi bien **partout où on a regardé** :
+> sur une tâche sans structure spatiale comme sur une tâche qui en a, à difficulté normale
+> comme durcie.
+
+Sans le « et la lire coûte » : cette partie-là était du bruit.
 
 ---
 

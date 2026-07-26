@@ -31,7 +31,7 @@ CE QUE CHAQUE ISSUE SIGNIFIERAIT :
     c'est la condition qu'on cherchait depuis le debut.
 
 SORTIES : figures/expB7_ceiling_control_poc.csv + .png
-Cree : 2026-07-27 (Claude Opus 5, L'Ingenieur) -- suite de expB7 volet 2.
+Cree : 2026-07-26 (Claude Opus 5, L'Ingenieur) -- suite de expB7 volet 2.
 """
 from __future__ import annotations
 

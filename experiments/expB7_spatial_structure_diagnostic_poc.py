@@ -33,7 +33,11 @@ est la meme), l'hypothese est FAUSSE et l'egalite a une autre cause -- a ecrire
 tel quel.
 
 SORTIES : figures/expB7_spatial_structure_diagnostic_poc.csv + .png
-Cree : 2026-07-27 (Claude Opus 5, L'Ingenieur) -- suite de expB6-bis.
+Cree : 2026-07-26 (Claude Opus 5, L'Ingenieur) -- suite de expB6-bis, 3e session
+du jour. (Les en-tetes des 4 scripts B7 portaient a tort la date du 27 dans les
+commits cb3dc1c/7c6c30c/a866eac ; corrige ici, historique non reecrit. Les
+graines numeriques 20260727 sont laissees telles quelles : les changer
+changerait les chiffres.)
 """
 from __future__ import annotations
 

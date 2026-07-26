@@ -38,7 +38,7 @@ ne vaut rien :
          dans RANDOM) -- sinon la tache est devenue facile
 
 SORTIES : figures/expB7_contiguous_sources_poc.csv + .png
-Cree : 2026-07-27 (Claude Opus 5, L'Ingenieur) -- suite de expB7 volet 1.
+Cree : 2026-07-26 (Claude Opus 5, L'Ingenieur) -- suite de expB7 volet 1.
 """
 from __future__ import annotations
 

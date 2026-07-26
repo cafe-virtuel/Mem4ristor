@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor V6.0.0 (preprint reformulé, non soumis)
-**Dernière mise à jour : 2026-07-26 (Claude Code/Opus 5 — audit DeepMind soldé, cadrage « bon marché » corrigé : voir §0 et §3bis)**
+**Dernière mise à jour : 2026-07-26, soir (Claude Code/Opus 5 — le signal d'arrêt ne tire aucun bénéfice de la topologie : voir §0 et §3bis)**
 **Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -30,6 +30,13 @@
   nombre de pas et fausse en énergie. Ce qui tient, mesuré sur graines réservées : le doute
   **décide ~4.4× plus tôt**, y compris depuis l'intérieur de la fenêtre trompeuse, au prix
   de 10-20 points de justesse. Voir §3.
+- **Resserrée une 5ᵉ fois le 26/07 au soir** (expériences B7, §3bis) : le signal d'arrêt
+  exige de l'information **spatiale**, mais **ne tire aucun bénéfice de la topologie** —
+  une simple dispersion globale `std(v)`, aveugle à qui est voisin de qui, fait aussi bien
+  partout où on a regardé, y compris sur une tâche construite pour que la topologie porte
+  de l'information. Sept mesures indépendantes, écart toujours ≤ 0, jamais en faveur du
+  désaccord local. C'est le rétrécissement **le mieux tenu des cinq** : il a survécu à sa
+  propre contre-épreuve et à son gate de réplication.
 - ⚠️ **Ce fichier a déjà dérivé deux fois, et la deuxième a coûté cher.** Périmé du 12 juin
   au 9 juillet (5 semaines) ; puis du 9 au 26 juillet, période pendant laquelle il a
   continué d'annoncer « 51 commits non poussés / publication en attente » **alors que la
@@ -120,6 +127,12 @@ nouveau document — c'est l'inverse qui a été montré.
 > « LZ76 regime classification (adaptive D(u)) » (un claim plus ancien, mai 2026).
 > Aucun des deux fichiers n'a été retouché pour éviter la collision. À trancher
 > (renuméroter l'un des deux) avant tout usage externe des deux registres ensemble.
+> **Point au 26/07/2026 (soir)** : toujours non tranché, et c'est délibéré — renuméroter une
+> étiquette de claim est un changement structurel qui touche `.brain/claims_mapping.json`,
+> donc le Guardian et son hook. Cela demande l'accord explicite de Julien, pas une décision
+> d'agent. **Ce qu'il faut savoir en attendant** : le C13 que le Guardian vérifie (et qui
+> apparaît dans ses 14/14) est celui de `claims_mapping.json`, l'ablation FROZEN_U — pas
+> celui du registre narratif.
 
 ### Résultats scientifiques actuels (résumé, voir CLAIMS_REGISTER.md pour le détail)
 
@@ -149,8 +162,24 @@ nouveau document — c'est l'inverse qui a été montré.
   l'instant que son signal d'arrêt choisit, 0.90-1.00 (contre 0.46-0.57 pour des instants
   de même distribution tirés sans lien au run). L'arrêt vaut **+0.49 à +0.61**.
   ⚠️ Nuance à ne pas omettre en citant : ce signal d'arrêt exige de l'information
-  **spatiale**, mais **pas la topologie** — un simple `std(v)` égale, voire dépasse, le
-  désaccord local `mean(|L·v|)` du modèle (−0.07, IC [−0.17, +0.00]).
+  **spatiale**, mais **pas la topologie** — un simple `std(v)`, aveugle à qui est voisin de
+  qui, égale le désaccord local `mean(|L·v|)` du modèle (−0.07, IC [−0.17, +0.00]).
+  *Correction du 26/07 au soir : ce paragraphe écrivait « égale, voire dépasse ». C'était*
+  *plus fort que les chiffres — l'intervalle touche zéro. Ce qui est établi, c'est que*
+  *`std(v)` n'est pas moins bon, pas que le désaccord local soit moins bon.*
+- **Le signal d'arrêt ne tire AUCUN bénéfice de la topologie** (26/07 soir, expériences
+  B7 ; détail dans `docs/FUTURE_WORK.md` §E5). Trois faits, tous sur graines réservées :
+  (1) sur la tâche d'origine les deux signaux sont **une seule lecture** (r = 0.981) parce
+  qu'elle n'a **aucune structure spatiale** (Moran's I du stimulus = −0.010) et que le
+  réseau n'en fabrique pas (Moran's I de `v` ≤ 0.022) ;
+  (2) construire une variante où la structure existe bel et bien (Moran's I +0.382, portée
+  par le champ `v`) **ne change rien** — interaction +0.02, IC [−0.08, +0.12] ;
+  (3) sur **sept mesures indépendantes** (deux niveaux de difficulté, deux mondes, groupes
+  de graines disjoints, seuils réglés séparément), l'écart est **toujours ≤ 0 et jamais une
+  seule fois** en faveur du désaccord local — l'amplitude est instable, le signe ne l'est pas.
+  ⚠️ Ce qu'il ne faut **pas** citer : « et lire la topologie coûte ». Un effet net
+  (−0.30, IC [−0.45, −0.17]) est apparu sur la tâche durcie puis **n'a pas répliqué** sur
+  deux groupes de graines jamais touchées (0/2). Il est consigné comme mort.
 - **Coût réel** : à substrat égal, M4R demande ~15× plus d'énergie qu'un RC équivalent, et
   6.7× à 20× plus d'opérations. Le « bon marché » du projet était un argument sur le
   **substrat** (dont tout dispositif analogique bénéficierait), pas sur l'architecture.
@@ -232,6 +261,20 @@ nouveau document — c'est l'inverse qui a été montré.
   pur ; toutes les mesures ont été refaites avec sélection sur graines d'entraînement et
   mesure sur graines disjointes. Le commit fautif et sa correction sont tous deux publics.
 
+- **26/07 (soir)** — **La question laissée ouverte par B6-bis est soldée, en 4 volets**
+  (`expB7_*`, commits `cb3dc1c`, `7c6c30c`, `a866eac`). *Pourquoi un simple `std(v)`
+  égale-t-il le désaccord local ?* Parce que, sur cette tâche, il n'y a rien à exploiter :
+  les deux signaux sont une seule lecture (r = 0.981) et le champ n'a aucune structure
+  spatiale (Moran's I = −0.010). Une variante construite pour en avoir (Moran's I +0.382)
+  **ne change rien** (interaction +0.02, IC [−0.08, +0.12]). Sur sept mesures indépendantes,
+  l'écart est toujours ≤ 0 et jamais en faveur du désaccord local → **le signal d'arrêt ne
+  tire aucun bénéfice de la topologie** (voir §3). **Deux garde-fous ont fonctionné et sont
+  publics** : un premier essai a **échoué à son propre gate** (grouper les sources en un
+  bloc unique ne durcit pas la tâche, elle la casse — acc_final 0.50) et n'a pas été lu ;
+  et un effet net apparu ensuite (« lire la topologie coûte », −0.30) **est mort à son gate
+  de réplication** sur graines jamais touchées (0/2), comme le Condorcet du 13/07. Trois
+  hypothèses mécanistes de plus proposées puis réfutées par leurs propres tests.
+
 **Total sur la période** : ~60 commits substantiels sur `main`, cœur (`dynamics.py`) jamais
 modifié de façon non rétrocompatible (les deux extensions du 07/07 et du 12/07 sont opt-in
 et bit-à-bit identiques désactivées), Guardian toujours ≥13/13 (13→14/14 le 08/07).
@@ -257,7 +300,17 @@ synchronisée avec `origin/main`.
 
 ### Tests xfail
 
-Aucun. Tous les tests xfail V5 ont été activés le 2026-03-22.
+**2 xfail** (vérifié en relançant la suite le 2026-07-26) :
+`tests/test_adversarial.py::test_snr_significance_breakdown` (effondrement du SNR en régime
+de bruit fort) et `::test_euler_drift_torture` (instabilité numérique à dt > 0.1).
+⚠️ *Cette section affirmait « Aucun » tout en étant contredite par l'arborescence du §5
+(« 118 passed + 2 xfail ») — les deux étaient faux. Corrigé le 26/07 au soir.*
+
+### Compte réel de la suite
+
+**130 passed + 2 xfail**, mesuré le 2026-07-26 :
+`python -m pytest --tb=no -q --ignore=tests/results` (l'option `--ignore` est obligatoire :
+`tests/results` contient des dumps UTF-16 qui cassent la collecte).
 
 ### Tests de régression scientifique (2026-04-10) ★
 
@@ -300,7 +353,7 @@ mem4ristor-v2-main/
 ├── experimental/              # MODULES NON PRODUCTION
 │   └── mem4ristor_king.py     # "Philosopher King"
 │
-├── tests/                     # SUITE DE TESTS (118 passed + 2 xfail au 09/07/2026)
+├── tests/                     # SUITE DE TESTS (130 passed + 2 xfail, mesuré le 26/07/2026 — voir §4)
 │
 ├── experiments/               # SCRIPTS D'EXPÉRIENCE (b1_*, b2_*, b4_*, b5_*, p2_*, ...)
 │
@@ -365,6 +418,7 @@ python examples/demo_applied.py
 | **Aria, Flux, Sentinel** | **Système MAS 2026** : Veille scientifique, optimisation Chemical Inductor, Stress Test V3 (Synchronisation 100%) (2026-05-16) |
 | Claude Code (Fable 5, Anthropic) | Vague 1 preprint (polissage, réparation Guardian), quatuor d'imperfections photonique, AUDIT-024 (détection + résolution), triage audit Hermès (11-12/06/2026) |
 | Claude Code (Opus 4.8, Anthropic) | Mandat λ₂ (réfutation), reformulation preprint (spectral→degré), Volet A (A2-A5), Volet B (ablation IC/FSS, comparaison ESN, pont LLM), Volet B fond (dossiers hardware B2, escalade STNO Kuramoto→LLGS macrospin) (01/07-09/07/2026) |
+| Claude Code (Opus 5, Anthropic) | Audit « DeepMind » soldé (Expériences A et B), cadrage « bon marché » corrigé (bilan câblage/énergie), latence B4, mécanisme d'arrêt B5-bis/B6-bis, détection et correction du piège de l'oracle par run ; puis B7 — le signal d'arrêt ne tire aucun bénéfice de la topologie (26/07/2026) |
 
 Niveau de transparence : **Radical** — transcripts complets dans le dépôt Café Virtuel.
 
@@ -477,7 +531,11 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 
 ---
 
-**Statut publication** : Preprint reformulé, cohérent avec le code (Guardian 14/14),
-mais **décision de soumission/publication toujours en attente de Julien** — ce n'est
-plus une question de corrections techniques bloquantes (résolu depuis juin), c'est un
-choix éditorial (revue cible, timing) qui lui appartient.
+**Statut publication** : le code et l'historique **sont publics depuis le ~14/07** (voir §0)
+— ne pas lire ce paragraphe comme « publication bloquée », c'est l'erreur qu'un audit externe
+a tirée de ce fichier en juillet. Ce qui reste ouvert est la seule **soumission arXiv/HAL**.
+Le preprint est reformulé et cohérent avec le code (Guardian 14/14) ; il n'y a plus de
+correction technique bloquante depuis juin. **Position de Julien au 26/07/2026** : c'est
+trop tôt pour arXiv tant que le travail n'a pas été confronté à de vrais chercheurs — un
+endorsement (nlin.AO / cs.NE) ne se demande pas dans le vide, il se demande à quelqu'un qui
+a lu. Ce n'est pas de l'attentisme, c'est un ordre d'opérations.
