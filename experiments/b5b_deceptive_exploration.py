@@ -42,6 +42,9 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "experiments"))
+# 2026-07-26 : le tri de experiments/ a deplace le harness dans scratch/ ; sans cette
+# ligne l'import echoue (ModuleNotFoundError) et ce script ne tournait plus.
+sys.path.insert(0, str(ROOT / "experiments" / "scratch"))
 import deceptive_task_poc as dp  # noqa: E402  (make_deceptive, simulate, stop_doubt/conv, dec_at, consts)
 
 dp.MAX_BUDGET = 2000               # t_pulse <= 700, marge suffisante ; accelere
