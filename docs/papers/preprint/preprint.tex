@@ -179,7 +179,7 @@ H \geq -\eta \log_2 \eta - (1 - \eta) \log_2(1 - \eta) \approx 0.61 \text{ bits 
 \end{equation}
 representing the mixing entropy of the two subpopulations.
 
-\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$, which is the default for all lattice experiments (Section~\ref{sec:results_lattice}). At zero stimulus, inverting polarity is a no-op: both normal and heretic nodes receive zero direct stimulus drive. Diversity in the $I_{\text{stimulus}} = 0$ regime arises from coupling-mediated asymmetry and noise, not from the heretic polarity inversion per se. The lower bound of Eq.~\ref{eq:entropy_bound} and the sustained diversity claim ($H_{\text{stable}} \approx 4.09$ bits, Table~\ref{tab:scaling}; synchrony $= 0.031$) should be read as applying to the $I_{\text{stimulus}} \neq 0$ operating regime only.
+\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$: at this baseline, inverting polarity is a no-op because both normal and heretic nodes receive zero direct stimulus drive. This zero-stimulus setting is used exclusively for the \emph{endogenous} connectivity and dead-zone experiments (Sections~\ref{sec:topo_regimes}--\ref{sec:lambda2}), where the (limited) diversity arises from coupling-mediated asymmetry and noise rather than from heretic inversion. The sustained-diversity results lie outside this regime: Table~\ref{tab:scaling} ($H_{\text{stable}} \approx 4.09$ bits; synchrony $= 0.031$) is evaluated under the driven protocol ($I_{\text{stimulus}} = 0.5$), where heretics are active and the lower bound of Eq.~\ref{eq:entropy_bound} applies.
 
 % ============================================================================
 % 4. RESULTS
