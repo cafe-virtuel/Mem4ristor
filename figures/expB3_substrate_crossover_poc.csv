@@ -1,0 +1,13 @@
+scenario,ratio_threshold,e_node,e_op,cost_m4r,cost_adv,verdict
+seuil_kirchhoff,0.06543689320388349,,,,,
+seuil_compte,2.2466666666666666,,,,,
+meme_substrat_analogique,,6.7e-15,6.7e-15,4.1406e-10,2.70948e-11,M4R 15x plus cher
+meme_substrat_analogique,,6.7e-14,6.7e-14,4.1406e-09,2.70948e-10,M4R 15x plus cher
+meme_substrat_analogique,,2.2e-14,2.2e-14,1.3596000000000001e-09,8.8968e-11,M4R 15x plus cher
+meme_substrat_analogique,,2.25e-13,2.25e-13,1.3905e-08,9.099e-10,M4R 15x plus cher
+meme_substrat_analogique,,1.28e-18,1.28e-18,7.9104e-14,5.17632e-15,M4R 15x plus cher
+meme_substrat_analogique,,1.28e-18,1.28e-18,7.9104e-14,5.17632e-15,M4R 15x plus cher
+substrats_mixtes,,6.7e-15,2.4e-11,4.1406e-10,3.3322560000000003e-06,M4R 8048x moins cher
+substrats_mixtes,,2.2e-14,2.4e-11,1.3596000000000001e-09,3.3322560000000003e-06,M4R 2451x moins cher
+substrats_mixtes,,6.7e-15,2.6e-11,4.1406e-10,3.609944e-06,M4R 8718x moins cher
+substrats_mixtes,,2.2e-14,2.6e-11,1.3596000000000001e-09,3.609944e-06,M4R 2655x moins cher
