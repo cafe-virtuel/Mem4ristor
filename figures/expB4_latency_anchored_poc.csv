@@ -1,0 +1,9 @@
+t_pulse,m4r_cost,m4r_acc,frac_before_lure_ends,acc_if_before,acc_if_after,leaky_cost,leaky_acc,leaky_params
+350,289.8,0.9,0.5,0.8,1.0,1172.6,1.0,"(0.05, 0.0, 800)"
+700,328.05,0.9,1.0,0.9,nan,1522.5,1.0,"(0.05, 0.0, 800)"
+,308.925,,,,,1347.55,,STNO vortex (v) dt=2.25e-12 tM4R=6.951e-10 tLK=3.032e-09
+,308.925,,,,,1347.55,,STNO vortex (v) dt=2.25e-11 tM4R=6.951e-09 tLK=3.032e-08
+,308.925,,,,,1347.55,,Photonique GST (u) dt=2.25e-10 tM4R=6.951e-08 tLK=3.032e-07
+,308.925,,,,,1347.55,,Photonique GST (u) dt=4.49e-10 tM4R=1.387e-07 tLK=6.050e-07
+,308.925,,,,,1347.55,,Neuristor Mott (v) dt=2.25e-09 tM4R=6.951e-07 tLK=3.032e-06
+,308.925,,,,,1347.55,,Neuristor Mott (v) dt=4.49e-09 tM4R=1.387e-06 tLK=6.050e-06
