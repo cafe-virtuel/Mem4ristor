@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor V6.0.0 (preprint reformulé, non soumis)
-**Dernière mise à jour : 2026-07-09 (Claude Code/Opus 4.8 — rattrapage après ~5 semaines de dérive : voir §0)**
+**Dernière mise à jour : 2026-07-26 (Claude Code/Opus 5 — audit DeepMind soldé, cadrage « bon marché » corrigé : voir §0 et §3bis)**
 **Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -9,7 +9,7 @@
 
 ---
 
-## 0. ÉTAT ACTUEL EN UNE MINUTE (2026-07-09)
+## 0. ÉTAT ACTUEL EN UNE MINUTE (2026-07-26)
 
 - **Version** : V6.0.0. Le preprint a été **reformulé** (titre/abstract/résultats) : l'ancien
   cadrage « transition spectrale » (λ₂_crit) a été **réfuté puis remplacé** par un cadrage
@@ -21,13 +21,22 @@
   de Pearson, indépendant du binning).
 - **Guardian** : 14/14 claims vérifiées automatiquement à chaque commit
   (`.brain/claims_mapping.json` + `.brain/preprint_guardian.py`, hook pre-commit).
-- **Git** : branche `main`, **51 commits locaux non poussés** vers `cafe-virtuel/Mem4ristor`
-  (décision de publication toujours en attente de Julien). Cœur (`dynamics.py`) stable
-  depuis plusieurs semaines.
-- **Ce fichier était périmé depuis le 12 juin** (5 semaines, ~20 commits substantiels non
-  reflétés ici — voir §3bis pour le résumé condensé de ce qui s'est passé). Repéré et
-  corrigé le 9 juillet à la demande de Julien. Ne PAS laisser ce fichier dériver à nouveau :
-  **à mettre à jour à chaque clôture de session**, même par 2-3 lignes dans §3bis.
+- **Git** : branche `main`, **synchronisée avec `origin/main`**. La publication a eu lieu
+  vers le ~14 juillet 2026 : tout l'historique est sur `github.com/cafe-virtuel/Mem4ristor`.
+  Le verrou de publication, le plus ancien du projet, est levé — il ne reste éventuellement
+  qu'une soumission arXiv/HAL. Cœur (`dynamics.py`) stable depuis plusieurs semaines.
+- **La niche du doute a été resserrée le 26/07** (expériences A/B, §3bis). La formule
+  « composant d'orientation bon marché » (13/07) est **corrigée** : elle était vraie en
+  nombre de pas et fausse en énergie. Ce qui tient, mesuré sur graines réservées : le doute
+  **décide ~4.4× plus tôt**, y compris depuis l'intérieur de la fenêtre trompeuse, au prix
+  de 10-20 points de justesse. Voir §3.
+- ⚠️ **Ce fichier a déjà dérivé deux fois, et la deuxième a coûté cher.** Périmé du 12 juin
+  au 9 juillet (5 semaines) ; puis du 9 au 26 juillet, période pendant laquelle il a
+  continué d'annoncer « 51 commits non poussés / publication en attente » **alors que la
+  publication était faite depuis le 14**. Un audit externe du dépôt (juillet) a repris cette
+  phrase telle quelle et en a tiré « publication BLOQUÉE » : l'erreur ne venait pas de
+  l'auditeur, **elle venait d'ici**. Ce fichier est lu par des tiers et par des IA :
+  **le mettre à jour à chaque clôture de session**, même par 2-3 lignes dans §3bis.
 
 ---
 
@@ -128,6 +137,23 @@ nouveau document — c'est l'inverse qui a été montré.
 - **Comparaison SOTA** : bat Kuramoto/Voter/Consensus (faible barre) ; perd contre un
   **Echo State Network réel sur NARMA10** (~5.5× moins bon — Mem4ristor n'est **pas** une
   mémoire, c'est un explorateur/anti-synchroniseur — positionnement assumé).
+- **Sur sa propre niche (décision sous convergence-piège, horizon inconnu), face aux
+  adversaires cités par l'audit externe** (26/07, graines d'entraînement et de mesure
+  disjointes) : le **recuit simulé est battu** (0.45 vs 0.90) et l'**exploration purement
+  aléatoire échoue** (0.00 sur le flux brut). Mais un **filtre à oubli exponentiel** — un
+  circuit RC, un paramètre, aucune exploration — atteint 1.00 contre 0.90, en payant ~4×
+  plus de pas. Ce qui bat le doute n'est donc pas une classe d'exploration, c'est un
+  passe-bas.
+- **Ce que le doute apporte, précisément** : il ne lit pas mieux, il sait **quand** lire.
+  À un instant fixe dans la fenêtre trompeuse le réseau est à 0.40 de justesse ; à
+  l'instant que son signal d'arrêt choisit, 0.90-1.00 (contre 0.46-0.57 pour des instants
+  de même distribution tirés sans lien au run). L'arrêt vaut **+0.49 à +0.61**.
+  ⚠️ Nuance à ne pas omettre en citant : ce signal d'arrêt exige de l'information
+  **spatiale**, mais **pas la topologie** — un simple `std(v)` égale, voire dépasse, le
+  désaccord local `mean(|L·v|)` du modèle (−0.07, IC [−0.17, +0.00]).
+- **Coût réel** : à substrat égal, M4R demande ~15× plus d'énergie qu'un RC équivalent, et
+  6.7× à 20× plus d'opérations. Le « bon marché » du projet était un argument sur le
+  **substrat** (dont tout dispositif analogique bénéficierait), pas sur l'architecture.
 - **H_cog (5 bins) est un indicateur legacy relatif**, pas une métrique primaire — les
   valeurs absolues ne doivent pas être citées (voir A5, reformulation du 08/07).
 - Environ 30 claims antérieurs (avril-mai 2026, incluant tous les items LIMIT-01 à
@@ -136,7 +162,7 @@ nouveau document — c'est l'inverse qui a été montré.
 
 ---
 
-## 3bis. SESSIONS RÉCENTES (12 juin → 9 juillet 2026, condensé)
+## 3bis. SESSIONS RÉCENTES (12 juin → 26 juillet 2026, condensé)
 
 > Résumé volontairement condensé — chaque ligne pointe vers l'entrée complète dans
 > `ARCHIVES_INDEX.md` (racine `D:\ANTIGRAVITY`) et/ou `.brain/claude_contexts/MEM4RISTOR.md`
@@ -175,11 +201,42 @@ nouveau document — c'est l'inverse qui a été montré.
   vrai vecteur d'aimantation 3D) — découverte que cette géométrie de couplage verrouille en
   antiphase et que BA scale-free est frustré (3e mécanisme indépendant où BA diffère de
   lattice). Rattrapage de ce fichier (vous le lisez).
+- **11-13/07** — Genèse à 5 états consolidée (la tendance de la veille était du bruit ;
+  l'interférence complexe, elle, préserve la parité et bat le vote) ; **le legs de 14 pistes
+  exécuté en entier** ; `u ∈ ℂ` entre dans le cœur (opt-in, bit-à-bit identique OFF) ;
+  γ_int passé au crible sur 9 critères, **aucun gain net** (le seul positif, Condorcet,
+  s'effondre à la réplication) ; architecture M4R↔solveur (P11) et **son bilan matériel
+  fermé** : le « −96 % » n'était qu'un décompte d'itérations, il devient +4205 % en temps
+  réel — leçon reprise le 26/07.
+- **~14/07** — **PUBLICATION.** Julien pousse tout l'historique vers
+  `github.com/cafe-virtuel/Mem4ristor`. Le plus vieux verrou du projet est levé.
+- **17/07** — Audit externe (Gemini jouant « DeepMind ») traité : l'inquiétude « les
+  expériences invalident le preprint » **mesurée et réfutée** (preprint inchangé, Guardian
+  14/14, l'expérience accusatrice le *confirme*). Un draft interne ressuscitant une thèse
+  déjà rejetée deux fois (`draft_friston_free_energy.md`) est **retiré** avec bandeau.
+- **26/07 (matin)** — Hygiène du dépôt pilote ; avis sur une analyse « IA GitHub » flatteuse
+  travaillant sur un état périmé ; une **vraie imprécision** trouvée à côté et corrigée dans
+  le preprint (scope note I_stim, commit `71afa83`).
+- **26/07 (jour)** — **Les deux dernières critiques de l'audit soldées, en 7 commits.**
+  *Expérience A* : la cascade d'entrée en dead zone par les hubs **existe** (ρ = −0.56,
+  répliquée sur graines disjointes) et fragmente bien au-delà d'une percolation aléatoire —
+  mais c'est une propriété du **protocole de couplage**, absente sous normalisation par
+  degré, et **non spécifique au scale-free** (ER donne −0.61). Son mécanisme par nœud reste
+  **ouvert** : deux explications ont été proposées puis réfutées par leurs propres tests.
+  *Expérience B* : recuit simulé et exploration aléatoire **battus** ; un filtre à oubli les
+  remplace avantageusement (voir §3). *Suites B2-B6* : le « bon marché » corrigé (~15× plus
+  cher à substrat égal), la **latence** identifiée comme la seule grandeur qui survit, et son
+  mécanisme isolé — le doute sait *quand* trancher, via un signal spatial mais non
+  topologique. **Un défaut de méthode découvert et corrigé le jour même** : régler un
+  adversaire « à son maximum par oracle par run » fabriquait 0.935 d'accuracy sur du bruit
+  pur ; toutes les mesures ont été refaites avec sélection sur graines d'entraînement et
+  mesure sur graines disjointes. Le commit fautif et sa correction sont tous deux publics.
 
-**Total sur la période** : ~25 commits substantiels sur `main`, cœur (`dynamics.py`) jamais
-modifié de façon non rétrocompatible, Guardian toujours ≥13/13 (13→14/14 le 08/07). **Aucun
-commit poussé vers `cafe-virtuel/Mem4ristor` depuis mai** — décision de publication en
-attente de Julien à chaque clôture de session (51 commits ahead au 09/07).
+**Total sur la période** : ~60 commits substantiels sur `main`, cœur (`dynamics.py`) jamais
+modifié de façon non rétrocompatible (les deux extensions du 07/07 et du 12/07 sont opt-in
+et bit-à-bit identiques désactivées), Guardian toujours ≥13/13 (13→14/14 le 08/07).
+**Tout est poussé** vers `cafe-virtuel/Mem4ristor` depuis le ~14/07 ; la branche `main` est
+synchronisée avec `origin/main`.
 
 ---
 

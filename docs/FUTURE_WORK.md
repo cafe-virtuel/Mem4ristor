@@ -5,7 +5,9 @@
 > **Origine.** Audit externe simulé « posture d'une chercheuse de référence en neuromorphique » du 2026-07-06
 > ([docs/audit_externe_neuromorphique_2026-07-06.md](audit_externe_neuromorphique_2026-07-06.md))
 > + mandat de réfutation λ₂ du 2026-07-01 (`experiments/lambda2_foundation_20260701/SYNTHESE.md`).
-> **Mise à jour.** 2026-07-11 (genèse 5 états consolidée D1, pont LLM tâche aval D2,
+> **Mise à jour.** 2026-07-26 (audit externe « DeepMind » SOLDÉ en entier — voir section E ;
+> cadrage « bon marché » corrigé ; B3 complété par le pont opérations↔énergie).
+> Précédente : 2026-07-11 (genèse 5 états consolidée D1, pont LLM tâche aval D2,
 > [13] révisé au code actuel, B5-STNO NARMA10 fait — voir sections correspondantes).
 > **Réservoir d'idées complémentaire** (écartées trop tôt, jamais tentées, garde-fou des
 > impasses) : [PISTES_POUR_LA_SUITE_2026-07-12.md](PISTES_POUR_LA_SUITE_2026-07-12.md)
@@ -18,6 +20,20 @@ Légende statut : ✅ fait · 🔜 prêt à démarrer · 🧩 projet (plusieurs 
 ---
 
 ## Priorité recommandée (si on ne fait qu'une chose à la fois)
+
+**26/07/2026 — CE QUI RESTE VRAIMENT.** Les trois critiques de l'audit externe « DeepMind »
+sont soldées (section E). Le backlog de tête est vide : tout ce qui reste ci-dessous est
+soit un **projet de fond de plusieurs semaines** (B2 SPICE, couplage électrique réel,
+micromagnétisme mumax3 — ce dernier réservé par Julien à une session **en personne**),
+soit de la **théorie** (C1 k_harm analytique, C2 hétérogénéité), soit deux **questions
+nouvelles nées le 26/07** et de taille normale :
+  - le **mécanisme par nœud** de la cascade topologique (deux explications proposées et
+    réfutées le jour même : ni l'amplitude du champ reçu, ni la variance de la cible
+    locale — le degré garde ρ partiel −0.37 après contrôle) ;
+  - **pourquoi un simple `std(v)` égale le désaccord local `mean(|L·v|)`** comme signal
+    d'arrêt (−0.07, IC [−0.17, +0.00]) alors que tout signal purement temporel échoue
+    catastrophiquement (0.03). L'arrêt a besoin du spatial, pas de la topologie : le
+    comprendre toucherait au cœur de ce que le doute apporte.
 
 0. **09/07/2026 — Fond du Volet B cadré (B2/B3/B5/B6)**, choix de Julien : « tout explorer »
    plutôt qu'un seul dispositif. 3 dossiers de correspondance physique (photonique/
@@ -384,6 +400,23 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   **Réserve dominante** : aucune énergie « système complet » (interconnexion, overhead
   laser/détecteur photonique, etc.) n'a été calculée — B3 reste un cadrage d'ordres de
   grandeur, pas une preuve de faisabilité énergétique bout en bout.
+- **✅ Complété (26/07/2026) — le pont opérations↔énergie, et il ne va pas dans le sens
+  espéré.** `experiments/expB3_substrate_crossover_poc.py`. La question posée : le cadrage
+  « composant d'orientation bon marché » (13/07) redevient-il vrai sur un substrat où un
+  pas coûte peu ? **Non, et la raison est structurelle.** Le fait décisif est que
+  l'adversaire qui égale M4R sur sa niche — un filtre à oubli exponentiel — **est un
+  circuit RC** : passer M4R en analogique y fait passer l'adversaire aussi, où il est
+  passif. À substrat égal (agrégation par Kirchhoff, le régime physiquement honnête),
+  **M4R coûte ~15× plus d'énergie, et le rapport ne dépend PAS du dispositif** — changer de
+  substrat divise les deux côtés par le même facteur. M4R entretient 200 oscillateurs
+  ACTIFS pendant 309 pas, le filtre un seul RC PASSIF pendant 1348.
+  ⚠️ La comparaison flatteuse (M4R sur STNO contre un filtre compté en opérations Loihi)
+  donne 2 500× à 8 700× en faveur de M4R : elle est calculée dans le script **et affichée
+  comme le piège qu'elle est**, car elle compare deux substrats et non deux méthodes —
+  exactement ce contre quoi la section 3 de `B3_ENERGY_COMPARISON.md` met en garde.
+  **Conclusion à retenir** : le « bon marché » du projet était un argument sur le
+  **substrat**, dont tout dispositif analogique bénéficierait identiquement, pas sur
+  l'architecture. Ce qui appartient en propre à M4R est la **latence** (voir E2).
 - **Reste.** Choisir UNE architecture hybride précise (quel dispositif pour quel rôle,
   N nœuds, overhead d'interconnexion) et la chiffrer bout en bout — projet de
   plusieurs semaines.
@@ -677,6 +710,70 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   bruitées — re-vérification au readout lissé saine avant citation.
 - **Reste.** (c) le backtest 0 € (paris préenregistrés / réponses LLM / investissement
   virtuel) avec la RECETTE composite (signaux + CV), pas les poids. **Effort.** 🧩.
+
+---
+
+## E. Audit externe « Google DeepMind » (Gemini, 17/07/2026) — SOLDÉ EN ENTIER
+
+> Les trois critiques de cet audit ont été traitées. Elles sont consignées ici parce que
+> deux d'entre elles ont produit les résultats les plus précis du projet sur sa propre
+> niche, et parce que la troisième a failli être racontée de travers.
+
+### E1 — « Friston / énergie libre » ✅ TRAITÉE (17/07/2026)
+Un draft interne (`docs/draft_friston_free_energy.md`) ressuscitait une thèse déjà rejetée
+deux fois par les audits internes, en portant une étiquette « validée par la Red Team »
+fausse. **Retiré** avec bandeau explicite (marqué, pas caché), commit `5209d0b`.
+
+### E2 — « Quelle classe computationnelle bat une exploration purement aléatoire ? » ✅ FAIT (26/07/2026)
+`experiments/expB_annealing_faceoff_poc.py` (+ B2/B3/B4/B5/B6-bis). Harness B1d/B5b exact,
+40 graines, hyperparamètres des adversaires choisis sur graines d'entraînement et mesurés
+sur graines **disjointes**.
+- **Les adversaires cités sont battus** : recuit simulé 0.45 (signal) / 0.50 (flux brut)
+  contre 0.90 ; exploration stochastique pure 0.38 / **0.00**. L'exploration aléatoire ne
+  bat rien ici — c'était littéralement la question.
+- **Mais un filtre à oubli exponentiel atteint 1.00**, et **ce n'est pas son exploration** :
+  privé de son ε, il fait aussi bien. Ce qui bat le doute est un **passe-bas**, et la
+  différence avec l'intégrateur pur (0.00) est l'**oubli**, pas l'aléa.
+- **Ce que le doute apporte, isolé** (`expB5-bis`, `expB6-bis`) : il ne lit pas mieux — à
+  instant fixe le réseau est à 0.40 — il sait **quand** lire. L'arrêt vaut **+0.49 à +0.61**,
+  et bat de loin des instants de même distribution tirés sans lien au run (0.46-0.57).
+  **Latence : 4.4× moins de pas**, y compris depuis l'intérieur de la fenêtre trompeuse.
+- **Reste ouvert** : ce signal d'arrêt exige du **spatial** mais **pas la topologie** — un
+  `std(v)` égale voire dépasse `mean(|L·v|)` (−0.07, IC [−0.17, +0.00]). Comprendre
+  pourquoi toucherait au cœur du mécanisme. Effort : 1 session.
+
+### E3 — « L'entrée en dead zone sur BA est-elle une cascade initiée par les hubs ? » ✅ FAIT (26/07/2026)
+`experiments/expA_ba_cascade_poc.py` (160 runs) + `expA_mechanism_drive_poc.py`.
+- **Oui, le phénomène existe** : ρ(degré, temps de verrouillage) = −0.56, **10/10 graines
+  négatives en primaire ET sur graines disjointes** ; les hubs se verrouillent ~490 pas
+  avant la périphérie ; le sous-graphe vivant éclate en 39.9 composantes contre 7.9 sous
+  retrait aléatoire du même nombre de nœuds.
+- **Mais l'attribution de l'audit est fausse sur trois points** : l'effet disparaît sous
+  normalisation par degré (c'est une propriété du **protocole de couplage**, pas du
+  réseau) ; il n'est **pas spécifique au scale-free** (ER à ⟨k⟩ comparable : −0.61) ; il
+  n'est pas un artefact d'indice (relabeling aléatoire : inchangé) ni de binning (tient
+  sous v*).
+- **Mécanisme par nœud : OUVERT.** Deux explications proposées, deux réfutées le jour même —
+  ni l'amplitude du champ reçu (partiel deg|drive = −0.37, le champ n'absorbe pas le degré),
+  ni la variance temporelle de la cible locale (ρ ≈ +0.03), car l'argument d'échantillonnage
+  du 01/07 est **cinématique** et suppose des voisins indépendants, ce que la dynamique
+  couplée viole. Effort : 1 session.
+
+### E4 — PIÈGE DE MÉTHODE À NE PAS REJOUER (découvert et corrigé le 26/07/2026)
+Régler un adversaire « à son maximum par **oracle par run** » (le meilleur de N combinaisons
+d'hyperparamètres, choisi run par run en connaissant la bonne réponse) **fabrique du
+résultat** : sur un signal sans aucune information (bruit pur), cette procédure rend
+**0.935 d'accuracy au lieu de 0.500**, parce qu'avec 18 combinaisons et une décision binaire
+il s'en trouve presque toujours une qui tombe juste. Le biais joue **contre** le composant
+qui n'ajuste rien.
+- **Où c'est corrigé** : `expB_annealing_faceoff_poc.py` et `expB2_wiring_budget_poc.py`
+  sélectionnent désormais sur graines d'entraînement et mesurent sur graines disjointes ; le
+  contrôle « bruit pur » est rejoué et imprimé à chaque exécution.
+- ⚠️ **Où le piège subsiste** : `b5b_deceptive_exploration.py` (08/07) règle l'ESN par le
+  même oracle par run (grille de 6 combinaisons, moins diverse donc moins exploitable). Le
+  biais y joue **en faveur de l'ESN**, donc **contre** M4R : la conclusion de B5b en sort
+  *conservative*, pas invalidée. **À refaire avec sélection train/test avant toute citation
+  au chiffre.** Effort : 1 h.
 
 ---
 
