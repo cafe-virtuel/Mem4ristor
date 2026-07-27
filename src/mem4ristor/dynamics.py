@@ -94,6 +94,28 @@ class Mem4ristorV3:
             p_flip = self.cfg['noise'].get('rtn_p_flip', 0.01)
             if not (0.0 <= p_flip <= 1.0):
                 raise ValueError(f"Configuration Error: 'rtn_p_flip' must be in [0, 1], got {p_flip}")
+        # 2026-07-27 (accord explicite de Julien) : le re-clippage final de u (fin de step())
+        # donne a u_clamp la priorite sur le watchdog. Or le watchdog ecrit u_fou / u_sage
+        # DELIBEREMENT (le KICK du 07/07 relance la repulsion depuis un consensus). Si u_clamp
+        # etait plus etroit que ces deux valeurs, le kick serait ecrase EN SILENCE et le
+        # watchdog cesserait de faire son travail sans aucun avertissement. On refuse la
+        # configuration au lieu de la subir. Mesure du 27/07 : hors de ce cas, le re-clippage
+        # final est bit-a-bit neutre (7 configurations sur 9, dont ART soft/hard).
+        wd_cfg = self.cfg.get('consolidation_watchdog', {})
+        if wd_cfg.get('enabled', False):
+            u_lo, u_hi = self.cfg['doubt']['u_clamp']
+            u_sage = float(wd_cfg.get('u_sage', 0.05))
+            u_fou = float(wd_cfg.get('u_fou', 0.9))
+            if not (u_lo <= u_sage <= u_hi):
+                raise ValueError(
+                    f"Configuration Error: consolidation_watchdog 'u_sage'={u_sage} is outside "
+                    f"'u_clamp'=[{u_lo}, {u_hi}]. The final clamp would silently override the "
+                    f"watchdog's consolidation phase. Widen u_clamp or move u_sage.")
+            if not (u_lo <= u_fou <= u_hi):
+                raise ValueError(
+                    f"Configuration Error: consolidation_watchdog 'u_fou'={u_fou} is outside "
+                    f"'u_clamp'=[{u_lo}, {u_hi}]. The final clamp would silently override the "
+                    f"watchdog's KICK. Widen u_clamp or move u_fou.")
 
     def _initialize_params(self, N=100, cold_start=False):
         if N <= 0 or N > 10_000_000:
@@ -413,7 +435,12 @@ class Mem4ristorV3:
                 self.heretic_mask |= newly_heretic
                 self.dynamic_heretic_count += int(np.sum(newly_heretic))
 
-        # Sécurité finale : re-clippage garanti de u selon u_clamp en toute fin de pas
+        # Sécurité finale : re-clippage garanti de u selon u_clamp en toute fin de pas.
+        # CHOIX EXPLICITE (27/07, accord de Julien) : u_clamp a la PRIORITE sur l'ART et sur
+        # le watchdog, qui bornent en dur a 1.0 / ecrivent 0.9 sans consulter u_clamp.
+        # Ce n'est pas un accident de l'ordre des lignes : c'est l'invariant du coeur, et
+        # `_validate_config` refuse desormais les configurations ou ce choix ecraserait
+        # silencieusement une intention du watchdog. Verrouille par test_u_clamp_invariant.py.
         self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
 
     def _step_complex_doubt(self, laplacian_v, sigma_social_for_u,
