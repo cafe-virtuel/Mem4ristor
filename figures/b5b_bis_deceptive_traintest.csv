@@ -1,0 +1,28 @@
+quantite,valeur,detail
+ctrlv1_oracle_per_run,0.5500,TEMOIN INVALIDE flux degenere
+ctrlv1_train_test,0.5000,TEMOIN INVALIDE flux degenere
+ctrlv2_combo_diversity,0.0000,part des problemes ou les 6 combos divergent
+ctrlv2_oracle_perm,0.5520,oracle par run sous permutation d'etiquettes
+ctrlv2_train_test_perm,0.5015,selection train/test sous permutation
+ctrlv2_oracle_true,0.9500,oracle par run sur les vraies etiquettes
+ctrlv2_power_criterion_met,False,oracle_perm >= 0.65
+esn_rule,DROP,choisie sur TRAIN
+esn_rule_rho,0.90,choisi sur TRAIN
+esn_rule_leak,0.30,choisi sur TRAIN
+esn_fixed_B,800,choisi sur TRAIN
+esn_fixed_rho,0.90,choisi sur TRAIN
+esn_fixed_leak,0.30,choisi sur TRAIN
+m4r_fixed_B,400,choisi sur TRAIN
+m4r_rule_symmetry,DOUBT,choisie sur TRAIN
+M4R_DOUBT,0.9000,mesure sur TEST
+M4R_CONV,0.4000,mesure sur TEST
+M4R_ORACLE,0.8500,mesure sur TEST
+M4R_FIXED,0.8000,mesure sur TEST
+ESN_RULE,0.0000,mesure sur TEST
+ESN_FIXED,1.0000,mesure sur TEST
+ESN_ORACLE,1.0000,mesure sur TEST
+V1_delta,0.9000,IC[0.7500;1.0000] sur TEST
+V2_delta,-0.1000,IC[-0.2500;0.0000] sur TEST
+V3_delta,0.9000,IC[0.7500;1.0000] sur TEST
+n_seeds_train,20,
+n_seeds_test,20,

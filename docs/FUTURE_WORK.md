@@ -792,11 +792,41 @@ qui n'ajuste rien.
 - **Où c'est corrigé** : `expB_annealing_faceoff_poc.py` et `expB2_wiring_budget_poc.py`
   sélectionnent désormais sur graines d'entraînement et mesurent sur graines disjointes ; le
   contrôle « bruit pur » est rejoué et imprimé à chaque exécution.
-- ⚠️ **Où le piège subsiste** : `b5b_deceptive_exploration.py` (08/07) règle l'ESN par le
-  même oracle par run (grille de 6 combinaisons, moins diverse donc moins exploitable). Le
-  biais y joue **en faveur de l'ESN**, donc **contre** M4R : la conclusion de B5b en sort
-  *conservative*, pas invalidée. **À refaire avec sélection train/test avant toute citation
-  au chiffre.** Effort : 1 h.
+- ~~⚠️ **Où le piège subsiste**~~ ✅ **DETTE PAYÉE le 27/07/2026 au soir**
+  (`experiments/b5b_bis_deceptive_traintest.py`, harness B5b identique, 20 graines TRAIN +
+  20 graines TEST **disjointes**, tout choix — hyperparamètres, règle d'arrêt, budget — fait
+  sur TRAIN et figé). Les **trois** endroits où le piège était présent dans
+  `b5b_deceptive_exploration.py` sont corrigés : `esn_best_by_oracle` (combo choisi run par
+  run), `np.maximum(acc[DROP], acc[CONV])` (meilleure règle prise graine par graine) et
+  `best_fixed` (budget choisi sur les données de mesure).
+  - **Le piège était RÉEL DANS LE CODE mais SANS EFFET sur les chiffres.** Contrôle par
+    permutation d'étiquettes sur les vraies trajectoires : les 6 combinaisons (ρ, fuite)
+    rendent des décisions **identiques dans 100 % des problèmes**, sur les trois canaux que
+    la sélection regarde (décision finale, décision à l'arrêt DROP, à l'arrêt CONV). Sans
+    divergence entre combinaisons, un oracle par run n'a rien à trier : oracle-par-run sous
+    permutation **0.55** au lieu du 0.935 constaté ailleurs dans le projet. Le critère de
+    pouvoir posé avant mesure (≥ 0.65) n'est **pas** atteint — rapporté tel quel, sans en
+    faire une victoire. La conclusion de B5b n'était donc pas seulement conservative : elle
+    n'était pas biaisée du tout par ce mécanisme.
+  - **Résultat sur graines TEST** : doute natif **0.90** ; M4R convergence 0.40 ; M4R meilleur
+    budget fixe 0.80 ; ESN meilleure règle naïve (DROP) **0.00** ; ESN meilleur budget fixe
+    (B=800) **1.00**.
+  - **V2, le seul test qui engage quelque chose** : −0.10, IC [−0.25, **+0.00**]. **Non
+    concluant au sens strict** (l'IC touche zéro) et l'écart ponctuel va dans le sens de
+    l'ESN. Ce qui est **établi** : le doute n'est **pas meilleur** qu'un horizon fixe bien
+    choisi. Ce qui ne l'est **pas** : qu'il soit pire. **La conclusion du 08/07 tient, et elle
+    est maintenant citable.** Noter que B=800 dépasse le leurre le plus long (700) : un budget
+    fixe supérieur à l'horizon **maximal** suffit — ce qu'un horizon inconnu interdit de choisir.
+  - ⚠️ **V1 (+0.90, IC [+0.75, +1.00]) est à ne pas survendre** : l'arrêt naïf de l'ESN est au
+    **plancher (0.00)**, son signal se déclenche pendant le leurre. Un adversaire qui répond
+    systématiquement faux n'est pas une baseline, c'est une baseline en panne. Le script
+    imprime cet avertissement automatiquement dès que l'adversaire tombe sous 0.10.
+  - 🔍 **Défaut d'instrument rencontré et conservé** : le premier contrôle écrit ce soir-là
+    (flux nul à stimulus constant) rendait **0.500** pour la procédure corrigée — le bon
+    chiffre — mais **0.550** pour le témoin censé montrer le piège, parce que ce flux
+    dégénéré ne produit aucune divergence entre combinaisons. Il ne testait rien. **Un
+    contrôle qui donne le bon chiffre pour la mauvaise raison est un contrôle en panne, pas
+    un feu vert** ; il est laissé dans le script, marqué invalide.
 
 ### E5 — « Pourquoi un simple `std(v)` égale-t-il le désaccord local ? » ✅ FAIT (26/07/2026, soir)
 

@@ -29,6 +29,40 @@ illimite) rapporte aussi pour separer "peut-il finir juste" de "s'engage-t-il tr
 
 Sortie : figures/b5b_deceptive_exploration.csv + .png + verdict.
 Cree : 2026-07-08 (Claude Opus 4.8) -- B5b niche exploration (docs/FUTURE_WORK.md).
+
+--------------------------------------------------------------------------------
+DETTE DE METHODE DE CE SCRIPT -- PAYEE LE 27/07/2026 AU SOIR (Claude Opus 5)
+--------------------------------------------------------------------------------
+Ce script regle l'ESN adverse par ORACLE PAR RUN : `esn_best_by_oracle` choisit
+(rho, leak) probleme par probleme EN CONNAISSANT dstar. Le 26/07 cette procedure a
+ete demasquee ailleurs dans le projet (sur du bruit pur elle rend 0.935 au lieu de
+0.500) et la dette a ete ouverte en E4 de docs/FUTURE_WORK.md. Deux autres endroits
+du meme script en relevent : `esn_best_stop = np.maximum(...)` prend la meilleure des
+deux regles d'arret GRAINE PAR GRAINE, et `best_fixed` choisit le meilleur budget sur
+les MEMES donnees qui servent a le mesurer.
+
+REFAIT PROPREMENT dans `experiments/b5b_bis_deceptive_traintest.py` : harness
+identique, 20 graines TRAIN + 20 graines TEST disjointes, tout choix fige sur TRAIN.
+Deux resultats, et le premier est le plus utile a savoir avant de relire ce fichier :
+
+  1. LE PIEGE ETAIT REEL DANS LE CODE MAIS SANS EFFET SUR LES CHIFFRES. Les 6
+     combinaisons (rho, leak) de la grille rendent des decisions IDENTIQUES dans
+     100 pct des problemes, sur les trois canaux que la selection regarde. Sans
+     divergence entre combinaisons, un oracle par run n'a rien a trier : sous
+     permutation d'etiquettes il rend 0.55, pas 0.935. Les chiffres ci-dessous ne
+     sont donc pas biaises par ce mecanisme.
+  2. LE VERDICT (2) DE CE SCRIPT TIENT, mesure sur graines disjointes : doute natif
+     0.90 contre 1.00 pour le meilleur budget fixe de l'ESN (B=800), ecart -0.10 avec
+     un IC [-0.25, +0.00] qui touche zero. Non concluant au sens strict ; le doute
+     n'est PAS meilleur qu'un horizon fixe bien choisi, et on ne peut pas etablir
+     qu'il soit pire. La niche reste ce qu'annonce ce script : etroite, conditionnee a
+     un horizon inconnu ou a un cout d'attente.
+  ⚠️ Et le verdict (1) est a ne pas survendre : l'arret naif de l'ESN est au PLANCHER
+     (0.00), son signal se declenche pendant le leurre. Ce n'est pas une baseline,
+     c'est une baseline en panne.
+
+Ce fichier est conserve tel quel (chiffres inclus) : il est la reference historique du
+08/07. Pour toute citation au chiffre, utiliser b5b_bis.
 """
 from __future__ import annotations
 import sys, time
