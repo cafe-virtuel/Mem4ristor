@@ -749,6 +749,22 @@ sur graines **disjointes**.
   établi, c'est que `std(v)` **n'est pas moins bon**, pas que le désaccord local soit moins
   bon. Corrigé, pas réécrit.
 
+> ⚠️ **LE PENDANT NÉGATIF, MESURÉ LE 27/07 AU SOIR — la réponse à E2 est CONDITIONNELLE À LA
+> TÂCHE, pas un verdict général.** Sur la niche établie (décision trompeuse en ligne, harness
+> B1d/B5b), l'exploration purement aléatoire ne bat rien : **0.00**. Sur le **Max-Cut**
+> (`p15_maxcut_ising_poc.py`, tâche hors niche), c'est l'inverse et l'écart est franc : à
+> budget d'échantillons **égal** — M4R lit `sign(v)` 300 fois sur 3000 pas, on tire 300
+> configurations de spins uniformes — le **meilleur de 300 tirages aléatoires bat M4R sur
+> 10/10 graines puis 10/10 graines neuves** (aléatoire 91.50 / 89.10 ; FROZEN_U 82.10 / 80.50 ;
+> FULL 80.90 / 79.80). Critère ≥ 8/10 posé avant mesure ; diagnostic et gate de fidélité dans
+> `experiments/p15b_maxcut_identity_diagnosis.py`. **Ne jamais citer E2 comme « le doute bat
+> l'exploration aléatoire » sans nommer la tâche.**
+> Reste **non tranché** (5 explications posées, 5 rejetées à leur propre critère) : pourquoi
+> **10 graines sur 20** donnent une coupe ET une énergie strictement identiques entre FULL et
+> FROZEN_U. Effort estimé pour la seule piste non testée (la coupe est une variable discrète à
+> faible dispersion, donc deux séries de même loi ont souvent le même maximum entier) : ~1 h,
+> **et elle expliquerait un artefact de mesure, pas une propriété de `u`.**
+
 ### E3 — « L'entrée en dead zone sur BA est-elle une cascade initiée par les hubs ? » ✅ FAIT (26/07/2026)
 `experiments/expA_ba_cascade_poc.py` (160 runs) + `expA_mechanism_drive_poc.py`.
 - **Oui, le phénomène existe** : ρ(degré, temps de verrouillage) = −0.56, **10/10 graines
