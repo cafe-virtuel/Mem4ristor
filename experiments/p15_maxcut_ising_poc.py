@@ -21,6 +21,37 @@ Conclusion d'Honnêteté Scientifique :
 Mem4ristor bascule naturellement en mode anti-synchronisation grâce au doute (u_filter < 0),
 ce qui le pousse vers la coupe sans algorithme explicite. Néanmoins, pour la recherche combinatoire
 discrète pure (Max-Cut), le Recuit Simulé discret optimisé reste supérieur à la relaxation continue FHN.
+
+--------------------------------------------------------------------------------
+AUDIT (Claude Opus 5, 27/07/2026) -- LA PHRASE "GRACE AU DOUTE" EST CONTREDITE
+PAR L'ABLATION CONTENUE DANS CE SCRIPT
+--------------------------------------------------------------------------------
+Le classement ci-dessus (SA > Glouton >> M4R) est exact et honnete : un glouton trivial
+fait +43% de coupe. Le point d'audit porte sur l'ATTRIBUTION, pas sur le classement.
+
+Ce script embarque l'ablation qui teste la phrase "grace au doute" -- et elle dit non :
+
+  Mem4ristor FROZEN_U (u fige a 0.5) : coupe = 82.10
+  Mem4ristor FULL (doute adaptatif)  : coupe = 80.90
+  FULL - FROZEN = -1.20, IC95 [-2.07, -0.33]  (l'intervalle EXCLUT zero)
+
+La comparaison est loyale : a u=0.5 le filtre vaut +0.01 (couplage quasi nul), contre
+~ -0.99 en FULL (anti-synchronisation forte). Elle teste donc bien l'effet revendique.
+Le doute adaptatif ne pousse PAS vers la coupe -- il la degrade legerement.
+
+Ce qui est etabli : le doute n'est pas la cause de la performance de M4R ici.
+Ce qui ne l'est PAS : que le doute "nuit". L'effet vaut 1.5%, mesure sur UN SEUL
+groupe de 10 graines, sans gate de replication. Ne pas citer ce -1.20 au chiffre.
+
+QUESTION OUVERTE (non expliquee) : 4 graines sur 10 donnent des resultats STRICTEMENT
+identiques entre FULL et FROZEN_U (coupe ET energie). Sur ces runs, u ne change
+litteralement rien au resultat -- soit best_cut est atteint avant que u ne diverge,
+soit la relaxation converge au meme point. A trancher avant toute reprise de ce POC.
+
+Statut : exploration (colonne B), resultat NEGATIF, conserve et documente.
+Aucun chiffre du preprint, aucun claim du Guardian, aucun CSV canonique concerne.
+Reproductibilite verifiee le 27/07 : re-execution complete, colonnes scientifiques
+identiques au bit pres (seuls les chronometres varient).
 """
 
 import os
@@ -176,6 +207,23 @@ def run_maxcut_benchmark(n_seeds=10, N=100, steps=3000):
     print(f"  Recuit Simulé (SA)   : Coupe Moyenne = {mean_cut_sa:.2f}")
     print(f"  Mem4ristor FROZEN    : Coupe Moyenne = {mean_cut_frozen:.2f}")
     print(f"  Mem4ristor FULL      : Coupe Moyenne = {mean_cut_m4r:.2f}")
+    print("=" * 50)
+
+    # Verdict d'attribution (audit du 27/07) : le classement etait honnete, mais la
+    # phrase "grace au doute" de l'en-tete est contredite par cette ablation meme.
+    # ASCII pur dans les print (piege cp1252).
+    d = df['cut_m4r'] - df['cut_frozen']
+    sem = d.std(ddof=1) / np.sqrt(len(d))
+    n_ident = int(((df.cut_m4r == df.cut_frozen) & (df.E_m4r == df.E_frozen)).sum())
+    print("")
+    print("ATTRIBUTION : le doute adaptatif n'est PAS la cause de la coupe obtenue.")
+    print("  FULL - FROZEN_U = %+.2f, IC95 [%+.2f, %+.2f] -- l'intervalle exclut zero."
+          % (d.mean(), d.mean() - 1.96 * sem, d.mean() + 1.96 * sem))
+    print("  Geler u a 0.5 fait marginalement MIEUX que le laisser s'adapter.")
+    print("  Effet de 1.5 pct, un seul groupe de graines, sans gate de replication :")
+    print("  ne pas citer cet ecart au chiffre, et ne pas conclure que le doute nuit.")
+    print("  Question ouverte : %d graines sur %d sont STRICTEMENT identiques FULL/FROZEN."
+          % (n_ident, len(df)))
     print("=" * 50)
     
     plt.figure(figsize=(10, 6))

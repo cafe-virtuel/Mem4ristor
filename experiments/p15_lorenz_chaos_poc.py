@@ -16,6 +16,37 @@ Algorithmes comparés :
 2. Mem4ristor FROZEN_U (doute u fixe)
 3. Filtre RC Exponentiel (RC Low-pass Filter)
 4. Passe-Bas Moyen Mobile
+
+--------------------------------------------------------------------------------
+AUDIT (Claude Opus 5, 27/07/2026) -- L'HYPOTHESE CI-DESSUS EST REFUTEE PAR CE SCRIPT
+--------------------------------------------------------------------------------
+Le texte ci-dessus posait un mecanisme : "u s'eleve et reinitialise la receptivite
+du reseau pour une capture quasi-instantanee du nouvel etat". Les chiffres produits
+par ce script disent l'inverse, et il faut le lire ici plutot que dans le CSV.
+
+  Filtre RC Exponentiel : MSE = 0.1699        <-- le meilleur
+  Moyenne Mobile        : MSE = 0.1833
+  Mem4ristor FROZEN_U   : MSE = 2.1072
+  Mem4ristor FULL       : MSE = 7.7238        <-- le pire des quatre
+  Erreur post-choc RC   : 0.196
+  Erreur post-choc FULL : 2.857               <-- 14.6x pire, sur le cas meme
+                                                  ou le doute etait cense gagner
+
+VERDICT : M4R FULL est 45x pire qu'un filtre RC de premiere annee, 3.7x pire que
+sa PROPRE ablation (FROZEN_U), et son desavantage est maximal exactement sur les
+ruptures de regime. Le doute adaptatif ne capture pas plus vite : il degrade.
+
+Ce resultat n'est pas une surprise et n'invalide rien du preprint. C'est la 3e
+replication independante du meme fait : le noeud FHN degrade l'information sur les
+taches de prediction (B5 08/07, ESN 5.5x meilleur sur NARMA10 ; B5 13/07, une simple
+regression lineaire bat M4R). M4R n'est pas un predicteur. Le preprint ne l'a jamais
+pretendu -- il porte sur ce que u fait a la DYNAMIQUE d'un reseau (ablation FROZEN_U,
+Cohen d ~9.4), pas sur ses performances de calcul.
+
+Statut : exploration (colonne B), resultat NEGATIF, conserve et documente.
+Aucun chiffre du preprint, aucun claim du Guardian, aucun CSV canonique concerne.
+Reproductibilite verifiee le 27/07 : re-execution complete, colonnes scientifiques
+identiques au bit pres (seuls les chronometres varient).
 """
 
 import os
@@ -168,6 +199,19 @@ def run_lorenz_benchmark(n_seeds=10, N=100, steps=3000):
     print(f"  Mem4ristor FULL       : MSE = {df['mse_full'].mean():.4f}")
     print(f"  Erreur Post-Choc RC   : {df['error_rc_shock'].mean():.4f}")
     print(f"  Erreur Post-Choc M4R  : {df['error_full_shock'].mean():.4f}")
+    print("=" * 50)
+
+    # Verdict imprime (audit du 27/07) : sans lui, un lecteur qui n'ouvre pas le CSV
+    # repart avec l'hypothese de l'en-tete, que ces chiffres refutent. ASCII pur (cp1252).
+    ratio_rc = df['mse_full'].mean() / df['mse_rc'].mean()
+    ratio_abl = df['mse_full'].mean() / df['mse_frozen'].mean()
+    ratio_shock = df['error_full_shock'].mean() / df['error_rc_shock'].mean()
+    print("")
+    print("VERDICT : hypothese de l'en-tete (capture quasi-instantanee des ruptures) REFUTEE.")
+    print("  M4R FULL est %.1fx pire que le filtre RC, %.1fx pire que sa propre ablation," % (ratio_rc, ratio_abl))
+    print("  et %.1fx pire sur le choc -- le cas ou le doute etait cense gagner." % ratio_shock)
+    print("  3e replication : M4R n'est pas un predicteur (cf. B5 08/07 et 13/07).")
+    print("  Resultat NEGATIF conserve. Ne touche aucun chiffre du preprint.")
     print("=" * 50)
     
     # Graphic output
