@@ -413,6 +413,9 @@ class Mem4ristorV3:
                 self.heretic_mask |= newly_heretic
                 self.dynamic_heretic_count += int(np.sum(newly_heretic))
 
+        # Sécurité finale : re-clippage garanti de u selon u_clamp en toute fin de pas
+        self.u = np.clip(self.u, *self.cfg['doubt']['u_clamp'])
+
     def _step_complex_doubt(self, laplacian_v, sigma_social_for_u,
                             sigma_social_override, epsilon_u_adaptive):
         """P10 (2026-07-12, accord explicite de Julien) : le doute COMPLEXE.
