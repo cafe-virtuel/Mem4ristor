@@ -713,8 +713,22 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   long-budget = problème ouvert. ⚠️ Réserve de propagation : B1d/B5b (07-08/07) utilisaient
   le readout instantané ; comparaisons relatives probablement robustes, accuracies absolues
   bruitées — re-vérification au readout lissé saine avant citation.
-- **Reste.** (c) le backtest 0 € (paris préenregistrés / réponses LLM / investissement
-  virtuel) avec la RECETTE composite (signaux + CV), pas les poids. **Effort.** 🧩.
+- **✅ (c) Backtest 0 € FAIT (13/07/2026)** — `experiments/scratch/p6c_backtest_poc.py`
+  (cette entrée disait encore « Reste » jusqu'au 28/07 : oubli de mise à jour, le
+  travail était fait depuis le 13/07, commit `e5d3ed9`). Domaine « investissement
+  virtuel » synthétique aux statistiques **génuinement** différentes de B1d (forces,
+  effectifs et durée du faux breakout tirés par essai au lieu d'être fixes), 60
+  épisodes, critère de succès identique à P6b (r_pb > 0.15 **ET** gain@50 % > +3 pts).
+  **La recette transporte, largement** : ALWAYS-TRADE = 63.3 % ; COMPOSITE_CV ré-appris
+  sur le nouveau domaine = **+30.0 pts @ 50 % de couverture (63.3 → 93.3 %), r_pb =
+  +0.463** — le meilleur résultat d'abstention du projet à ce jour, au-delà de P6b.
+  **Ce qui est démontré, précisément** : c'est la **recette** (les signaux + la CV
+  groupée) qui transporte, pas les poids — le signal individuel gagnant de B1d
+  (`conf_u_inv`) transporté tel quel fonctionne aussi (+13.3 pts) mais **nettement
+  moins bien** que le composite ré-appris. **Réserve** : domaine **synthétique**, pas
+  un vrai backtest sur données de marché ni sur réponses de LLM ; le PEPIT_LOG parlait
+  de paris préenregistrés / réponses LLM / investissement virtuel — seul le troisième
+  est couvert, et en simulation. **Reste (🧩) :** un domaine à données réelles.
 
 ---
 
@@ -759,11 +773,49 @@ sur graines **disjointes**.
 > FULL 80.90 / 79.80). Critère ≥ 8/10 posé avant mesure ; diagnostic et gate de fidélité dans
 > `experiments/p15b_maxcut_identity_diagnosis.py`. **Ne jamais citer E2 comme « le doute bat
 > l'exploration aléatoire » sans nommer la tâche.**
-> Reste **non tranché** (5 explications posées, 5 rejetées à leur propre critère) : pourquoi
-> **10 graines sur 20** donnent une coupe ET une énergie strictement identiques entre FULL et
-> FROZEN_U. Effort estimé pour la seule piste non testée (la coupe est une variable discrète à
-> faible dispersion, donc deux séries de même loi ont souvent le même maximum entier) : ~1 h,
-> **et elle expliquerait un artefact de mesure, pas une propriété de `u`.**
+> ~~Reste **non tranché**~~ ✅ **TRANCHÉ le 28/07/2026** — `experiments/p15c_maxcut_identity_mechanism.py`
+> (gate de fidélité G0 passé, critères posés avant chaque volet, gate de réplication sur les
+> graines **20-39** jamais touchées). Pourquoi 10 graines sur 20 donnaient une coupe **et** une
+> énergie strictement identiques entre FULL et FROZEN_U — **quatre réponses, dont deux défauts
+> d'énoncé, et aucune ne concerne `u`** :
+> 1. **L'énoncé comptait deux fois la même chose.** `cut = 0.25·Σ|J| + 0.5·E` exactement
+>    (bijection affine lisible dans `compute_cut_and_energy`) : résidu **nul sur 20/20**, les
+>    deux tests d'identité coïncident sur 20/20. Le « **ET** énergie » — ce qui rendait
+>    l'observation frappante — ne portait aucune information. Établi **sans simulation**.
+> 2. **Ce n'est pas une coïncidence de valeur, c'est le même état** : `best_s(FULL)` et
+>    `best_s(FROZEN_U)` sont **le même vecteur de spins** sur 9 graines identiques sur 10,
+>    et **11 sur 11** en réplication. La question « pourquoi la même coupe » se dissout.
+> 3. **La piste laissée au froid est morte** (7ᵉ explication rejetée à son propre critère) :
+>    deux séries de 300 tirages uniformes **indépendantes** collisionnent à **0.10** (0.15 en
+>    réplication) contre **0.50** observé — facteur 5.
+> 4. **Le mécanisme, répliqué** : le record est battu dans un état de signes que les **deux
+>    conditions occupent au même instant** — 0.90 puis **1.00** chez les graines identiques
+>    contre 0.30 puis **0.22** chez les autres (critère posé avant : ≥ 0.70 et écart ≥ 0.30).
+>    Quand elles diffèrent, c'est un désaccord d'**exploration**, jamais de sélection (0 cas
+>    sur 10 où les deux optima sont vus des deux côtés).
+>
+> **⚠️ LE FAIT DUR, NON CHERCHÉ, ET LE PLUS UTILE DES QUATRE.** Sur **300 lectures**, M4R ne
+> visite que **~24 états de signes distincts en FULL et ~40 en FROZEN_U** (25 / 45 en
+> réplication), pour un **n_eff = 5** — il paie 300 lectures l'équivalent de 5 tirages
+> indépendants, **facteur 60**. Le réseau est quasi immobile : l'identité n'a plus rien
+> d'étonnant, c'est l'inverse qui demanderait une explication. Trois conséquences :
+> - **Le doute explore MOINS que le doute gelé** (24 contre 40 états) et il fige la dispersion
+>   de la coupe là où `FROZEN_U` la garde : sd early→late **3.01 → 0.47 en FULL sur 20/20
+>   graines**, contre 3.01 → 2.01 en FROZEN_U sur **8/20** seulement. Sur cette tâche, `u` est
+>   un frein à l'exploration. **3ᵉ contradiction de la phrase « grâce au doute »** de l'en-tête
+>   d'origine, après l'ablation du 27/07 au matin et le hasard du 27/07 au soir.
+> - **R2 et R5 (27/07) avaient le même angle mort** : ils testaient la **moyenne** de la coupe,
+>   qui ne bouge pas (72.9 → 73.8). C'est la **variance** qui s'effondre. Un critère posé sur la
+>   mauvaise statistique ne se rattrape pas en repêchant son seuil.
+> - Le transitoire lui-même **n'est pas** un tirage uniforme (sd 3.01 contre **6.03** mesurés sur
+>   le même graphe) : M4R est déjà deux fois moins dispersé que le hasard **avant** de se figer,
+>   ce qui suffit à expliquer sa défaite contre best-of-300.
+>
+> **Portée.** Tâche **hors niche**, où M4R perd déjà contre le tirage aléatoire à budget égal.
+> C'est l'explication d'une identité de **mesure**, pas une propriété de `u` — exactement ce qui
+> était annoncé avant d'ouvrir la question. Le **−1.20 FULL−FROZEN_U reste à ne pas citer**, et
+> pour une raison de plus : c'est l'écart entre deux maximums pris sur ~24 et ~40 états, souvent
+> le même.
 
 ### E3 — « L'entrée en dead zone sur BA est-elle une cascade initiée par les hubs ? » ✅ FAIT (26/07/2026)
 `experiments/expA_ba_cascade_poc.py` (160 runs) + `expA_mechanism_drive_poc.py`.
