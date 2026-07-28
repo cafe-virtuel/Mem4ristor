@@ -811,6 +811,43 @@ sur graines **disjointes**.
 >   le même graphe) : M4R est déjà deux fois moins dispersé que le hasard **avant** de se figer,
 >   ce qui suffit à expliquer sa défaite contre best-of-300.
 >
+> **✅ SUITE IMMÉDIATE (28/07, `experiments/p16_state_mobility_on_niche.py`) — le fait dur
+> a été porté SUR LA NICHE, et l'attribution au doute est tombée.** Harnais B1d exact
+> (gate de fidélité : `acc_final` 0.7500 et `acc_conv` 0.2500 reproduits au chiffre près
+> sur les graines du POC), **quatre** bras au lieu de deux, gate de réplication sur les
+> graines 20-39.
+> - **Le fait se réplique, massivement** : 20/20 puis 20/20 graines disjointes. Sur la
+>   niche, le doute visite **35 états distincts contre 75** pour `FROZEN_U(0.5)`.
+>   Ce n'était donc pas un accident du Max-Cut.
+> - **⚠️ Mais l'attribution au doute est FAUSSE, et dans le sens inverse de celui qu'on
+>   pouvait craindre.** À `u` **figé à 0.95** — le niveau même qu'atteint le doute
+>   (`u_end ≈ 0.88`) — le réseau visite **encore moins** d'états : **15.7 contre 35.0**,
+>   20/20 puis 20/20. **L'adaptativité du doute MODÈRE l'immobilisation, elle ne la
+>   produit pas.**
+> - **Le signe tranche, la force non** : à force de couplage égale, le synchronisant
+>   (`u=0.05`) visite **75.5** états contre **15.7** pour l'anti-synchronisant — soit le
+>   même ordre que le couplage **nul** (75.3). **Ce qui immobilise est
+>   l'anti-synchronisation**, pas l'intensité du couplage. C'est un figement et non un
+>   cycle (Hamming consécutive 0.18 / 0.29 / 0.51 / 0.56 nœuds sur 100).
+> - **Formulation défendable** : « le doute explore moins » est **vrai contre
+>   `FROZEN_U(0.5)` et FAUX contre `FROZEN_U(0.95)` ** — ne jamais l'écrire sans nommer le
+>   comparateur. Le comparateur historique `u=0.5` est un réseau **quasi découplé**
+>   (`u_filter ≈ 0`), pas un réseau « sans doute ». La caractérisation **« explorateur
+>   discipliné » (08/07) n'est pas renversée** : elle gagne une précision — la discipline
+>   se paie en mobilité.
+> - **🛡️ Le garde-fou colonne A a été posé, il est tombé, et la vérification a montré
+>   qu'il n'y avait pas d'alerte.** Sur `H_cont` — l'observable de Table 1 — FULL 3.609 <
+>   FROZ_05 3.828. **Avant d'écrire quoi que ce soit** : (a) `b4_ablation_robustness.csv`,
+>   dans le régime du preprint, donne **déjà le même ordre** (`full_hcont` 3.645/3.674
+>   contre `frozen_hcont` 4.327/4.653) ; (b) la légende de `tab:ablations` dans
+>   `preprint.tex` l'écrit noir sur blanc — l'entropie instantanée n'y est pas rapportée
+>   car elle *« donne des résultats directionnellement incorrects pour cette
+>   comparaison »*. Le preprint ne revendique **rien** sur `H` entre FULL et FROZEN : sa
+>   revendication est la **synchronie** (0.031 contre 0.751) et la complexité LZ.
+>   **La colonne A n'est pas approchée, et elle avait anticipé le point avant nous.**
+>   *Leçon : un garde-fou qui tombe n'est pas une alerte tant qu'on n'a pas vérifié ce que
+>   la cible affirme réellement.*
+>
 > **Portée.** Tâche **hors niche**, où M4R perd déjà contre le tirage aléatoire à budget égal.
 > C'est l'explication d'une identité de **mesure**, pas une propriété de `u` — exactement ce qui
 > était annoncé avant d'ouvrir la question. Le **−1.20 FULL−FROZEN_U reste à ne pas citer**, et
