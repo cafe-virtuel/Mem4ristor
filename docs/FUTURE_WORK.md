@@ -1041,8 +1041,45 @@ alors qu'il produit les CSV canoniques de **deux** claims (C04, C13) — a été
 (ImportError) ; il rejoue désormais ses deux CSV **bit à bit** (Cohen d 9,38 BA / 4,72
 lattice, séparation complète, 30 graines × 2 topologies).
 
-**Reste ouvert** : (a) le seuil d'attraction (~+0,17) se déplace-t-il avec `I_stim` ? (b)
-pourquoi LZ et synchronie décrochent-elles à deux seuils différents ?
+**RÉSULTAT 4 (P19, `p19_threshold_vs_stimulus.py`)** — les deux questions ci-dessus, traitées
+par un balayage croisé **7 intensités de stimulus × 11 valeurs de couplage figé** (990 runs).
+
+- **F2 ACCEPTÉE, 6 régimes sur 6.** Les mi-transitions des deux observables ne coïncident
+  **jamais** : synchronie entre filtre **+0,18 et +0,51**, LZ entre **−0,25 et −0,80**, écart
+  0,48 à 1,26. Cas le plus net, à `I_stim = 0,35` : le couplage passe de +0,90 à −0,15, la
+  synchronie s'effondre de **0,837 à 0,068** et la LZ **ne bouge pas** (1,639 → 1,655) — elle
+  ne chute qu'à filtre −0,43 (→ 1,20).
+  → **couper l'attraction désynchronise ; rendre franchement répulsif structure les
+  trajectoires. Deux effets, deux seuils, séparés par une large zone où l'un agit sans
+  l'autre.** `tab:ablations` les rapporte côte à côte comme une seule ablation parce qu'à
+  `u = 0,05` on franchit les deux d'un coup.
+- **F1 REJETÉE, et le critère était MAL POSÉ** (à consigner comme tel) : le seuil de synchronie
+  bouge énormément (étendue **1,18**) mais **non monotonement** en `I_stim` (+0,37 ; −0,04 ;
+  +0,05 ; +0,27 ; +0,31 ; −0,81). Ni « propriété du forçage » (L1), ni « propriété du réseau »
+  (L2). **Mon critère présupposait une transition unique et monotone** — la cause du rejet est
+  le fait ci-dessous. Deuxième critère mal posé de la journée après E3 ; dans les deux cas ce
+  sont les contrôles écrits à côté qui ont rattrapé.
+- **F3 ACCEPTÉE** : à `I_stim = 0`, l'étendue de la synchronie sur les 11 valeurs de couplage
+  vaut **0,0047**. Sans forçage commun, le couplage ne produit aucune transition. Contrôle
+  d'instrument passé sur les 990 runs (`u` immobile au bit près).
+
+**⚠️ FAIT NON CHERCHÉ, RÉPLIQUÉ, NON EXPLIQUÉ — la courbe n'est pas monotone.** À fort
+stimulus, en allant vers le répulsif, la synchronie descend, **remonte**, puis redescend :
+
+| `u` figé | 0,50 | 0,55 | **0,65** | **0,80** | 0,95 |
+|---|---|---|---|---|---|
+| filtre | +0,01 | −0,15 | **−0,43** | **−0,73** | −0,88 |
+| synchronie (`I_stim` = 1,0) | 0,284 | 0,163 | **0,310** | **0,282** | 0,047 |
+| réplication, graines 3041-3050 | 0,277 | 0,162 | **0,308** | **0,276** | 0,078 |
+
+Présent aussi à `I_stim = 0,75`. Répliqué au centième. **Hypothèse à tester, pas un
+résultat** : état à **clusters en anti-phase déséquilibrés** — une répulsion modérée
+scinderait le réseau, et des groupes de tailles inégales remonteraient la corrélation moyenne
+de Pearson. Ce serait la signature « chimère » dont parle le preprint.
+
+**Reste ouvert** : (a) que se passe-t-il dans la bande de ré-synchronisation (mesure des
+corrélations intra/inter-groupe) ? (b) `tab:ablations` à régénérer + à couvrir par un claim
+Guardian — décision de Julien, non prise à ce jour.
 
 ---
 
