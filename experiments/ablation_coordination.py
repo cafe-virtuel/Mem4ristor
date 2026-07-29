@@ -76,6 +76,7 @@ ABLATIONS = [
 
 FIG_PATH = ROOT / "figures" / "ablation_coordination.png"
 CSV_PATH = ROOT / "figures" / "ablation_coordination.csv"
+SUMMARY_PATH = ROOT / "figures" / "ablation_coordination_summary.csv"  # 1 ligne/cellule (Guardian)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -207,6 +208,34 @@ def main() -> int:
         writer.writeheader()
         writer.writerows(rows)
     print(f"\n[csv] {CSV_PATH}")
+
+    # ── CSV de RESUME (29/07/2026) ────────────────────────────────────────
+    # Ajoute pour le Guardian, qui lit la PREMIERE ligne correspondant a son filtre et ne
+    # calcule aucune moyenne : un claim pointe sur le CSV par graine ci-dessus testerait la
+    # graine 0, pas la valeur publiee dans tab:ablations. Meme motif que
+    # b4_ablation_summary.csv. Les colonnes scientifiques du CSV par graine sont INCHANGEES ;
+    # ce fichier est une sortie supplementaire, aucun calcul n'a ete touche.
+    with SUMMARY_PATH.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["regime", "ablation", "n_seeds", "sync_mean", "sync_std",
+                        "lz_full_mean", "lz_full_std", "lz_tail_mean", "lz_tail_std"],
+        )
+        writer.writeheader()
+        for regime, _ in STIMULI:
+            for ablation, _ in ABLATIONS:
+                agg = {m: np.array(results[regime][m][ablation]) for m in METRICS}
+                writer.writerow({
+                    "regime": regime, "ablation": ablation,
+                    "n_seeds": len(agg["synchrony"]),
+                    "sync_mean": f"{agg['synchrony'].mean():.6f}",
+                    "sync_std": f"{agg['synchrony'].std(ddof=1):.6f}",
+                    "lz_full_mean": f"{agg['lz_full'].mean():.6f}",
+                    "lz_full_std": f"{agg['lz_full'].std(ddof=1):.6f}",
+                    "lz_tail_mean": f"{agg['lz_tail'].mean():.6f}",
+                    "lz_tail_std": f"{agg['lz_tail'].std(ddof=1):.6f}",
+                })
+    print(f"[csv] {SUMMARY_PATH}  (resume pour le Guardian)")
 
     # ── Summary statistics & Welch tests ─────────────────────────────────
     METRIC_LABELS = {

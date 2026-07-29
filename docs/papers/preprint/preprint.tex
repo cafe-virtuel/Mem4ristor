@@ -224,15 +224,15 @@ Table~\ref{tab:ablations} quantifies the contribution of each mechanism to diver
 \toprule
 \textbf{Configuration} & \textbf{Synchrony} $\downarrow$ & \textbf{LZ complexity} & \textbf{Collapse?} \\
 \midrule
-Full model                     & $0.031 \pm 0.034$ & $1.069 \pm 0.016$ & No \\
-No heretics ($\eta = 0$)       & $0.069 \pm 0.092$ & $1.134 \pm 0.021$ & Partial \\
-No Levitating Sigmoid          & $0.039 \pm 0.022$ & $1.073 \pm 0.016$ & No \\
-Frozen $u$ (no doubt dynamics) & $0.751 \pm 0.060$ & $1.635 \pm 0.006$ & Yes \\
+Full model                     & $0.002 \pm 0.009$ & $1.096 \pm 0.022$ & No \\
+No heretics ($\eta = 0$)       & $0.034 \pm 0.023$ & $1.154 \pm 0.026$ & Partial \\
+No Levitating Sigmoid          & $0.003 \pm 0.008$ & $1.069 \pm 0.030$ & No \\
+Frozen $u$ (no doubt dynamics) & $0.697 \pm 0.085$ & $1.602 \pm 0.005$ & Yes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The heretic mechanism and the Levitating Sigmoid are each individually necessary: their removal raises synchrony and LZ complexity, indicating that nodes begin to co-evolve and follow more structured (less cognitively diverse) trajectories. Freezing $u$ entirely produces a catastrophic synchronization surge into the fully locked regime. Because the Full-model baseline is statistically indistinguishable from zero (its standard deviation exceeds its mean), a fold-change ratio is unstable; we therefore report the effect as a \emph{complete separation} of the two synchrony distributions (Cohen's $d \approx 9$ on a 30-seed replication, \texttt{experiments/b4\_ablation\_robustness.py}), confirming that the doubt dynamics are the primary anti-synchronization engine.
+Removing the heretic mechanism raises both synchrony ($0.002 \to 0.034$) and LZ complexity ($1.096 \to 1.154$), indicating that nodes begin to co-evolve and follow more structured (less cognitively diverse) trajectories. Removing the Levitating Sigmoid, by contrast, leaves synchrony unchanged ($0.002 \to 0.003$, within seed-to-seed variation) and slightly lowers LZ complexity: on this metric and in this regime, it is not individually necessary. Freezing $u$ entirely produces a catastrophic synchronization surge into the fully locked regime. Because the Full-model baseline is statistically indistinguishable from zero (its standard deviation exceeds its mean), a fold-change ratio is unstable; we therefore report the effect as a \emph{complete separation} of the two synchrony distributions (Cohen's $d \approx 9$ on a 30-seed replication, \texttt{experiments/b4\_ablation\_robustness.py}), confirming that the doubt dynamics are the primary anti-synchronization engine.
 
 \subsection{Trajectory-Based Minimality: Coordination Phase Space}
 \label{sec:traj_minimality}
@@ -252,7 +252,7 @@ Figure~\ref{fig:phase_space} plots all 80 runs of the ablation study (4 conditio
 \label{fig:phase_space}
 \end{figure}
 
-The key claim is that \textbf{only the full model} consistently occupies the structured ($C_{\text{LZ}} < 1.6$) half-plane across both endogenous and forced protocols, while all ablations either drift toward chaotic ($C_{\text{LZ}} \approx 2.0$) or fail to achieve structured trajectories. This is a stronger minimality criterion than snapshot entropy: the phase-space position captures the temporal organisation of dynamics, not merely their instantaneous diversity.
+The key claim is that \textbf{FROZEN\_U is the only condition lying clearly outside the structured ($C_{\text{LZ}} < 1.6$) half-plane in both protocols} (0/10 seeds below the boundary in each). NO\_HERETIC leaves it under forcing only ($1.77$). The full model and NO\_SIGMOID sit inside it under forcing ($1.55$ and $1.54$) and \emph{at its boundary} under the endogenous protocol ($1.62$ and $1.60$): the full model is therefore at the edge of the structured half-plane rather than distinctively within it, consistent with the near-criticality reported in Section~\ref{sec:discussion}. Note also that under the endogenous protocol the FULL and NO\_HERETIC conditions are identical by construction---at $I_{\text{stim}} = 0$ the heretic inversion is a no-op (Section~\ref{sec:model})---so that protocol contrasts three distinct systems, not four. This is still a stronger minimality criterion than snapshot entropy: the phase-space position captures the temporal organisation of dynamics, not merely their instantaneous diversity.
 
 \textbf{Complementary evidence from forcing sweep.} To demonstrate that $u$ acts specifically as an \emph{anti-synchronisation filter}, we swept $I_{\text{stim}} \in [0, 1]$ for FULL vs FROZEN\_U (BA $m=3$, $N=100$, 7 seeds, 3000 steps). FULL maintains $\bar{r} \approx 0.025$--$0.035$ across all $I_{\text{stim}} \in [0.1, 1.0]$ (flat, near-zero synchrony). FROZEN\_U shows a sharp transition at $I_{\text{stim}} \approx 0.2$ from $\bar{r} = 0.006$ (endogenous) to $\bar{r} = 0.830$ (plateau), with Cohen's $d = 13.21$ ($p = 9.7 \times 10^{-10}$) separating the two conditions at $I_{\text{stim}} = 0.5$. This confirms that $u$ absorbs the common forcing signal and prevents stimulus-induced phase locking---a \emph{dynamic buffering} function that snapshot metrics cannot detect.
 
