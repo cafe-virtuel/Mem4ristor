@@ -1131,12 +1131,62 @@ le garde-fou du 28/07 : *un signal d'alarme est une question, pas une conclusion
 bande de ré-synchronisation** pendant sa montée (filtre −0,43 à −0,73). Il ne s'y arrête pas —
 mais personne n'a jamais regardé ce que fait le réseau pendant cette traversée.
 
+**RÉSULTAT 7 (P21, `p21_doubt_traversal_of_the_band.py`) — le doute ne traverse pas la bande,
+il la franchit trop vite pour l'habiter.** `u` monte de 0,05 à 0,997 : il passe donc
+*à travers* la bande. C'était le seul endroit où la **dynamique** de `u` pouvait faire quelque
+chose qu'un `u` figé ne fait pas (un bras figé n'a pas de trajectoire). 3 vitesses
+(`tau_u` ∈ {2, 10, 50}), 9000 pas, `I_stim` = 1,0 (la bande n'existe qu'à fort stimulus),
+30 blocs de 300 pas, réplication sur 3071-3080.
+
+| pas | `u` | filtre | synchronie |
+|---|---|---|---|
+| 0–300 | 0,486 | **+0,054** | +0,211 |
+| 300–600 | 0,913 | **−0,851** | +0,159 |
+| 600–900 | 0,975 | −0,894 | +0,096 |
+| stationnaire | 0,999 | −0,907 | ≈ +0,04 |
+
+Entre les deux premiers blocs le filtre passe de +0,05 à −0,85 : **toute la bande est franchie
+à l'intérieur d'un seul bloc de 300 pas**, et cela reste vrai à la vitesse la plus lente
+testée. **La bande est un régime stationnaire qui n'existe que si l'on fige `u`.**
+
+- **T1 ACCEPTÉE (10/10 puis 10/10) mais T2 REJETÉE (0/10)** : les remontées transitoires de
+  synchronie existent — elles ne sont **pas** la bande, ce sont des fluctuations du régime
+  stationnaire (filtre −0,907). T1 seule aurait pu être présentée comme « la traversée laisse
+  une signature » ; c'est T2, écrite à côté, qui l'interdit. **Troisième fois de la journée**
+  (après E3 et F1) que c'est le contrôle adjacent qui rattrape.
+- **T3 REJETÉE (6/10 puis 5/10)** : traverser vite ou lentement ne change pas l'état final.
+  Conforme à la **présomption négative écrite avant la mesure**.
+- **T4 (contrôle d'instrument) PASSÉE, 10/10, et elle tranche une inversion du preprint** :
+  `tau_u` = 2 → `u` franchit 0,5 en **35 pas** ; `tau_u` = 10 → 137 ; `tau_u` = 50 → **896**.
+  Donc **`tau_u` grand = LENT**, conforme à `dynamics.py:338` (`du = ε_eff·(…−u)/tau_u`). Or la
+  Discussion du preprint (« Doubt time-scale and criticality ») écrit *« for τ_u < 10, doubt
+  dynamics are too slow »* et *« for τ_u > 50, fast doubt dynamics »* : **le vocabulaire y est
+  inversé**. Aucun chiffre n'en dépend (le balayage reste ce qu'il est), seule son
+  interprétation est retournée.
+
+**CE QUE LA JOURNÉE ÉTABLIT, PAR CONVERGENCE.** Cinq expériences, cinq chemins indépendants,
+la même réponse : **seul le NIVEAU atteint par `u` compte pour l'anti-synchronisation.** Le
+saut direct l'égale (P17) ; la carte des seuils est une affaire d'intensité de couplage
+(P18, P19) ; l'état stationnaire est identique (P20b) ; le chemin pour y arriver n'y change
+rien (P21).
+→ **Conséquence d'ingénierie, positive** : l'anti-synchronisation pourrait être obtenue par un
+**couplage répulsif fixe**, bien plus simple à fabriquer qu'une variable d'état adaptative par
+nœud.
+→ ⚠️ **Réserve, à ne pas omettre** : un couplage fixe suppose de connaître le bon niveau à
+l'avance, alors que `u` s'y établit **seul** ; et sur la niche B1d ce qui sert n'est pas
+l'anti-synchronisation mais *savoir quand trancher*, où l'adaptativité garde son rôle. Ce qui
+tombe ici est **borné à l'anti-synchronisation**.
+
 **Reste ouvert** : (a) `tab:ablations` à régénérer + à couvrir par un claim Guardian —
 décision de Julien, non prise à ce jour ; (b) les trois formulations « doubt **dynamics** »
 (abstract, contribution 2, étiquette de Table 1) plus fortes que ce que l'ablation établit,
 alors que la Discussion §5.1 dit déjà juste — proposition de réécriture non rédigée, décision
-de Julien ; (c) la traversée transitoire de la bande par le doute ; (d) pourquoi la cohésion
-intra-camp l'emporte sur l'opposition inter-camps dans la bande.
+de Julien ; (c) l'inversion de vocabulaire sur `tau_u` dans la Discussion (T4) — correction de
+texte, décision de Julien ; (d) pourquoi la cohésion intra-camp l'emporte sur l'opposition
+inter-camps dans la bande ; (e) ⚠️ **point de méthode** : les corrélations intra/inter dépendent
+de la **longueur de fenêtre** (P20b sur 750 pas donne +0,218 là où P21 sur 300 pas donne
++0,35 dans le même régime). Ne jamais comparer deux mesures de structure sans vérifier la
+fenêtre.
 
 ---
 
