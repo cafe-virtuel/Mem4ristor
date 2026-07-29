@@ -975,6 +975,77 @@ Sans le « et la lire coûte » : cette partie-là était du bruit.
 
 ---
 
+### E6 — « L'ablation FROZEN_U mesure-t-elle l'adaptativité de `u`, ou son niveau ? » ✅ FAIT (29/07/2026)
+
+Née de la relecture du 28/07 (« nommer le comparateur »). Deux scripts :
+`p17_frozen_u_level_vs_dynamics.py`, `p18_polarity_threshold_both_protocols.py`.
+
+**⚠️ Correction d'une note du 28/07.** Il existe **deux comparateurs distincts nommés
+`FROZEN_U`** dans le projet, à deux valeurs opposées du filtre
+`u_filter = tanh(π(0,5−u)) + 0,01` :
+- **colonne A / preprint** — `u` gelé à `sigma_baseline = 0,05` → filtre **+0,90**, couplage
+  **synchronisant fort** (`ablation_coordination.py:112`, `p2_sigma_social_ablation.py`) ;
+- **colonne B** — `u` gelé à **0,50** → filtre **+0,01**, réseau **quasi découplé**
+  (`p15*`, bras `FROZ_05` de P16).
+
+La note laissée dans SYNAPSE le 28/07 (« toute comparaison FULL/FROZEN_U du projet hérite de
+l'ambiguïté u=0,5 = sans lien ») est **vraie de la colonne B et fausse du preprint**.
+
+**RÉSULTAT 1 (P17, régime forcé).** Un `u` **figé** à 0,997 — constante, aucune adaptativité —
+désynchronise **autant** que le doute adaptatif : synchronie **+0,0030 contre +0,0023**,
+**10/10 puis 10/10** sur graines neuves ; LZ 1,109 contre 1,096. Un bras supplémentaire fige
+le **profil par nœud** de FULL (même moyenne, hétérogénéité conservée) : écart 0,004 → **ce
+n'est pas non plus l'hétérogénéité spatiale de `u`**. Contrôle d'instrument passé
+(`max|u_fin − u_init| = 0` exactement, 112 runs figés).
+→ *ce que l'ablation du preprint isole est la **polarité** du couplage, pas la **dynamique**
+de `u`.* La Discussion §5.1 du preprint écrit déjà la version correcte (« when a node's doubt
+exceeds u = 0,5, its coupling flips from attractive to repulsive ») ; l'abstract, la
+contribution (2) et l'étiquette de `tab:ablations` (« no doubt dynamics ») sont **plus fortes
+que ce que la mesure établit**.
+
+**RÉSULTAT 2 (P18, les deux protocoles, balayage de `u` figé).** Ma prédiction — « la
+frontière est au changement de signe, u = 0,5 » — est **REJETÉE**, et c'est le plus instructif :
+- **régime forcé** : la chute se produit entre `u=0,30` (sync 0,42) et `u=0,45` (sync 0,087),
+  donc **pendant que le couplage est encore attractif** (filtre +0,166). Ce n'est **pas** le
+  signe qui désynchronise, c'est **l'absence d'attraction forte** ;
+- **régime endogène** : **aucune frontière** — les 8 conditions, de filtre +0,898 à −0,762,
+  donnent toutes une synchronie ≈ 0 et le quadrant structuré, **10/10 puis 10/10**. *Sans
+  stimulus, le couplage ne joue aucun rôle anti-synchronisation.* (Le CSV périmé du 26/04 le
+  disait déjà : endogène FROZEN_U 0,006 contre FULL 0,199.) ;
+- **deux effets à deux seuils** : la synchronie décroche vers filtre ≈ +0,17, mais la
+  complexité **LZ** ne décroche qu'au-delà de |filtre| ≈ 0,55 (1,55 → 1,11). Désynchroniser
+  et structurer temporellement ne sont **pas** le même seuil du même paramètre.
+- ⚠️ **Critère E3 « accepté » mais qui n'établit pas ce qu'il visait** : le répulsif faible
+  (u=0,55) passe 10/10 — et son **miroir attractif** (u=0,45, même intensité) aussi. Critère
+  mal posé (suffisance sans exclusivité) ; c'est le contrôle miroir qui l'a rattrapé.
+- ⚠️ **Tension à nommer avec P16 (28/07)** : « le signe tranche, la force non » y était mesuré
+  sur la **mobilité d'états** de la niche B1d ; ici, sur la **synchronie de Pearson** en BA
+  m=3, c'est **l'inverse**. Régimes et observables différents — pas une contradiction, mais
+  ne jamais citer l'une des deux phrases sans son régime.
+
+**RÉSULTAT 3 — UN TROU DE COUVERTURE, réparé à moitié.** Le gate de fidélité bit-à-bit a
+échoué et **n'a pas été repêché**. Cause établie avant la mesure : le CSV de `tab:ablations`
+(`figures/scratch/ablation_coordination.csv`) date du **26/04/2026**, soit **avant le fix de
+bruit Euler-Maruyama du 01/05** (AUDIT-024, `818cf67`) ; `figures/scratch/` est **gitignoré**
+donc il n'est pas versionné ; et **aucun des 14 claims du Guardian ne couvre `tab:ablations`**.
+Régénéré avec le code actuel : les **synchronies tiennent** (FULL +0,0023 vs 0,031 ± 0,034 ;
+FROZEN +0,697 vs 0,751 ± 0,060) mais les **LZ sont hors des écarts publiés** (1,096 vs
+1,069 ± 0,016 ; 1,603 vs 1,635 ± 0,006). Les mesures faites avec le code actuel concordent
+entre elles (b4 sur BA m=3 : 0,0088 / 0,6875) ; c'est le CSV du 26/04 qui est l'intrus.
+→ **OUVERT** : régénérer `tab:ablations` + lui donner un claim Guardian (précédent : C04 et
+C08 le 12/06, « Option A » validée par Julien). Décision de Julien, non prise à ce jour.
+
+**Réparé au passage** : `experiments/scratch/p2_sigma_social_ablation.py` — **non versionné**
+alors qu'il produit les CSV canoniques de **deux** claims (C04, C13) — a été sorti de
+`scratch/` vers `experiments/`. `b4_ablation_robustness.py` ne s'exécutait plus depuis
+(ImportError) ; il rejoue désormais ses deux CSV **bit à bit** (Cohen d 9,38 BA / 4,72
+lattice, séparation complète, 30 graines × 2 topologies).
+
+**Reste ouvert** : (a) le seuil d'attraction (~+0,17) se déplace-t-il avec `I_stim` ? (b)
+pourquoi LZ et synchronie décrochent-elles à deux seuils différents ?
+
+---
+
 ## Dépendances rapides
 - A3 alimente A5 (mesure H_cont per-seed) et B4 (IC sur labels mesurés).
 - B1 débloque B3 (énergie/tâche) et B5 (comparaison SOTA).
