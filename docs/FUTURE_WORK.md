@@ -1077,9 +1077,66 @@ résultat** : état à **clusters en anti-phase déséquilibrés** — une répu
 scinderait le réseau, et des groupes de tailles inégales remonteraient la corrélation moyenne
 de Pearson. Ce serait la signature « chimère » dont parle le preprint.
 
-**Reste ouvert** : (a) que se passe-t-il dans la bande de ré-synchronisation (mesure des
-corrélations intra/inter-groupe) ? (b) `tab:ablations` à régénérer + à couvrir par un claim
-Guardian — décision de Julien, non prise à ce jour.
+**RÉSULTAT 5 (P20, `p20_resync_band_cluster_structure.py`)** — la bande ouverte par P19,
+instruite. Partition par le **signe du premier vecteur propre** de la matrice de corrélation
+(méthode non supervisée, écrite avant), 8 cellules × 20 graines, réplication sur 3051-3060.
+
+| cellule (`I_stim` = 1,0) | filtre | synchronie | cohésion **intra**-camp | opposition **inter**-camps | petit camp |
+|---|---|---|---|---|---|
+| u=0,05 attractif fort | +0,90 | 0,855 | +0,855 | *(un seul camp)* | 0 |
+| u=0,55 — le creux | −0,15 | 0,162 | +0,611 | −0,393 | 34 |
+| u=0,65 — la bande | −0,43 | **0,310** | +0,696 | −0,343 | 24 |
+| u=0,80 — la bande | −0,73 | 0,286 | +0,675 | −0,337 | 26 |
+| u=0,95 | −0,88 | 0,048 | **+0,213** | −0,139 | 38 |
+
+- **C1 ACCEPTÉE (10/10 × 4, canoniques et réplication)** : la bande est bien un état à **deux
+  camps en anti-phase**.
+- **C2 REJETÉE (0/10)** : mon explication — « le déséquilibre des tailles fait remonter la
+  moyenne » — est **fausse**. Test contrefactuel (mêmes corrélations, camps égalisés à 50/50) :
+  la synchronie resterait à **+0,17**, pas à 0. La cause est que la **cohésion interne (+0,70)
+  vaut deux fois l'opposition externe (−0,34)**.
+- **C3 REJETÉE** : le creux a **la même structure** que la bande. La présence de camps ne
+  distingue rien.
+- **Ce qui reste, et qui est plus intéressant que l'hypothèse morte** : le réseau **se scinde
+  en deux camps dès que l'attraction faiblit**, et le reste dans tout le régime répulsif ; un
+  seul camp uniquement en attraction forte. Ce qui varie le long de l'axe n'est pas *s'il y a*
+  des camps mais **leurs paramètres**, et ils ne varient pas dans le même sens : de u=0,55 à
+  0,65 les camps deviennent plus cohésifs, moins opposés et plus déséquilibrés (les trois
+  poussent la moyenne vers le haut → la bosse) ; à u=0,95 ils se **dissolvent** (cohésion
+  +0,70 → +0,21). *Lecture post-hoc, marquée comme telle* : le déséquilibre pèse pour environ
+  la moitié de la remontée (+0,171 contre +0,104 au contrefactuel égalisé), l'asymétrie
+  cohésion/opposition pour l'autre moitié — aucun critère préalable ne le valide.
+
+**RÉSULTAT 6 (P20b, `p20b_full_camps_or_independent.py`) — un soupçon sur l'observable
+centrale, posé puis LEVÉ par la mesure.** P20 avait laissé un trou : la synchronie moyenne de
+Pearson **ne distingue pas** « nœuds indépendants » de « deux camps qui se compensent », et
+FULL n'avait pas été mesuré. Or le preprint écrit *« r̄ ≈ 0 : independent »*. Deux hypothèses
+**mutuellement exclusives** écrites avant la mesure :
+
+| cellule | synchronie | cohésion intra | opposition inter | petit camp |
+|---|---|---|---|---|
+| **FULL** (`I_stim` = 0,5, régime de Table 1) | +0,002 | **+0,115** | −0,110 | 47 |
+| u=0,05 (l'ablation) | +0,698 | +0,726 | −0,321 | **1,4** |
+| u=0,95 figé | +0,000 | +0,113 | −0,114 | 45 |
+
+**D2 ACCEPTÉE, 10/10 puis 10/10** (et D1 rejetée 0/10) : dans FULL les corrélations sont
+quasi nulles **des deux côtés** de la partition — ce n'est pas une structure de camps, c'est du
+bruit qu'un algorithme coupe en deux parce qu'on le lui demande. **Les nœuds sont réellement
+décorrélés ; la lecture du preprint est justifiée.** Contrôle qui boucle : l'ablation à u=0,05
+donne un **camp unique** (le second ne contient que 1,4 nœud).
+→ troisième soupçon de la journée porté sur la colonne A, vérifié, et **levé**. Même motif que
+le garde-fou du 28/07 : *un signal d'alarme est une question, pas une conclusion.*
+
+*Observation non mesurée, à consigner* : `u` monte de 0,05 à 0,997, donc **le doute traverse la
+bande de ré-synchronisation** pendant sa montée (filtre −0,43 à −0,73). Il ne s'y arrête pas —
+mais personne n'a jamais regardé ce que fait le réseau pendant cette traversée.
+
+**Reste ouvert** : (a) `tab:ablations` à régénérer + à couvrir par un claim Guardian —
+décision de Julien, non prise à ce jour ; (b) les trois formulations « doubt **dynamics** »
+(abstract, contribution 2, étiquette de Table 1) plus fortes que ce que l'ablation établit,
+alors que la Discussion §5.1 dit déjà juste — proposition de réécriture non rédigée, décision
+de Julien ; (c) la traversée transitoire de la bande par le doute ; (d) pourquoi la cohésion
+intra-camp l'emporte sur l'opposition inter-camps dans la bande.
 
 ---
 
