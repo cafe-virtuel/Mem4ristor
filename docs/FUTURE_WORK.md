@@ -843,7 +843,10 @@ sur graines **disjointes**.
 >   `preprint.tex` l'écrit noir sur blanc — l'entropie instantanée n'y est pas rapportée
 >   car elle *« donne des résultats directionnellement incorrects pour cette
 >   comparaison »*. Le preprint ne revendique **rien** sur `H` entre FULL et FROZEN : sa
->   revendication est la **synchronie** (0.031 contre 0.751) et la complexité LZ.
+>   revendication est la **synchronie** (0.002 contre 0.697) et la complexité LZ.
+>   *(valeurs mises à jour le 30/07 par la passe soustractive : ce paragraphe, écrit le
+>   28/07, citait encore `0.031 contre 0.751` — les valeurs du CSV du 26/04, rendues
+>   périmées par la régénération de `tab:ablations` du 29/07. L'argument est inchangé.)*
 >   **La colonne A n'est pas approchée, et elle avait anticipé le point avant nous.**
 >   *Leçon : un garde-fou qui tombe n'est pas une alerte tant qu'on n'a pas vérifié ce que
 >   la cible affirme réellement.*
