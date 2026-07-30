@@ -161,7 +161,7 @@ By the Poincar\'e--Bendixson theorem, which applies strictly to planar ($\mathbb
 \item By Poincar\'e--Bendixson, the absence of a stable equilibrium within $\Omega$ guarantees the existence of a limit cycle for the \emph{isolated unit}.
 \end{enumerate}
 
-\textbf{Important scope note.} The Poincar\'e--Bendixson theorem does \emph{not} extend to the coupled $3N$-dimensional system. For the full network, stability arguments rely on numerical means: the Floquet multipliers of the linearized dynamics around the synchronized manifold satisfy $|\mu_k| \gg 1$ for all transverse modes $k > 0$ (Section~\ref{sec:comp_analysis}), indicating that the synchronized state is unstable. The observed sustained diversity is therefore an empirical result confirmed by Floquet analysis, not analytically derived from Poincar\'e--Bendixson.
+\textbf{Important scope note.} The Poincar\'e--Bendixson theorem does \emph{not} extend to the coupled $3N$-dimensional system, and we make no analytical stability claim for the full network. Linearization around the synchronized manifold at the reference parameterization in fact yields Jacobian eigenvalues with \emph{negative} real parts ($\approx -0.13$), i.e.\ perfect synchrony would be locally \emph{stable} in a homogeneous network without heretics (Section~\ref{sec:comp_analysis}). The observed sustained diversity is therefore \emph{not} derived from an analytical instability of the synchronized state: it is an empirical result, produced structurally by heretic asymmetry and symmetry-breaking initialization (Section~\ref{sec:comp_analysis}) and quantified by the ablation of Section~\ref{sec:ablation}.
 
 
 \subsection{Heretic Percolation Threshold}
@@ -179,7 +179,7 @@ H \geq -\eta \log_2 \eta - (1 - \eta) \log_2(1 - \eta) \approx 0.61 \text{ bits 
 \end{equation}
 representing the mixing entropy of the two subpopulations.
 
-\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$: at this baseline, inverting polarity is a no-op because both normal and heretic nodes receive zero direct stimulus drive. This zero-stimulus setting is used exclusively for the \emph{endogenous} connectivity and dead-zone experiments (Sections~\ref{sec:topo_regimes}--\ref{sec:lambda2}), where the (limited) diversity arises from coupling-mediated asymmetry and noise rather than from heretic inversion. The sustained-diversity results lie outside this regime: Table~\ref{tab:scaling} ($H_{\text{stable}} \approx 4.09$ bits; synchrony $= 0.031$) is evaluated under the driven protocol ($I_{\text{stimulus}} = 0.5$), where heretics are active and the lower bound of Eq.~\ref{eq:entropy_bound} applies.
+\textbf{Scope note (audit 2026-04-22).} The argument above is \emph{vacuous} when $I_{\text{stimulus}} = 0$: at this baseline, inverting polarity is a no-op because both normal and heretic nodes receive zero direct stimulus drive. This zero-stimulus setting is used exclusively for the \emph{endogenous} connectivity and dead-zone experiments (Sections~\ref{sec:topo_regimes}--\ref{sec:lambda2}), where the (limited) diversity arises from coupling-mediated asymmetry and noise rather than from heretic inversion. The sustained-diversity results lie outside this regime: Table~\ref{tab:scaling} ($H_{\text{stable}} \approx 4.09$ bits; synchrony $= 0.0197$) is evaluated under the driven protocol ($I_{\text{stimulus}} = 0.5$), where heretics are active and the lower bound of Eq.~\ref{eq:entropy_bound} applies.
 
 % ============================================================================
 % 4. RESULTS
@@ -279,7 +279,7 @@ The key finding: \textbf{freezing $u$ (FROZEN\_U) sharply raises mutual informat
 \subsection{Topological Normalization Regimes}
 \label{sec:topo_regimes}
 
-We systematically sweep the Barab\'asi--Albert attachment parameter $m \in \{1, 2, 3, 4, 5, 6, 7, 8, 10, 15\}$ with $N = 100$, 5 seeds per configuration, 3000 steps, and $I_{\text{stimulus}} = 0$. Two coupling modes are compared: uniform ($D/\sqrt{N}$, i.e.\ $\gamma = 0$) and degree-linear ($D/\deg(i)$, i.e.\ $\gamma = 1$). Note: Table~\ref{tab:alpha_sweep} extends this analysis to intermediate $\gamma$ values.
+We systematically sweep the Barab\'asi--Albert attachment parameter $m \in \{1, 2, 3, 4, 5, 6, 7, 8, 10, 15\}$ with $N = 100$, 10 seeds per configuration, 3000 steps, and $I_{\text{stimulus}} = 0$. Two coupling modes are compared: uniform ($D/\sqrt{N}$, i.e.\ $\gamma = 0$) and degree-linear ($D/\deg(i)$, i.e.\ $\gamma = 1$). Note: Table~\ref{tab:alpha_sweep} extends this analysis to intermediate $\gamma$ values.
 
 \begin{table}[ht]
 \centering
@@ -335,7 +335,7 @@ $m$ & $\gamma^*$ & $\max H_{\text{cog}}$ & $H_{\text{cont}}$ & $\bar{r}$ & Asses
 \end{tabular}
 \end{table}
 
-The negative result holds under the continuous metric: \textbf{no exponent $\gamma$ recovers multi-state diversity at high degree}. At the best $\gamma$ for each $m$, $H_{\text{cog}}$ declines gradually (0.72 at $m=2$ to $\approx 0$ by $m \gtrsim 6$)---a smooth crossover, not the abrupt $m=2 \to 3$ collapse reported by earlier non-cold-start runs, which the Cold Start Protocol (Section~\ref{sec:results_lattice}) resolves. The continuous entropy $H_{\text{cont}}$ declines even more gently (from $\approx 3.2$ to $\approx 2.3$ bits), confirming that the loss is one of \emph{multi-state} structure rather than of all voltage spread. Crucially, synchrony $\bar{r}$ stays near zero for every $m$ and $\gamma$ (peak $0.13$, versus $0.75$ for the frozen-doubt ablation of Section~\ref{sec:ablation}): the endogenous dead zone is \emph{not} a temporal consensus but a spatial collapse onto a common fixed point. Under the driven protocol ($I_{\text{stimulus}} = 0.5$, heretics active), functional diversity extends further; the endogenous regime is more fragile, consistent with the heretic mechanism being one of the two jointly necessary ingredients identified in Section~\ref{sec:comp_analysis}.
+The negative result holds under the continuous metric: \textbf{no exponent $\gamma$ recovers multi-state diversity at high degree}. At the best $\gamma$ for each $m$, $H_{\text{cog}}$ declines gradually (0.72 at $m=2$ to $\approx 0$ by $m \gtrsim 6$)---a smooth crossover, not the abrupt $m=2 \to 3$ collapse reported by earlier non-cold-start runs, which the Cold Start Protocol (Section~\ref{sec:results_lattice}) resolves. The continuous entropy $H_{\text{cont}}$ declines even more gently (from $\approx 3.2$ to $\approx 2.3$ bits), confirming that the loss is one of \emph{multi-state} structure rather than of all voltage spread. Crucially, synchrony $\bar{r}$ stays near zero for every $m$ and $\gamma$ (peak $0.13$, versus $0.697$ for the frozen-doubt ablation of Section~\ref{sec:ablation}): the endogenous dead zone is \emph{not} a temporal consensus but a spatial collapse onto a common fixed point. Under the driven protocol ($I_{\text{stimulus}} = 0.5$, heretics active), functional diversity extends further; the endogenous regime is more fragile, consistent with the heretic mechanism being one of the two jointly necessary ingredients identified in Section~\ref{sec:comp_analysis}.
 
 \textbf{Metric note (why $H_{\text{cog}}$ here).} We re-measured this sweep with the paper's functional metrics to check whether the artifact-prone $H_{\text{cog}}$ could be retired. It cannot, for a specific reason: in the endogenous regime no continuous metric cleanly reproduces the multi-state boundary. Pairwise synchrony---the primary metric of the ablation study (Section~\ref{sec:ablation})---is uninformative here because, absent a common drive, nodes never synchronize regardless of degree ($\bar{r} \approx 0$ everywhere). Continuous entropy $H_{\text{cont}}$ is misleading at weak coupling: near-decoupled nodes (low $\gamma$, low $m$) spread widely in voltage and inflate $H_{\text{cont}}$ without forming distinct functional states---at $m=2$, $H_{\text{cont}}$ peaks at $\gamma=0$ while $H_{\text{cog}}$ peaks at $\gamma=1$. The multi-state boundary is therefore intrinsically discrete, and $H_{\text{cog}}$ is retained as a \emph{relative} indicator of it, with absolute values not cited. The robust, binning-independent regime evidence is carried elsewhere: the measured-regime regression of Figure~\ref{fig:regime_degree} (continuous entropy across topologies at comparable coupling) and the synchrony-based ablation of Section~\ref{sec:ablation} under drive.
 
@@ -508,19 +508,17 @@ This LZ-based regime classification complements the crossover analysis: while th
 
 \subsection{Comparative Benchmarks}
 
-Table~\ref{tab:benchmarks} compares the model against classical collective dynamics models on $10 \times 10$ lattices, 1000 steps, biased stimulus phase ($I_{\text{stim}} = 1.0$ for steps 200--800).
+Table~\ref{tab:benchmarks} compares the model against classical collective dynamics models on $10 \times 10$ lattices. The model's own values are those of Table~\ref{tab:scaling} (3000 steps, $I_{\text{stim}} = 0.5$, 10 seeds); the baseline models were run at 1000 steps with a biased stimulus phase ($I_{\text{stim}} = 1.0$ for steps 200--800).
 
 \begin{table}[ht]
 \centering
-\caption{Benchmark comparison on BA $m=3$ scale-free network ($N = 100$, $I_\mathrm{stim}=0.5$, see Section~
-\ref{tab:ablations} for protocol). Synchrony: mean pairwise Pearson correlation of $v(t)$ trajectories (lower = more independent). $H_{\text{stable}}$: 100-bin continuous spectral entropy. The lattice value ($\text{sync} = 0.0197 \pm 0.0142$ at $N=100$, see Table~
-\ref{tab:scaling}) is even lower due to absence of scale-free hubs, but BA $m=3$ is shown here to match the ablation protocol and isolate the model's contribution from lattice-specific regularity.}
+\caption{Benchmark comparison on a $10\times10$ periodic lattice ($N = 100$, $I_\mathrm{stim} = 0.5$, 3000 steps, 10 seeds --- the same runs as Table~\ref{tab:scaling}, so that both columns of this row come from one protocol). Synchrony: mean pairwise Pearson correlation of $v(t)$ trajectories (lower = more independent). $H_{\text{stable}}$: 100-bin continuous spectral entropy. On BA $m=3$ under the ablation protocol the model reaches an even lower synchrony ($0.002 \pm 0.009$, Table~\ref{tab:ablations}), the lattice being the more conservative choice here. \textbf{Protocol note:} the three baseline models were measured under a \emph{different} protocol (1000 steps, phasic $I_\mathrm{stim} = 1.0$ over steps 200--800); the comparison is therefore indicative on the baselines' side.}
 \label{tab:benchmarks}
 \begin{tabular}{lccc}
 \toprule
 \textbf{Model} & \textbf{Synchrony} $\downarrow$ & $H_{\text{stable}}$ & \textbf{Diversity sustained?} \\
 \midrule
-Doubt-modulated FHN (this work) & $0.031 \pm 0.034$ & $4.09 \pm 0.19$ & Yes \\
+Doubt-modulated FHN (this work) & $0.0197 \pm 0.0142$ & $4.09 \pm 0.19$ & Yes \\
 Kuramoto ($K = 2$)              & $\approx 1.0$     & $< 0.5$         & No (phase-locked) \\
 Voter model                     & $\approx 1.0$     & $0.00$          & No (absorbing state) \\
 Distributed consensus           & $\approx 1.0$     & $0.00$          & No (by design) \\
