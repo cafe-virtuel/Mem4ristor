@@ -442,6 +442,15 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     **Recommandation** (décision Julien) : dans l'abstract/`sec:ablation`, mener avec
     « rises from 0.007 to 0.658 (complete separation over 30 seeds, Cohen d≈9) » et rétrograder
     le « ~90-fold » (ou le retirer). H_cont s'effondre aussi (diff +0.68 à +0.98 CI).
+    - **✅ SOLDÉ le 30/07/2026 — et la façon dont ça a traîné est la leçon.** La recommandation
+      ci-dessus, décidée le 08/07, a été appliquée **exactement aux deux endroits nommés**
+      (abstract et `sec:ablation`) — et à aucun autre. Le ratio a continué de vivre **quatre
+      fois** ailleurs pendant trois semaines : contribution (2), chapeau des Résultats,
+      **Conclusion** et **Limitations**. La décision était juste, écrite, datée ; elle a été
+      exécutée **à la lettre plutôt qu'à la revendication**. Retiré partout le 30/07.
+      → *Toute recommandation nommant des emplacements doit être relue comme portant sur
+      l'affirmation, pas sur les lignes citées.* C'est ce qui a motivé la **règle de clôture
+      soustractive** (`CONTRAT_CLAUDE.md`, étape 0) et le `tex_guardian`.
 - **✅ Fait — Table 1 (diversité H_cont) + finite-size scaling** (`experiments/b4_table1_robustness.py`,
   commit `182eab5`). 30 seeds × 7 tailles (N = 16…900), IC bootstrap, mesure identique à la Table 1
   canonique (cold_start, I_stim=0.5, 3000 steps). Supplément (n'écrase pas C02/C03).

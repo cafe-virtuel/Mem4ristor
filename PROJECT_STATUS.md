@@ -56,7 +56,7 @@ Le projet est né au sein du **Café Virtuel**, un laboratoire de collaboration 
 Publication : DOI 10.5281/zenodo.19986042 (V4.0.0 — dernière release Zenodo ; le code a
 évolué depuis, la prochaine release Zenodo portera les valeurs V6.0.0 reformulées).
 Preprint actuel (non soumis, non publié sur Zenodo) : `docs/papers/preprint/preprint.tex`
-→ `preprint.pdf` (26 pages, Guardian 14/14).
+→ `preprint.pdf` (27 pages, Guardian **18/18**, Tex Guardian 11/11 ancres · 0 valeur morte · 12/12 sources).
 
 ---
 
@@ -358,7 +358,7 @@ mem4ristor-v2-main/
 ├── experiments/               # SCRIPTS D'EXPÉRIENCE (b1_*, b2_*, b4_*, b5_*, p2_*, ...)
 │
 ├── docs/
-│   ├── papers/preprint/preprint.tex   # Preprint actuel (reformulé, 26 pages, Guardian 14/14)
+│   ├── papers/preprint/preprint.tex   # Preprint actuel (reformulé, 27 pages, Guardian 18/18)
 │   ├── papers/preprint/preprint.pdf
 │   ├── CLAIMS_REGISTER.md              # Registre narratif des claims (voir §3)
 │   └── hardware/                        # Dossiers de correspondance physique (voir §2)
@@ -493,7 +493,7 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 
 | Fichier | Analyse | Note |
 |---------|---------|------|
-| floquet_multipliers.png | Multiplicateurs de Floquet (Section 5.2 preprint) | Ajouté figure preprint.tex 02 mai 2026 |
+| floquet_multipliers.png | Multiplicateurs de Floquet | ⚠️ **N'est plus dans le preprint.** La section Floquet est un claim **supprimé le 06/05/2026** (`CLAIMS_REGISTER.md`, motif : le Jacobien donne \|μ\|≈0.20, contradictoire). La figure et cette ligne ont survécu à la suppression ; la dernière phrase qui s'y référait encore dans le `.tex` a été retirée le 30/07. Conservée comme archive, **à ne pas citer**. |
 | lyapunov_analysis.png | Exposant de Lyapunov max vs couplage D (Section 5.2 preprint) | Ajouté figure preprint.tex 02 mai 2026 |
 | phase_diagram_corrected.png | Diagramme de phase corrigé (post-audit KIMI) | Remplacé par fiedler_phase_diagram.png comme référence principale |
 | phase_diagram_v4_extensions.png | Extensions V4 (dynamic heretics) | Exploratoire, données dans figures/v4_parametric_sweep.csv |
@@ -534,8 +534,12 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 **Statut publication** : le code et l'historique **sont publics depuis le ~14/07** (voir §0)
 — ne pas lire ce paragraphe comme « publication bloquée », c'est l'erreur qu'un audit externe
 a tirée de ce fichier en juillet. Ce qui reste ouvert est la seule **soumission arXiv/HAL**.
-Le preprint est reformulé et cohérent avec le code (Guardian 14/14) ; il n'y a plus de
-correction technique bloquante depuis juin. **Position de Julien au 26/07/2026** : c'est
+Le preprint est reformulé et cohérent avec le code (Guardian **18/18**, et depuis le
+30/07 le **Tex Guardian** vérifie aussi le texte publié contre les CSV) ; il n'y a plus de
+correction technique bloquante depuis juin. ⚠️ **Nuance ajoutée le 30/07** : « cohérent avec
+le code » n'a longtemps désigné que les **CSV**. La première passe systématique du texte
+(801 lignes) a relevé **17 défauts, tous dans le `.tex` et aucun dans les données** — dont un
+claim supprimé le 06/05 encore publié. Corrigés depuis ; voir le transcript du 30/07. **Position de Julien au 26/07/2026** : c'est
 trop tôt pour arXiv tant que le travail n'a pas été confronté à de vrais chercheurs — un
 endorsement (nlin.AO / cs.NE) ne se demande pas dans le vide, il se demande à quelqu'un qui
 a lu. Ce n'est pas de l'attentisme, c'est un ordre d'opérations.
