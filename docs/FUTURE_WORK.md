@@ -607,9 +607,23 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   quand on ajoute la non-isochronicité — la signature physique la plus caractéristique
   des vrais STNO, absente du premier test. La prédiction falsifiable repose maintenant
   sur 2 modèles convergents (Kuramoto pur et auto-oscillateur Slavin-Tiberkevich), pas
-  un seul. Réserve inchangée : au capteur brut (non calibré), l'effet est nul dans les
-  deux modèles — la prédiction telle que formulée suppose implicitement qu'un vrai
-  circuit de détection de désaccord aurait un gain suffisant, hypothèse non vérifiée.
+  un seul. ~~Réserve inchangée : au capteur brut (non calibré), l'effet est nul dans les
+  deux modèles~~ 🔧 **CORRIGÉ le 31/07/2026 — cette phrase était FAUSSE, et elle s'est
+  propagée.** Au capteur brut, l'effet est nul dans **un seul** modèle (§8,
+  Slavin-Tiberkevich : d = 0.01–0.09). Il est **réel dans les deux autres**, et aucun IC ne
+  chevauche zéro : §7 Kuramoto d = **+2.28** (BA) / **+1.05** (lattice) ; §9 macrospin LLGS
+  d = **+2.42** (lattice) / **+1.61** (BA frustré) — le §9 note même explicitement que c'est
+  « la première fois sur les 3 modèles testés que l'effet brut est déjà fort ». La phrase
+  d'origine généralisait au §7 un constat vrai du seul §8, alors que les chiffres du §7
+  étaient **dans le même document, deux sections plus loin**. Elle a ensuite été recopiée
+  dans `docs/BILAN_FORCES_FAIBLESSES.md` le 31/07 au matin, où elle est devenue « nul dans
+  les **trois** modèles » — corrigée le jour même. *Motif : une affirmation qui ne porte pas
+  son chiffre se propage et grossit à chaque copie.*
+  **La réserve qui SUBSISTE, reformulée sur ce que les mesures disent** : le seul modèle où
+  le capteur brut ne suffit pas est celui qui ajoute la **non-isochronicité** — la signature
+  la plus caractéristique des vrais STNO. Pourquoi ce modèle-là décroche n'est **pas
+  expliqué** : question ouverte, et elle porte sur le réalisme du transfert, pas sur le
+  mécanisme.
 - **✅ Confirmé le jour même par le macrospin LLGS complet** (`b2_stno_macrospin_llgs_poc.py`,
   cf. B2 et `SPINTRONIC_PATHWAY.md` §9) : la prédiction repose maintenant sur **3 modèles
   convergents** (Kuramoto, Slavin-Tiberkevich, LLGS vectoriel complet), le dernier étant le

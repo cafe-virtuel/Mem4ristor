@@ -79,9 +79,39 @@ Romera et al. (2018).
 couplage modulé **retarde** la récupération d'environ **+52 %** par rapport au couplage figé.
 Un laboratoire qui mesurerait une récupération plus *rapide* réfuterait ce volet.
 
-⚠️ **Réserve honnête** : au capteur brut non calibré, l'effet est **nul** dans les trois modèles.
-La prédiction suppose qu'un vrai circuit de détection aurait un gain suffisant — **hypothèse non
-vérifiée**. Et le canal de couplage électrique réel n'a jamais été modélisé.
+**Ce que « capteur brut » veut dire** : le circuit qui mesure le désaccord entre voisins peut être
+pris *tel quel* (gain = 1) ou *amplifié* (calibré). C'est la question qui décide si un laboratoire
+peut tester la prédiction sans ajouter de composant.
+
+| Modèle | Capteur **brut** (tel quel) | Capteur calibré |
+|---|---|---|
+| Kuramoto (§7) | **+2,28** (BA) / **+1,05** (lattice) | +14,85 / +4,83 |
+| Slavin-Tiberkevich (§8) | **nul** (0,01 à 0,09) | +4,41 à +5,49 |
+| Macrospin LLGS complet (§9) | **+2,42** (lattice) / **+1,61** (BA) | +3,22 / +3,36 |
+
+**Au capteur brut, l'effet tient dans deux modèles sur trois**, et aucun intervalle de confiance ne
+touche zéro dans ces deux-là. Le modèle §9 est **le plus direct des trois** (vraie équation
+vectorielle, aucune reformulation), et c'est l'un de ceux qui tiennent.
+
+⚠️ **Les réserves qui restent, elles, sont réelles** :
+1. L'effet est **nul au brut dans le modèle §8** — précisément celui qui ajoute la
+   **non-isochronicité**, la signature la plus caractéristique des vrais oscillateurs. On ne sait
+   pas encore pourquoi ce modèle-là décroche.
+2. Le **canal de couplage électrique réel** (celui de Romera) **n'a jamais été modélisé**. La
+   géométrie testée verrouille en **antiphase**, alors que la littérature rapporte plutôt un
+   verrouillage **en phase** sur les vrais réseaux couplés électriquement. Avant toute campagne
+   expérimentale, il faut savoir quelle grandeur observer.
+3. Second volet de la prédiction, au signe inversé : la récupération après un leurre est
+   **retardée d'environ +52 %**. À ne pas vendre comme « le doute améliore les décisions ».
+
+> 🔧 **Errata du 31/07/2026** — la première version de ce fichier, publiée le matin même, écrivait
+> *« au capteur brut, l'effet est nul dans les trois modèles »*. **C'est faux** : il est nul dans
+> **un** modèle sur trois. L'erreur venait de `FUTURE_WORK.md` §B6, qui disait « nul dans les deux
+> modèles » — une phrase écrite au moment du §8 et qui était **déjà fausse** pour le §7 (d = +2,28
+> au brut). Elle a été recopiée, puis élargie à « trois » quand un troisième modèle est arrivé.
+> *Une affirmation sans son chiffre se propage et grossit ;* c'est exactement le motif que ce projet
+> traque depuis le 29/07, et la règle §6 de ce fichier — un chiffre par affirmation — existait
+> précisément pour l'empêcher. Elle n'a pas été appliquée à cette ligne-là.
 
 📁 `docs/hardware/SPINTRONIC_PATHWAY.md` §8-9 · `docs/FUTURE_WORK.md` §B6
 
