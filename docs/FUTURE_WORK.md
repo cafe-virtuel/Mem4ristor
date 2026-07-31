@@ -1044,11 +1044,14 @@ Régénéré avec le code actuel : les **synchronies tiennent** (FULL +0,0023 vs
 FROZEN +0,697 vs 0,751 ± 0,060) mais les **LZ sont hors des écarts publiés** (1,096 vs
 1,069 ± 0,016 ; 1,603 vs 1,635 ± 0,006). Les mesures faites avec le code actuel concordent
 entre elles (b4 sur BA m=3 : 0,0088 / 0,6875) ; c'est le CSV du 26/04 qui est l'intrus.
-→ **OUVERT** : régénérer `tab:ablations` + lui donner un claim Guardian (précédent : C04 et
-C08 le 12/06, « Option A » validée par Julien). Décision de Julien, non prise à ce jour.
+→ ✅ **FAIT le 29/07** (décision de Julien) : `tab:ablations` a été régénérée, versionnée,
+vérifiée reproductible bit à bit sur 3 exécutions, et couverte par **quatre** claims Guardian
+(**C14–C17**, tolérances calibrées pour avoir attrapé la dérive précise subie). *Entrée
+laissée à « OUVERT » jusqu'au 31/07 — corrigée par la passe soustractive de ce jour.*
 
 **Réparé au passage** : `experiments/scratch/p2_sigma_social_ablation.py` — **non versionné**
-alors qu'il produit les CSV canoniques de **deux** claims (C04, C13) — a été sorti de
+alors qu'il produit les CSV canoniques de **deux** claims (C04, **C18** — ex-C13, renommé le
+31/07 pour lever la collision d'étiquette avec le registre) — a été sorti de
 `scratch/` vers `experiments/`. `b4_ablation_robustness.py` ne s'exécutait plus depuis
 (ImportError) ; il rejoue désormais ses deux CSV **bit à bit** (Cohen d 9,38 BA / 4,72
 lattice, séparation complète, 30 graines × 2 topologies).

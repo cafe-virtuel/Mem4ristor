@@ -115,30 +115,50 @@ nouveau document — c'est l'inverse qui a été montré.
 
 **Sources de vérité actuelles** (pas `docs/limitations.md`, périmé) :
 - **`.brain/claims_mapping.json`** + **`.brain/preprint_guardian.py`** — vérification
-  **automatisée** à chaque commit (hook pre-commit), 14 claims (C01–C13 + C08b),
-  **14/14 OK** au 9 juillet 2026.
+  **automatisée** à chaque commit (hook pre-commit), **18 claims**, **18/18 OK** au
+  31 juillet 2026.
+- **`.brain/tex_guardian.py`** (créé le 30/07) — second garde-fou au même hook :
+  il compare le **texte publié** à ses **données** (ancrages, registre des valeurs mortes,
+  audit des sources citées). **13/13 ancres, 0 valeur morte, 12/12 sources** au 31/07.
 - **`docs/CLAIMS_REGISTER.md`** — registre narratif détaillé (valeur, script, seeds,
   statut) pour chaque claim + claims secondaires/exploratoires (S01-S09).
 
-> ⚠️ **Incohérence connue, découverte le 09/07/2026, non corrigée** : les deux fichiers
-> ci-dessus utilisent **la même étiquette `C13` pour deux claims différents**.
-> `claims_mapping.json` (celui que le Guardian vérifie) : C13 = « Cohen d ablation
-> FROZEN_U vs FULL, BA m=3, 30 seeds » (ajouté 08/07/2026). `CLAIMS_REGISTER.md` : C13 =
-> « LZ76 regime classification (adaptive D(u)) » (un claim plus ancien, mai 2026).
-> Aucun des deux fichiers n'a été retouché pour éviter la collision. À trancher
-> (renuméroter l'un des deux) avant tout usage externe des deux registres ensemble.
-> **Point au 26/07/2026 (soir)** : toujours non tranché, et c'est délibéré — renuméroter une
-> étiquette de claim est un changement structurel qui touche `.brain/claims_mapping.json`,
-> donc le Guardian et son hook. Cela demande l'accord explicite de Julien, pas une décision
-> d'agent. **Ce qu'il faut savoir en attendant** : le C13 que le Guardian vérifie (et qui
-> apparaît dans ses 14/14) est celui de `claims_mapping.json`, l'ablation FROZEN_U — pas
-> celui du registre narratif.
+> ✅ **Collisions d'étiquettes RÉSOLUES le 31/07/2026** (accord explicite de Julien).
+> Les deux fichiers ci-dessus utilisaient la même étiquette pour des claims différents,
+> et c'était le cas **deux fois**. Aucun chiffre vérifié n'a changé : seules les étiquettes.
+>
+> - **`C13`** (connue depuis le 09/07) — `claims_mapping.json` : « Cohen d ablation
+>   FROZEN_U vs FULL, BA m=3, 30 seeds » ; `CLAIMS_REGISTER.md` : « LZ76 regime
+>   classification (adaptive D(u)) », un claim plus ancien. → le claim du Guardian est
+>   renommé **`C18`**, étiquette libre des deux côtés (le registre va jusqu'à C21).
+>   ⚠️ **Le diagnostic du 30/07 était faux sur un point, et il faut le savoir** : N2 du
+>   `tex_guardian` signalait ce claim comme « ne protégeant rien de publié ». Il protège
+>   en réalité le **résultat central du papier** — « Cohen's *d* ≈ 9 » est publié à
+>   **trois** endroits (contributions, `sec:ablation`, Conclusion). N2 ne le voit pas
+>   parce que le texte l'écrit en **entier** et que le détecteur ignore les entiers
+>   **par conception** (sinon : bruit des tailles de réseau, numéros de section, comptes
+>   de graines). Le signalement de `C18` est donc **structurel et permanent, pas une
+>   dette** — et le retirer aurait désarmé le garde-fou du résultat central.
+> - **`C07`** (trouvée le 30/07) — le Guardian appelait `C07` ce que le registre et
+>   `AUDIT_LOG.md:1284` (12/06) appellent **`C07b`** (lattice 10×10 = 0.0197 ± 0.0142).
+>   → clé renommée **`C07b`**. Le vrai `C07` du registre (BA m=3 FORCED = 0.031 `[valeur morte]`)
+>   porte un chiffre **périmé** depuis la régénération du 29/07 : il est marqué **remplacé par `C14`**
+>   (0.002312, CSV versionné, reproductible bit à bit). ⚠️ Dette laissée ouverte :
+>   `figures/p2_table1_sync.csv` (source de C07b) n'est régénérable par **aucun script du
+>   dépôt** — son producteur vit dans le dépôt pilote et vise un répertoire disparu.
+> - **`C01`** — corrigé le même jour, défaut différent et réel : le claim vérifiait
+>   `p2_delta_sweep.csv` (δ=0 → 4.157), **valeur publiée nulle part**. Repointé sur
+>   `p2_table1_lattice.csv` (lattice_10x10 = 4.086280), soit le **4.09 ± 0.19** publié
+>   dans `tab:scaling` et `tab:benchmarks`, et ancré aux deux. Le registre portait encore
+>   `4.06 ± 0.08`, valeur d'avant la régénération du 08/07 : **même défaut que C02 et C03,
+>   corrigés le 30/07 — C01 avait été sauté.** La correction avait été appliquée aux lignes
+>   trouvées, pas à l'affirmation ; c'est le motif du « ~90-fold », une fois de plus.
 
 ### Résultats scientifiques actuels (résumé, voir CLAIMS_REGISTER.md pour le détail)
 
 - **Résultat central : ablation FROZEN_U vs FULL** — geler `u` détruit
   l'anti-synchronisation. Séparation complète, **Cohen d = 9.4 (BA m=3) / 4.7 (lattice)**,
-  30 seeds, IC bootstrap (C13 dans `claims_mapping.json`). Mesure indépendante du binning
+  30 seeds, IC bootstrap (**C18** dans `claims_mapping.json`, ex-C13). Mesure indépendante du binning
   (corrélation de Pearson) — c'est le résultat le moins attaquable du papier.
 - **Le mécanisme causal n'est PAS spectral** : λ₂_crit≈2.31 a été **réfuté** comme
   mécanisme (mandat du 1er juillet 2026) — c'est un artefact de corrélation avec le
@@ -513,7 +533,9 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 > juin. **Toutes sont résolues depuis** (vérifié le 09/07/2026 par recoupement avec
 > `docs/CLAIMS_REGISTER.md` actuel) :
 > - **C07** (topologie erronée) → résolu : le registre distingue maintenant C07 (BA m=3)
->   et C07b (lattice, 0.0197±0.0142) séparément.
+>   et C07b (lattice, 0.0197±0.0142) séparément. **Complété le 31/07** : le Guardian, lui,
+>   appelait encore « C07 » le claim lattice — clé renommée `C07b` ; et le C07 du registre
+>   est désormais **remplacé par C14** (sa valeur 0.031 `[valeur morte]` l'est depuis le 29/07).
 > - **C12** (Binder U4 plat) → résolu : le claim est marqué `~~C12~~ INFIRMÉE` dans le
 >   registre, section Binder retirée du preprint.
 > - **C05** (valeur canonique floue λ₂) → **dépassé plutôt que résolu** : λ₂ n'est plus le
