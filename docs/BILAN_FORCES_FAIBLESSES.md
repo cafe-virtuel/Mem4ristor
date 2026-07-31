@@ -46,7 +46,7 @@ découpage en classes — c'est le résultat **le moins attaquable** du papier.
 ### 1.2 Ce n'est pas une impression : c'est re-testé automatiquement
 
 **18 chiffres publiés** sont recalculés depuis leurs données à **chaque commit** et comparés au
-papier — **18/18 au 31/07/2026**. Depuis le 30/07, un **second** contrôle compare le *texte publié*
+papier — **20/20 au 31/07/2026**. Depuis le 30/07, un **second** contrôle compare le *texte publié*
 à ses sources (13 ancrages, registre des valeurs remplacées, audit des scripts cités) ; il est
 **bloquant** depuis le 31/07. Très peu de laboratoires ont cet appareil.
 
