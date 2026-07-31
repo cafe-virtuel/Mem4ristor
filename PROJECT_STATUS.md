@@ -140,7 +140,8 @@ nouveau document — c'est l'inverse qui a été montré.
 >   de graines). Le signalement de `C18` est donc **structurel et permanent, pas une
 >   dette** — et le retirer aurait désarmé le garde-fou du résultat central.
 > - **`C07`** (trouvée le 30/07) — le Guardian appelait `C07` ce que le registre et
->   `AUDIT_LOG.md:1284` (12/06) appellent **`C07b`** (lattice 10×10 = 0.0197 ± 0.0142).
+>   `AUDIT_LOG.md:1284` (12/06) appellent **`C07b`** (lattice 10×10, alors publié à
+>   0.0197 ± 0.0142 `[valeur morte]` — voir la correction de protocole ci-dessous).
 >   → clé renommée **`C07b`**. Le vrai `C07` du registre (BA m=3 FORCED = 0.031 `[valeur morte]`)
 >   porte un chiffre **périmé** depuis la régénération du 29/07 : il est marqué **remplacé par `C14`**
 >   (0.002312, CSV versionné, reproductible bit à bit). ⚠️ Dette laissée ouverte :
@@ -153,6 +154,23 @@ nouveau document — c'est l'inverse qui a été montré.
 >   `4.06 ± 0.08`, valeur d'avant la régénération du 08/07 : **même défaut que C02 et C03,
 >   corrigés le 30/07 — C01 avait été sauté.** La correction avait été appliquée aux lignes
 >   trouvées, pas à l'affirmation ; c'est le motif du « ~90-fold », une fois de plus.
+>
+> 🔴 **Et une correction de VALEUR PUBLIÉE, trouvée le même jour en payant la dette du CSV**
+> (décision de Julien). `tab:benchmarks` publiait une synchronie de `0.0197` `[valeur morte]`
+> produite **sans cold start**, alors que le papier revendique le Cold Start Protocol et affirmait en **trois
+> endroits** (L182, L195, L515) que les deux colonnes de cette ligne viennent d'un seul
+> protocole. Le CSV n'était pas faux : il se rejouait **au bit près**. C'est le **protocole**
+> qui ne correspondait pas à ce que le texte annonçait. Mesuré : cold start → **0.036 ± 0.023**,
+> soit **+0.0162, au-delà de l'écart-type publié**. `verify_table1_preprint.py` écrit désormais
+> les **deux** CSV dans le **même run** — la phrase publiée est devenue vraie au lieu d'être
+> corrigée — et la dette de régénération est fermée du même geste.
+> ⚠️ **La correction affaiblit le chiffre** (synchronie plus haute), comme Floquet le 30/07 :
+> l'écart aux baselines passe d'un facteur ~51 à ~28. Les baselines étant à ≈ 1.0, la
+> conclusion du tableau est inchangée.
+> 💡 **Ce que ça apprend sur nos garde-fous, et il faut le garder** : l'ancre du `tex_guardian`
+> **tenait parfaitement** avant cette correction — `0.0197` était bien la valeur exacte de son
+> CSV. *Une ancre qui tient prouve qu'un nombre publié vient de son CSV ; elle ne prouve rien
+> sur le protocole qui a produit ce CSV.* C'est un étage au-dessus de ce que l'outil sait voir.
 
 ### Résultats scientifiques actuels (résumé, voir CLAIMS_REGISTER.md pour le détail)
 
@@ -533,7 +551,7 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 > juin. **Toutes sont résolues depuis** (vérifié le 09/07/2026 par recoupement avec
 > `docs/CLAIMS_REGISTER.md` actuel) :
 > - **C07** (topologie erronée) → résolu : le registre distingue maintenant C07 (BA m=3)
->   et C07b (lattice, 0.0197±0.0142) séparément. **Complété le 31/07** : le Guardian, lui,
+>   et C07b (lattice, alors 0.0197±0.0142 `[valeur morte]`) séparément. **Complété le 31/07** : le Guardian, lui,
 >   appelait encore « C07 » le claim lattice — clé renommée `C07b` ; et le C07 du registre
 >   est désormais **remplacé par C14** (sa valeur 0.031 `[valeur morte]` l'est depuis le 29/07).
 > - **C12** (Binder U4 plat) → résolu : le claim est marqué `~~C12~~ INFIRMÉE` dans le
