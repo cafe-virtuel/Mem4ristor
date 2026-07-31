@@ -1,11 +1,18 @@
 # PROJECT STATUS — Mem4ristor V6.0.0 (preprint reformulé, non soumis)
-**Dernière mise à jour : 2026-07-26, soir (Claude Code/Opus 5 — le signal d'arrêt ne tire aucun bénéfice de la topologie : voir §0 et §3bis)**
+**Dernière mise à jour : 2026-07-31 (Claude Code/Opus 5 — collisions d'étiquettes tranchées, `tex_guardian` bloquant, synchronie de Table 1 réalignée sur le protocole publié : voir §3)**
 **Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
 > Ce fichier est le point d'entrée pour quiconque (humain ou IA) travaille sur ce projet.
 > Lisez-le en premier. Pour l'historique complet des sessions et investigations :
 > → **[PROJECT_HISTORY.md](PROJECT_HISTORY.md)**
+>
+> 📊 **Pour savoir ce que le projet vaut réellement — forces, faiblesses, et ce qui n'a jamais
+> été testé — en français simple et avec un chiffre par affirmation :**
+> → **[docs/BILAN_FORCES_FAIBLESSES.md](docs/BILAN_FORCES_FAIBLESSES.md)** *(créé le 31/07/2026)*
+> Il existe parce que chaque session rapportait ses **pertes** sans que personne ne tienne le
+> **solde**. Il répond notamment à la question de l'ambition initiale (économie d'énergie :
+> **non**, et c'est structurel ; réduction de latence : **oui**, mais étroitement).
 
 ---
 
@@ -19,8 +26,14 @@
   l'anti-synchronisation) — séparation complète, Cohen d ≈ 9.4 (BA m=3) / 4.7 (lattice),
   30 seeds. C'est le résultat le plus robuste et le moins attaquable du papier (corrélation
   de Pearson, indépendant du binning).
-- **Guardian** : 14/14 claims vérifiées automatiquement à chaque commit
+- **Guardian** : **18/18** claims vérifiées automatiquement à chaque commit
   (`.brain/claims_mapping.json` + `.brain/preprint_guardian.py`, hook pre-commit).
+  *Ce compteur était resté à « 14/14 » du 29/07 au 31/07 — cible identifiée par la passe
+  soustractive du 30/07 et corrigée seulement le 31 : la détection ne vaut que si la
+  correction suit.*
+- **Tex Guardian** : depuis le 30/07, un second contrôle compare le **texte publié** à ses
+  **données** (13/13 ancrages, 0 valeur périmée, 12/12 sources citées et versionnées).
+  **Bloquant depuis le 31/07** — un commit qui désynchronise le texte de ses sources est refusé.
 - **Git** : branche `main`, **synchronisée avec `origin/main`**. La publication a eu lieu
   vers le ~14 juillet 2026 : tout l'historique est sur `github.com/cafe-virtuel/Mem4ristor`.
   Le verrou de publication, le plus ancien du projet, est levé — il ne reste éventuellement
