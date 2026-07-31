@@ -7,7 +7,7 @@ Claude Code (Opus 5) / Julien Chauvin. Derniere porte du protocole B6.
 CE QUI EST ETABLI CE SOIR, ET CE QUI NE L'EST PAS
 --------------------------------------------------
 b6_third_arm_transient.py : aucun couplage CONSTANT ne reproduit le retard de flip du
-volet 2 (-21 %, sens oppose), meme re-regle par T_pulse.
+volet 2 (-18 %, sens oppose), meme re-regle par T_pulse.
 b6_fourth_arm_profile.py  : aucune RAMPE PREENREGISTREE non plus (-6 %), et pas par
 defaut de calage — le profil moyen <u_filter(t)> lui etait donne EXACT, mesure sur les
 memes graines, pour le meme T_pulse. Ma prediction S1 (« le profil moyen suffira »)

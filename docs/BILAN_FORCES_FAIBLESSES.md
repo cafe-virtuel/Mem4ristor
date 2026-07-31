@@ -67,8 +67,9 @@ hypothèse initiale est plus crédible qu'un projet qui n'en trouve jamais.
 C'est **la seule chose qui sort de l'ordinateur**. Tout le reste est auto-référentiel (on mesure
 des grandeurs calculées sur la simulation qui les produit). Ici, on propose une expérience qu'un
 laboratoire peut faire **pour donner tort au projet** : prendre de vrais oscillateurs magnétiques,
-moduler leur couplage par le désaccord local, et mesurer s'ils se synchronisent moins qu'un
-réseau à couplage fixe.
+moduler leur couplage par le désaccord local, et mesurer ce qu'ils font de différent d'un réseau
+à couplage fixe. *(L'observable a changé le 31/07 au soir : ce n'est plus la synchronisation,
+c'est le temps de récupération après un leurre — voir l'encadré plus bas.)*
 
 **Ce qui l'appuie** : **trois modèles physiques indépendants** convergent (Kuramoto, l'auto-oscillateur
 Slavin-Tiberkevich, et le macrospin vectoriel complet), avec des effets de **1,05 à 14,85**.
@@ -78,6 +79,34 @@ Romera et al. (2018).
 **Deuxième volet, au signe inversé et tout aussi testable** : après un leurre transitoire, le
 couplage modulé **retarde** la récupération d'environ **+52 %** par rapport au couplage figé.
 Un laboratoire qui mesurerait une récupération plus *rapide* réfuterait ce volet.
+
+> 🔄 **MISE À JOUR DU 31/07/2026 AU SOIR — les deux volets ont changé de rôle.**
+> On a ajouté à l'expérience les **bras de contrôle qui manquaient** : et si un couplage
+> **fixe**, bien réglé, produisait le même effet que le doute ? Un laboratoire aurait alors
+> mesuré quelque chose de réel et l'aurait attribué à la mauvaise cause.
+>
+> - 🔴 **Le volet 1 (synchronisation) n'est plus une signature du doute.** Un couplage fixe
+>   réglé au bon niveau reproduit l'effet à **0,24** près (sur une échelle où l'effet vaut
+>   1,35), et ce réglage **fonctionne aussi sur d'autres topologies et d'autres dispersions
+>   de fréquence** — donc même l'argument « le doute se règle tout seul » tombe. Il reste au
+>   doute un avantage de **+0,18**, répliqué sur des graines neuves, mais **cinq fois trop
+>   petit** pour qu'une manip le distingue de son bruit.
+> - 🟢 **Le volet 2 (retard de récupération), lui, discrimine — et fortement.** *Aucun*
+>   couplage imposé de l'extérieur ne le reproduit : ni fixe (**−18 %**), ni fixe re-réglé au
+>   mieux (−18 %), ni une **rampe programmée dans le temps** à laquelle on donne le profil
+>   exact du doute (**−6 %**), ni même une rampe programmée **oscillateur par oscillateur**
+>   (**−3 %**). Le signe compte : ces montages ne ratent pas le retard, ils font **l'inverse**
+>   — ils accélèrent. Le couplage doit **répondre au signal au moment où il arrive**.
+> - ⚠️ **La réserve, écrite avant la mesure** : ce résultat est obtenu avec un montage de
+>   lecture qui compare **deux copies jumelles** du réseau, et l'effet tient précisément à
+>   l'écart entre elles. Un vrai dispositif n'a qu'une copie. **À refaire sur une lecture
+>   simple avant d'en faire un argument. Non fait.**
+> - ⚠️ **Et une réserve qui touche tout le tableau ci-dessous** : ces effets sont **instables
+>   d'un jeu de graines à l'autre** (le +1,47 d'une condition devient +0,55 sur dix autres
+>   graines). Une campagne réelle doit prévoir **bien plus de dix répétitions**.
+>
+> 📁 `docs/hardware/SPINTRONIC_PATHWAY.md` §12 · `experiments/b6_third_arm*.py`,
+> `b6_fourth_arm_profile.py`, `b6_fifth_arm_per_node.py` (CSV versionnés)
 
 **Ce que « capteur brut » veut dire** : le circuit qui mesure le désaccord entre voisins peut être
 pris *tel quel* (gain = 1) ou *amplifié* (calibré). C'est la question qui décide si un laboratoire

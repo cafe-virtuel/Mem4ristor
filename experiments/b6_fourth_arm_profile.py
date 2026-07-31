@@ -7,7 +7,7 @@ Claude Code (Opus 5) / Julien Chauvin. Ferme le dernier verrou du protocole B6.
 L'OBJECTION A LAQUELLE CE SCRIPT REPOND
 ----------------------------------------
 b6_third_arm_transient.py a etabli ce soir qu'aucun couplage CONSTANT ne reproduit le
-retard de flip du volet 2 : le bras fixe en reproduit -21 %, c'est-a-dire qu'il part
+retard de flip du volet 2 : le bras fixe en reproduit -18 %, c'est-a-dire qu'il part
 dans le SENS OPPOSE (il accelere la recuperation la ou le doute la retarde), et cela
 meme RE-REGLE pour chaque T_pulse (Q3 verifiee).
 

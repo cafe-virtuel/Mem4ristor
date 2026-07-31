@@ -73,7 +73,12 @@ acc_fin, pas l'ecart entre regles) :
     entre oscillateurs desaccordes (sigma_omega=0.15, phases non verrouillees a
     K=0.3) agit comme une dissipation ~K*u_filter~0.27 comparable au gain net
     0.2 : le reseau COUPLE vit sous le seuil effectif, dynamique molle et lente.
-  - FAIT PHYSIQUE 2 (cicatrice de doute) : en FULL, le conflit fait monter u_net
+  - FAIT PHYSIQUE 2 (cicatrice de doute) [NUANCE LE 31/07/2026 AU SOIR : le FAIT
+    tient, sa CAUSE est mal nommee ici. Ce n'est PAS une hysteresis MOYENNE --
+    imposer le profil moyen exact de u_filter, ou meme son profil par noeud, ne
+    reproduit AUCUN retard (-6 % et -3 %). Le retard tient a ce que le couplage
+    repond au signal RECU PAR SA COPIE : mecanisme en BOUCLE FERMEE. Voir
+    b6_fifth_arm_per_node.py et SPINTRONIC_PATHWAY.md §12.] : en FULL, le conflit fait monter u_net
     durablement au-dessus de u_ref (0.42 vs 0.26 a t=6000) -> u_filter plus bas
     -> couplage (dissipation) reduit -> p_net durablement PLUS HAUT que p_ref,
     independamment du signe de l'evidence. Une lecture differentielle contre un

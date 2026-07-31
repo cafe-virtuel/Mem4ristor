@@ -1049,7 +1049,11 @@
   **Le risque annoncé s'est réalisé, en plus intéressant : le résultat est négatif
   DEUX fois, et informatif trois fois.** (1) Le doute-dans-la-dynamique RETARDE la
   sortie de tromperie (+52 % de temps de flip FULL vs FROZEN — la « cicatrice u » :
-  le conflit coupe le couplage et verrouille la trace du leurre). (2) L'horloge de
+  le conflit coupe le couplage et verrouille la trace du leurre). ⚠️ **Le fait tient,
+  la cause est mal nommée** (mesuré le 31/07 au soir) : ce n'est pas une hystérésis
+  moyenne. Imposer le profil temporel exact du couplage, ou même son profil par nœud,
+  ne reproduit **aucun** retard (−6 % et −3 %). Le mécanisme est en **boucle fermée**.
+  Voir `SPINTRONIC_PATHWAY.md` §12. (2) L'horloge de
   délibération (la niche B5b) ne se transpose pas : tous les signaux internes sont
   noyés par le désaccord permanent du substrat oscillant ; le meilleur arrêt reste le
   budget fixe. (3) En chemin, deux faits physiques : le couplage désaccordé est une
