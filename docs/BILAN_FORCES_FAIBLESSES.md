@@ -93,10 +93,29 @@ peut tester la prédiction sans ajouter de composant.
 touche zéro dans ces deux-là. Le modèle §9 est **le plus direct des trois** (vraie équation
 vectorielle, aucune reformulation), et c'est l'un de ceux qui tiennent.
 
-⚠️ **Les réserves qui restent, elles, sont réelles** :
-1. L'effet est **nul au brut dans le modèle §8** — précisément celui qui ajoute la
-   **non-isochronicité**, la signature la plus caractéristique des vrais oscillateurs. On ne sait
-   pas encore pourquoi ce modèle-là décroche.
+✅ **La réserve du capteur est LEVÉE le 31/07 — elle est devenue une spécification chiffrée.**
+*(`experiments/b6_sensor_gain_threshold.py`, gate de fidélité passé au chiffre près.)*
+
+- **La non-isochronicité est disculpée.** On l'accusait de faire décrocher le modèle §8. Sans
+  elle du tout, l'effet est **déjà nul** au capteur brut — et le capteur ne bouge pas d'un
+  millième quand on la fait varier de 0 à 10 (**étendue 0,0010**).
+- **La vraie cause est une échelle de capteur.** Pour que le couplage bascule en répulsif, il
+  faut un désaccord mesuré supérieur à **0,45**. Ce modèle en produit **0,011** : il manque un
+  facteur **41**. C'est un problème d'unité de mesure, pas de physique d'oscillateur.
+- **Ce qu'un laboratoire doit prévoir** : un amplificateur de gain **5 à 7** sur le canal de
+  détection du désaccord donne déjà un effet franc ; **7 à 10** pour la bascule complète
+  (seuil identique sur les deux topologies ; il monte à 10 quand la non-isochronicité est
+  maximale). En électronique, un ampli de gain 10 est banal.
+- 💡 **Et le mécanisme n'a pas besoin de la bascule** : à gain 5, Cohen d = **+1,35** alors
+  qu'**aucune** graine ne franchit le seuil. La modulation douce de l'amplitude du couplage
+  suffit. La cible d'un expérimentateur n'est donc pas « faire basculer u », c'est « obtenir un
+  effet détectable » — et cela demande moins de gain.
+
+⚠️ **Les réserves qui restent** :
+1. Ce modèle n'a **aucun bruit sur le capteur**. Un vrai amplificateur en ajoute, et rien ici ne
+   dit que l'effet y survit — un gain de 7 amplifie aussi le bruit. **C'est la question suivante,
+   et elle est mesurable.** Un gain n'est pas gratuit non plus en surface ni en consommation :
+   ce travail chiffre une **exigence**, pas un coût.
 2. Le **canal de couplage électrique réel** (celui de Romera) **n'a jamais été modélisé**. La
    géométrie testée verrouille en **antiphase**, alors que la littérature rapporte plutôt un
    verrouillage **en phase** sur les vrais réseaux couplés électriquement. Avant toute campagne

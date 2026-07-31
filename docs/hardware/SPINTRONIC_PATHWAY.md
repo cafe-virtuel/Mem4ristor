@@ -328,3 +328,65 @@ topologies que B4) :**
    de puissance micro-onde mesuré, aucune vérification que le gain de capteur=5 est
    physiquement réalisable sur un vrai circuit de détection de phase STNO. C'est un
    test de **portabilité mathématique du mécanisme**, pas une validation physique.
+
+---
+
+## §10 — De quel gain de capteur un laboratoire a-t-il besoin ? (2026-07-31)
+
+`experiments/b6_sensor_gain_threshold.py` · `figures/b6_sensor_gain_threshold*.csv` (**versionnés**)
+
+Les §7-§9 laissaient une réserve identique et **floue** : *« une fois le capteur calibré »*,
+sans jamais dire **combien** il faut. Un expérimentateur ne peut rien faire d'une telle
+phrase. Ce volet la remplace par un nombre. **Gate de fidélité G1 passé au chiffre près**
+sur quatre références du CSV du 09/07 (`u_mean` 0.0608 / 0.5034 / 0.0607 / 0.5252).
+
+**1. La non-isochronicité était accusée à tort, et la preuve dormait dans le CSV du 09/07.**
+À `n_nonlin = 0` — modèle **isochrone**, elle est absente — l'effet est **déjà nul** au
+capteur brut (diff +0.0076 BA / +0.0036 lattice, les deux IC chevauchant zéro). Re-mesuré
+ici : `u_mean` au gain 1 vaut **0.0608** (n_nonlin=0) contre **0.0599** (n_nonlin=10),
+**étendue 0.0010**. La non-isochronicité n'agit pas sur le capteur.
+
+**2. La cause est une échelle de capteur, lue dans le code et non devinée.**
+`u ≈ gain·|S| + 0.05` à l'équilibre, et la bascule de polarité exige `u > 0.5` : il faut donc
+`|S| > 0.45/gain`. Ce modèle produit `|S| ≈ 0.011` — **facteur 41 manquant**. Ici `S` est une
+moyenne **vectorielle complexe** de `(a_j − a_i)`, dont les contributions s'annulent entre
+elles ; le §7 moyennait des sinus d'ordre 1. **Problème d'unité de mesure, pas de physique
+d'oscillateur** — ce qui change entièrement la portée de la réserve.
+
+**3. La spécification.**
+
+| Ce qu'on veut obtenir | Gain nécessaire |
+|---|---|
+| Effet franc (Cohen d ≈ 1,3 à 1,9) | **5 à 7** |
+| Bascule complète de polarité (≥6/10 graines) | **7** (isochrone) à **10** (non-isochronicité maximale) |
+
+Le seuil de bascule est **identique sur les deux topologies** — réseau irrégulier ou grille
+régulière, même réponse. La non-isochronicité **déplace** ce seuil (7 → 10) sans jamais
+toucher au capteur : elle agit sur la dynamique, pas sur la mesure.
+
+**4. Le fait non prédit, et le plus utile pour une campagne réelle.**
+L'effet est franc **avant toute bascule** : BA, `n_nonlin=0`, gain 5 → **Cohen d = +1.35 avec
+0/10 graines** au-dessus de `u = 0.5` ; à `n_nonlin=10`, gain 7 → d = +1.92 avec **1/10**.
+**Le mécanisme ne requiert donc pas l'inversion de polarité du couplage** : la modulation
+*douce* de son amplitude suffit. Pour un expérimentateur, la cible n'est pas « faire basculer
+`u` » mais « obtenir un effet détectable » — et cela demande **moins** de gain que ce que les
+§7-§9 laissaient croire.
+
+**5. Un critère à moi a échoué, et il est conservé affiché.**
+J'avais prédit une transition **abrupte** par emballement — la boucle `gain ↑ → |S| ↑ → u ↑`
+est réelle (`|S|` passe de 0.011 à 0.045), donc l'emballement était plausible. La montée est
+en fait **régulière**. C'est l'échec de cette prédiction qui a fait apparaître le point 4 : un
+seuil net aurait masqué la croissance continue de l'effet.
+
+**6. Ce que ça ne prouve toujours pas.**
+Ce modèle n'a **aucun bruit sur le capteur**. Un amplificateur de gain 7 amplifie aussi le
+bruit, et rien ici ne dit que l'effet y survit — **c'est la question suivante, et elle est
+mesurable**. Un gain n'est pas gratuit en surface ni en consommation : ce volet chiffre une
+**exigence**, pas un coût. Et le canal de couplage électrique réel (Romera) n'est toujours pas
+modélisé.
+
+> ⚠️ **Dette signalée le 31/07, non traitée** : les CSV des §7, §8 et §9 vivent dans
+> `figures/scratch/`, **gitignoré**. Les données qui appuient la prédiction falsifiable — la
+> seule affirmation du projet qui sorte de la simulation — **ne sont pas vérifiables par qui
+> clone le dépôt**. Troisième occurrence du même défaut en une journée. Les sorties de ce
+> volet-ci vont dans `figures/` et sont versionnées.

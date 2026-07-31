@@ -619,11 +619,44 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   dans `docs/BILAN_FORCES_FAIBLESSES.md` le 31/07 au matin, où elle est devenue « nul dans
   les **trois** modèles » — corrigée le jour même. *Motif : une affirmation qui ne porte pas
   son chiffre se propage et grossit à chaque copie.*
-  **La réserve qui SUBSISTE, reformulée sur ce que les mesures disent** : le seul modèle où
-  le capteur brut ne suffit pas est celui qui ajoute la **non-isochronicité** — la signature
-  la plus caractéristique des vrais STNO. Pourquoi ce modèle-là décroche n'est **pas
-  expliqué** : question ouverte, et elle porte sur le réalisme du transfert, pas sur le
-  mécanisme.
+  ~~**La réserve qui SUBSISTE** : pourquoi ce modèle-là décroche n'est pas expliqué.~~
+- **✅ RÉSOLU le 31/07/2026 — `experiments/b6_sensor_gain_threshold.py`.** La réserve du
+  capteur, ouverte depuis le 09/07 et formulée de façon floue (« un gain suffisant » : combien ?),
+  est remplacée par une **spécification chiffrée**. Gate de fidélité G1 passé au chiffre près
+  sur 4 références du CSV du 09/07 (`u_mean` 0.0608 / 0.5034 / 0.0607 / 0.5252).
+  - **LA NON-ISOCHRONICITÉ EST DISCULPÉE**, et la preuve dormait dans le CSV du 09/07 —
+    aucune simulation nécessaire : à `n_nonlin=0` (modèle **isochrone**, elle est absente),
+    l'effet est **déjà nul** au capteur brut (diff +0.0076 BA / +0.0036 lattice, les deux IC
+    chevauchant zéro). Re-mesuré ici : `u_mean` au gain 1 vaut 0.0608 (n_nonlin=0) contre
+    0.0599 (n_nonlin=10) — **étendue 0.0010**. Elle n'agit pas sur le capteur.
+  - **LA CAUSE EST UNE ÉCHELLE DE CAPTEUR.** Chaîne lue dans le code, pas devinée :
+    `u ≈ gain·|S| + 0.05` à l'équilibre, et la bascule de polarité exige `u > 0.5`, donc
+    `|S| > 0.45/gain`. Le modèle produit `|S| ≈ 0.011` : **facteur 41 manquant**. `S` y est une
+    moyenne **vectorielle complexe** de `(a_j − a_i)` dont les contributions s'annulent, là où
+    le §7 moyenne des sinus d'ordre 1. Problème d'unité, pas de physique d'oscillateur.
+  - **SPÉCIFICATION** : gain **5 à 7** pour un effet franc, **7 à 10** pour la bascule complète.
+    Seuil de bascule (≥6/10 graines) **identique sur les deux topologies** : 7 à `n_nonlin=0`,
+    **10** à `n_nonlin=10` — la non-isochronicité *déplace* le seuil sans jamais toucher au capteur.
+  - **FAIT NON PRÉDIT, le plus utile** : l'effet est franc **AVANT toute bascule** — BA,
+    `n_nonlin=0`, gain 5 : **Cohen d = +1.35 avec 0/10 graines** au-dessus de `u=0.5` ; et à
+    `n_nonlin=10`, gain 7 : d = +1.92 avec **1/10**. Le mécanisme ne requiert donc **pas**
+    l'inversion de polarité : la modulation *douce* de l'amplitude du couplage suffit. Pour un
+    expérimentateur, la cible n'est pas « faire basculer `u` » mais « obtenir un effet
+    détectable », et cela demande **moins** de gain.
+  - **Critère P6 ÉCHOUÉ, conservé affiché** : j'avais prédit une transition **abrupte** par
+    emballement (la boucle `gain ↑ → |S| ↑ → u ↑` est réelle : `|S|` passe de 0.011 à 0.045).
+    Elle est **régulière**, sans emballement. L'échec de cette prédiction est ce qui a fait
+    apparaître le fait ci-dessus — un seuil net aurait masqué la montée continue de l'effet.
+  - **RÉSERVE NEUVE, et c'est la question suivante** : ce modèle n'a **aucun bruit sur le
+    capteur**. Un vrai amplificateur de gain 7 amplifie aussi le bruit, et rien ici ne dit que
+    l'effet y survit. Mesurable. Un gain n'est pas gratuit en surface ni en consommation non plus :
+    ce travail chiffre une **exigence**, pas un coût.
+  - ⚠️ **Dette signalée, non traitée** : les CSV des trois POC STNO (§7, §8, §9) vivent dans
+    `figures/scratch/` — **gitignoré**. Les données qui appuient la prédiction falsifiable, la
+    seule affirmation du projet qui sorte de la simulation, **ne sont pas vérifiables par qui
+    clone le dépôt**. Troisième occurrence du même défaut (après `p2_sigma_social_ablation` le
+    29/07 et `p2_table1_sync` le 31/07 au matin). Les sorties de `b6_sensor_gain_threshold.py`,
+    elles, vont dans `figures/` et sont versionnées.
 - **✅ Confirmé le jour même par le macrospin LLGS complet** (`b2_stno_macrospin_llgs_poc.py`,
   cf. B2 et `SPINTRONIC_PATHWAY.md` §9) : la prédiction repose maintenant sur **3 modèles
   convergents** (Kuramoto, Slavin-Tiberkevich, LLGS vectoriel complet), le dernier étant le
