@@ -1283,6 +1283,79 @@ fenêtre.
 
 ---
 
+## F. Et si le doute servait à VÉRIFIER plutôt qu'à calculer ? 💭 *(piste ouverte le 31/07/2026)*
+
+- **Origine.** Question de Julien en fin de session : *« est-ce que M4R peut avoir une utilité
+  pour un LLM, et qu'est-ce que tu en tirerais, toi ? »* La réponse honnête sur le **modèle** est
+  en D2 (mécanisme prouvé, utilité conditionnelle, jamais testé sur un vrai transformer). Mais en
+  cherchant ce qui, dans ce projet, a réellement servi à un agent qui raisonne, ce n'est **pas le
+  modèle** qui ressort — ce sont les **garde-fous construits pour le vérifier**.
+
+- **L'analogie, et elle est explicite : `u` empêche un réseau de converger trop tôt sur un
+  consensus ; les règles de méthode de ce dépôt empêchent un agent LLM de converger trop tôt sur
+  une réponse plausible.** *« Écris tes critères avant de savoir ce qu'ils diront »* · *« Vérifie
+  la prémisse de la tâche, pas seulement celle du résultat »* (règle A0) · *« Qu'est-ce que cette
+  session a rendu faux ailleurs ? »* (passe soustractive) · *« Une dette héritée se mesure avant
+  d'être payée »* · *« Un garde-fou qui tombe n'est pas une alerte tant qu'on n'a pas vérifié ce
+  que la cible affirme »*. Ce sont des mécanismes de **doute calibré**, appliqués un étage
+  au-dessus du modèle.
+
+### Ce qui est MESURÉ (avec sa réserve, qui est sévère)
+
+Sur les journées documentées du **27 au 31 juillet 2026**, chaque erreur consignée dans les
+transcripts porte l'indication de **ce qui l'a rattrapée**. La répartition est stable et elle est
+écrite cinq soirs de suite : **ce n'est presque jamais la vigilance au moment de l'erreur, c'est
+une forme écrite avant** (un critère, un contrôle adjacent, une prédiction chiffrée). Exemples
+datés : 30/07 — 6 défauts, **4 rattrapés par une forme écrite avant, 2 par relecture, 0 par
+vigilance** ; 29/07 — 3 critères tombés, **3 rattrapés par un contrôle écrit avant** ; 31/07 —
+3 valeurs mortes introduites par l'agent lui-même, **3 attrapées par l'outil**, dont deux dans le
+paragraphe qui documentait le défaut.
+
+> ⚠️ **BIAIS DE SÉLECTION SÉVÈRE, à écrire avant tout usage de ces chiffres.** Ce corpus ne
+> contient que les erreurs **détectées**. Les erreurs jamais vues n'y sont, par construction, pas.
+> On ne peut donc **pas** en tirer un taux de détection, ni un « les garde-fous attrapent X % des
+> erreurs ». Tout ce qu'on peut mesurer, c'est la **répartition des mécanismes de rattrapage
+> parmi les erreurs connues**. C'est déjà quelque chose — et c'est beaucoup moins que ce que la
+> formulation naïve laisserait croire.
+
+### Ce qui est OBSERVATION, pas résultat
+
+Que ces règles « fonctionnent comme `u` » est une **analogie**, pas une mesure. Personne n'a
+montré qu'elles partagent un mécanisme formel avec le modèle. Ne pas l'écrire autrement.
+
+### Ce qui rendrait la piste TESTABLE (et pourquoi elle n'est pas en l'air)
+
+**Le corpus existe déjà** : ~3 mois de transcripts datés où chaque erreur est étiquetée par son
+mécanisme de rattrapage. Deux protocoles possibles, par ordre de coût :
+
+1. **Rétrospectif (peu coûteux)** — coder systématiquement les erreurs des transcripts selon
+   `rattrapée par : forme écrite avant | relecture | vigilance | outil automatique | jamais`,
+   et regarder si la répartition change **avant/après** l'introduction de chaque règle (A0 le
+   29/07, passe soustractive le 30/07, `tex_guardian` le 30/07, N4 le 31/07). ⚠️ Ce n'est pas une
+   expérience contrôlée : les règles ont été introduites **parce que** des incidents les
+   appelaient, donc la causalité est confondue avec la sévérité de la période.
+2. **Prospectif (le seul qui trancherait)** — même tâche, deux agents, un avec le protocole
+   écrit et un sans, erreurs comptées par un tiers. C'est un vrai dispositif expérimental, et il
+   sort du périmètre de ce dépôt.
+
+### Ce qui pourrait la tuer
+
+- La répartition observée pourrait n'être qu'un **artefact de rédaction** : un agent qui écrit
+  ses transcripts a intérêt à attribuer ses rattrapages à une méthode plutôt qu'à la chance.
+  **Aucun contrôle n'existe contre ça aujourd'hui.**
+- Ces règles pourraient n'être qu'une **redécouverte** de pratiques standard (pré-enregistrement,
+  revue par les pairs, tests de régression). Le 29/07 a déjà montré que trois d'entre elles
+  existaient depuis août 2025 dans les règles du Café Virtuel. Vérifier la littérature avant
+  d'appeler ça neuf.
+
+### Statut
+
+**HYPOTHÈSE, non testée.** Aucun chiffre de cette section ne doit être cité comme un résultat du
+projet. Elle est consignée parce que la question était bonne, que le corpus existe, et que la
+laisser hors du dépôt reviendrait à la perdre. 🧩
+
+---
+
 ## Dépendances rapides
 - A3 alimente A5 (mesure H_cont per-seed) et B4 (IC sur labels mesurés).
 - B1 débloque B3 (énergie/tâche) et B5 (comparaison SOTA).
