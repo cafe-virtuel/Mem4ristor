@@ -390,3 +390,63 @@ modélisé.
 > seule affirmation du projet qui sorte de la simulation — **ne sont pas vérifiables par qui
 > clone le dépôt**. Troisième occurrence du même défaut en une journée. Les sorties de ce
 > volet-ci vont dans `figures/` et sont versionnées.
+
+---
+
+## §11 — Le bruit du capteur aide, et c'est une mauvaise nouvelle (2026-07-31)
+
+`experiments/b6_sensor_noise.py` · `figures/b6_sensor_noise*.csv` (**versionnés**)
+
+Question posée par Julien : *« je pensais que le bruit était même bénéfique pour M4R ? »*
+Vérifié d'abord : **oui pour le bruit de dynamique** — la variabilité de fabrication augmente
+l'entropie de +0,05 à +0,75 bits (`PHOTONIC_PATHWAY` §4quater). Le bruit du **capteur** est
+autre chose : du bruit sur une **information**, pas sur le mouvement. Jamais testé avant.
+
+**1. Son intuition est vérifiée, et par le mécanisme prévu à l'avance.**
+Le capteur mesure `|S|`, une **valeur absolue** : un bruit symétrique ajouté avant le module
+**augmente** systématiquement la mesure (rectification, `E[|S+ε|] > |E[S]|`). Le désaccord
+capté passe de 0,15 à 1,02.
+
+| Bruit du capteur, à **gain = 1** (aucun amplificateur) | Cohen d |
+|---|---|
+| 0 (capteur propre) | +0,08 |
+| 0,4 | +0,68 |
+| **0,8** | **+3,22** |
+
+**Le bruit remplace l'amplificateur** — et fait mieux qu'un ampli de gain 7 sans bruit (+2,75).
+
+**2. Mais il apporte du NIVEAU, pas de l'INFORMATION.** Deux contrôles écrits *contre* cette
+envie, et ils convergent :
+- un `u` **figé au niveau atteint** fait aussi bien 4 fois sur 6, et **mieux** dans les deux
+  exceptions (+7,98 contre +5,78 ; +3,73 contre +3,22) — le bruit n'apporte **jamais** un
+  avantage sur le niveau ;
+- à fort bruit, un capteur **aveugle**, qui ne mesure que du bruit et rien du réseau, fait
+  **exactement** aussi bien : **+7,91 contre +7,93, écart 0,01**.
+
+La fenêtre où l'information compte encore est **étroite** : σ ∈ [0,05 ; 0,20] à gain 5, où le
+capteur informé bat nettement l'aveugle (+2,68 contre +0,98). Au-delà, le dispositif marche
+**sans rien mesurer**.
+
+**3. Conséquence pour le protocole expérimental, et elle coupe dans les deux sens.**
+
+✅ **La réserve « le bruit du capteur pourrait tuer l'effet » est levée — c'est l'inverse.** Un
+laboratoire n'a besoin ni d'une chaîne de détection propre, ni forcément d'un amplificateur.
+
+🔴 **Mais le pouvoir discriminant de la prédiction est en jeu.** Si un capteur bruité produit
+le même effet qu'un capteur informé, l'expérience telle que formulée **ne teste plus le
+mécanisme du doute** : elle teste « un couplage répulsif en moyenne ». Le contrôle actuel —
+couplage figé à sa valeur **initiale** — ne distingue pas les deux.
+
+> ➡️ **Le protocole B6 doit comporter TROIS bras, pas deux :**
+> 1. couplage modulé par le désaccord (le mécanisme) ;
+> 2. couplage fixe à la valeur **initiale** (contrôle historique) ;
+> 3. **couplage fixe réglé au NIVEAU MOYEN ATTEINT** par le mécanisme ← **le bras manquant**.
+>
+> C'est le contrôle `FROZEN_U(0,95)` que Julien avait fait ajouter le 28/07 sur la niche,
+> transposé au dispositif physique. **Sans lui, un laboratoire mesurerait un effet réel et
+> l'attribuerait à la mauvaise cause** — et nous lui aurions fourni le protocole qui permet
+> cette erreur.
+
+**4. Ce que ça ne dit pas.** Un gain n'est gratuit ni en surface ni en consommation : ce volet
+chiffre une **exigence**, pas un coût. Et le canal de couplage électrique réel (Romera) n'est
+toujours pas modélisé.

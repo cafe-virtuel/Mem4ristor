@@ -111,11 +111,24 @@ vectorielle, aucune reformulation), et c'est l'un de ceux qui tiennent.
   suffit. La cible d'un expérimentateur n'est donc pas « faire basculer u », c'est « obtenir un
   effet détectable » — et cela demande moins de gain.
 
-⚠️ **Les réserves qui restent** :
-1. Ce modèle n'a **aucun bruit sur le capteur**. Un vrai amplificateur en ajoute, et rien ici ne
-   dit que l'effet y survit — un gain de 7 amplifie aussi le bruit. **C'est la question suivante,
-   et elle est mesurable.** Un gain n'est pas gratuit non plus en surface ni en consommation :
-   ce travail chiffre une **exigence**, pas un coût.
+✅ **Le bruit du capteur : testé le même jour, et il AIDE** *(`experiments/b6_sensor_noise.py`,
+question posée par Julien)*. Le capteur mesure une **valeur absolue**, donc du bruit
+**augmente** systématiquement la mesure (rectification). Sans aucun amplificateur, un bruit
+suffisant donne **Cohen d = +3,22** contre +0,08 avec un capteur propre — mieux qu'un ampli de
+gain 7. **Le bruit remplace l'amplificateur.**
+
+🔴 **Mais il apporte du *niveau*, pas de l'*information* — et ça touche la prédiction elle-même.**
+Deux contrôles convergents : un `u` figé au même niveau fait aussi bien ou **mieux** ; et à fort
+bruit, un capteur **aveugle** — qui ne mesure rien du réseau — fait **exactement** aussi bien
+(écart 0,01). Conséquence directe :
+
+> **Le protocole expérimental doit comporter TROIS bras, pas deux.** Il manque un couplage fixe
+> réglé **au niveau moyen atteint** par le mécanisme. Sans lui, un laboratoire mesurerait un
+> effet réel et **l'attribuerait à la mauvaise cause** — et nous lui aurions fourni le protocole
+> qui permet cette erreur.
+
+⚠️ **Ce qui reste non chiffré** : un gain n'est gratuit ni en surface ni en consommation. Ce
+travail chiffre une **exigence**, pas un coût.
 2. Le **canal de couplage électrique réel** (celui de Romera) **n'a jamais été modélisé**. La
    géométrie testée verrouille en **antiphase**, alors que la littérature rapporte plutôt un
    verrouillage **en phase** sur les vrais réseaux couplés électriquement. Avant toute campagne

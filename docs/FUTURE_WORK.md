@@ -647,10 +647,41 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     emballement (la boucle `gain ↑ → |S| ↑ → u ↑` est réelle : `|S|` passe de 0.011 à 0.045).
     Elle est **régulière**, sans emballement. L'échec de cette prédiction est ce qui a fait
     apparaître le fait ci-dessus — un seuil net aurait masqué la montée continue de l'effet.
-  - **RÉSERVE NEUVE, et c'est la question suivante** : ce modèle n'a **aucun bruit sur le
-    capteur**. Un vrai amplificateur de gain 7 amplifie aussi le bruit, et rien ici ne dit que
-    l'effet y survit. Mesurable. Un gain n'est pas gratuit en surface ni en consommation non plus :
-    ce travail chiffre une **exigence**, pas un coût.
+  - ~~**RÉSERVE NEUVE** : ce modèle n'a aucun bruit sur le capteur.~~ **✅ TRAITÉE LE JOUR
+    MÊME — `experiments/b6_sensor_noise.py`** (question posée par Julien : *« je pensais que le
+    bruit était même bénéfique pour M4R ? »*). Gate de fidélité passé.
+    - **Son intuition est vérifiée, et par le mécanisme prévu** : le capteur mesure `|S|`, une
+      valeur absolue, donc un bruit symétrique ajouté avant le module **augmente**
+      systématiquement la mesure (rectification, `E[|S+ε|] > |E[S]|`). Le désaccord capté passe
+      de 0.15 à 1.02. **À gain=1 — aucun amplificateur — un bruit σ=0.8 donne Cohen d = +3.22**
+      contre +0.08 avec un capteur propre, et **mieux qu'un ampli de gain 7 sans bruit** (+2.75).
+      **Le bruit remplace l'amplificateur.**
+    - **MAIS il apporte du NIVEAU, pas de l'INFORMATION** — deux contrôles écrits *contre* cette
+      envie, et ils convergent : (a) un `u` **figé au niveau atteint** fait aussi bien 4 fois sur
+      6, et **mieux** dans les 2 exceptions (+7.98 contre +5.78 ; +3.73 contre +3.22) — le bruit
+      n'apporte donc **jamais** d'avantage sur le niveau ; (b) à fort bruit, un capteur
+      **aveugle** (qui ne mesure QUE du bruit, aucune information sur le réseau) fait
+      **exactement** aussi bien : +7.91 contre +7.93, **écart 0.01**.
+    - **Fenêtre où l'information compte encore, et elle est étroite** : σ ∈ [0.05, 0.20] à
+      gain 5 — le capteur informé y bat nettement l'aveugle (+2.68 contre +0.98). Au-delà, le
+      dispositif fonctionne **sans rien mesurer du réseau**.
+    - **Troisième porte vers la conclusion du 29/07** : seul le niveau atteint par `u` compte.
+  - 🔴 **CORRECTION DU PROTOCOLE EXPÉRIMENTAL B6 — la conséquence importante, et elle coupe
+    dans les deux sens.**
+    **Bonne** : la réserve « le bruit du capteur pourrait tuer l'effet » est **levée, à
+    l'inverse** — un laboratoire n'a besoin ni d'une chaîne de détection propre, ni forcément
+    d'un amplificateur.
+    **Mauvaise, et elle touche le POUVOIR DISCRIMINANT de la prédiction** : si un capteur bruité
+    produit le même effet qu'un capteur informé, alors l'expérience **telle que formulée ne teste
+    plus le mécanisme du doute** — elle teste « un couplage répulsif en moyenne ». Le contrôle
+    actuel (couplage figé à sa valeur **initiale**) ne permet pas de distinguer les deux.
+    ➡️ **IL FAUT UN TROISIÈME BRAS : couplage fixe réglé AU NIVEAU MOYEN ATTEINT par le doute.**
+    C'est exactement le contrôle `FROZEN_U(0.95)` que Julien avait fait ajouter le 28/07 sur la
+    niche, transposé au protocole physique. **Sans lui, un laboratoire mesurerait un effet réel
+    et l'attribuerait à la mauvaise cause** — et le projet aurait fourni le protocole qui permet
+    cette erreur.
+  - **Reste non chiffré** : un gain n'est gratuit ni en surface ni en consommation. Ce travail
+    chiffre une **exigence**, pas un coût.
   - ⚠️ **Dette signalée, non traitée** : les CSV des trois POC STNO (§7, §8, §9) vivent dans
     `figures/scratch/` — **gitignoré**. Les données qui appuient la prédiction falsifiable, la
     seule affirmation du projet qui sorte de la simulation, **ne sont pas vérifiables par qui
