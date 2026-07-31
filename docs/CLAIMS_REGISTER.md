@@ -2,6 +2,17 @@
 
 > Principe : tout claim numérique publié dans preprint.tex doit avoir un script de vérification listé ici.
 > Zéro valeur sans script reproductible. Mis à jour à chaque session.
+>
+> 🔧 **31/07/2026 — cette promesse était FAUSSE pour 7 claims sur 18, et personne ne le mesurait.**
+> `C05` (λ₂ = 2,31, cité dans l'abstract), `C08`, `C08b`, `C09`, `C10`, `C11` et `C12` avaient leur
+> **unique producteur dans `experiments/scratch/`**, gitignoré : leurs CSV étaient vérifiés à chaque
+> commit, mais **personne ne pouvait les régénérer**. Le Guardian garantissait que *le chiffre publié
+> est celui du CSV* — jamais que *le CSV soit reproductible*. Les 7 scripts ont été **déplacés** vers
+> `experiments/` (déplacement, pas patch : ils utilisaient tous `parent.parent`, donc ils étaient
+> **cassés là où ils vivaient**, écrivant dans un `experiments/figures/` inexistant). Un contrôle
+> **N4** a été ajouté au `tex_guardian` pour que l'écart ne puisse plus réapparaître sans être vu.
+> *Le risque n'était pas théorique : c'est exactement ce qui a explosé le 12/06 (AUDIT-024), quand
+> trois CSV pré-mai se sont révélés non reproductibles après le changement de bruit du 01/05.*
 > Dernière mise à jour : 2026-06-12 (Claude Code/Fable — AUDIT-024 détecté ET résolu : CSV pré-mai régénérés avec le code actuel, preprint corrigé (Option A validée Julien) ; C20 reformulé ; C21 révisé)
 >
 > ✅ **AUDIT-024 RÉSOLU (2026-06-12, Option A validée par Julien)** : le commit `818cf67`

@@ -34,6 +34,15 @@
 - **Tex Guardian** : depuis le 30/07, un second contrôle compare le **texte publié** à ses
   **données** (13/13 ancrages, 0 valeur périmée, 12/12 sources citées et versionnées).
   **Bloquant depuis le 31/07** — un commit qui désynchronise le texte de ses sources est refusé.
+- **Contrôle N4 — « le CSV est-il régénérable ? »** *(ajouté le 31/07, en observation)* :
+  **12/12**. Il ferme l'angle mort qui a coûté AUDIT-024 en juin — le Guardian vérifie que le
+  chiffre publié est celui du CSV, **jamais** que ce CSV puisse être reproduit. Mesuré le 31/07 :
+  **7 claims sur 18** (dont `C05`, la frontière λ₂ = 2,31 de l'abstract) avaient leur unique
+  producteur dans `experiments/scratch/`, gitignoré. Les 7 scripts sont désormais versionnés —
+  et ils étaient **cassés là où ils vivaient** (`parent.parent` pointait sur `experiments/`).
+  💡 *Origine : une question de Julien — « je me demande si finalement le gitignore est une bonne
+  idée, on n'arrête pas de repiocher dedans ». La mesure a donné 155 scripts de `scratch/` cités
+  dans la doc versionnée, dont **19** engageant la reproductibilité et **7** portant un claim.*
 - **Git** : branche `main`, **synchronisée avec `origin/main`**. La publication a eu lieu
   vers le ~14 juillet 2026 : tout l'historique est sur `github.com/cafe-virtuel/Mem4ristor`.
   Le verrou de publication, le plus ancien du projet, est levé — il ne reste éventuellement
