@@ -675,19 +675,23 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     produit le même effet qu'un capteur informé, alors l'expérience **telle que formulée ne teste
     plus le mécanisme du doute** — elle teste « un couplage répulsif en moyenne ». Le contrôle
     actuel (couplage figé à sa valeur **initiale**) ne permet pas de distinguer les deux.
-    ➡️ **IL FAUT UN TROISIÈME BRAS : couplage fixe réglé AU NIVEAU MOYEN ATTEINT par le doute.**
-    C'est exactement le contrôle `FROZEN_U(0.95)` que Julien avait fait ajouter le 28/07 sur la
-    niche, transposé au protocole physique. **Sans lui, un laboratoire mesurerait un effet réel
-    et l'attribuerait à la mauvaise cause** — et le projet aurait fourni le protocole qui permet
-    cette erreur.
+    ➡️ ~~**IL FAUT UN TROISIÈME BRAS : couplage fixe réglé AU NIVEAU MOYEN ATTEINT par le doute.**~~
+    ✅ **FAIT le 31/07 au soir — et le résultat est l'INVERSE de ce qui était espéré ici.**
+    Ce bras ne sauve pas le volet 1, **il l'enterre** : un couplage fixe y reproduit l'effet à
+    0,24 de Cohen *d* près, et son réglage transfère d'une topologie et d'une dispersion de
+    fréquence à l'autre. C'est le **volet 2** qui porte le pouvoir discriminant. Voir l'entrée
+    du 31/07 (soir) plus bas et `SPINTRONIC_PATHWAY.md` §12.
+    *(Le bras était aussi mal spécifié : « au niveau moyen atteint » désigne `u`, une variable
+    interne qu'aucun laboratoire ne peut régler. Ce qui se câble est le couplage `u_filter`.)*
   - **Reste non chiffré** : un gain n'est gratuit ni en surface ni en consommation. Ce travail
     chiffre une **exigence**, pas un coût.
-  - ⚠️ **Dette signalée, non traitée** : les CSV des trois POC STNO (§7, §8, §9) vivent dans
-    `figures/scratch/` — **gitignoré**. Les données qui appuient la prédiction falsifiable, la
-    seule affirmation du projet qui sorte de la simulation, **ne sont pas vérifiables par qui
-    clone le dépôt**. Troisième occurrence du même défaut (après `p2_sigma_social_ablation` le
-    29/07 et `p2_table1_sync` le 31/07 au matin). Les sorties de `b6_sensor_gain_threshold.py`,
-    elles, vont dans `figures/` et sont versionnées.
+  - ~~⚠️ **Dette signalée, non traitée** : les CSV des trois POC STNO (§7, §8, §9) vivent dans
+    `figures/scratch/` — **gitignoré**.~~ ✅ **SOLDÉE le 31/07 au soir.** Les trois scripts
+    écrivaient déjà dans `figures/` ; personne ne les avait relancés depuis le rangement du
+    14/07. Régénérés et **versionnés**. Et la régénération a servi de test : **toutes** les
+    colonnes hors IC se rejouent à l'identique (20 lignes, 3 fichiers, **0 différence**
+    vérifiée mécaniquement) — ce n'était donc pas une dette de *valeur*, seulement de
+    versionnement. Seuls les IC ont bougé, pour la raison expliquée à l'entrée du 31/07 (soir).
 - **✅ Confirmé le jour même par le macrospin LLGS complet** (`b2_stno_macrospin_llgs_poc.py`,
   cf. B2 et `SPINTRONIC_PATHWAY.md` §9) : la prédiction repose maintenant sur **3 modèles
   convergents** (Kuramoto, Slavin-Tiberkevich, LLGS vectoriel complet), le dernier étant le
@@ -708,6 +712,42 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
   par rapport au même réseau à couplage fixe (volet 2, P12) ». Un labo qui mesurerait
   une récupération plus RAPIDE réfuterait le volet 2. Ne pas vendre B6 comme « le doute
   améliore les décisions du dispositif » — ce n'est pas ce que la simulation dit.
+- 🔴 **RÉÉCRIT LE 31/07/2026 AU SOIR — la prédiction change d'observable.**
+  `b6_third_arm.py` · `b6_third_arm_transient.py` · `b6_fourth_arm_profile.py` ·
+  `b6_fifth_arm_per_node.py`, CSV **versionnés**. Détail complet : `SPINTRONIC_PATHWAY.md` §12.
+  - 🔴 **LE VOLET 1 NE TESTE PAS LE MÉCANISME DU DOUTE.** Un couplage **fixe** réglé au niveau
+    moyen du couplage atteint reproduit l'effet à **0,24** de Cohen *d* près (BA : +1,11 contre
+    +1,35 ; lattice : +0,54 contre +0,67), et **son réglage transfère** — calé sur BA il marche
+    sur lattice (97 %, 103 %), calé à σ_ω=0,15 il marche à 0,30 et 0,075 (167 %, 145 %, donc
+    *mieux* que le réglage local). Les deux critères posés avant mesure sont **rejetés**.
+    Ce qui subsiste, **répliqué sur graines 3081-3090 jamais utilisées** : un avantage du doute
+    dans 3 des 4 conditions distinctes, d'ampleur **+0,18** de Cohen *d* — **cinq fois sous le
+    seuil de 1,0** fixé avant mesure. **Ne jamais citer ce +0,18 sans écrire qu'il est trop
+    petit pour qu'une manip le sépare de son bruit expérimental.**
+  - 🟢 **LE VOLET 2 DISCRIMINE, CONTRE TOUTE FORME DE BOUCLE OUVERTE.** Gate de fidélité **8/8
+    au dixième de pas** contre le CSV du 12/07. Part du retard (+52 %) reproduite — toutes ces
+    fractions sortent du **même calcul**, moyenne des fractions par `T_pulse` sur {1500, 3000,
+    4500}, `T_pulse=500` exclu partout (le retard y vaut 2,8 pas) : couplage fixe **−18 %**,
+    fixe re-réglé par `T_pulse` **−18 %**, **rampe préenregistrée −6 %**, rampe calée ailleurs
+    −8 %, **rampe par nœud −3 %**. Le signe compte : ces bras ne manquent pas le
+    retard, ils vont **dans le sens inverse**. Contrôle d'instrument : rejouer le couplage par
+    nœud **et par copie** redonne le bras 1 **exactement** (`frac = 1,000`) — ce qui établit que
+    `u` n'agit que par `u_filter` et **valide rétroactivement** l'échec des autres bras.
+  - ⚠️ **LA « CICATRICE DE DOUTE » DU 12/07 EST MAL DÉCRITE — correction.** Elle y est présentée
+    comme *« le conflit fait monter `u` durablement »*, donc comme une **hystérésis moyenne**.
+    Mesuré : imposer le profil moyen exact du couplage (de +0,90 à −0,88) ne produit **aucun**
+    retard, et le profil par nœud non plus. Par élimination, le retard tient à ce que le couplage
+    **répond au signal effectivement reçu** : **le mécanisme est irréductiblement en boucle
+    fermée.** Le fait du 12/07 tient ; sa cause était mal nommée.
+  - 🔴 **RÉSERVE PRINCIPALE, écrite avant la mesure** : la lecture du harnais B1d est
+    **différentielle** (deux copies jumelles, `+stim` / `−stim`), et l'effet isolé est
+    précisément porté par l'**écart entre les deux bras**. Il pourrait donc tenir au **protocole
+    de lecture** autant qu'au mécanisme — un vrai dispositif n'a pas deux copies. **À refaire sur
+    une lecture non différentielle avant d'en faire un argument autonome. NON FAIT.**
+  - ⚠️ **Réserve née de la réplication, et elle porte sur tous les §7-§10** : le Cohen *d* de ce
+    dispositif est **instable d'un jeu de graines à l'autre** (à σ_ω=0,075 : +1,47 contre +0,55 ;
+    sur lattice : +0,67 contre +0,35). Facteur 2 à 3 entre deux jeux de dix graines. Une campagne
+    réelle doit prévoir **bien plus de dix répétitions**.
 - **Reste (🧩).** Non testé en circuit réel ni en micromagnétisme spatial complet
   (texture de vortex résolue, mumax3, ou modèle de Thiele) — palier explicitement
   reporté par Julien à une décision séparée (nécessite d'installer mumax3/CUDA, campagnes

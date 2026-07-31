@@ -251,7 +251,8 @@ de couplage précise.
 
 **Lecture honnête.**
 1. **Sur lattice (où un ordre réel existe), le mécanisme est net dès le capteur brut**
-   (Cohen d=2.42, IC[+0.311,+0.653]) et se renforce une fois calibré (Cohen d=3.22) — la
+   (Cohen d=2.42, IC[+0.314,+0.652] — recalculé le 31/07, cf. la note du §7 sur `hash()`)
+   et se renforce une fois calibré (Cohen d=3.22) — la
    première fois sur les 3 modèles testés que l'effet brut (non calibré) est déjà fort,
    pas seulement « correct en signe mais modeste ».
 2. **Sur BA (frustré), un effet statistiquement réel mais de faible amplitude absolue
@@ -300,10 +301,25 @@ topologies que B4) :**
 
 | Topologie | Capteur | R_FULL | R_FROZEN_U | diff (IC 95%) | Cohen d |
 |---|---|---|---|---|---|
-| BA m=3 | brut (gain=1) | 0.646±0.082 | 0.826±0.067 | +0.180 [+0.114,+0.247] | **+2.28** |
-| BA m=3 | amplifié (gain=5, `u` franchit 0.5) | 0.079±0.010 | 0.826±0.067 | +0.747 [+0.702,+0.785] | **+14.85** |
-| Lattice 10×10 | brut (gain=1) | 0.296±0.058 | 0.382±0.094 | +0.086 [+0.022,+0.158] | **+1.05** |
-| Lattice 10×10 | amplifié (gain=5) | 0.045±0.007 | 0.382±0.094 | +0.338 [+0.286,+0.400] | **+4.83** |
+| BA m=3 | brut (gain=1) | 0.646±0.082 | 0.826±0.067 | +0.180 [+0.114,+0.245] | **+2.28** |
+| BA m=3 | amplifié (gain=5, `u` franchit 0.5) | 0.079±0.010 | 0.826±0.067 | +0.747 [+0.701,+0.784] | **+14.85** |
+| Lattice 10×10 | brut (gain=1) | 0.296±0.058 | 0.382±0.094 | +0.086 [+0.021,+0.157] | **+1.05** |
+| Lattice 10×10 | amplifié (gain=5) | 0.045±0.007 | 0.382±0.094 | +0.338 [+0.284,+0.400] | **+4.83** |
+
+> 🔧 **IC recalculés le 31/07/2026, et pourquoi ils ont changé.** Le script tirait sa graine de
+> bootstrap par `hash((topologie, gain))` — or `hash()` d'une **chaîne** est randomisé à chaque
+> démarrage de l'interpréteur Python (`PYTHONHASHSEED`, protection anti-collision depuis 3.3).
+> Ce `seed=` avait donc toutes les apparences d'une graine fixée **sans en être une** : chaque
+> exécution rendait un intervalle différent. Mesuré : 60 tirages sur les **mêmes** données
+> donnaient **six** valeurs distinctes à la 3ᵉ décimale, sur chaque borne. Les valeurs
+> antérieures (`[+0.114,+0.247]`, `[+0.702,+0.785]`, `[+0.022,+0.158]`, `[+0.286,+0.400]`)
+> venaient d'un tirage du 09/07 **définitivement irrécupérable**.
+> Corrigé (`zlib.crc32`, déterministe) et `n_boot` porté de 5 000 à 50 000, ce qui ramène
+> l'erreur de Monte-Carlo de ~0.0013 à ~0.0004 par borne — les bornes à 3 décimales ne
+> dépendent plus du tirage. **Le défaut ne touchait QUE les IC** : `R_FULL`, `R_FROZEN`, les
+> écarts-types et les Cohen *d* se rejouent **au bit près**, vérifié le 31/07. Même correction
+> appliquée aux §8 et §9, qui portaient le même défaut. *Motif déjà rencontré le matin même
+> avec `tab:benchmarks` : un chiffre exact, produit autrement qu'il n'y paraît.*
 
 **Lecture honnête.**
 1. **Le mécanisme se porte, dans les deux régimes** : le doute réduit la
@@ -385,11 +401,13 @@ mesurable**. Un gain n'est pas gratuit en surface ni en consommation : ce volet 
 **exigence**, pas un coût. Et le canal de couplage électrique réel (Romera) n'est toujours pas
 modélisé.
 
-> ⚠️ **Dette signalée le 31/07, non traitée** : les CSV des §7, §8 et §9 vivent dans
-> `figures/scratch/`, **gitignoré**. Les données qui appuient la prédiction falsifiable — la
-> seule affirmation du projet qui sorte de la simulation — **ne sont pas vérifiables par qui
-> clone le dépôt**. Troisième occurrence du même défaut en une journée. Les sorties de ce
-> volet-ci vont dans `figures/` et sont versionnées.
+> ~~⚠️ **Dette signalée le 31/07, non traitée** : les CSV des §7, §8 et §9 vivent dans
+> `figures/scratch/`, **gitignoré**.~~ ✅ **SOLDÉE le soir même.** Les trois scripts écrivaient
+> déjà dans `figures/` — personne ne les avait relancés depuis le rangement du 14/07.
+> Régénérés et **versionnés**. La régénération a doublé de test de reproductibilité :
+> **toutes** les colonnes hors IC sont identiques (20 lignes, 3 fichiers, **0 différence**
+> vérifiée mécaniquement). Ce n'était pas une dette de *valeur*, seulement de versionnement —
+> à l'exception des IC, cf. la note du §7.
 
 ---
 
@@ -446,7 +464,165 @@ couplage figé à sa valeur **initiale** — ne distingue pas les deux.
 > transposé au dispositif physique. **Sans lui, un laboratoire mesurerait un effet réel et
 > l'attribuerait à la mauvaise cause** — et nous lui aurions fourni le protocole qui permet
 > cette erreur.
+>
+> ⚠️ **PÉRIMÉ LE SOIR MÊME, conservé pour la trace — lire le §12.** Le bras 3 a été construit
+> quelques heures plus tard, et il a donné **l'inverse** de ce qui est écrit ci-dessus. (a) Il
+> en faut **cinq**, pas trois. (b) Le bras 3 tel que formulé ici — « au niveau moyen atteint »,
+> c'est-à-dire au niveau de `u` — **n'est pas réalisable** : `u` est une variable interne. (c)
+> Surtout : ajouter ce bras **ne sauve pas le volet 1**, il l'enterre — un couplage fixe y
+> reproduit l'effet à 0,24 de Cohen *d* près, et son réglage transfère d'une condition à
+> l'autre. **C'est le volet 2 (retard de récupération) qui porte le pouvoir discriminant.**
 
 **4. Ce que ça ne dit pas.** Un gain n'est gratuit ni en surface ni en consommation : ce volet
 chiffre une **exigence**, pas un coût. Et le canal de couplage électrique réel (Romera) n'est
 toujours pas modélisé.
+
+> ➡️ **Le troisième bras a été construit le soir même. Il a donné l'inverse de ce qu'on
+> attendait : ce n'est pas le volet 1 qu'il sauve, c'est le volet 2. Voir §12.**
+
+---
+
+## §12 — Le protocole complet : sur QUELLE observable la prédiction discrimine (2026-07-31, soir)
+
+`experiments/b6_third_arm.py` · `b6_third_arm_transient.py` · `b6_fourth_arm_profile.py` ·
+`b6_fifth_arm_per_node.py` → CSV **versionnés** dans `figures/`.
+
+Le §11 laissait une consigne : ajouter un troisième bras, *« couplage fixe réglé au niveau
+moyen atteint »*. En le construisant, deux choses sont apparues — l'une avant toute mesure,
+l'autre contre toute attente.
+
+### 1. Le bras demandé n'était pas exécutable, et le corriger a changé la question
+
+`u` est une **variable interne** : aucun laboratoire ne peut la lire ni la régler. Ce qu'un
+dispositif câble, c'est le **couplage**, `u_filter = tanh(π(0,5 − u)) + 0,01`. Comme `tanh`
+est non linéaire, `⟨tanh(π(0,5 − u))⟩ ≠ tanh(π(0,5 − ⟨u⟩))` (Jensen), et `u` varie à la fois
+dans le temps et par nœud. Le bras 3 se dédouble donc :
+
+| | réglage | réalisable sur un dispositif ? |
+|---|---|---|
+| **3a** | `u` figé à ⟨u⟩ | ❌ non — `u` n'est pas accessible |
+| **3b** | couplage figé à ⟨u_filter⟩ | ✅ **oui — c'est celui du protocole** |
+
+L'écart de Jensen mesuré vaut **−0,017** en régime stationnaire (§7-§10) mais **+0,208** sous
+tâche trompeuse, parce que `u` y monte à 0,65 et **traverse 0,5**, la zone où `tanh` bascule
+de signe. La distinction est donc négligeable dans un cas et forte dans l'autre — raison de
+plus pour spécifier **3b**, le seul des deux qui existe physiquement.
+
+### 2. 🔴 Le volet 1 (synchronisation stationnaire) NE teste PAS le mécanisme du doute
+
+Modèle §8, gain 5, `n_nonlin = 0`, Cohen *d* contre le bras 2. Gate de fidélité **4/4** contre
+le CSV du 09/07.
+
+| | d(B1) *doute* | d(3a) | d(3b) *câblable* |
+|---|---|---|---|
+| BA m=3 | +1,35 | +0,93 | **+1,11** |
+| Lattice 10×10 | +0,67 | +0,46 | **+0,54** |
+
+Un couplage fixe reproduit l'effet à **0,24** de Cohen *d* près. Et son réglage **transfère** :
+calé sur BA il fonctionne sur lattice (**97 %**, **103 %**), calé à σ_ω = 0,15 il fonctionne à
+0,30 et 0,075 (**167 %**, **145 %** — donc *mieux* que le réglage local). L'argument
+d'auto-calibration ne tient pas ici.
+
+Ce qui subsiste, **répliqué sur graines 3081-3090 jamais utilisées** : le doute garde un
+avantage dans 3 des 4 conditions distinctes, d'ampleur moyenne **+0,18** de Cohen *d*. C'est
+réel et c'est **cinq fois sous le seuil de 1,0** fixé avant mesure pour parler de
+discrimination — donc trop petit pour qu'une manip le sépare de son bruit expérimental.
+**Ne jamais citer ce +0,18 sans cette phrase.**
+
+> ⚠️ **Réserve née de cette réplication, et elle porte au-delà de ce volet.** Le Cohen *d* de
+> ce dispositif est **instable d'un jeu de graines à l'autre** : à σ_ω = 0,075 il passe de
+> **+1,47 à +0,55**, sur lattice de **+0,67 à +0,35**. Un facteur 2 à 3 entre deux jeux de dix
+> graines. Cela vaut aussi pour les valeurs des §7-§10, y compris le **+1,35** du §10 : elles
+> sont exactes et elles sont peu stables. Toute campagne réelle doit prévoir bien plus de
+> dix répétitions.
+
+### 3. 🟢 Le volet 2 (retard de récupération) discrimine, contre TOUTE boucle ouverte
+
+Harnais `b1d_stno_deceptive_poc.py` (12/07), lattice 10×10, 12 graines. Gate de fidélité
+**8/8 au dixième de pas** contre le CSV du 12/07 — les quatre bras ajoutés partagent donc
+exactement la dynamique qui a produit le résultat publié.
+
+Référence : temps de basculement moyen **5274,7 pas** pour le bras 1 contre **3466,7** pour le
+bras 2 — le « +52 % » du 12/07, reproduit ici au dixième de pas.
+
+| bras | quel couplage | part du retard reproduite |
+|---|---|---|
+| **B1** | modulé par le désaccord (**boucle fermée**) | *référence, 100 %* |
+| **B2** | fixe à la valeur initiale | *référence, 0 %* |
+| **B3a** | fixe au niveau de `u` atteint *(non réalisable)* | **−25 %** |
+| **B3b** | fixe au niveau du **couplage** atteint *(câblable)* | **−18 %** |
+| **B3c** | fixe, **re-réglé pour chaque T_pulse** | **−18 %** |
+| **B4a** | **programmé dans le temps**, profil exact du bras 1 | **−6 %** |
+| **B4b** | même profil, calé sur un autre T_pulse | **−8 %** |
+| **B5b** | programmé **par nœud**, profil exact du bras 1 | **−3 %** |
+| **B5a** | programmé par nœud **et par copie** | **+100 %** *(gate d'instrument)* |
+
+> ⚠️ **Toutes ces fractions sont calculées de la même façon** — moyenne des fractions par
+> `T_pulse` sur {1500, 3000, 4500} — et c'est une correction : le premier jet de ce tableau
+> mélangeait deux méthodes (ratio des moyennes globales pour les bras 3, moyenne des fractions
+> pour les bras 4 et 5), ce qui donnait −21 % au lieu de −18 %. `T_pulse = 500` est **exclu
+> partout** : le retard y vaut 2,8 pas et toute fraction y explose. *Deux chiffres présentés
+> côte à côte doivent sortir du même calcul, même quand l'écart est petit.*
+
+Le signe compte : les bras en boucle ouverte ne *manquent* pas le retard, ils vont **dans le
+sens inverse** — un couplage fixe au niveau du doute *accélère* la récupération que le doute
+*ralentit*.
+
+**B5a est un gate, pas un résultat** : rejouer le couplage enregistré nœud par nœud *et* copie
+par copie redonne le bras 1 **exactement** (`frac = 1,000`). Il établit que `u` n'agit que par
+`u_filter` — aucun canal caché — et **valide rétroactivement l'échec des bras 3 et 4**, qui
+sans lui aurait pu passer pour un défaut d'implémentation.
+
+### 4. ⚠️ La « cicatrice de doute » du 12/07 est mal décrite — correction
+
+Le 12/07 décrivait le mécanisme comme *« le conflit fait monter `u` durablement »*, donc comme
+une **hystérésis moyenne**. C'est faux. Le profil moyen `⟨u_filter(t)⟩` va bien de **+0,90 à
+−0,88**, et l'imposer ne produit **aucun** retard (−6 %). Le profil par nœud non plus (−3 %).
+
+Par élimination, la seule différence entre B5a (reproduit tout) et B5b (ne reproduit rien) est
+que le couplage de chaque copie **répond au signal que cette copie reçoit**. **Le mécanisme est
+irréductiblement en boucle fermée** : le reproduire en boucle ouverte exigerait de connaître le
+signal avant de l'avoir reçu.
+
+### 5. Le protocole, tel qu'un laboratoire doit l'exécuter
+
+**Observable : PAS la synchronisation stationnaire** (§2 ci-dessus : elle ne discrimine pas),
+mais le **temps de récupération après un leurre transitoire** — leurre nombreux et fort retiré
+après `T_pulse`, vérité moins nombreuse et plus faible maintenue.
+
+**Ordre d'opérations — il n'est pas libre** : le bras 1 doit tourner **en premier**, car c'est
+lui qui livre le niveau et le profil de couplage sur lesquels les bras 3, 4 et 5 se règlent.
+
+| | bras | ce qu'il élimine s'il échoue à reproduire |
+|---|---|---|
+| 1 | couplage modulé par le désaccord mesuré | *le mécanisme lui-même* |
+| 2 | couplage fixe à sa valeur initiale | *contrôle historique* |
+| 3 | couplage fixe au **niveau moyen** du bras 1 | « c'est juste un couplage plus répulsif » |
+| 4 | couplage **programmé dans le temps** (profil du bras 1) | « il suffit d'une rampe » |
+| 5 | couplage programmé **par nœud** *(si le dispositif le permet)* | « il suffit d'une rampe par oscillateur » |
+
+**Critères de falsification, dans les deux sens :**
+- si le **bras 1 ne retarde pas** la récupération par rapport au bras 2 → le mécanisme est
+  **réfuté** ;
+- si **l'un des bras 3, 4 ou 5 reproduit le retard** → l'effet observé existe mais **n'est pas
+  le mécanisme du doute**, c'est un effet de couplage. En simulation ils rendent −21 %, −6 % et
+  −3 % : un bras qui rendrait une fraction franchement positive contredirait ce dossier.
+
+**Gain de capteur requis** : 5 à 7 (§10). **Chaîne de détection propre : non nécessaire** — le
+bruit du capteur aide par rectification (§11).
+
+### 6. Ce que ce volet ne prouve pas
+
+- 🔴 **La lecture est DIFFERENTIELLE**, et c'est la réserve principale. Le dispositif de mesure
+  du 12/07 compare deux copies jumelles recevant `+stim` et `−stim`. L'effet isolé au §4 est
+  précisément porté par **l'écart entre ces deux bras**. Il pourrait donc tenir au **protocole
+  de lecture** autant qu'au mécanisme. Un vrai dispositif n'a pas deux copies. **Refaire la
+  mesure sur une lecture non différentielle avant d'en faire un argument autonome — non fait.**
+- Le retard est un **coût**, pas un gain : le doute décide *plus lentement*. C'est ce qui en
+  fait une bonne signature falsifiable, mais **B6 ne doit jamais être vendue comme « le doute
+  améliore les décisions du dispositif »** (déjà écrit dans `FUTURE_WORK` B6, 12/07).
+- À `T_pulse = 500`, le retard vaut **2,8 pas** : aucune fraction n'y est interprétable (le
+  dénominateur est quasi nul). Le leurre y est trop court pour laisser une trace. Les chiffres
+  ci-dessus portent sur `T_pulse ≥ 1500`.
+- Aucun circuit réel, aucun micromagnétisme spatial résolu, et le canal de couplage électrique
+  de Romera *et al.* 2018 n'est toujours pas modélisé.

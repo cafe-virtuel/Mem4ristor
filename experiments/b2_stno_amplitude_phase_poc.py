@@ -53,6 +53,7 @@ import csv
 import pathlib
 import sys
 import time
+import zlib
 
 import numpy as np
 
@@ -141,7 +142,9 @@ def run_one(adj, seed, condition, gain_u, n_nonlin):
     }
 
 
-def bootstrap_ci(a, b, n_boot=5000, seed=0):
+def bootstrap_ci(a, b, n_boot=50000, seed=0):
+    """n_boot 5000 -> 50000 le 31/07/2026 : a 5000, l'erreur de Monte-Carlo sur chaque
+    borne valait ~0.0013, soit six valeurs possibles a la 3e decimale. A 50000 : ~0.0004."""
     rng = np.random.RandomState(seed)
     diffs = np.empty(n_boot)
     na, nb = len(a), len(b)
@@ -214,7 +217,12 @@ def main():
                 diff = frozen.mean() - full.mean()
                 pooled_std = np.sqrt((full.var(ddof=1) + frozen.var(ddof=1)) / 2)
                 cohen_d = diff / pooled_std if pooled_std > 1e-12 else float('nan')
-                ci_lo, ci_hi = bootstrap_ci(full, frozen, seed=hash((topo_name, n_nonlin, gain)) % (2**31))
+                # 31/07/2026 : hash() sur du TEXTE est randomise a chaque demarrage de
+                # l'interpreteur -> ce `seed=` n'en etait pas un. crc32 est deterministe
+                # et garde l'intention (un tirage propre a chaque cellule).
+                ci_lo, ci_hi = bootstrap_ci(
+                    full, frozen,
+                    seed=zlib.crc32(repr((topo_name, n_nonlin, gain)).encode()) % (2**31))
                 agg.append({
                     'topology': topo_name, 'n_nonlin': n_nonlin, 'gain_u': gain,
                     'R_FULL_mean': float(full.mean()), 'R_FULL_std': float(full.std()),
