@@ -1,4 +1,4 @@
-# CONTEXT — Mem4ristor V4.0.0
+# CONTEXT — Mem4ristor V6.0.0 (code) · V4.0.0 (dernière version déposée)
 
 > Point d'entrée universel. Lisible par n'importe quel LLM ou humain en < 2 minutes.
 > Pour l'état technique détaillé : PROJECT_STATUS.md
@@ -52,15 +52,22 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 
 ---
 
-## État actuel (2026-05-02)
+## État actuel (2026-08-02)
 
-- **Version** : V4.0.0 — Audited Stable (Chimera State Implementation)
-- **Branche active** : `research/v5-cognitive-exploration`
-- **Tests** : 84 passing, 0 failures
-- **DOI** : 10.5281/zenodo.19700749
+> Ce bloc datait du 2026-05-02 et était faux sur six lignes (version, branche, tests, DOI,
+> statut de publication, jalon). Corrigé le 02/08/2026 — audit externe B8, valeurs revérifiées
+> le jour même. **Source de vérité en cas de doute : `PROJECT_STATUS.md`.**
+
+- **Version du code** : V6.0.0 (`VERSION`, `pyproject.toml`)
+- **Dernière version déposée sur Zenodo** : **V4.0.0** (2026-05-02, DOI de version
+  `10.5281/zenodo.19986042`). **V5 et V6 ne sont pas déposées.**
+- **Branche active** : `main`
+- **Tests** : 141 collectés, `pytest` exit 0 (2 `xfail` documentés dans `test_adversarial.py`)
+- **DOI** : 10.5281/zenodo.18620596 — *concept DOI*, résout toujours vers la dernière version déposée
 - **GitHub** : https://github.com/cafe-virtuel/Mem4ristor
-- **Papiers** : preprint soumis (Zenodo) · paper_2 en préparation · paper_B (hardware) en préparation
-- **Prochain jalon** : Binder cumulant U4 pour confirmer transition 1er ordre · V5 (ε modulé par u)
+- **Papiers** : preprint **non soumis et non publié sur Zenodo**
+  (`docs/papers/preprint/preprint.tex` → 27 p) · paper_2 en préparation · paper_B (hardware) en préparation
+- **Prochain jalon** : voir `PROJECT_STATUS.md` §0
 
 ---
 

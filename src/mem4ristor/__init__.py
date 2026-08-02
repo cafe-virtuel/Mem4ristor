@@ -51,7 +51,11 @@ try:
 except ImportError:
     pass  # matplotlib not installed — viz functions unavailable
 
-__version__ = "4.0.0"
+# Version du PAQUET. Doit rester alignee sur pyproject.toml et VERSION
+# (verrouille par tests/test_version_consistency.py depuis le 02/08/2026).
+# A ne pas confondre avec la version DEPOSEE sur Zenodo (V4.0.0), qui est celle
+# que decrit CITATION.cff. Le code a evolue depuis ce depot.
+__version__ = "6.0.0"
 
 __all__ = [
     # Graph utilities

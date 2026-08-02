@@ -11,19 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        # Couvre tout l'intervalle declare par requires-python (>=3.9) ET la version
+        # reellement utilisee en local (3.13), qui n'etait pas testee jusqu'au 02/08/2026.
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        # `pip install -e .` installe le paquet AVEC les dependances de pyproject.toml
+        # (dont pyyaml, importe au niveau module par dynamics.py). Sans lui, la collecte
+        # des tests echouait sur ModuleNotFoundError: yaml -- audit externe B5, 02/08/2026.
+        pip install -e .
         pip install -r requirements.txt
         pip install pytest
         

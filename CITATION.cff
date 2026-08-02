@@ -4,12 +4,19 @@ authors:
 - family-names: "Chauvin"
   given-names: "Julien"
   orcid: "https://orcid.org/0009-0006-9285-2308"
-title: "Mem4ristor V4: Spatiotemporal Chaos and Chimera States in Doubt-Modulated FHN Networks"
+# Verifie contre l'API Zenodo le 02/08/2026 (audit externe B8).
+# Le DOI ci-dessous est le CONCEPT DOI : il resout toujours vers la derniere version
+# deposee. Derniere version deposee a ce jour : V4.0.0, 2026-05-02,
+# DOI de version 10.5281/zenodo.19986042.
+# Le code de ce depot est en V6.0.0 et n'a PAS encore ete depose sur Zenodo
+# (cf. PROJECT_STATUS.md §1). Les champs title/version/date-released ci-dessous
+# decrivent donc la derniere version CITABLE, pas l'etat du code.
+title: "Sustained Attractor Diversity in Doubt-Modulated FitzHugh-Nagumo Networks: Spectral Dead Zone and Chimera States on Scale-Free Topologies"
 version: 4.0.0
 doi: "10.5281/zenodo.18620596"
-date-released: 2026-05-01
-url: "https://github.com/cafe-virtuel/Mem4ristor"
-repository: "https://zenodo.org/records/18620596"
+date-released: 2026-05-02
+url: "https://doi.org/10.5281/zenodo.18620596"
+repository-code: "https://github.com/cafe-virtuel/Mem4ristor"
 keywords:
   - neuromorphic computing
   - memristor

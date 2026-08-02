@@ -47,13 +47,18 @@ The `PROJECT_STATUS.md` file maintains a full register of all scientific investi
 If this work is useful to you, please cite:
 
 ```bibtex
-@software{mem4ristor_v6,
+@software{mem4ristor_zenodo,
   author = {Julien Chauvin},
-  title = {Mem4ristor V6: Spatiotemporal Chaos and Chimera States in Doubt-Modulated FitzHugh-Nagumo Networks},
+  title = {Sustained Attractor Diversity in Doubt-Modulated FitzHugh-Nagumo Networks:
+           Spectral Dead Zone and Chimera States on Scale-Free Topologies},
   year = {2026},
   publisher = {Zenodo},
-  doi = {10.5281/zenodo.19700749},
-  url = {https://doi.org/10.5281/zenodo.19700749}
+  version = {V4.0.0},
+  doi = {10.5281/zenodo.18620596},
+  url = {https://doi.org/10.5281/zenodo.18620596},
+  note = {Concept DOI; resolves to the latest deposit. Latest deposited version is
+          V4.0.0 (2026-05-02, DOI 10.5281/zenodo.19986042). The code in this
+          repository is V6.0.0 and has not been deposited.}
 }
 ```
 
