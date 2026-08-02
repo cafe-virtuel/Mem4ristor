@@ -70,6 +70,15 @@ CRITERES ET PREDICTIONS — ECRITS AVANT LA MESURE
   pourrait etre une propriete du PROTOCOLE DE LECTURE autant que du mecanisme. Il
   faudrait le verifier sur une lecture non differentielle avant d'en faire un argument
   — et cette verification n'est PAS faite ici.
+  [FAITE LE 02/08/2026 dans b6_nondifferential_readout.py, et la reponse est double :
+   le BRUIT COMMUN aux deux copies — la seule idealisation irrealisable — ne porte rien
+   (retard conserve a 103 % avec des bruits independants), donc ce n'est PAS un artefact
+   de protocole ; mais la PAIRE +stim/-stim reste necessaire (contre une reference
+   passive la decision devient biaisee, sur une puce isolee il n'y a plus de decision).
+   ETAT INITIAL ET OMEGA testes le meme jour dans b6_two_real_chips.py : eux non plus ne
+   portent l'effet. Retrait cumule des TROIS idealisations = 0.61 du retard et ZERO perte
+   de precision. La reserve est LEVEE ; ce qui reste exige est une paire +stim/-stim,
+   pas une paire de jumeaux.]
 
 Coeur NON touche. b1d_stno_deceptive_poc.py NON modifie.
 SORTIES : figures/b6_fifth_arm_per_node.csv / _summary.csv  (VERSIONNEES)

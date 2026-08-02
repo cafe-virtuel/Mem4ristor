@@ -38,7 +38,7 @@ LES CINQ BRAS
 CRITERES ET PREDICTIONS — ECRITS AVANT LA MESURE
 ------------------------------------------------
   G0  FIDELITE (BLOQUANT). B1 et B2 doivent reproduire le CSV du 12/07
-      (figures/scratch/b1d_stno_deceptive_poc.csv) au pas pres, par T_pulse :
+      (figures/b1d_stno_deceptive_poc.csv, versionne le 02/08) au pas pres, par T_pulse :
         FULL   : 1294.0 / 5102.6 / 6838.6 / 7863.7   (moyenne 5274.7)
         FROZEN : 1291.2 / 2611.4 / 4239.6 / 5724.8   (moyenne 3466.7)
       Tolerance 0.5 pas. Si G0 echoue, RIEN n'est interpretable.

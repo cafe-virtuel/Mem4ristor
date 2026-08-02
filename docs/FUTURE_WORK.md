@@ -739,11 +739,56 @@ corrélationnelle. PDF 25 p, 0 undefined ref, Guardian 13/13. **Reste lié : A3.
     retard, et le profil par nœud non plus. Par élimination, le retard tient à ce que le couplage
     **répond au signal effectivement reçu** : **le mécanisme est irréductiblement en boucle
     fermée.** Le fait du 12/07 tient ; sa cause était mal nommée.
-  - 🔴 **RÉSERVE PRINCIPALE, écrite avant la mesure** : la lecture du harnais B1d est
-    **différentielle** (deux copies jumelles, `+stim` / `−stim`), et l'effet isolé est
-    précisément porté par l'**écart entre les deux bras**. Il pourrait donc tenir au **protocole
-    de lecture** autant qu'au mécanisme — un vrai dispositif n'a pas deux copies. **À refaire sur
-    une lecture non différentielle avant d'en faire un argument autonome. NON FAIT.**
+  - 🟢 **RÉSERVE PRINCIPALE — FAITE le 02/08, et LEVÉE en tant que soupçon d'artefact**
+    (`b6_nondifferential_readout.py` puis `b6_two_real_chips.py` ; gates de fidélité **6/6**
+    puis **12/12** à la décimale — L0 redonne le CSV du 12/07 et L1 redonne la campagne du
+    matin, run par run). La lecture du harnais B1d est **différentielle** : deux copies
+    jumelles `+stim` / `−stim` partageant **le bruit, l'état initial et les fréquences
+    propres**. Ces trois idéalisations ont été retirées **une par une**, lectures appariées :
+
+    | lecture | ce qui devient indépendant | part du retard | acc_fin (FULL) |
+    |---|---|---|---|
+    | **L0** paire jumelle *(12/07)* | — | *1,000* | 0,944 |
+    | **L1** | le **bruit** | **0,992** | 0,944 |
+    | **L4** | + l'**état initial** | **0,803** | 0,917 |
+    | **L5** | + les **`ω`** *(deux puces réelles)* | **0,612** | 0,972 |
+    | **L5c** | L5 + **nulling** de l'offset | **0,625** | **1,000** |
+
+    **Aucune des trois ne porte l'effet** : leur retrait cumulé coûte ~40 % d'**amplitude** et
+    **zéro précision**. Un laboratoire avec deux puces ordinaires mesurerait **+34 %** au lieu
+    de +52 % (**+44 %**, **+41 %**, **+23 %** par `T_pulse`).
+    **Ce qui reste exigé** : une paire `±stim`, pas une paire de jumeaux. Les montages plus
+    simples échouent : contre une **référence passive** la décision devient biaisée (les 3
+    graines sur 3 à `d* = +1` ne récupèrent jamais) ; sur une **puce isolée** il n'y a plus de
+    décision du tout (acc_fin 0,58, réponse « +1 » systématique).
+    ⚠️ **Réserve qui subsiste, écrite avant la mesure** : le nulling testé est un **scalaire**
+    mesuré avant stimulation ; une **dérive** différentielle *pendant* le run ne se calibre pas
+    ainsi et n'est pas testée.
+  - ✅ **Le CSV de référence du dossier est enfin VERSIONNÉ** (02/08). `b1d_stno_deceptive_poc.csv`
+    vivait dans `figures/scratch/`, gitignoré : tous les gates de fidélité de B6 (8/8 le 31/07,
+    6/6 puis 12/12 le 02/08) se calaient sur un fichier absent du dépôt. Réparé **par
+    régénération, pas par déplacement** : le script l'a rejoué et le résultat est **identique au
+    bit près** à l'artefact du 12/07, trois semaines après. La dette était bien de
+    versionnement, pas de valeur — et on le sait maintenant au lieu de le supposer.
+  - ⚠️ **DEUX DE MES PRÉDICTIONS REJETÉES, et la seconde est la plus instructive.**
+    (a) J'avais prédit que le désappariement de `ω` ferait tomber la lecture sous 50 %, **par
+    un offset statique biaisant le signe**. Faux deux fois : 0,612, et la précision *monte* à
+    0,972 (au-dessus de la paire jumelle). Le désappariement **érode l'amplitude, il ne fausse
+    pas la décision** — j'avais prédit le mauvais *mode de défaillance*, pas seulement le
+    mauvais seuil. (b) Ma prédiction « la calibration rattrapera L5 » **passe pour la mauvaise
+    raison** : L5 n'avait pas besoin d'être rattrapé (+0,013 seulement). *Un critère qui passe
+    pour la mauvaise raison est un critère en panne, et compte comme tel.* Ce que le nulling
+    apporte réellement est ailleurs et est mesuré : précision 0,972 → **1,000**, essais non
+    aboutis 1 → **0**.
+  - ⚠️ **UN CRITÈRE À MOI ÉTAIT MAL POSÉ, et il faut le savoir avant de réutiliser la métrique.**
+    J'avais prédit que L2 échouerait, avec le seuil « part du retard ≥ 50 % ». L2 rend **72 %**,
+    donc ma prédiction est rejetée — sauf que ces 72 % viennent des runs qui **ne basculent
+    jamais**, comptés `flip = MAX_BUDGET+1`, c'est-à-dire à la **valeur maximale possible**.
+    *Une lecture qui tombe en panne gonfle le retard qu'elle est censée mesurer.* La métrique
+    « part du retard » n'est valide qu'à **précision constante** ; hors de là elle récompense
+    la panne. Même défaut dans ma garde d'utilisabilité : posée sur le seul contrôle `FROZEN_U`,
+    elle laisse passer L2 (0,92) qui se casse dans la condition d'intérêt `FULL` (0,67). **Une
+    garde doit porter sur toutes les conditions comparées, pas seulement sur le contrôle.**
   - ⚠️ **Réserve née de la réplication, et elle porte sur tous les §7-§10** : le Cohen *d* de ce
     dispositif est **instable d'un jeu de graines à l'autre** (à σ_ω=0,075 : +1,47 contre +0,55 ;
     sur lattice : +0,67 contre +0,35). Facteur 2 à 3 entre deux jeux de dix graines. Une campagne

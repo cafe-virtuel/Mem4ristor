@@ -77,8 +77,10 @@ La mesure se fait par **spectroscopie micro-onde standard** — la méthode déj
 Romera et al. (2018).
 
 **Deuxième volet, au signe inversé et tout aussi testable** : après un leurre transitoire, le
-couplage modulé **retarde** la récupération d'environ **+52 %** par rapport au couplage figé.
-Un laboratoire qui mesurerait une récupération plus *rapide* réfuterait ce volet.
+couplage modulé **retarde** la récupération d'environ **+52 %** par rapport au couplage figé —
+**+34 %** si l'on utilise deux puces ordinaires plutôt que deux réseaux jumeaux *(mesuré le
+02/08, encadré ci-dessous)*. Un laboratoire qui mesurerait une récupération plus *rapide*
+réfuterait ce volet.
 
 > 🔄 **MISE À JOUR DU 31/07/2026 AU SOIR — les deux volets ont changé de rôle.**
 > On a ajouté à l'expérience les **bras de contrôle qui manquaient** : et si un couplage
@@ -97,10 +99,26 @@ Un laboratoire qui mesurerait une récupération plus *rapide* réfuterait ce vo
 >   exact du doute (**−6 %**), ni même une rampe programmée **oscillateur par oscillateur**
 >   (**−3 %**). Le signe compte : ces montages ne ratent pas le retard, ils font **l'inverse**
 >   — ils accélèrent. Le couplage doit **répondre au signal au moment où il arrive**.
-> - ⚠️ **La réserve, écrite avant la mesure** : ce résultat est obtenu avec un montage de
->   lecture qui compare **deux copies jumelles** du réseau, et l'effet tient précisément à
->   l'écart entre elles. Un vrai dispositif n'a qu'une copie. **À refaire sur une lecture
->   simple avant d'en faire un argument. Non fait.**
+> - 🟢 **La réserve, écrite avant la mesure — VÉRIFIÉE ET LEVÉE le 02/08.** Ce résultat était
+>   obtenu avec un montage qui compare **deux copies jumelles** du réseau — jumelles au sens
+>   fort : même bruit, même état de départ, mêmes fréquences propres. Trois idéalisations
+>   qu'aucune fabrication ne donne. Elles ont été retirées **une par une** :
+>
+>   | ce qu'on rend réaliste | part du retard qui survit |
+>   |---|---|
+>   | le bruit de chaque puce | 99 % |
+>   | + leur état de départ | 80 % |
+>   | + leurs fréquences propres *(= deux vraies puces)* | **61 %** |
+>
+>   **Aucune des trois ne portait l'effet.** Les retirer toutes coûte ~40 % d'**amplitude** et
+>   **rien du tout en fiabilité** — la machine décide même *mieux* (100 % de bonnes réponses
+>   contre 94 % avec les jumelles). Le retard n'était donc pas un artefact du montage.
+>   **Ce qu'un laboratoire mesurerait avec deux puces ordinaires : +34 %** au lieu de +52 %.
+>   Il faut bien **deux réseaux**, l'un stimulé à l'endroit et l'autre à l'envers — mais ils
+>   n'ont pas besoin d'être appariés. Avec un réseau témoin au repos, la mesure devient
+>   **biaisée** ; avec **une seule puce**, il n'y a plus de décision du tout.
+>   ⚠️ **Reste non testé** : la calibration essayée est une mesure prise *avant* l'expérience.
+>   Si les deux puces s'écartaient lentement *pendant*, elle n'y suffirait pas.
 > - ⚠️ **Et une réserve qui touche tout le tableau ci-dessous** : ces effets sont **instables
 >   d'un jeu de graines à l'autre** (le +1,47 d'une condition devient +0,55 sur dix autres
 >   graines). Une campagne réelle doit prévoir **bien plus de dix répétitions**.
@@ -163,7 +181,9 @@ travail chiffre une **exigence**, pas un coût.
    verrouillage **en phase** sur les vrais réseaux couplés électriquement. Avant toute campagne
    expérimentale, il faut savoir quelle grandeur observer.
 3. Second volet de la prédiction, au signe inversé : la récupération après un leurre est
-   **retardée d'environ +52 %**. À ne pas vendre comme « le doute améliore les décisions ».
+   **retardée d'environ +52 %** — mais c'est la valeur obtenue avec deux réseaux *jumeaux*.
+   Avec **deux puces ordinaires**, mesuré le 02/08 : **+34 %** (§ encadré ci-dessus).
+   À ne pas vendre comme « le doute améliore les décisions ».
 
 > 🔧 **Errata du 31/07/2026** — la première version de ce fichier, publiée le matin même, écrivait
 > *« au capteur brut, l'effet est nul dans les trois modèles »*. **C'est faux** : il est nul dans

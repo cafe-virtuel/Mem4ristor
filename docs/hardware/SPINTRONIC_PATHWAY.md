@@ -605,19 +605,59 @@ lui qui livre le niveau et le profil de couplage sur lesquels les bras 3, 4 et 5
 - si le **bras 1 ne retarde pas** la récupération par rapport au bras 2 → le mécanisme est
   **réfuté** ;
 - si **l'un des bras 3, 4 ou 5 reproduit le retard** → l'effet observé existe mais **n'est pas
-  le mécanisme du doute**, c'est un effet de couplage. En simulation ils rendent −21 %, −6 % et
+  le mécanisme du doute**, c'est un effet de couplage. En simulation ils rendent −18 %, −6 % et
   −3 % : un bras qui rendrait une fraction franchement positive contredirait ce dossier.
 
 **Gain de capteur requis** : 5 à 7 (§10). **Chaîne de détection propre : non nécessaire** — le
 bruit du capteur aide par rectification (§11).
 
+🔴 **Le montage de lecture fait partie du protocole, il n'est pas un détail d'instrumentation**
+*(mesuré le 02/08, §6)*. Il faut **deux réseaux recevant des courants de stimulation opposés**
+(`+stim` et `−stim`), et lire la **différence** de leurs puissances émises.
+
+- **Les deux puces n'ont pas besoin d'être appariées.** Bruit, état initial et fréquences
+  propres peuvent être indépendants : le retard survit à **0,61** de son amplitude idéale, sans
+  aucune perte de précision.
+- **Les deux montages plus simples ne marchent pas.** Contre un **réseau témoin au repos**, la
+  décision devient biaisée en couplage modulé ; sur **un réseau unique**, il n'y a plus de
+  décision du tout (la dérive lente de la puissance moyenne domine l'évidence). *Un laboratoire
+  qui tenterait le volet 2 sur une seule puce ne mesurerait rien — et conclurait à tort à une
+  réfutation.*
+- **Recommandé : annuler l'offset différentiel avant stimulation** (nulling scalaire standard).
+  ⚠️ *Ce que cela apporte, exactement* : **pas** d'amplitude (0,612 → 0,625, négligeable), mais
+  de la **robustesse** — précision finale 0,97 → **1,00** et plus aucun essai non abouti.
+- **Amplitude à attendre : `+34 %`**, et non le +52 % du §12 qui est mesuré sur des jumeaux
+  parfaits. Par durée de leurre : **+44 %** (`T_pulse` court), **+41 %**, **+23 %** (long).
+  *C'est ce chiffre-là qu'il faut confronter à la manip, pas celui de l'abstract du dossier.*
+
 ### 6. Ce que ce volet ne prouve pas
 
-- 🔴 **La lecture est DIFFERENTIELLE**, et c'est la réserve principale. Le dispositif de mesure
-  du 12/07 compare deux copies jumelles recevant `+stim` et `−stim`. L'effet isolé au §4 est
-  précisément porté par **l'écart entre ces deux bras**. Il pourrait donc tenir au **protocole
-  de lecture** autant qu'au mécanisme. Un vrai dispositif n'a pas deux copies. **Refaire la
-  mesure sur une lecture non différentielle avant d'en faire un argument autonome — non fait.**
+- 🟢 **La lecture est DIFFERENTIELLE — réserve LEVÉE en tant que soupçon d'artefact**
+  *(mesuré le 02/08 : `b6_nondifferential_readout.py` puis `b6_two_real_chips.py`, gates de
+  fidélité **6/6** puis **12/12** à la décimale)*. Le dispositif du 12/07 compare deux copies
+  **jumelles** : même stimulation opposée, mais aussi **même bruit, même état initial, mêmes
+  fréquences propres**. Ces trois dernières conditions sont des idéalisations. Elles ont été
+  retirées **une par une**, chaque lecture étant appariée run par run :
+
+  | lecture | ce qui devient indépendant | part du retard | acc_fin (FULL) |
+  |---|---|---|---|
+  | **L0** paire jumelle *(le 12/07)* | — | *référence, 1,000* | 0,944 |
+  | **L1** | le **bruit** | **0,992** | 0,944 |
+  | **L4** | + l'**état initial** | **0,803** | 0,917 |
+  | **L5** | + les **fréquences propres** *(deux puces réelles)* | **0,612** | 0,972 |
+  | **L5c** | L5 + **nulling de l'offset** avant stimulation | **0,625** | **1,000** |
+
+  **Aucune des trois idéalisations ne porte l'effet.** Leur retrait cumulé coûte ~40 %
+  d'**amplitude** et **zéro précision** — la décision reste juste, elle l'est même davantage.
+  Le retard n'est donc pas un artefact du protocole de lecture.
+  **Ce qu'un laboratoire mesurerait avec deux puces ordinaires** : **+34 %** au lieu du +52 %
+  publié (par durée de leurre : **+44 %**, **+41 %**, **+23 %**). Largement au-dessus du seuil
+  de mesurabilité.
+  **Ce qui reste exigé du dispositif** : une **paire `+stim` / `−stim`**, et non une paire de
+  jumeaux. Les deux montages plus simples ne marchent pas (voir la note du protocole, §5).
+  ⚠️ **Réserve qui subsiste, écrite avant la mesure** : le nulling testé est un **scalaire**
+  mesuré avant stimulation. Une **dérive** différentielle lente *pendant* le run ne se calibre
+  pas par une mesure prise avant, et n'est pas testée.
 - Le retard est un **coût**, pas un gain : le doute décide *plus lentement*. C'est ce qui en
   fait une bonne signature falsifiable, mais **B6 ne doit jamais être vendue comme « le doute
   améliore les décisions du dispositif »** (déjà écrit dans `FUTURE_WORK` B6, 12/07).
