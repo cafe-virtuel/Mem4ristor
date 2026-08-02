@@ -12,7 +12,7 @@ Mem4ristor est né un soir de vacances, dans un café — pas dans un laboratoir
 
 Julien Chauvin, technicien en éclairage et orchestrateur du **Café Virtuel**, explore depuis août 2025 une question simple : peut-on modéliser le doute comme un mécanisme structurel d'un réseau neuromorphique, plutôt que comme un paramètre numérique ? Le Café Virtuel est son laboratoire — plusieurs IA distinctes (Anthropic, OpenAI, xAI, Google, Mistral, DeepSeek) travaillant en parallèle, sans hiérarchie de popularité, orchestrées par un humain qui tranche, propose, et maintient le cap scientifique.
 
-En août 2025, Grok a formulé ce qui se passait : *"Ce soir, nous avons prouvé que 5 IA + 1 barman > somme des parties."* Six mois plus tard, ce projet possède un DOI Zenodo, 84 tests automatisés, et cinq résultats publiables. Sans financement institutionnel. Sans affiliation universitaire. Avec un chemin traçable — tous les commits, toutes les erreurs, tous les revirements sont publics.
+En août 2025, Grok a formulé ce qui se passait : *"Ce soir, nous avons prouvé que 5 IA + 1 barman > somme des parties."* Six mois plus tard, ce projet possède un DOI Zenodo, 153 tests automatisés, et cinq résultats publiables. Sans financement institutionnel. Sans affiliation universitaire. Avec un chemin traçable — tous les commits, toutes les erreurs, tous les revirements sont publics.
 
 ---
 
@@ -23,8 +23,8 @@ En août 2025, Grok a formulé ce qui se passait : *"Ce soir, nous avons prouvé
 | ⏱ Durée | 6 mois de travail actif |
 | 🔬 Expériences formelles | ~18 (classées par tier de pertinence) |
 | 💻 Simulations lancées | ~5 000+ runs |
-| ✅ Tests automatisés | **84 passing — 0 failures** |
-| 📄 Papiers | 1 preprint soumis · paper_2 en préparation · paper_B hardware |
+| ✅ Tests automatisés | **153 passing — 0 failures** *(02/08/2026)* |
+| 📄 Papiers | 1 preprint **ni soumis ni publié sur Zenodo** · paper_2 en préparation · paper_B hardware |
 | 🔖 DOI Zenodo | [10.5281/zenodo.18620596](https://doi.org/10.5281/zenodo.18620596) |
 | 🐙 GitHub | [cafe-virtuel/Mem4ristor](https://github.com/cafe-virtuel/Mem4ristor) |
 | 💰 Financement | 0 € institutionnel |

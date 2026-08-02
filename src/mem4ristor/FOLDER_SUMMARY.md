@@ -3,7 +3,7 @@
 > **Ne pas modifier la table manuellement** — utiliser --mode summaries pour mettre à jour.
 
 ## Rôle du dossier
-Modules core du framework Mem4ristor. Toute modification impacte les 84 tests.
+Modules core du framework Mem4ristor. Toute modification impacte les 153 tests.
 
 ## Contenu
 

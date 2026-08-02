@@ -45,7 +45,7 @@ Companion machine-readable. Chaque expérience : question, protocole 2 lignes, r
    — 6 mois de travail
    — ~18 expériences formelles
    — ~5000+ simulations
-   — 84 tests automatisés (0 failures)
+   — 153 tests automatisés (0 failures)
    — 3 papiers en cours (preprint, paper_2, paper_B)
    — 1 DOI Zenodo publié
    — 1 dépôt GitHub public

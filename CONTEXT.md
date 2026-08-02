@@ -47,7 +47,7 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 | `experiments/` | 69 scripts d'expérience classés par tier (1=finding, 2=validation, 3=robustesse) | [FOLDER_SUMMARY.md](experiments/FOLDER_SUMMARY.md) |
 | `docs/` | preprint.tex (Paper 1), paper_2/, results_compendium/ | [FOLDER_SUMMARY.md](docs/FOLDER_SUMMARY.md) |
 | `figures/` | Outputs CSV + PNG générés par experiments/ | [FOLDER_SUMMARY.md](figures/FOLDER_SUMMARY.md) |
-| `tests/` | 84 tests — 0 failures | — |
+| `tests/` | 153 tests — exit 0, 2 `xfail` documentés | — |
 | `archives/` | Code historique — ne pas modifier | [FOLDER_SUMMARY.md](archives/FOLDER_SUMMARY.md) |
 
 ---
@@ -62,7 +62,7 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 - **Dernière version déposée sur Zenodo** : **V4.0.0** (2026-05-02, DOI de version
   `10.5281/zenodo.19986042`). **V5 et V6 ne sont pas déposées.**
 - **Branche active** : `main`
-- **Tests** : 141 collectés, `pytest` exit 0 (2 `xfail` documentés dans `test_adversarial.py`)
+- **Tests** : 153 collectés, `pytest` exit 0 (2 `xfail` documentés dans `test_adversarial.py`)
 - **DOI** : 10.5281/zenodo.18620596 — *concept DOI*, résout toujours vers la dernière version déposée
 - **GitHub** : https://github.com/cafe-virtuel/Mem4ristor
 - **Papiers** : preprint **non soumis et non publié sur Zenodo**
