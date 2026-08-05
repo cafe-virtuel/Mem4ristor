@@ -12,12 +12,17 @@ license = {text = "MIT"}
 authors = [
     {name = "Julien Chauvin"}
 ]
+# Harmonise avec requirements.txt le 2026-08-05 (audit externe, constat 2.6) : pandas et
+# tqdm y figuraient sans etre declares ici. Un `pip install -e .` ne suffisait donc pas a
+# faire tourner les scripts d'experiments/ qui les importent.
 dependencies = [
     "numpy>=1.20.0",
     "scipy>=1.7.0",
-    "matplotlib>=3.4.0", 
+    "matplotlib>=3.4.0",
     "pyyaml>=6.0",
-    "networkx>=2.6.0"
+    "networkx>=2.6.0",
+    "pandas>=2.0.0",
+    "tqdm>=4.65.0"
 ]
 
 [tool.pytest.ini_options]

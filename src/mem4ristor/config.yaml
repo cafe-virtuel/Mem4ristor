@@ -1,4 +1,6 @@
-# Mem4ristor V4.0.0 Default Configuration
+# Mem4ristor Default Configuration
+# (l'en-tete portait « V4.0.0 » jusqu'au 2026-08-05 : un numero de version fige dans un
+#  commentaire se perime en silence. La version fait foi dans pyproject.toml et VERSION.)
 # Standard Dynamics Parameters
 #
 # NOTE pour les scripts experiments/ :

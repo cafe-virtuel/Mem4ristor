@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 from typing import Dict, Tuple
 
@@ -6,11 +8,45 @@ from typing import Dict, Tuple
 # Snapshot-based metrics (spatial diversity at a single timestep)
 # ---------------------------------------------------------------------------
 
-def calculate_continuous_entropy(v_array: np.ndarray, bins: int = 100, v_min: float = -3.0, v_max: float = 3.0) -> float:
+def calculate_continuous_entropy(v_array: np.ndarray, bins: int = 100, v_min: float = -3.0,
+                                 v_max: float = 3.0, warn_out_of_range: bool = False) -> float:
     """
     Shannon entropy estimation using a fine uniform grid.
     Replaces the previous 5-bin artificial ceiling with a continuous approximation.
+
+    ⚠️ CE QUE CETTE MÉTRIQUE NE DIT PAS (documenté le 2026-08-05, audit externe 5.16).
+
+    `np.histogram(range=(v_min, v_max))` ÉCARTE silencieusement les valeurs hors plage :
+    elles ne sont comptées dans aucun bin et disparaissent du calcul. Mesuré sur un run
+    standard (BA m=3, N=100, I_stim=0.5, 3000 pas) : **v descend à −3.21 et 0.49 % des
+    valeurs tombent hors de [−3, 3]**. Ce n'est donc pas un cas théorique.
+
+    Conséquence pratique : H_cont n'est comparable qu'entre protocoles STRICTEMENT
+    identiques — mêmes bins, mêmes bornes, même régime. Deux valeurs obtenues avec des
+    plages différentes ne se comparent pas, même de loin.
+
+    Les valeurs par défaut (100 bins, [−3, 3]) sont VOLONTAIREMENT inchangées : elles
+    produisent toutes les entropies publiées du preprint. Les élargir corrigerait le
+    biais mais changerait chaque valeur publiée — c'est une décision de publication,
+    pas un correctif de code.
+
+    Paramètres
+    ----------
+    warn_out_of_range : si True, émet un RuntimeWarning quand des valeurs sortent de la
+        plage, avec leur proportion. Désactivé par défaut : activé, il ne changerait
+        aucun résultat mais rendrait bavarde toute campagne un peu longue. Sert au
+        diagnostic ponctuel, pas à la production.
     """
+    if warn_out_of_range:
+        v = np.asarray(v_array)
+        hors = int(np.count_nonzero((v < v_min) | (v > v_max)))
+        if hors:
+            warnings.warn(
+                f"calculate_continuous_entropy : {hors}/{v.size} valeurs "
+                f"({100.0 * hors / v.size:.3f} %) hors de la plage [{v_min}, {v_max}] "
+                f"— elles sont ECARTEES du calcul, pas saturees aux bornes.",
+                RuntimeWarning, stacklevel=2,
+            )
     counts, _ = np.histogram(v_array, bins=bins, range=(v_min, v_max))
     total = np.sum(counts)
     if total == 0:

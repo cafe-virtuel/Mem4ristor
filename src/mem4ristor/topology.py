@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import scipy.sparse as sp_sparse
 from typing import Optional
@@ -241,12 +243,42 @@ class Mem4Network:
                     "graph?). eigsh assumes symmetry and would return a "
                     "silently wrong value. Use scipy.linalg.eig on the full "
                     "matrix and define which spectral quantity you mean.")
+            # Repli DENSE en cas d'echec du solveur creux (2026-08-05, audit externe 5.14).
+            #
+            # Ce bloc rendait `0.0` sur n'importe quelle exception. C'est le pire choix
+            # possible ICI, parce que lambda2 = 0 n'est pas une valeur neutre : c'est la
+            # signature d'un GRAPHE DECONNECTE. Une panne de convergence d'eigsh devenait
+            # donc un resultat scientifique parfaitement plausible, indiscernable d'un
+            # vrai fait topologique — et le projet a passe des semaines sur des seuils en
+            # lambda2 (cf. la refutation du 01/07).
+            #
+            # On ne remplace pas le mensonge par un crash : on retombe sur le solveur
+            # DENSE, exact, qui est deja la branche du dessous. Le resultat est preserve,
+            # seul le cout change. Au-dela d'une taille ou le dense n'est plus raisonnable,
+            # on echoue franchement plutot que d'epuiser la memoire.
             try:
                 from scipy.sparse.linalg import eigsh as sparse_eigsh
                 vals = sparse_eigsh(self.L.astype(float), k=2, which='SM', return_eigenvectors=False)
-                return np.sort(vals)[1]
-            except Exception:
-                return 0.0
+                return float(np.sort(vals)[1])
+            except Exception as err:
+                n = self.L.shape[0]
+                if n > 5000:
+                    raise RuntimeError(
+                        f"get_spectral_gap : le solveur creux a echoue sur N={n} "
+                        f"({type(err).__name__}: {err}) et le repli dense est exclu a "
+                        f"cette taille. Ne PAS interpreter comme lambda2 = 0 : c'est une "
+                        f"panne numerique, pas un graphe deconnecte."
+                    ) from err
+                warnings.warn(
+                    f"get_spectral_gap : solveur creux en echec sur N={n} "
+                    f"({type(err).__name__}: {err}) — repli sur le solveur dense exact. "
+                    f"Le resultat est valide ; seul le temps de calcul augmente.",
+                    RuntimeWarning, stacklevel=2,
+                )
+                from scipy.linalg import eigh
+                dense = self.L.toarray() if hasattr(self.L, "toarray") else np.asarray(self.L)
+                vals = eigh(np.asarray(dense, dtype=float), eigvals_only=True)
+                return float(vals[1]) if len(vals) > 1 else 0.0
         else:
             if not np.allclose(self.L, np.asarray(self.L).T):
                 raise ValueError(

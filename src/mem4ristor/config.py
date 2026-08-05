@@ -26,6 +26,7 @@ Usage:
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional
 import yaml
@@ -77,10 +78,26 @@ class NoiseConfig:
 @dataclass
 class Mem4Config:
     """
-    Complete Mem4ristor v3.1.0 configuration.
+    Configuration Mem4ristor — PARTIELLE, et il faut le savoir avant de s'en servir.
 
     All parameters are documented and typed. Default values match
     the reference configuration from the preprint.
+
+    ⚠️ COUVERTURE INCOMPLÈTE (constaté le 2026-08-05, audit externe 5.8).
+    Cette dataclasse ne décrit que 4 des 8 sections de `config.yaml` : `dynamics`,
+    `coupling`, `doubt`, `noise`. Les quatre autres — `metacognitive`, `compartments`,
+    `nonlocal_coupling`, `topological_regulation`, c'est-à-dire TOUTES les extensions —
+    étaient jusqu'ici perdues sans le moindre signe par `from_dict()`. Activer
+    `metacognitive.enabled: true` dans un YAML puis charger via `Mem4Config` ne
+    produisait donc aucun effet, et aucune erreur.
+
+    `from_dict()` prévient désormais (voir plus bas). Les sections restent non typées :
+    les décrire demanderait des dataclasses par extension, ce qui est un chantier de
+    conception, pas un correctif. `Mem4ristorV3` accepte, lui, le dict complet — pour
+    piloter une extension, passer par lui plutôt que par cette classe.
+
+    (L'en-tête annonçait « v3.1.0 » ; un numéro figé dans une docstring se périme en
+    silence. La version fait foi dans `pyproject.toml` et `VERSION`.)
     """
     dynamics: DynamicsConfig = field(default_factory=DynamicsConfig)
     coupling: CouplingConfig = field(default_factory=CouplingConfig)
@@ -91,9 +108,28 @@ class Mem4Config:
         """Convert to the nested dict format expected by Mem4ristorV3."""
         return asdict(self)
 
+    #: Les sections que cette dataclasse sait réellement porter.
+    SECTIONS_CONNUES = ("dynamics", "coupling", "doubt", "noise")
+
     @classmethod
     def from_dict(cls, d: dict) -> "Mem4Config":
-        """Create from a nested dict (e.g., loaded from YAML)."""
+        """Create from a nested dict (e.g., loaded from YAML).
+
+        Avertit sur les sections IGNORÉES plutôt que de les perdre en silence
+        (2026-08-05). On avertit sans lever : `config.yaml` contient légitimement les
+        quatre sections d'extensions, et lever casserait tout chargement du fichier de
+        référence du projet. Le but est que l'utilisateur sache que son réglage n'a pas
+        été pris, pas de lui interdire le fichier.
+        """
+        inconnues = [k for k in d if k not in cls.SECTIONS_CONNUES]
+        if inconnues:
+            warnings.warn(
+                f"Mem4Config : section(s) IGNOREE(S) : {', '.join(sorted(inconnues))}. "
+                f"Cette classe ne porte que {', '.join(cls.SECTIONS_CONNUES)} — tout "
+                f"reglage place dans les autres sections N'AURA AUCUN EFFET. Passer le "
+                f"dict complet a Mem4ristorV3 pour piloter une extension.",
+                RuntimeWarning, stacklevel=2,
+            )
         return cls(
             dynamics=DynamicsConfig(**d.get("dynamics", {})),
             coupling=CouplingConfig(**d.get("coupling", {})),

@@ -24,7 +24,27 @@ def make_ba(n: int, m: int, seed: int) -> np.ndarray:
     Retourne
     --------
     adj : np.ndarray (n, n) float, symétrique, valeurs 0/1
+
+    Lève
+    ----
+    ValueError si (n, m) est hors du domaine du générateur.
+
+    Note (2026-08-05, audit externe constat 5.15) : ces gardes ne changent RIEN pour
+    les appels valides. Sans elles, `m >= n` produisait un IndexError dans la clique
+    initiale et `m > new_node` un « ValueError: a must be greater than 0 » de NumPy,
+    tous deux à des dizaines de lignes du vrai problème — l'erreur désignait le
+    symptôme, pas l'appel fautif.
     """
+    if n < 2:
+        raise ValueError(f"make_ba : n doit valoir au moins 2 (reçu n={n}).")
+    if m < 1:
+        raise ValueError(f"make_ba : m doit valoir au moins 1 (reçu m={m}).")
+    if n < m + 1:
+        raise ValueError(
+            f"make_ba : n doit être >= m+1 pour que la clique initiale tienne "
+            f"(reçu n={n}, m={m} → il faut n >= {m + 1})."
+        )
+
     rng = np.random.RandomState(seed)
     adj = np.zeros((n, n), dtype=float)
 
@@ -59,7 +79,20 @@ def make_er(n: int, p: float, seed: int, ensure_connected: bool = True) -> np.nd
     Retourne
     --------
     adj : np.ndarray (n, n) float, symétrique, valeurs 0/1
+
+    Lève
+    ----
+    ValueError si n < 2 ou si p n'est pas une probabilité.
+
+    Note (2026-08-05) : `p` hors [0, 1] ne levait aucune erreur — p < 0 rendait un
+    graphe vide et p > 1 un graphe complet, tous deux silencieusement. Un balayage de
+    densité mal borné produisait donc des points parfaitement plausibles.
     """
+    if n < 2:
+        raise ValueError(f"make_er : n doit valoir au moins 2 (reçu n={n}).")
+    if not (0.0 <= p <= 1.0):
+        raise ValueError(f"make_er : p doit être une probabilité dans [0, 1] (reçu p={p}).")
+
     rng = np.random.RandomState(seed)
     adj = np.zeros((n, n), dtype=float)
 

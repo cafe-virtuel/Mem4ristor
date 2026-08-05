@@ -1,7 +1,9 @@
-# Scientific Reproducibility Container for Mem4ristor v2.9.3
+# Scientific Reproducibility Container for Mem4ristor
+# (l'en-tete annoncait « v2.9.3 » jusqu'au 2026-08-05 ; la version fait foi dans
+#  pyproject.toml et VERSION, pas dans un commentaire.)
 # Based on slim Python image for minimal footprint
 
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 

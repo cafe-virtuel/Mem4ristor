@@ -29,6 +29,8 @@ Note sur l'implémentation ART :
 from __future__ import annotations
 
 import csv
+import os
+import shutil
 import subprocess
 import sys
 import time
@@ -47,7 +49,32 @@ sys.path.insert(0, str(ROOT / "experiments"))
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-NGSPICE = Path("D:/ANTIGRAVITY/ngspice-46_64/Spice64/bin/ngspice_con.exe")
+def _trouver_ngspice() -> Path:
+    """Localise l'executable ngspice sans chemin machine en dur.
+
+    Corrige le 2026-08-05 (audit externe, constat 5.10) : ce script portait
+    `D:/ANTIGRAVITY/ngspice-46_64/...` en dur, alors qu'il PRODUIT le claim C11 --
+    un tiers ne pouvait pas le rejouer, quelle que soit son installation de ngspice.
+
+    Ordre de recherche, du plus explicite au plus implicite :
+      1. la variable d'environnement NGSPICE (chemin complet de l'executable) ;
+      2. le PATH du systeme (`ngspice_con` sous Windows, `ngspice` ailleurs) ;
+      3. l'emplacement historique de la machine de developpement, conserve en dernier
+         recours pour ne pas casser les rejeux locaux.
+    Aucune erreur ici : le chemin peut ne pas exister, l'appelant le verifie et
+    explique quoi installer.
+    """
+    depuis_env = os.environ.get("NGSPICE")
+    if depuis_env:
+        return Path(depuis_env)
+    for nom in ("ngspice_con", "ngspice"):
+        trouve = shutil.which(nom)
+        if trouve:
+            return Path(trouve)
+    return Path("D:/ANTIGRAVITY/ngspice-46_64/Spice64/bin/ngspice_con.exe")
+
+
+NGSPICE = _trouver_ngspice()
 RESULTS = ROOT / "experiments" / "spice" / "results"
 FIGURES = ROOT / "figures"
 RESULTS.mkdir(parents=True, exist_ok=True)
@@ -274,7 +301,14 @@ def generate_netlist(
 
 def run_ngspice(path: Path) -> float:
     if not NGSPICE.exists():
-        sys.exit(f"ngspice non trouvé : {NGSPICE}")
+        sys.exit(
+            f"ngspice introuvable a : {NGSPICE}\n"
+            "Ce script produit le claim C11 et a besoin de ngspice pour tourner.\n"
+            "  - installer ngspice et le mettre dans le PATH, ou\n"
+            "  - pointer la variable d'environnement NGSPICE sur l'executable :\n"
+            "      Windows  set NGSPICE=C:\\chemin\\vers\\ngspice_con.exe\n"
+            "      Linux    export NGSPICE=/usr/bin/ngspice"
+        )
     t0 = time.time()
     res = subprocess.run(
         [str(NGSPICE), "-b", str(path)],
