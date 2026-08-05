@@ -35,26 +35,31 @@ En août 2025, Grok a formulé ce qui se passait : *"Ce soir, nous avons prouvé
 
 Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) — un modèle classique d'oscillateur neuronal. L'extension centrale est la variable de **doute u ∈ [0,1]** : chaque nœud possède son propre niveau de doute, qui module dynamiquement la *polarité* de son couplage avec ses voisins. Quand u ≈ 0 ou u ≈ 1, un nœud devient "hérétique" — il pousse activement contre le consensus local, empêchant l'effondrement synchrone du réseau.
 
-**u n'est pas un paramètre de contrôle. C'est un mécanisme.** La preuve : bloquer u à sa valeur initiale (ablation FROZEN_U) fait exploser la synchronie de +985%, transformant un réseau fonctionnel et divers en une meute parfaitement alignée. Ce n'est pas une nuance — c'est un saut d'un ordre de grandeur. u est ce qui empêche le consensus de dévorer la diversité.
+**u n'est pas un paramètre de contrôle. C'est un mécanisme.** La preuve : bloquer u à sa valeur initiale (ablation FROZEN_U) fait passer la corrélation moyenne entre trajectoires de 0.007 à 0.658, transformant un réseau fonctionnel et divers en une meute parfaitement alignée. Les deux conditions se séparent complètement, sans un seul recouvrement sur 30 graines. Ce n'est pas une nuance : les deux populations ne se touchent pas. u est ce qui empêche le consensus de dévorer la diversité.
 
-Ce que le modèle prédit : une **zone morte spectrale** liée à la valeur propre de Fiedler λ₂ du réseau. Au-dessus de λ₂ ≈ 2.31 (réseaux Barabási-Albert avec m ≥ 5), aucune entrée ne peut réactiver la diversité cognitive — la *topologie seule* verrouille le réseau. En dessous, des états de chimère émergent spontanément : coexistence de synchronisation partielle et de chaos, par un mécanisme distinct de toutes les chimères classiques connues.
+Ce que le modèle prédit : une **zone morte** au-delà d'un certain **degré de couplage** (réseaux Barabási-Albert avec m ≥ 5), où aucune entrée ne peut réactiver la diversité cognitive. La cause n'est **pas** spectrale : elle tient au nombre de voisins couplés, via un mécanisme d'échantillonnage en champ moyen (degré harmonique k_harm ≈ 6). À degré fixé, faire varier λ₂ d'un facteur ~27 laisse le régime inchangé. En deçà de ce seuil, des états de chimère émergent spontanément : coexistence de synchronisation partielle et de chaos, par un mécanisme distinct des chimères classiques connues.
 
 ---
 
 ## 4. LES DÉCOUVERTES
 
-### [1] La Spectral Dead Zone — λ₂_crit = 2.31
-La topologie dicte le destin cognitif. Au-dessus du seuil spectral, aucune entrée ne peut réactiver le réseau. La connexion tue la diversité.
+### [1] La Dead Zone — un seuil de degré de couplage (k_harm ≈ 6)
+La connectivité dicte le destin cognitif. Au-delà d'un certain nombre de voisins couplés, aucune entrée ne réactive le réseau. La connexion tue la diversité.
 
-**→ Séparation complète confirmée sur 36 observations. Accuracy 100%. Régression logistique formelle.**
-Figure : `figures/fiedler_phase_diagram.png`
+**→ La cause est le degré de couplage, pas la connectivité algébrique.** À degré fixé (recâblage Watts-Strogatz), balayer λ₂ sur une plage ×27 laisse le régime **plat** ; un anneau k=10 à λ₂ = 0.22 meurt dans 100 % des runs, exactement comme un graphe régulier de même degré à λ₂ = 4.5.
+
+**→ La séparation en λ₂ ∈ (2.13, 2.50), milieu 2.31, observée sur les 36 observations du jeu initial (BA/ER) est une frontière CORRÉLATIONNELLE** : λ₂ y covarie avec le degré. Elle reste un bon classifieur sur ce jeu, elle n'en est pas la cause. *L'ancien titre de cette section — « La Spectral Dead Zone — λ₂_crit = 2.31 » — nommait une cause réfutée le 1er juillet 2026.*
+**→ Réserve sur le « n=36 » du jeu initial** (`SYNTHESE.md` du dossier ci-dessous) : les labels de régime n'y sont pas mesurés mais **recopiés à la main par type de topologie — 12 décisions, pas 36**, et figées avant AUDIT-024. Re-mesurés dynamiquement par graine avec le code actuel, les régimes **se chevauchent** (λ₂ ∈ [1.26, 3.20]) : ER p=0.08 (λ₂=1.67) meurt tandis que BA m=4 (λ₂=2.22) vit.
+
+Scripts : `experiments/lambda2_foundation_20260701/` — **versionné le 05/08/2026** (il vivait dans `experiments/scratch/`, gitignoré, alors que le preprint §4.5 le cite : un clone ne pouvait pas rejouer la réfutation de λ₂). Voir `docs/audits/2026-08-05/`.
 
 ---
 
 ### [2] u = filtre anti-synchronisation — le surge FROZEN_U
 Bloquer la variable de doute transforme un réseau fonctionnel en meute synchronisée. u n'est pas un paramètre — c'est ce qui empêche le consensus de dévorer la diversité.
 
-**→ R passe de 0.067 (FULL) à 0.730 (FROZEN_U). Facteur ×10.9.**
+**→ R passe de 0.007 (FULL) à 0.658 (FROZEN_U) : séparation complète des deux conditions, sans recouvrement, sur 30 graines (Cohen d ≈ 9).**
+*Aucun ratio n'est cité, volontairement : le dénominateur est proche de zéro, ce qui rend tout facteur (« ×10.9 », « ×90 », « +985 % ») instable pour un déplacement minuscule du numérateur. Décision du 08/07/2026, appliquée au preprint le 30/07. Les valeurs 0.067 / 0.730 qui figuraient ici dataient du bruit d'avant le 1er mai (AUDIT-024).*
 Figure : `figures/p2_sigma_social_ablation.png`
 
 ---
@@ -67,11 +72,15 @@ Figure : `figures/lz_per_node.png`
 
 ---
 
-### [4] La Transition Événementielle
-Forcer un nœud *périphérique* produit +1.20 bits sur BA m=3. Forcer un *hub* : +0.21 bits. Contre-intuitif. Le seuil de bifurcation n'est pas dans l'amplitude — il est dans la position topologique. Sur BA m=5 (dead zone) : tous les forcings dégradent le réseau, quelle que soit l'amplitude.
+### [4] ⚫ RÉFUTÉ — La Transition Événementielle
+Le résultat d'avril 2026 affirmait : forcer un nœud *périphérique* produit +1.20 bits sur BA m=3, forcer un *hub* +0.21 bits — le seuil de bifurcation serait topologique et non dans l'amplitude.
 
-**→ dH périphérique = +1.20 bits vs hub = +0.21 bits (BA m=3). Idée originale de Julien Chauvin.**
-Figure : `figures/event_phase_transition.png`
+**→ RÉFUTÉ le 11/07/2026.** C'était un artefact du bruit antérieur au 1er mai (AUDIT-024, Euler-Maruyama ×4.47). Grille complète rejouée au protocole d'avril **inchangé** : **0/9 configurations du claim positives, 9/9 négatives** — l'événement *dégrade* H_cont (≈ −1.0) sur BA m=3, pour le hub comme pour la périphérie ; effet ~nul sur la dead zone m=5.
+
+**Le preprint ne cite pas ce résultat ; la soumission n'est pas affectée.** Les CSV d'avril sont préservés.
+*Idée originale de Julien Chauvin — conservée ici parce qu'une idée réfutée reste une idée qui a été testée.*
+Script du rejeu : `experiments/event_phase_transition_rerun_20260711.py` — ⚠️ **non versionné** (`scratch/`) : un clone ne peut pas rejouer cette réfutation.
+Figure (historique, ne reflète plus le code actuel) : `figures/event_phase_transition.png`
 
 ---
 

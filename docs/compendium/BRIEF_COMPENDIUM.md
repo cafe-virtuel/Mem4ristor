@@ -54,21 +54,30 @@ Companion machine-readable. Chaque expérience : question, protocole 2 lignes, r
 3. LE MODÈLE EN 3 PARAGRAPHES
    — Ce qu'est Mem4ristor (FHN + variable de doute u)
    — Pourquoi u est une idée non-triviale (pas un paramètre, un mécanisme)
-   — Ce que ça prédit (spectral dead zone, chimera state, anti-synchronisation)
+   — Ce que ça prédit (dead zone par seuil de degré, chimera state, anti-synchronisation)
 
 4. LES DÉCOUVERTES (Tier 1 — les 5 findings qui comptent)
    Chaque finding : titre accrocheur + 2 lignes de contexte + chiffre clé en gras + figure mentionnée
 
-   [1] La Spectral Dead Zone — λ₂_crit = 2.31
-       "La topologie dicte le destin cognitif. Au-dessus du seuil spectral, aucune entrée ne peut
-        réactiver le réseau. La connexion tue la diversité."
-       Chiffre clé : séparation complète confirmée sur 36 observations, accuracy 100%.
-       Figure : fiedler_phase_diagram.png
+   [1] La Dead Zone — un seuil de degré de couplage (k_harm ≈ 6)
+       "La connectivité dicte le destin cognitif. Au-delà d'un certain nombre de voisins
+        couplés, aucune entrée ne réactive le réseau. La connexion tue la diversité."
+       Chiffre clé : à degré fixé, balayer λ₂ sur une plage ×27 laisse le régime PLAT.
+       La séparation en λ₂ ≈ 2.31 du jeu initial (BA/ER) est CORRÉLATIONNELLE :
+       λ₂ y covarie avec le degré. Bon classifieur sur ce jeu, pas la cause.
+       RÉSERVE sur le "n=36" : les labels y sont recopiés à la main par TYPE de
+       topologie — 12 décisions, pas 36 — et figés avant AUDIT-024. Re-mesurés par
+       graine avec le code actuel, les régimes SE CHEVAUCHENT (λ₂ ∈ [1.26, 3.20]).
+       Scripts : experiments/lambda2_foundation_20260701/ — versionné le 05/08/2026
+       (il vivait dans scratch/, gitignoré, alors que le preprint §4.5 le cite).
 
-   [2] Le Surge FROZEN_U (+985% synchronie)
+   [2] Le Surge FROZEN_U
        "Bloquer la variable de doute transforme un réseau fonctionnel en meute synchronisée.
         u n'est pas un paramètre — c'est ce qui empêche le consensus de dévorer la diversité."
-       Chiffre clé : R passe de 0.067 à 0.730 (×10.9).
+       Chiffre clé : R passe de 0.007 à 0.658 — séparation complète, sans recouvrement,
+       sur 30 graines (Cohen d ≈ 9). AUCUN ratio n'est cité : le dénominateur est proche
+       de zéro, donc tout facteur est instable (décision du 08/07). Les valeurs 0.067/0.730
+       qui figuraient ici dataient du bruit d'avant le 1er mai (AUDIT-024).
        Figure : p2_sigma_social_ablation.png
 
    [3] L'Intelligence Topologique (LZ par nœud [11])
@@ -78,13 +87,17 @@ Companion machine-readable. Chaque expérience : question, protocole 2 lignes, r
        Chiffre clé : r=-0.716 (BA m=5, N=400, p=1.29e-79). Résultat non anticipé.
        Figure : lz_per_node.png
 
-   [4] La Transition Événementielle [13]
-       "Forcer un nœud PÉRIPHÉRIQUE produit +1.20 bits sur BA m=3. Forcer un HUB : +0.21 bits.
-        Contre-intuitif. Le seuil de bifurcation est topologique — pas en amplitude.
-        Sur BA m=5 (dead zone) : tous les forcings dégradent. La topologie est le verrou."
-       Chiffre clé : dH périphérique = +1.20 bits vs hub = +0.21 bits.
-       Figure : event_phase_transition.png
-       Note : idée originale de Julien Chauvin (analogie "demande en mariage")
+   [4] RÉFUTÉ — La Transition Événementielle [13]
+       Le claim d'avril 2026 : "forcer un nœud PÉRIPHÉRIQUE produit +1.20 bits sur BA m=3,
+       forcer un HUB +0.21 bits — le seuil de bifurcation est topologique, pas en amplitude."
+       RÉFUTÉ le 11/07/2026 : artefact du bruit d'avant le 1er mai (AUDIT-024, x4.47).
+       Grille complète rejouée au protocole d'avril INCHANGÉ : 0/9 configurations du claim
+       positives, 9/9 négatives — l'événement DÉGRADE H_cont (≈ -1.0), hub comme périphérie.
+       Le preprint ne cite pas ce résultat ; la soumission n'est pas affectée.
+       Script du rejeu : experiments/event_phase_transition_rerun_20260711.py
+       — NON VERSIONNÉ (scratch/) : un clone ne peut pas rejouer cette réfutation.
+       Note : idée originale de Julien Chauvin (analogie "demande en mariage") — conservée
+       parce qu'une idée réfutée reste une idée qui a été testée.
 
    [5] Les Chimères — classe distincte (Abrams-Strogatz 2004)
        "Abrams-Strogatz : chimère par couplage non-local fixe (quenched). Mem4ristor : chimère
@@ -145,10 +158,10 @@ Ne pas réécrire ce que ces fichiers disent déjà — les synthétiser et les 
 ### Tier 1 — Findings originaux, publiables seuls
 | # | Expérience | Chiffre clé | Figure |
 |---|------------|-------------|--------|
-| 1 | Spectral Dead Zone | λ₂_crit=2.31, accuracy 100%, n=36 | fiedler_phase_diagram.png |
-| 2 | FROZEN_U surge | +985% synchrony (0.067→0.730) | p2_sigma_social_ablation.png |
+| 1 | Dead Zone (seuil de degré) | k_harm≈6 ; λ₂≈2.31 = frontière **corrélationnelle** sur le jeu initial (n=36), pas causale | fiedler_phase_diagram.png |
+| 2 | FROZEN_U surge | 0.007→0.658, séparation complète, Cohen d≈9, 30 graines (pas de ratio : dénominateur ≈ 0) | p2_sigma_social_ablation.png |
 | 3 | LZ par nœud [11] | r=-0.716, p=1.29e-79 (BA m=5) | lz_per_node.png |
-| 4 | Phase transition événementielle [13] | périphérique dH=+1.20 vs hub dH=+0.21 | event_phase_transition.png |
+| 4 | ⚫ **RÉFUTÉ** — Phase transition événementielle [13] | rejeu 11/07 : 0/9 configs positives, 9/9 négatives (dH≈−1.0) | event_phase_transition.png |
 | 5 | Chimère vs Abrams-Strogatz | R=0.141 vs R=0.766 | reviewer2_chimera_comparison.png |
 
 ### Tier 2 — Validation forte

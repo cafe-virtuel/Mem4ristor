@@ -8,7 +8,7 @@
 
 ## Le modèle en 3 phrases
 
-Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœud possède une variable de **doute u ∈ [0,1]** qui module dynamiquement la polarité de son couplage avec ses voisins. Quand u ≈ 0 ou u ≈ 1, le nœud est "hérétique" — il pousse activement contre le consensus, empêchant l'effondrement synchrone. La topologie du réseau (valeur propre de Fiedler λ₂) détermine si ce mécanisme peut fonctionner : au-dessus de λ₂ ≈ 2.31, le réseau entre dans une **dead zone spectrale** où aucune entrée ne peut réactiver la diversité cognitive.
+Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœud possède une variable de **doute u ∈ [0,1]** qui module dynamiquement la polarité de son couplage avec ses voisins. Quand u ≈ 0 ou u ≈ 1, le nœud est "hérétique" — il pousse activement contre le consensus, empêchant l'effondrement synchrone. La connectivité du réseau détermine si ce mécanisme peut fonctionner : au-delà d'un certain **degré de couplage** (degré harmonique k_harm ≈ 6), le réseau entre dans une **dead zone** où aucune entrée ne réactive la diversité. Le phénomène est réel ; sa cause n'est **pas** spectrale — à degré fixé, faire varier λ₂ d'un facteur ~27 ne change pas le régime. La séparation en λ₂ ≈ 2.31 observée sur le jeu initial (BA/ER) est une frontière **corrélationnelle** : λ₂ y covarie avec le degré.
 
 ---
 
@@ -18,24 +18,40 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 |-------|------------|
 | **u** | Variable de doute constitutionnel ∈ [0,1]. Module la polarité du couplage. Le mécanisme central du modèle. |
 | **Hérétique** | Nœud avec u ≈ 0 ou u ≈ 1. S'oppose activement au consensus local. Ratio typique : 15%. |
-| **Dead zone spectrale** | Régime BA m≥5 (λ₂ > 2.31) où H_cog ≈ 0 quelle que soit l'entrée. La topologie verrouille le réseau. |
+| **Dead zone** | Régime BA m≥5 où H_cog ≈ 0 quelle que soit l'entrée. Gouvernée par le **degré de couplage** (k_harm ≈ 6) via un mécanisme d'échantillonnage en champ moyen — **pas** par λ₂. L'ancien nom « dead zone *spectrale* » est abandonné : il nommait une cause réfutée. |
 | **FULL** | Configuration normale — u dynamique actif. |
-| **FROZEN_U** | Ablation — u gelé à sa valeur initiale. Sert de baseline. Surge de synchrony +985% vs FULL. |
+| **FROZEN_U** | Ablation — u gelé à sa valeur initiale. Sert de baseline. Corrélation moyenne entre trajectoires : 0.007 (FULL) → 0.658 (FROZEN_U), séparation complète sur 30 graines. |
 | **H_cog** | Entropie cognitive (5 bins) — mesure la diversité des états. H_cog > 0 = réseau fonctionnel. |
 | **H_cont** | Entropie continue (100 bins) — mesure plus fine, utile pour comparaisons cross-conditions. |
 | **Levitating Sigmoid** | `w(u) = tanh(π(0.5−u)) + δ`. Remplace la fonction linéaire (1−2u) — élimine la singularité à u=0.5. |
 
 ---
 
-## 5 résultats Tier 1 (findings publiables)
+## 5 findings historiques — 4 tiennent, 1 est réfuté
+
+> Les numéros d'origine sont conservés : on ne renumérote pas une liste dont un membre est mort,
+> sinon les renvois anciens pointent vers le mauvais résultat.
 
 | # | Finding | Chiffre clé | Script |
 |---|---------|-------------|--------|
-| 1 | **Spectral Dead Zone** — λ₂_crit = 2.31 sépare réseaux fonctionnels et morts | Accuracy 100%, n=36 obs. | `lambda2_crit_regression.py` |
+| 1 | **Dead zone** — un seuil de **degré de couplage** sépare réseaux fonctionnels et morts (k_harm ≈ 6) ; la séparation en λ₂ ≈ 2.31 du jeu initial est **corrélationnelle**, pas causale | à degré fixé, λ₂ varie ×27 sans changer le régime | `experiments/lambda2_foundation_20260701/` (versionné le 05/08) |
 | 2 | **Intelligence topologique** — dans FULL, les hubs ont des trajectoires plus structurées (u couple complexité ↔ connectivité) | r=−0.716, p=1.29e-79 (BA m=5) | `lz_per_node.py` |
-| 3 | **Transition événementielle** — forcer un nœud périphérique produit +1.20 bits ; forcer un hub : +0.21 bits | dH périph > dH hub (BA m=3) | `event_phase_transition.py` |
+| 3 | ⚫ **RÉFUTÉ — Transition événementielle** (voir la note sous ce tableau) | 0/9 configurations positives au rejeu | `event_phase_transition_rerun_20260711.py` ⚠️ **non versionné** (`scratch/`) |
 | 4 | **Chimère — classe distincte** — R=0.141 (Mem4ristor) vs R=0.766 (Abrams-Strogatz 2004) | Deux mécanismes séparables | `reviewer2_chimera_comparison.py` |
-| 5 | **u = filtre anti-synchronisation** — bloquer u transforme le réseau en meute synchronisée | Synchrony ×10.9, H_cog ×∞ | `p2_sigma_social_ablation.py` |
+| 5 | **u = filtre anti-synchronisation** — bloquer u transforme le réseau en meute synchronisée | corrélation 0.007 → 0.658, séparation complète (Cohen d ≈ 9, 30 graines) | `p2_sigma_social_ablation.py` |
+
+> ⚫ **Finding 3 — RÉFUTÉ le 11/07/2026.** Le résultat d'avril — *« forcer un nœud périphérique
+> produit +1.20 bits, forcer un hub +0.21 »* — était un artefact du bruit antérieur au 1er mai
+> (AUDIT-024, Euler-Maruyama ×4.47). Grille complète rejouée au protocole d'avril **inchangé**
+> (`experiments/event_phase_transition_rerun_20260711.py`) : **0/9 configurations du claim
+> positives, 9/9 négatives** — l'événement *dégrade* H_cont (≈ −1.0) sur BA m=3, pour le hub
+> comme pour la périphérie ; effet ~nul sur la dead zone m=5. **Le preprint ne cite pas ce
+> résultat ; la soumission n'est pas affectée.** *Idée originale de Julien Chauvin — conservée
+> ici parce qu'une idée réfutée reste une idée qui a été testée.*
+>
+> ⚠️ **Le script du rejeu vit dans `experiments/scratch/`, qui est gitignoré.** Un clone du dépôt
+> ne peut donc pas rejouer cette réfutation. Dette de versionnement identifiée le 05/08/2026 —
+> voir `docs/audits/2026-08-05/`.
 
 ---
 

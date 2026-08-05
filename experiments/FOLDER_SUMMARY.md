@@ -21,14 +21,14 @@ Scripts d'expériences scientifiques Mem4ristor. Classés par tier de pertinence
 | `demo_chimera.py` | Mem4ristor V4 - Chimera State Demonstration | Démo 5 min : chimera state sur BA m=3, N=100. | demo | 🆕 nouveau |
 | `dt_sensitivity.py` | dt Sensitivity Analysis (DeepSeek review item 7) | H_cog max_delta=0.0079 << 0.05. Euler validé sur dt. | — | 🆕 nouveau |
 | `dt_sensitivity_figure.py` | Génère figures/dt_sensitivity.png depuis figures/dt_sensitivity.csv | — | — | 🆕 nouveau |
-| `event_phase_transition.py` | [13] Event-Driven Phase Transition — Peripheral Node High-Amplitude Forcing | Périphérique dH=+1.20 bits vs hub dH=+0.21 (BA m=3). Seuil = topologie. | 1 | 🆕 nouveau |
+| `event_phase_transition.py` | [13] Event-Driven Phase Transition — Peripheral Node High-Amplitude Forcing | ⚫ **RÉFUTÉ 11/07/2026** — le « périphérique dH=+1.20 vs hub +0.21 » d'avril était un artefact du bruit pré-1er mai (AUDIT-024). Rejeu complet : **0/9 configs positives, 9/9 négatives** (dH≈−1.0). Voir `event_phase_transition_rerun_20260711.py` (⚠️ non versionné, `scratch/`). | 1 | ⚫ réfuté |
 | `fiedler_phase_diagram.py` | lambda2 vs H_stable phase diagram — visualizing the topological transition. | Phase diagram λ₂ vs H_stable. Seuil spectral visualisé. | — | 🆕 nouveau |
 | `find_p_add.py` | Calcule et affiche les valeurs propres du graphe BA modifié pour différentes probabilités p. | — | — | 🆕 nouveau |
 | `find_p_add_1600.py` | Calcule lambda2 pour différents p dans un graphe BA modifié. | — | — | 🆕 nouveau |
 | `forcing_sweep_frozen_u.py` | Piste E — Forcing sweep FULL vs FROZEN_U (PROJECT_STATUS §3novedecies-bis piste E). | — | — | 🆕 nouveau |
 | `generate_spice_grid.py` | Génère un réseau de Memristeur pour simulation SPICE. | — | — | ✅ enrichi |
 | `heretic_ratio_sweep_coordination.py` | Piste C — Heretic ratio sweep under forcing (P1.5bis follow-up). | — | — | 🆕 nouveau |
-| `lambda2_crit_regression.py` | Formalisation de lambda2_crit -- Regression logistique multi-sources. | λ₂_crit=2.31 (séparation complète, 36 obs., accuracy 100%). | — | 🆕 nouveau |
+| `lambda2_crit_regression.py` | Formalisation de lambda2_crit -- Regression logistique multi-sources. | λ₂ ≈ 2.31 — ⚠️ frontière **CORRÉLATIONNELLE**, pas causale : λ₂ covarie avec le degré sur ce jeu. Le « n=36 » est gonflé : **12 décisions recopiées à la main** par type de topologie. Cause réelle = degré de couplage (k_harm≈6), voir `lambda2_foundation_20260701/`. | — | 🆕 nouveau |
 | `limit02_alpha_sweep.py` | LIMIT-02 Power-Law Normalization Sweep (v2) - Using core.py degree_power mode. | — | — | 🆕 nouveau |
 | `limit02_ba_m_sweep.py` | LIMIT-02 BA Attachment Parameter Sweep — The m=5 Mystery. | — | — | 🆕 nouveau |
 | `limit02_norm_sweep.py` | LIMIT-02 Normalization Sweep — Degree-based coupling on Barabási-Albert networks. | — | — | 🆕 nouveau |
