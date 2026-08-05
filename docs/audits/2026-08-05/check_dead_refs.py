@@ -35,9 +35,39 @@ ROOT = Path(
 )
 
 # Les fichiers de doc qui engagent la reproductibilite pour un tiers.
-DOC_FILES = ["README.md", "REPRODUCE_RESULTS.md", "docs/CLAIMS_REGISTER.md"]
+#
+# experiments/FOLDER_SUMMARY.md ajoute le 2026-08-05 (demande de Julien) : il catalogue
+# les scripts du dossier experiments/ et en cite des dizaines, mais il manquait a cette
+# liste. Consequence mesuree le jour meme : event_phase_transition.py et son rerun y
+# etaient cites tout en vivant dans scratch/, et ils n'ont jamais compte dans le total.
+# Un compteur de dettes qui omet un fichier de doc ne mesure pas moins de dette : il
+# mesure moins bien, ce qui est pire, parce que son chiffre a l'air complet.
+#
+# NE SONT PAS SCANNES, et c'est deliberé : PROJECT_HISTORY.md, AUDIT_LOG.md, sessions/*
+# et les CHANGELOG sont des JOURNAUX DATES. Un script cite dans un journal decrit l'etat
+# du depot ce jour-la ; ce n'est pas une promesse faite au lecteur d'aujourd'hui. On
+# n'edite pas un journal, donc on ne compte pas ses references comme des dettes.
+DOC_FILES = [
+    "README.md",
+    "REPRODUCE_RESULTS.md",
+    "docs/CLAIMS_REGISTER.md",
+    "experiments/FOLDER_SUMMARY.md",
+]
 
+# Les deux dettes sont comptees SEPAREMENT, et c'est le coeur de ce fichier.
+#
+#   PROMESSE  : un CHEMIN complet (experiments/scratch/x.py). Le document dit au lecteur
+#               « lance ceci pour reproduire cette figure ». Si le fichier n'est pas
+#               versionne, la promesse est intenable -> BLOQUANT (exit 1).
+#   CATALOGUE : un NOM NU entre backticks (`x.py`), forme employee par FOLDER_SUMMARY,
+#               qui inventorie le dossier experiments/. C'est une description, pas une
+#               promesse -> INFORMATIF.
+#
+# Les fusionner donnerait un chiffre plus gros et moins utile : 69 entrees de catalogue
+# noieraient 17 promesses intenables, et on ne saurait plus laquelle traiter. Meme
+# principe que N4 dans tex_guardian.py, demarre en observation plutot qu'en bloquant.
 REF_RE = re.compile(r"experiments/scratch/[A-Za-z0-9_]+\.py")
+NAME_RE = re.compile(r"`([A-Za-z0-9_]+\.py)`")
 
 
 def git(*args: str) -> str:
@@ -57,32 +87,43 @@ def main() -> int:
         by_basename.setdefault(path.rsplit("/", 1)[-1], []).append(path)
 
     refs: set[str] = set()
+    names: dict[str, set[str]] = {}
     for doc in DOC_FILES:
         content = git("show", f"HEAD:{doc}")
         refs.update(REF_RE.findall(content))
+        for n in NAME_RE.findall(content):
+            names.setdefault(n, set()).add(doc)
 
     dead, relocated = [], []
     for ref in sorted(refs):
         basename = ref.rsplit("/", 1)[-1]
         hits = by_basename.get(basename, [])
-        if hits:
-            relocated.append((ref, hits))
-        else:
-            dead.append(ref)
+        (relocated if hits else dead).append((ref, hits) if hits else ref)
 
-    print(f"References `experiments/scratch/*.py` citees : {len(refs)}")
-    print(f"  fichiers scannes : {', '.join(DOC_FILES)}\n")
+    # Catalogue : noms nus introuvables. On retire ceux deja comptes comme promesses,
+    # pour ne jamais faire porter la meme dette par les deux compteurs.
+    deja = {r.rsplit("/", 1)[-1] for r in refs}
+    orphelins = sorted(n for n in names if n not in by_basename and n not in deja)
 
+    print("=== PROMESSES (bloquant) — chemins experiments/scratch/*.py cites ===")
+    print(f"  fichiers scannes : {', '.join(DOC_FILES)}")
+    print(f"  citees : {len(refs)}\n")
     for ref, hits in relocated:
-        print(f"RELOGEE : {ref}  ->  {', '.join(hits)}")
+        print(f"  RELOGEE : {ref}  ->  {', '.join(hits)}")
     for ref in dead:
-        print(f"MORTE   : {ref}")
-
-    print(f"\nTOTAL MORTES : {len(dead)} / {len(refs)}")
+        print(f"  MORTE   : {ref}")
+    print(f"\n  TOTAL MORTES : {len(dead)} / {len(refs)}")
     if dead:
-        print("\nUn clone propre ne peut pas rejouer ces scripts.")
-        return 1
-    return 0
+        print("  Un clone propre ne peut pas rejouer ces scripts.")
+
+    print(f"\n=== CATALOGUE (informatif) — noms nus `x.py` introuvables : {len(orphelins)} ===")
+    print("  Un document versionne les nomme comme s'ils existaient. Ce n'est pas une")
+    print("  promesse de reproductibilite : c'est un inventaire perime par le rangement")
+    print("  du 14/07, qui a deplace le contenu d'experiments/ vers scratch/.")
+    for n in orphelins:
+        print(f"  ABSENT : {n}   (cite dans {', '.join(sorted(names[n]))})")
+
+    return 1 if dead else 0
 
 
 if __name__ == "__main__":
