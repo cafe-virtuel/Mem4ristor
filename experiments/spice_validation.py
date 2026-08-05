@@ -26,7 +26,12 @@ import numpy as np
 
 # --- Paths ---
 ROOT = Path(__file__).resolve().parent.parent
-NGSPICE = Path("D:/ANTIGRAVITY/ngspice-46_64/Spice64/bin/ngspice_con.exe")
+# Chemin resolu par le module partage (env NGSPICE -> PATH -> emplacements connus).
+# Etait un chemin machine en dur jusqu'au 2026-08-05 ; l'installation avait bouge et
+# plus aucun script SPICE ne pouvait tourner. Voir experiments/ngspice_locator.py.
+from ngspice_locator import trouver_ngspice  # noqa: E402
+
+NGSPICE = trouver_ngspice()
 RESULTS = ROOT / "experiments" / "spice" / "results"
 FIGURES = ROOT / "figures"
 RESULTS.mkdir(parents=True, exist_ok=True)

@@ -199,11 +199,11 @@ Ne pas réécrire ce que ces fichiers disent déjà — les synthétiser et les 
 {
   "id": "EXP_001",
   "tier": 1,
-  "title": "Spectral Dead Zone",
-  "question": "Existe-t-il un seuil spectral au-delà duquel le réseau ne peut plus être fonctionnel ?",
+  "title": "Dead Zone — seuil de degré de couplage (ex-'Spectral Dead Zone')",
+  "question": "Existe-t-il un seuil de connectivité au-delà duquel le réseau ne peut plus être fonctionnel ?",
   "protocol": "Sweep BA(m) N=100/400/1600, mesure H_cog et λ₂, régression logistique sur 36 observations.",
-  "key_result": "λ₂_crit = 2.31 (midpoint séparation complète). Accuracy 100% sur n=36.",
-  "significance": "La topologie seule détermine la capacité cognitive — résultat central du preprint.",
+  "key_result": "Seuil réel = degré de couplage (k_harm ≈ 6). La séparation λ₂ ≈ 2.31 du jeu initial est CORRÉLATIONNELLE : à degré fixé, λ₂ varie x27 sans changer le régime. Réserve sur le n=36 : les labels sont recopiés à la main par TYPE de topologie (12 décisions, pas 36).",
+  "significance": "Le phénomène est réel ; sa cause n'est PAS spectrale. La formulation 'la topologie seule détermine la capacité cognitive' a été réfutée le 2026-07-01 et retirée ici le 2026-08-05.",
   "commit": "43fab61",
   "outputs": ["figures/fiedler_phase_diagram.csv", "figures/fiedler_phase_diagram.png"],
   "paper": "preprint.tex, paper_2.tex"

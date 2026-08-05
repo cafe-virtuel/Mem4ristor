@@ -49,44 +49,14 @@ sys.path.insert(0, str(ROOT / "experiments"))
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-def _trouver_ngspice() -> Path:
-    """Localise l'executable ngspice sans chemin machine en dur.
+# Resolution deleguee au module partage (2026-08-05). Ce fichier a d'abord porte sa
+# PROPRE fonction de recherche -- corrigee ici et nulle part ailleurs. La passe
+# soustractive de cloture a retrouve cinq autres scripts SPICE avec le meme chemin mort
+# en dur : un correctif local qui ne mesure pas sa propagation, le defaut meme que ce
+# projet outille. Une seule implementation desormais, dans ngspice_locator.py.
+from ngspice_locator import trouver_ngspice, message_absence  # noqa: E402
 
-    Corrige le 2026-08-05 (audit externe, constat 5.10) : ce script portait
-    `D:/ANTIGRAVITY/ngspice-46_64/...` en dur, alors qu'il PRODUIT le claim C11 --
-    un tiers ne pouvait pas le rejouer, quelle que soit son installation de ngspice.
-
-    Ordre de recherche, du plus explicite au plus implicite :
-      1. la variable d'environnement NGSPICE (chemin complet de l'executable) ;
-      2. le PATH du systeme (`ngspice_con` sous Windows, `ngspice` ailleurs) ;
-      3. les emplacements connus de la machine de developpement, en dernier recours.
-
-    Le chemin de l'etape 3 a DEJA change une fois : le script portait
-    `D:/ANTIGRAVITY/ngspice-46_64/...` jusqu'au 05/08, emplacement qui n'existait plus
-    et rendait C11 non regenerable en silence. C'est la raison d'etre des etapes 1 et 2 :
-    un chemin machine n'est pas une dependance, c'est une panne differee.
-
-    Aucune erreur ici : le chemin peut ne pas exister, l'appelant le verifie et
-    explique quoi installer.
-    """
-    depuis_env = os.environ.get("NGSPICE")
-    if depuis_env:
-        return Path(depuis_env)
-    for nom in ("ngspice_con", "ngspice"):
-        trouve = shutil.which(nom)
-        if trouve:
-            return Path(trouve)
-    connus = [
-        Path("D:/Autres programmes/ngspice-46_64/Spice64/bin/ngspice_con.exe"),
-        Path("D:/ANTIGRAVITY/ngspice-46_64/Spice64/bin/ngspice_con.exe"),  # avant le 05/08
-    ]
-    for c in connus:
-        if c.exists():
-            return c
-    return connus[0]
-
-
-NGSPICE = _trouver_ngspice()
+NGSPICE = trouver_ngspice()
 RESULTS = ROOT / "experiments" / "spice" / "results"
 FIGURES = ROOT / "figures"
 RESULTS.mkdir(parents=True, exist_ok=True)
@@ -341,14 +311,7 @@ def generate_netlist(
 
 def run_ngspice(path: Path) -> float:
     if not NGSPICE.exists():
-        sys.exit(
-            f"ngspice introuvable a : {NGSPICE}\n"
-            "Ce script produit le claim C11 et a besoin de ngspice pour tourner.\n"
-            "  - installer ngspice et le mettre dans le PATH, ou\n"
-            "  - pointer la variable d'environnement NGSPICE sur l'executable :\n"
-            "      Windows  set NGSPICE=C:\\chemin\\vers\\ngspice_con.exe\n"
-            "      Linux    export NGSPICE=/usr/bin/ngspice"
-        )
+        sys.exit(message_absence(NGSPICE, "Ce script produit le claim C11 et"))
     t0 = time.time()
     res = subprocess.run(
         [str(NGSPICE), "-b", str(path)],

@@ -32,11 +32,16 @@
   soustractive du 30/07 et corrigée seulement le 31 : la détection ne vaut que si la
   correction suit.*
 - **Tex Guardian** : depuis le 30/07, un second contrôle compare le **texte publié** à ses
-  **données** (15/15 ancrages, 0 valeur périmée, 12/12 sources citées et versionnées).
+  **données** (15/15 ancrages, 0 valeur périmée, 14/14 sources citées et versionnées — 12 fichiers + 2 dossiers depuis le 05/08).
   **Bloquant depuis le 31/07** — un commit qui désynchronise le texte de ses sources est refusé.
 - **Contrôle N4 — « le CSV est-il régénérable ? »** *(ajouté le 31/07, en observation)* :
-  **12/12**. Il ferme l'angle mort qui a coûté AUDIT-024 en juin — le Guardian vérifie que le
-  chiffre publié est celui du CSV, **jamais** que ce CSV puisse être reproduit. Mesuré le 31/07 :
+  **13/13** *(mesuré le 05/08)*. Il ferme l'angle mort qui a coûté AUDIT-024 en juin — le
+  Guardian vérifie que le chiffre publié est celui du CSV, **jamais** que ce CSV puisse être
+  reproduit.
+  🔴 **SA PROPRE LIMITE, mesurée le 05/08** : N4 vérifie qu'un producteur **existe et est
+  versionné**, pas qu'il **peut s'exécuter**. `spice_art_kirchhoff.py` (claim C11) était
+  versionné et régulièrement déclaré vert alors que ngspice avait été déplacé et qu'aucune
+  machine ne pouvait plus le lancer. Une dépendance externe absente lui est invisible. Mesuré le 31/07 :
   **7 claims sur 18** (dont `C05`, la frontière λ₂ = 2,31 de l'abstract) avaient leur unique
   producteur dans `experiments/scratch/`, gitignoré. Les 7 scripts sont désormais versionnés —
   et ils étaient **cassés là où ils vivaient** (`parent.parent` pointait sur `experiments/`).
@@ -78,7 +83,7 @@ Le projet est né au sein du **Café Virtuel**, un laboratoire de collaboration 
 Publication : DOI 10.5281/zenodo.19986042 (V4.0.0 — dernière release Zenodo ; le code a
 évolué depuis, la prochaine release Zenodo portera les valeurs V6.0.0 reformulées).
 Preprint actuel (non soumis, non publié sur Zenodo) : `docs/papers/preprint/preprint.tex`
-→ `preprint.pdf` (27 pages, Guardian **20/20**, Tex Guardian 15/15 ancres · 0 valeur morte · 12/12 sources).
+→ `preprint.pdf` (27 pages, Guardian **20/20**, Tex Guardian 15/15 ancres · 0 valeur morte · 14/14 sources).
 
 ---
 
@@ -141,7 +146,7 @@ nouveau document — c'est l'inverse qui a été montré.
   31 juillet 2026.
 - **`.brain/tex_guardian.py`** (créé le 30/07) — second garde-fou au même hook :
   il compare le **texte publié** à ses **données** (ancrages, registre des valeurs mortes,
-  audit des sources citées). **15/15 ancres, 0 valeur morte, 12/12 sources** au 31/07.
+  audit des sources citées). **15/15 ancres, 0 valeur morte, 14/14 sources** au 05/08 (le compte est passé de 12 à 14 quand l'audit des sources a été étendu aux chemins de DOSSIER, invisibles jusque-là : voir docs/audits/2026-08-05/).
 - **`docs/CLAIMS_REGISTER.md`** — registre narratif détaillé (valeur, script, seeds,
   statut) pour chaque claim + claims secondaires/exploratoires (S01-S09).
 
