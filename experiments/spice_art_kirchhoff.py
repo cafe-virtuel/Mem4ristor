@@ -81,6 +81,25 @@ RESULTS.mkdir(parents=True, exist_ok=True)
 FIGURES.mkdir(parents=True, exist_ok=True)
 
 # --- Physique (identique à config.yaml et spice_dead_zone_test.py) ---
+#
+# ⚠️ ÉCART ASSUMÉ SUR `leak_delta`, relevé le 2026-08-05 (audit externe, constat 5.9).
+#
+# `leak_delta` est le δ de la Levitating Sigmoid  w(u) = tanh(π(0.5−u)) + δ.
+# Ici il vaut 0.05. Or :
+#   - le preprint PUBLIE δ = 0.01 (preprint.tex:97, avec sa justification physique :
+#     l'offset garantit w(0.5) > 0 et évite une dead zone mathématique dure) ;
+#   - dynamics.py:60 applique bien 0.01.
+# Ce circuit tourne donc avec un δ CINQ FOIS supérieur à celui du modèle publié.
+#
+# Ce n'est pas corrigé ici, et c'est délibéré : ce script produit le claim C11, et
+# changer δ changerait sa valeur. Réaligner sur 0.01 est une décision scientifique
+# (elle touche un résultat publié), pas un correctif de code — elle appartient à Julien.
+# En attendant, l'écart est ÉCRIT plutôt que subi : toute comparaison quantitative
+# SPICE ↔ Python porte sur deux paramétrages différents du même noyau.
+#
+# À ne pas confondre avec l'écart d'implémentation ART documenté en tête de fichier
+# (courant continu vs mécanisme multiplicatif) : celui-là est intentionnel et concerne
+# la STRUCTURE du modèle ; celui-ci est un paramètre, et personne ne l'avait signalé.
 PHYS = dict(
     a=0.7, b=0.8, eps=0.08, alpha=0.15,
     eps_u=0.02, sigma_base=0.05,
