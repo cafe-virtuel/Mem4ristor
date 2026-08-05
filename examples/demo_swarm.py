@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Add src to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-from mem4ristor.mem4ristor_v3 import Mem4ristorV3
+from mem4ristor.core import Mem4ristorV3
 from mem4ristor.symbiosis import SymbioticSwarm
 
 def demo_swarm_telepathy():

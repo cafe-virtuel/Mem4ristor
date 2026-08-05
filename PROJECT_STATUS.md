@@ -368,9 +368,20 @@ de bruit fort) et `::test_euler_drift_torture` (instabilité numérique à dt > 
 
 ### Compte réel de la suite
 
-**130 passed + 2 xfail**, mesuré le 2026-07-26 :
+**151 passed + 2 xfail = 153 collectés**, mesuré le 2026-08-05 :
 `python -m pytest --tb=no -q --ignore=tests/results` (l'option `--ignore` est obligatoire :
 `tests/results` contient des dumps UTF-16 qui cassent la collecte).
+
+> ⚠️ **Lire le total, pas seulement le premier nombre.** La formulation « 153 (+2 xfail) »,
+> employée ailleurs, se lit à tort comme 155 : les 2 xfail sont **dans** les 153. L'écart avec
+> le 130 du 26/07 vient des 12 tests de `test_version_consistency.py` (02/08) et des ajouts
+> antérieurs. Ce chiffre est daté parce qu'il se périme à chaque test ajouté — un audit externe
+> l'a d'ailleurs relevé le 05/08, à raison.
+>
+> 🔁 **CE COMPTE VIT À DEUX ENDROITS DE CE FICHIER** : ici et dans l'arborescence du §5
+> (`tests/`). Ils ont divergé le 26/07 (note ci-dessus), et **de nouveau le 05/08** — corrigé
+> ici, oublié là-bas, dans le fichier même qui documente ce défaut. **Corriger l'un sans
+> l'autre est le mode d'échec par défaut : les mettre à jour ensemble, ou pas du tout.**
 
 ### Tests de régression scientifique (2026-04-10) ★
 
@@ -413,7 +424,7 @@ mem4ristor-v2-main/
 ├── experimental/              # MODULES NON PRODUCTION
 │   └── mem4ristor_king.py     # "Philosopher King"
 │
-├── tests/                     # SUITE DE TESTS (130 passed + 2 xfail, mesuré le 26/07/2026 — voir §4)
+├── tests/                     # SUITE DE TESTS (151 passed + 2 xfail = 153, mesuré le 05/08/2026 — voir §4)
 │
 ├── experiments/               # SCRIPTS D'EXPÉRIENCE (b1_*, b2_*, b4_*, b5_*, p2_*, ...)
 │

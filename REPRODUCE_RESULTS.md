@@ -1,7 +1,10 @@
 # Reproducibility Guide: Mem4ristor Project
 
 This document describes how to reproduce all results presented in the
-accompanying scientific paper (WORK_LOG_PAPER.tex).
+accompanying scientific paper (`docs/papers/preprint/preprint.tex`).
+
+> Corrigé le 2026-08-05 : ce guide renvoyait à `WORK_LOG_PAPER.tex`, un fichier qui
+> n'existe plus dans le dépôt. Signalé par l'audit externe du même jour.
 
 ---
 
