@@ -94,28 +94,37 @@ FIGURES.mkdir(parents=True, exist_ok=True)
 
 # --- Physique (identique à config.yaml et spice_dead_zone_test.py) ---
 #
-# ⚠️ ÉCART ASSUMÉ SUR `leak_delta`, relevé le 2026-08-05 (audit externe, constat 5.9).
+# `leak_delta` = δ de la Levitating Sigmoid  w(u) = tanh(π(0.5−u)) + δ.
 #
-# `leak_delta` est le δ de la Levitating Sigmoid  w(u) = tanh(π(0.5−u)) + δ.
-# Ici il vaut 0.05. Or :
-#   - le preprint PUBLIE δ = 0.01 (preprint.tex:97, avec sa justification physique :
-#     l'offset garantit w(0.5) > 0 et évite une dead zone mathématique dure) ;
-#   - dynamics.py:60 applique bien 0.01.
-# Ce circuit tourne donc avec un δ CINQ FOIS supérieur à celui du modèle publié.
+# RÉALIGNÉ 0.05 → 0.01 le 2026-08-05 (décision de Julien, après mesure).
 #
-# Ce n'est pas corrigé ici, et c'est délibéré : ce script produit le claim C11, et
-# changer δ changerait sa valeur. Réaligner sur 0.01 est une décision scientifique
-# (elle touche un résultat publié), pas un correctif de code — elle appartient à Julien.
-# En attendant, l'écart est ÉCRIT plutôt que subi : toute comparaison quantitative
-# SPICE ↔ Python porte sur deux paramétrages différents du même noyau.
+# Historique, parce qu'il explique ce que ce circuit valide vraiment. Ce script a tourné
+# jusqu'ici à δ = 0.05, soit CINQ FOIS la valeur publiée : le preprint spécifie δ = 0.01
+# (preprint.tex:97, avec sa justification — l'offset garantit w(0.5) > 0 et évite une
+# dead zone mathématique dure) et dynamics.py:60 l'applique. Le circuit censé valider le
+# modèle du papier tournait donc sur un autre modèle. Relevé par l'audit externe du
+# 05/08 (constat 5.9) ; personne ne l'avait vu avant.
+#
+# CE QUE LE RÉALIGNEMENT COÛTE, mesuré avant d'être décidé :
+#   - le ratio ART_soft/V4 côté SPICE passe de 1.490 à 1.134, tandis que le Python reste
+#     à 1.490 → l'« accord parfait » de C11 (0.00 %) devient un écart de 23.9 % ;
+#   - la colonne delta_pct de la ligne ART soft, elle, reste à 0.0 — c'est-à-dire que le
+#     Guardian serait resté VERT pendant que le claim écrit devenait faux. Les deux ne
+#     mesurent pas la même chose : voir la note de C11 dans docs/CLAIMS_REGISTER.md.
+#   - la DIRECTION de l'effet ART est préservée (ART soft 0.8476 > V4 pur 0.7476), donc
+#     le critère de validation annoncé en tête de ce fichier tient toujours.
+#
+# Pourquoi le payer : un accord obtenu à un δ qui n'est pas celui du papier ne prouve pas
+# ce qu'il a l'air de prouver. Un écart de 23.9 % contre le modèle réellement publié est
+# un résultat ; un 0.00 % contre un autre modèle n'en est pas un.
 #
 # À ne pas confondre avec l'écart d'implémentation ART documenté en tête de fichier
 # (courant continu vs mécanisme multiplicatif) : celui-là est intentionnel et concerne
-# la STRUCTURE du modèle ; celui-ci est un paramètre, et personne ne l'avait signalé.
+# la STRUCTURE du modèle ; celui-ci était un paramètre, et il est désormais aligné.
 PHYS = dict(
     a=0.7, b=0.8, eps=0.08, alpha=0.15,
     eps_u=0.02, sigma_base=0.05,
-    D=0.15, leak_delta=0.05,
+    D=0.15, leak_delta=0.01,
     v_cubic_divisor=5.0,
 )
 

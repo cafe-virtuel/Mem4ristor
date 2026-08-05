@@ -38,17 +38,17 @@ from limit02_topology_sweep import make_ba  # noqa: E402
 
 # --- Shared physics (matches Mem4Network defaults) ---
 #
-# ⚠️ SAUF `leak_delta` — le commentaire ci-dessus est inexact sur ce point (2026-08-05).
-# `leak_delta` est le δ de w(u) = tanh(π(0.5−u)) + δ. Ici 0.05, alors que le preprint
-# publie δ = 0.01 (preprint.tex:97) et que dynamics.py:60 applique 0.01. La branche
-# SPICE tourne donc avec un δ cinq fois supérieur au modèle publié — le même écart
-# existe dans spice_art_kirchhoff.py (producteur du claim C11), où il est documenté
-# plus longuement. Non corrigé : réaligner changerait un résultat publié, c'est une
-# décision scientifique et pas un correctif de code.
+# `leak_delta` RÉALIGNÉ 0.05 → 0.01 le 2026-08-05 (décision de Julien). Ce fichier
+# tournait à 0.05 alors que le preprint publie δ = 0.01 (preprint.tex:97) et que
+# dynamics.py:60 l'applique — le commentaire « matches Mem4Network defaults » ci-dessus
+# était donc faux sur ce paramètre précis. Le même écart existait dans
+# spice_art_kirchhoff.py (producteur du claim C11), où le coût du réalignement est
+# mesuré et documenté. Les deux fichiers sont alignés ensemble : n'en corriger qu'un
+# aurait recréé la divergence qu'on vient de fermer.
 PHYS = dict(
     a=0.7, b=0.8, eps=0.08, alpha=0.15,
     eps_u=0.02, sigma_base=0.05,
-    D=0.15, leak_delta=0.05,
+    D=0.15, leak_delta=0.01,
     v_cubic_divisor=5.0,
 )
 

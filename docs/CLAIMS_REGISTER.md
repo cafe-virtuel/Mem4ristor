@@ -39,10 +39,43 @@
 | C08b | MI FROZEN_U / FULL ratio (BA m=3 distance=1) | **3.41×** (0.4875 → 1.6625) | `experiments/p2_spatial_mutual_information.py` (ba_m3) | **10** | 2026-06-12 | ✅ **RÉGÉNÉRÉ 12/06 (Option A), puis monté à 10 seeds** (3.37× à 3 seeds → 3.41×). Preprint corrigé (était 1.84×, ancien bruit). Mappé Guardian |
 | C09 | ART hard H_min_post vs V4 | +0.40 bits (3.12 vs 2.72) | `experiments/p2_art_benchmark.py` | 10 | 2026-05-11 | ✅ vérifié |
 | C10 | Combi metacog+compart | +0.49 bits additif, synergie ≈ 0 | `experiments/p2_v5_combination.py` | 10 | 2026-05-11 | ✅ vérifié |
-| C11 | ART soft H_min_post circuit SPICE | ratio SPICE/V4=1.490 = Python/V4=1.490 (accord parfait) | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15 | ✅ vérifié |
+| C11 | ART soft H_min_post circuit SPICE | **Le circuit reproduit la DIRECTION de l'effet ART, pas son amplitude.** H_min_post ART soft : SPICE 0.8476 = Python 0.8476 (accord exact sur la valeur absolue, c'est ce que le Guardian vérifie via `delta_pct`). Mais le **ratio** ART_soft/V4 vaut **1.134 côté SPICE contre 1.490 côté Python — 23.9 % d'écart** | `experiments/spice_art_kirchhoff.py` | 1 (seed=42) | 2026-05-15, **reformulé le 2026-08-05** | ✅ vérifié (reformulé) — voir note (**) |
 | ~~C12~~ | ~~Transition thermodynamique du FSS via Binder U4~~ | ~~λ2_crit ≈ 2.31, convergence vers minimum U4~~ | ~~`experiments/v6_binder_cumulant_u4.py`~~ | ~~40~~ | ~~2026-05-19~~ | **🚨 INFIRMEE 2026-06-01** — U4 plat (0.6641–0.6666, variation 0.38%), pas de minimum. Section Binder FSS retirée du preprint V6.0.0 par AUDIT-017. Voir ligne supprimés ci-dessous. |
 | C13 | LZ76 regime classification (adaptive D(u)=0.50·u) | LZ=0.88→0.65 (-27%) à m=6 ; structuré jusqu'à m=10 (LZ=0.58) | `experiments/fss_lz_sweep.py` | 5 (re-productible avec 3 seeds aussi) | 2026-06-01 | ✅ vérifié — voir note LZ |
 | C20 | **Persistance temporelle endogène (révisé)** | AC@lag50 = +0.57 à +0.74 sans drive externe (I_stim=0), reproductible 5 seeds × 2 topologies (m=3, m=6) × 3 D. Le réseau maintient une cohérence temporelle réelle à 50 pas, sans stimulus. | `experiments/poc1_absence_v2.py` | 5 | 2026-06-12 | ✅ **REFORMULÉ 2026-06-12 (Claude Code/Fable)** suite contre-expertise 03/06 : les composantes fréquence (« f≈0.01 » — réel : f_fft≈0.002) et LZ (mesuré sur v_mean, incomparable ; LZ_state>0.85 partout sauf D=0 trivial) sont **retirées du claim**. Ne reste que la persistance AC@lag50, validée par la contre-expertise. L'appellation « intrinsic oscillator » est abandonnée (pas de bande étroite démontrée). Voir `figures/poc1_v2_raw.csv` + `poc1_v2.png` |
+
+### (**) Note C11 — pourquoi le claim a été affaibli le 2026-08-05, volontairement
+
+**Ce qui a changé.** Jusqu'à cette date, `spice_art_kirchhoff.py` tournait avec
+`leak_delta = 0.05`, soit **cinq fois le δ publié** : le preprint spécifie
+`w(u) = tanh(π(0.5−u)) + δ` avec **δ = 0.01** (`preprint.tex:97`), et `dynamics.py:60`
+l'applique. **Le circuit censé valider le modèle du papier tournait donc sur un autre
+modèle.** Écart relevé par l'audit externe du 05/08 (constat 5.9) ; personne ne l'avait
+vu depuis mai. Réalignement décidé par Julien après mesure.
+
+**Ce que ça coûte, mesuré avant d'être décidé** — le claim passe d'un accord parfait à
+un écart mesuré :
+
+| | δ = 0.05 (avant) | δ = 0.01 (publié) |
+|---|---|---|
+| H_min_post ART soft, SPICE vs Python | 0.8476 = 0.8476 | 0.8476 = 0.8476 (inchangé) |
+| ratio ART_soft/V4 côté SPICE | 1.490 | **1.134** |
+| ratio ART_soft/V4 côté Python | 1.490 | 1.490 |
+| **écart des ratios** | **0.00 %** | **23.89 %** |
+| direction de l'effet ART | reproduite | **reproduite** (0.8476 > 0.7476) |
+
+**Pourquoi c'est quand même le bon choix.** Un accord parfait obtenu à un δ qui n'est
+pas celui du papier ne prouve pas ce qu'il a l'air de prouver. Un écart de 23.9 % contre
+le modèle réellement publié est un résultat ; un 0.00 % contre un autre modèle n'en est
+pas un. Même famille de décision que le β≈0 dit franchement et que le retrait du
+« ~90-fold ».
+
+> 🔴 **ET UN ANGLE MORT DU DISPOSITIF, à traiter séparément.** Le Guardian vérifie pour
+> C11 la colonne `delta_pct` de la ligne *ART soft*, qui compare deux **valeurs
+> absolues** — elle vaut 0.0 **dans les deux configurations**. Le Guardian serait donc
+> resté VERT pendant que la phrase publiée ici (« ratio 1.490 = 1.490, accord parfait »)
+> devenait fausse. **Le garde-fou et le registre ne mesuraient pas la même grandeur.**
+> Ancrer le *ratio* plutôt que la valeur absolue reste à faire.
 
 ---
 
