@@ -89,7 +89,12 @@ def main() -> int:
     refs: set[str] = set()
     names: dict[str, set[str]] = {}
     for doc in DOC_FILES:
-        content = git("show", f"HEAD:{doc}")
+        # On lit le WORKING TREE, pas `git show HEAD:` — sinon l'outil ne peut pas
+        # servir a verifier une correction AVANT de la commiter, ce qui est
+        # precisement le moment ou on en a besoin (constate le 05/08 : 20 references
+        # repointees, compteur toujours a 17). La question « un clone l'aurait-il ? »
+        # reste posee au bon endroit : la PRESENCE des fichiers vient de `git ls-files`.
+        content = (ROOT / doc).read_text(encoding="utf-8", errors="replace")
         refs.update(REF_RE.findall(content))
         for n in NAME_RE.findall(content):
             names.setdefault(n, set()).add(doc)
