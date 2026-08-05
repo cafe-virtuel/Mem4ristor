@@ -59,8 +59,13 @@ def _trouver_ngspice() -> Path:
     Ordre de recherche, du plus explicite au plus implicite :
       1. la variable d'environnement NGSPICE (chemin complet de l'executable) ;
       2. le PATH du systeme (`ngspice_con` sous Windows, `ngspice` ailleurs) ;
-      3. l'emplacement historique de la machine de developpement, conserve en dernier
-         recours pour ne pas casser les rejeux locaux.
+      3. les emplacements connus de la machine de developpement, en dernier recours.
+
+    Le chemin de l'etape 3 a DEJA change une fois : le script portait
+    `D:/ANTIGRAVITY/ngspice-46_64/...` jusqu'au 05/08, emplacement qui n'existait plus
+    et rendait C11 non regenerable en silence. C'est la raison d'etre des etapes 1 et 2 :
+    un chemin machine n'est pas une dependance, c'est une panne differee.
+
     Aucune erreur ici : le chemin peut ne pas exister, l'appelant le verifie et
     explique quoi installer.
     """
@@ -71,7 +76,14 @@ def _trouver_ngspice() -> Path:
         trouve = shutil.which(nom)
         if trouve:
             return Path(trouve)
-    return Path("D:/ANTIGRAVITY/ngspice-46_64/Spice64/bin/ngspice_con.exe")
+    connus = [
+        Path("D:/Autres programmes/ngspice-46_64/Spice64/bin/ngspice_con.exe"),
+        Path("D:/ANTIGRAVITY/ngspice-46_64/Spice64/bin/ngspice_con.exe"),  # avant le 05/08
+    ]
+    for c in connus:
+        if c.exists():
+            return c
+    return connus[0]
 
 
 NGSPICE = _trouver_ngspice()
