@@ -17,18 +17,33 @@ def calculate_continuous_entropy(v_array: np.ndarray, bins: int = 100, v_min: fl
     ⚠️ CE QUE CETTE MÉTRIQUE NE DIT PAS (documenté le 2026-08-05, audit externe 5.16).
 
     `np.histogram(range=(v_min, v_max))` ÉCARTE silencieusement les valeurs hors plage :
-    elles ne sont comptées dans aucun bin et disparaissent du calcul. Mesuré sur un run
-    standard (BA m=3, N=100, I_stim=0.5, 3000 pas) : **v descend à −3.21 et 0.49 % des
-    valeurs tombent hors de [−3, 3]**. Ce n'est donc pas un cas théorique.
+    elles ne sont comptées dans aucun bin et disparaissent du calcul.
 
-    Conséquence pratique : H_cont n'est comparable qu'entre protocoles STRICTEMENT
-    identiques — mêmes bins, mêmes bornes, même régime. Deux valeurs obtenues avec des
-    plages différentes ne se comparent pas, même de loin.
+    AMPLEUR RÉELLE, mesurée le 2026-08-05 — et elle dépend entièrement du protocole :
 
-    Les valeurs par défaut (100 bins, [−3, 3]) sont VOLONTAIREMENT inchangées : elles
-    produisent toutes les entropies publiées du preprint. Les élargir corrigerait le
-    biais mais changerait chaque valeur publiée — c'est une décision de publication,
-    pas un correctif de code.
+      - BA m=3, N=100, I_stim=0.5, SANS cold start, sur les 3000 pas : v descend à
+        −3.21 et **0.49 %** des valeurs sortent de [−3, 3] ;
+      - protocole du **Tableau 1** (lattice, cold start, derniers 25 %, 10 graines,
+        tailles 4/10/25) : **0 valeur hors plage sur 750 000**.
+
+    Autrement dit, le débordement appartient au TRANSITOIRE, et le régime stationnaire
+    sur lequel portent les valeurs publiées n'en contient pas. ⚠️ La première mesure,
+    écrite ici avant la seconde, laissait croire l'inverse.
+
+    CONSÉQUENCE POUR tab:scaling — mesurée, pas supposée. En élargissant la plage À
+    DENSITÉ DE BINS CONSTANTE ([−4, 4] avec 133 bins), les trois valeurs publiées
+    bougent de **−0.011 / −0.003 / −0.004 bit**, soit un à deux ordres de grandeur sous
+    leurs écarts-types (0.12 / 0.19 / 0.09). Le Tableau 1 est donc INSENSIBLE à ce choix.
+
+    ⚠️ Piège associé : élargir la plage en gardant 100 bins fait chuter H de 0.19 à 0.39
+    bit. Ce n'est PAS un débiaisage, c'est l'effet mécanique de bins plus larges. Toute
+    comparaison entre plages doit se faire à densité de bins égale, sinon elle mesure la
+    largeur des bins et rien d'autre.
+
+    Les valeurs par défaut (100 bins, [−3, 3]) sont donc conservées en connaissance de
+    cause : la mesure montre qu'aucune valeur publiée n'en dépend.
+
+    Reste vrai : H_cont ne se compare qu'entre protocoles strictement identiques.
 
     Paramètres
     ----------
