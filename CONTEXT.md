@@ -36,7 +36,7 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 |---|---------|-------------|--------|
 | 1 | **Dead zone** — un seuil de **degré de couplage** sépare réseaux fonctionnels et morts (k_harm ≈ 6) ; la séparation en λ₂ ≈ 2.31 du jeu initial est **corrélationnelle**, pas causale | à degré fixé, λ₂ varie ×27 sans changer le régime | `experiments/lambda2_foundation_20260701/` (versionné le 05/08) |
 | 2 | **Intelligence topologique** — dans FULL, les hubs ont des trajectoires plus structurées (u couple complexité ↔ connectivité) | r=−0.716, p=1.29e-79 (BA m=5) | `lz_per_node.py` |
-| 3 | ⚫ **RÉFUTÉ — Transition événementielle** (voir la note sous ce tableau) | 0/9 configurations positives au rejeu | `event_phase_transition_rerun_20260711.py` ⚠️ **non versionné** (`scratch/`) |
+| 3 | ⚫ **RÉFUTÉ — Transition événementielle** (voir la note sous ce tableau) | 0/9 configurations positives au rejeu | `experiments/event_phase_transition_rerun_20260711.py` (versionné le 05/08) |
 | 4 | **Chimère — classe distincte** — R=0.141 (Mem4ristor) vs R=0.766 (Abrams-Strogatz 2004) | Deux mécanismes séparables | `reviewer2_chimera_comparison.py` |
 | 5 | **u = filtre anti-synchronisation** — bloquer u transforme le réseau en meute synchronisée | corrélation 0.007 → 0.658, séparation complète (Cohen d ≈ 9, 30 graines) | `p2_sigma_social_ablation.py` |
 
@@ -49,9 +49,10 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 > résultat ; la soumission n'est pas affectée.** *Idée originale de Julien Chauvin — conservée
 > ici parce qu'une idée réfutée reste une idée qui a été testée.*
 >
-> ⚠️ **Le script du rejeu vit dans `experiments/scratch/`, qui est gitignoré.** Un clone du dépôt
-> ne peut donc pas rejouer cette réfutation. Dette de versionnement identifiée le 05/08/2026 —
-> voir `docs/audits/2026-08-05/`.
+> ✅ **Rejouable par un clone depuis le 05/08/2026.** Le script du rejeu, le protocole d'avril
+> qu'il importe (`experiments/event_phase_transition.py`) et les CSV de référence des deux
+> campagnes sont versionnés. Ils vivaient dans `experiments/scratch/` et `figures/scratch/`,
+> gitignorés : la réfutation était affirmée partout et vérifiable nulle part.
 
 ---
 

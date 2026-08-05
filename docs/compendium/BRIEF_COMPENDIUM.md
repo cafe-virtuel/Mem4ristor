@@ -95,7 +95,8 @@ Companion machine-readable. Chaque expérience : question, protocole 2 lignes, r
        positives, 9/9 négatives — l'événement DÉGRADE H_cont (≈ -1.0), hub comme périphérie.
        Le preprint ne cite pas ce résultat ; la soumission n'est pas affectée.
        Script du rejeu : experiments/event_phase_transition_rerun_20260711.py
-       — NON VERSIONNÉ (scratch/) : un clone ne peut pas rejouer cette réfutation.
+       — versionné le 05/08/2026 avec le protocole d'avril qu'il importe et les CSV
+       de reference : la refutation est rejouable par un clone.
        Note : idée originale de Julien Chauvin (analogie "demande en mariage") — conservée
        parce qu'une idée réfutée reste une idée qui a été testée.
 

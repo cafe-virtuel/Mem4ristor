@@ -79,7 +79,7 @@ Le résultat d'avril 2026 affirmait : forcer un nœud *périphérique* produit +
 
 **Le preprint ne cite pas ce résultat ; la soumission n'est pas affectée.** Les CSV d'avril sont préservés.
 *Idée originale de Julien Chauvin — conservée ici parce qu'une idée réfutée reste une idée qui a été testée.*
-Script du rejeu : `experiments/event_phase_transition_rerun_20260711.py` — ⚠️ **non versionné** (`scratch/`) : un clone ne peut pas rejouer cette réfutation.
+Script du rejeu : `experiments/event_phase_transition_rerun_20260711.py` — **versionné le 05/08/2026**, avec le protocole d'avril qu'il importe (`experiments/event_phase_transition.py`) et les CSV de référence des deux campagnes. La réfutation est désormais rejouable par un clone : elle était affirmée partout et vérifiable nulle part.
 Figure (historique, ne reflète plus le code actuel) : `figures/event_phase_transition.png`
 
 ---
