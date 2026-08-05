@@ -10,7 +10,7 @@
 >    (commit `7057ac8`, 2026-07-14) concluent l'**inverse** : U₄ plat ≈ 2/3 → **crossover
 >    lisse, PAS une transition thermodynamique**. C'est aussi la lignée du β≈0 (mai 2026).
 > 2. **λ₂ causal.** Ce texte réintroduit λ₂_crit ≈ 2.31 comme seuil causal gouverné par une
->    « Kirchhoff ART ». La réfutation du 2026-07-01 (`experiments/scratch/lambda2_foundation_20260701/`)
+>    « Kirchhoff ART ». La réfutation du 2026-07-01 (`experiments/lambda2_foundation_20260701/`)
 >    et la reformulation du 2026-07-06 ont établi que le mécanisme est le **champ moyen /
 >    degré harmonique (k_harm≈6)** ; 2.31 est une **frontière corrélationnelle**, pas causale.
 > 3. **ART présentée comme gouverneur du régime.** L'ART (Kirchhoff) est **opt-in et
