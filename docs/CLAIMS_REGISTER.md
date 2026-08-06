@@ -76,6 +76,33 @@ pas un. Même famille de décision que le β≈0 dit franchement et que le retra
 > resté VERT pendant que la phrase publiée ici (« ratio 1.490 = 1.490, accord parfait »)
 > devenait fausse. **Le garde-fou et le registre ne mesuraient pas la même grandeur.**
 > Ancrer le *ratio* plutôt que la valeur absolue reste à faire.
+>
+> ✅ **FERMÉ LE 2026-08-06 — par deux claims, pas un.** Le défaut n'était pas que C11
+> mesurait *mal*, mais qu'une spec de claim ne savait désigner qu'**une cellule** :
+> quand le registre publie une grandeur qui n'en est pas une, l'ancrage se rabat sur la
+> cellule la plus proche. Le mapping sait désormais déclarer une **grandeur dérivée**
+> (`derived`, cf. `compute_derived()`), et l'entrée C11 ci-dessus — qui porte **trois**
+> affirmations numériques — en a maintenant trois ancres :
+>
+> | affirmation publiée dans C11 | claim | valeur ancrée |
+> |---|---|---|
+> | `H_min_post` ART soft : SPICE = Python | `C11` | `delta_pct` = 0.0 |
+> | ratio ART_soft/V4 **côté SPICE** = 1.134 | **`C11b`** | 1.1338 (dérivé de 2 lignes) |
+> | **23.9 % d'écart** entre les deux ratios | **`C11c`** | −23.8898 % (dérivé de 4 cellules) |
+>
+> Le ratio Python (1.490) n'a pas de claim propre : il est déterminé par les deux autres.
+> La phrase en gras du claim — *« le circuit reproduit la direction de l'effet ART »* —
+> n'en a pas non plus : elle est vraie ssi le ratio SPICE > 1, donc **C11b l'ancre
+> mécaniquement**.
+>
+> ⚠️ **Et il y a un contrôle positif, parce qu'un garde-fou vert ne prouve rien tant
+> qu'on n'a pas montré qu'il sait rendre rouge.** `preprint_guardian.py --self-test`
+> rejoue les trois claims contre le **témoin figé `6833cde`** (l'état d'avant le
+> réalignement de δ) et exige deux choses : que **C11b et C11c y BLOQUENT** (1.4896 et
+> 0.0000 contre 1.134 et −23.89), et que **C11 y rende exactement la même valeur
+> qu'aujourd'hui** — `0.0000` des deux côtés. Cette seconde moitié est la démonstration
+> **rejouable** de l'angle mort : sans elle, on prouverait que les nouveaux claims
+> fonctionnent, pas qu'ils étaient nécessaires.
 
 ---
 

@@ -45,10 +45,20 @@ découpage en classes — c'est le résultat **le moins attaquable** du papier.
 
 ### 1.2 Ce n'est pas une impression : c'est re-testé automatiquement
 
-**18 chiffres publiés** sont recalculés depuis leurs données à **chaque commit** et comparés au
-papier — **20/20 au 31/07/2026**. Depuis le 30/07, un **second** contrôle compare le *texte publié*
-à ses sources (13 ancrages, registre des valeurs remplacées, audit des scripts cités) ; il est
-**bloquant** depuis le 31/07. Très peu de laboratoires ont cet appareil.
+**22 valeurs publiées** — dans le papier ou dans le registre des claims — sont recalculées depuis
+leurs données à **chaque commit** et comparées à ce qui est écrit : **22/22 au 06/08/2026**.
+Depuis le 30/07, un **second** contrôle compare le *texte publié* à ses sources (13 ancrages,
+registre des valeurs remplacées, audit des scripts cités) ; il est **bloquant** depuis le 31/07.
+Très peu de laboratoires ont cet appareil.
+
+⚠️ **Et il a une limite qu'on a payée pour connaître.** Jusqu'au 06/08, un claim ne pouvait
+désigner qu'**une case d'un tableau de résultats**. Quand la phrase publiée porte sur autre chose
+— un *rapport* entre deux lignes, un *écart* entre deux rapports — le contrôle se rabattait sur la
+case la plus proche, et pouvait rester **vert** pendant que la phrase devenait fausse. C'est
+arrivé une fois, sur C11, et personne ne l'aurait vu. Le dispositif sait maintenant vérifier des
+grandeurs calculées, et un **contrôle positif** rejoue les nouvelles vérifications contre l'état
+d'avant pour prouver qu'elles savent dire non — parce qu'un feu vert ne prouve rien tant qu'on n'a
+pas montré que le feu peut passer au rouge.
 
 📁 `.brain/preprint_guardian.py` · `.brain/tex_guardian.py` · hook `pre-commit`
 

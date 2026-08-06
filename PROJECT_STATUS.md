@@ -26,7 +26,7 @@
   l'anti-synchronisation) — séparation complète, Cohen d ≈ 9.4 (BA m=3) / 4.7 (lattice),
   30 seeds. C'est le résultat le plus robuste et le moins attaquable du papier (corrélation
   de Pearson, indépendant du binning).
-- **Guardian** : **20/20** claims vérifiées automatiquement à chaque commit
+- **Guardian** : **22/22** claims vérifiées automatiquement à chaque commit
   (`.brain/claims_mapping.json` + `.brain/preprint_guardian.py`, hook pre-commit).
   *Ce compteur était resté à « 14/14 » du 29/07 au 31/07 — cible identifiée par la passe
   soustractive du 30/07 et corrigée seulement le 31 : la détection ne vaut que si la
@@ -83,7 +83,7 @@ Le projet est né au sein du **Café Virtuel**, un laboratoire de collaboration 
 Publication : DOI 10.5281/zenodo.19986042 (V4.0.0 — dernière release Zenodo ; le code a
 évolué depuis, la prochaine release Zenodo portera les valeurs V6.0.0 reformulées).
 Preprint actuel (non soumis, non publié sur Zenodo) : `docs/papers/preprint/preprint.tex`
-→ `preprint.pdf` (27 pages, Guardian **20/20**, Tex Guardian 15/15 ancres · 0 valeur morte · 14/14 sources).
+→ `preprint.pdf` (27 pages, Guardian **22/22**, Tex Guardian 15/15 ancres · 0 valeur morte · 14/14 sources).
 
 ---
 
@@ -142,8 +142,10 @@ nouveau document — c'est l'inverse qui a été montré.
 
 **Sources de vérité actuelles** (pas `docs/limitations.md`, périmé) :
 - **`.brain/claims_mapping.json`** + **`.brain/preprint_guardian.py`** — vérification
-  **automatisée** à chaque commit (hook pre-commit), **20 claims**, **20/20 OK** au
-  31 juillet 2026.
+  **automatisée** à chaque commit (hook pre-commit), **22 claims**, **22/22 OK** au
+  6 août 2026. *(20 → 22 le 06/08 : `C11b` et `C11c`, deux grandeurs **dérivées** —
+  un ratio entre lignes et un écart de ratios — que le format « une cellule = un claim »
+  ne savait pas exprimer, d'où l'angle mort de C11.)*
 - **`.brain/tex_guardian.py`** (créé le 30/07) — second garde-fou au même hook :
   il compare le **texte publié** à ses **données** (ancrages, registre des valeurs mortes,
   audit des sources citées). **15/15 ancres, 0 valeur morte, 14/14 sources** au 05/08 (le compte est passé de 12 à 14 quand l'audit des sources a été étendu aux chemins de DOSSIER, invisibles jusque-là : voir docs/audits/2026-08-05/).
@@ -434,7 +436,7 @@ mem4ristor-v2-main/
 ├── experiments/               # SCRIPTS D'EXPÉRIENCE (b1_*, b2_*, b4_*, b5_*, p2_*, ...)
 │
 ├── docs/
-│   ├── papers/preprint/preprint.tex   # Preprint actuel (reformulé, 27 pages, Guardian 20/20)
+│   ├── papers/preprint/preprint.tex   # Preprint actuel (reformulé, 27 pages, Guardian 22/22)
 │   ├── papers/preprint/preprint.pdf
 │   ├── CLAIMS_REGISTER.md              # Registre narratif des claims (voir §3)
 │   └── hardware/                        # Dossiers de correspondance physique (voir §2)
@@ -612,7 +614,7 @@ Elles sont documentées ici pour traçabilité et pour répondre aux reviewers s
 **Statut publication** : le code et l'historique **sont publics depuis le ~14/07** (voir §0)
 — ne pas lire ce paragraphe comme « publication bloquée », c'est l'erreur qu'un audit externe
 a tirée de ce fichier en juillet. Ce qui reste ouvert est la seule **soumission arXiv/HAL**.
-Le preprint est reformulé et cohérent avec le code (Guardian **20/20**, et depuis le
+Le preprint est reformulé et cohérent avec le code (Guardian **22/22**, et depuis le
 30/07 le **Tex Guardian** vérifie aussi le texte publié contre les CSV) ; il n'y a plus de
 correction technique bloquante depuis juin. ⚠️ **Nuance ajoutée le 30/07** : « cohérent avec
 le code » n'a longtemps désigné que les **CSV**. La première passe systématique du texte
