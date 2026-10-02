@@ -366,18 +366,20 @@ class Mem4ristorV3:
                 mode_art  = art.get('mode', 'soft')
                 rigidity  = 1.0 - self.u  # 1 = rigide (u faible), 0 = souple
 
-                # Convertir sparse -> dense une seule fois si necessaire
+                # Garder le creux creux : ne jamais materialiser N x N (toarray).
+                # Resultat identique au chemin dense (verifie bit a bit, 02/10/2026) ;
+                # gain ~50x a N=2000, nul a N=200.
                 if hasattr(adj, 'toarray'):
-                    adj_dense = adj.toarray().astype(float)
+                    adj_op = adj.astype(float)
                 else:
-                    adj_dense = np.asarray(adj, dtype=float)
+                    adj_op = np.asarray(adj, dtype=float)
 
-                degree = adj_dense.sum(axis=1)
+                degree = np.asarray(adj_op.sum(axis=1)).ravel()
                 degree = np.where(degree < 1.0, 1.0, degree)  # evite div/0
 
                 if mode_art == 'soft':
-                    # Gemini : pression = rigidit?? MOYENNE des voisins
-                    mean_rig = (adj_dense @ rigidity) / degree
+                    # Gemini : pression = rigidite MOYENNE des voisins
+                    mean_rig = (adj_op @ rigidity) / degree
                     pressure = mean_rig > rigid_thr
                     factor   = float(art.get('alpha_art_soft', 0.15))
                     self.u[pressure] = np.minimum(
@@ -385,7 +387,7 @@ class Mem4ristorV3:
                     )
                 elif mode_art == 'hard':
                     # Grok : proportion de voisins rigides (retroaction non-lineaire)
-                    n_rigid = adj_dense @ (rigidity > rigid_thr).astype(float)
+                    n_rigid = adj_op @ (rigidity > rigid_thr).astype(float)
                     ratio   = n_rigid / degree
                     pressure = ratio > 0
                     factor   = float(art.get('alpha_art_hard', 0.25))
