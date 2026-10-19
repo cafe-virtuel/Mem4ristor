@@ -64,22 +64,22 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 | `experiments/` | 69 scripts d'expérience classés par tier (1=finding, 2=validation, 3=robustesse) | [FOLDER_SUMMARY.md](experiments/FOLDER_SUMMARY.md) |
 | `docs/` | preprint.tex (Paper 1), paper_2/, results_compendium/ | [FOLDER_SUMMARY.md](docs/FOLDER_SUMMARY.md) |
 | `figures/` | Outputs CSV + PNG générés par experiments/ | [FOLDER_SUMMARY.md](figures/FOLDER_SUMMARY.md) |
-| `tests/` | 153 tests — exit 0, 2 `xfail` documentés | — |
+| `tests/` | 169 tests — exit 0 (167 passed + 2 `xfail` documentés) | — |
 | `archives/` | Code historique — ne pas modifier | [FOLDER_SUMMARY.md](archives/FOLDER_SUMMARY.md) |
 
 ---
 
-## État actuel (2026-08-02)
+## État actuel (2026-10-19)
 
 > Ce bloc datait du 2026-05-02 et était faux sur six lignes (version, branche, tests, DOI,
 > statut de publication, jalon). Corrigé le 02/08/2026 — audit externe B8, valeurs revérifiées
-> le jour même. **Source de vérité en cas de doute : `PROJECT_STATUS.md`.**
+> le 19/10/2026. **Source de vérité en cas de doute : `PROJECT_STATUS.md`.**
 
 - **Version du code** : V6.0.0 (`VERSION`, `pyproject.toml`)
 - **Dernière version déposée sur Zenodo** : **V4.0.0** (2026-05-02, DOI de version
   `10.5281/zenodo.19986042`). **V5 et V6 ne sont pas déposées.**
 - **Branche active** : `main`
-- **Tests** : 153 collectés, `pytest` exit 0 (2 `xfail` documentés dans `test_adversarial.py`)
+- **Tests** : 169 collectés (167 passed + 2 `xfail` documentés dans `test_adversarial.py`), `pytest` exit 0
 - **DOI** : 10.5281/zenodo.18620596 — *concept DOI*, résout toujours vers la dernière version déposée
 - **GitHub** : https://github.com/cafe-virtuel/Mem4ristor
 - **Papiers** : preprint **non soumis et non publié sur Zenodo**

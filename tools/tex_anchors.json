@@ -13,6 +13,9 @@
   "docs_scannes": [
     "PROJECT_STATUS.md",
     "README.md",
+    "REPRODUCE_RESULTS.md",
+    "REPRODUCE_IN_5_MINUTES.md",
+    "CONTEXT.md",
     "docs/*.md"
   ],
 

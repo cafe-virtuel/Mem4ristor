@@ -1,5 +1,5 @@
 """
-Mem4ristor v4.0.0 — Neuromorphic-inspired diversity-preserving cognitive architecture.
+Mem4ristor v6.0.0 — Neuromorphic-inspired diversity-preserving cognitive architecture.
 
 Modules:
     core        — Mem4ristorV3 engine & Mem4Network (lattice / adjacency)

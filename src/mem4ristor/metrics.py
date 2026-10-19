@@ -285,7 +285,6 @@ def calculate_transfer_entropy(source_history: np.ndarray, target_history: np.nd
     H_3d = -np.sum(p_3d * np.log2(p_3d))
     
     TE = H_Y_curr_prev + H_Y_prev_X_prev - H_Y_prev - H_3d
-    print(f"H_Yp={H_Y_prev:.3f}, H_Ycp={H_Y_curr_prev:.3f}, H_YpXp={H_Y_prev_X_prev:.3f}, H_3d={H_3d:.3f}, TE={TE:.5f}")
     return max(0.0, float(TE))
 
 

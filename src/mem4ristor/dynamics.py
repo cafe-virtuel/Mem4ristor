@@ -305,6 +305,9 @@ class Mem4ristorV3:
         else:
             innovation_mask = (self.u > 0.5).astype(float)
 
+        if np.any(np.abs(self.v) > 1e50) or np.any(np.abs(self.w) > 1e50):
+            raise OverflowError("Boom ! La simulation a déraillé et a dépassé ±100. Le filet de sécurité est retiré.")
+
         plasticity_drive = self.lambda_intrinsic * sigma_social * innovation_mask
         w_ratio = self.w / self.w_saturation
         saturation_factor = np.clip(1.0 - (w_ratio**2), 0.0, 1.0)

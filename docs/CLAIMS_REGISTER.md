@@ -135,17 +135,17 @@ Replication à n=10 planifiée pour révision future.
 | "36 configurations" | Doublement faux — correct : 12 topologies × 3 seeds | 2026-05-06 |
 | "complete separation" logistic regression (3 seeds) | Corrigé → 10 seeds + Albert & Anderson 1984 | 2026-05-06 |
 | **C12 — Transition thermodynamique FSS via Binder U4** | **INFIRMEE 2026-06-01** — U4 plat (0.6641–0.6666, variation 0.38%), pas de minimum. CSV `v6_binder_cumulant_U4.csv` ne contient que 4 bins lambda2 (9 sims), pas 40. Section Binder FSS retirée du preprint V6.0.0 par AUDIT-017 (31 mai 2026). | 2026-06-01 |
-| **C05b — λ₂_crit combined (3.14, CI95 [1.93, 4.85])** | **Non-canonique** — valeur alternative existe dans `lambda2_crit_regression.csv` mais n'est pas publiée. La valeur canonique preprint est l'EBC-only = 2.31. Conservée comme mention secondaire pour traçabilité. | 2026-06-01 |
+| **C05b — λ₂_crit combined (3.99, CI95 [2.64, 5.91] ; anc. 3.14 pré-12/06)** | **Non-canonique** — valeur alternative dans `lambda2_crit_regression.csv`, non publiée. La valeur canonique preprint est l'EBC-only = 2.31 (`C05`, inchangé au bit près). Conservée comme mention secondaire pour traçabilité. | 2026-06-01 (maj 2026-10-19) |
 
 ---
 
-## Notes d'audit Hermes M3 (2026-06-01)
+## Notes d'audit Hermes M3 (2026-06-01, maj 2026-10-19)
 
 **C05 note (\*)** : Le CSV `lambda2_crit_regression.csv` contient DEUX estimations :
-- **EBC-only** (régression logistique sur la métrique EBC) : midpoint = 2.3149, gap [2.126, 2.504], n=36 → **CANONIQUE préprint**
-- **Combined** (EBC + autres métriques) : midpoint = 3.140, CI95 [1.928, 4.845], n=58, σ_boot=0.746 → valeur alternative non publiée
+- **EBC-only** (séparation complète sur la métrique EBC) : midpoint = 2.3149, gap [2.126, 2.504], n=36 → **CANONIQUE préprint (`C05`, reproductible au bit près)**
+- **Combined** (EBC + Fiedler + SR) : midpoint = 3.989, CI95 [2.642, 5.914], n=58, σ_boot=0.848, R²=0.733 (avec `p2_stochastic_resonance_topology.csv` régénéré à 10 seeds le 12/06 ; valait 3.140, CI95 [1.928, 4.845] sur l'ancien CSV du 27/04) → valeur alternative non publiée
 
-La valeur 2.31 est plus conservative et soutenue par un IC resserré. Le 3.14 a un IC très large (3 unités de lambda2) qui reflete l'instabilité de la regression combinée. **Recommandation preprint : garder 2.31 (EBC).**
+La valeur 2.31 est plus conservative et soutenue par un intervalle de séparation étroit. L'estimation combinée a un IC très large (> 3 unités de lambda2) qui reflète l'instabilité du mélange de protocoles (bruit fort à $\sigma=1.2$ dans SR). **Recommandation preprint : garder 2.31 (EBC).**
 
 **C07 / C07b** *(mis à jour le 2026-07-31)* : la distinction reste vraie, et l'action qu'elle demandait est **faite**. Le claim historique C07 — « pairwise synchrony = 0.031 ± 0.034 » `[valeur morte]` — référait à **BA m=3 en régime FORCED** (I_stim=0.5), **PAS au lattice** ; la valeur lattice 10×10 était alors donnée à 0.0197 ± 0.0142 `[valeur morte]`, 36 % plus faible (elle vaut **0.036 ± 0.023** depuis le passage au Cold Start le 31/07 — voir C07b ci-dessus). Le preprint a été clarifié le **30/07** : `tab:benchmarks` se contredisait lui-même (corps « lattice 10×10 », légende « BA m=3 ») et publiait le chiffre BA ; il porte désormais les valeurs lattice, les deux colonnes venant enfin des mêmes runs (décision de Julien). Depuis le **31/07**, C07 est remplacé par **C14** (voir le tableau ci-dessus) et le Guardian n'appelle plus « C07 » ce qui est C07b.
 

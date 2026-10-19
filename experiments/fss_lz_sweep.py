@@ -163,7 +163,7 @@ def main():
     parser = argparse.ArgumentParser(description="FSS Lambda2 + LZ Complexity Sweep")
     parser.add_argument('--dry-run', action='store_true', help="Petit test rapide")
     parser.add_argument('--binder', action='store_true', help="Calcule U4 sur N=100/200/400 (lent)")
-    parser.add_argument('--nseeds', type=int, default=10, help="Nombre de seeds (default 10)")
+    parser.add_argument('--nseeds', type=int, default=5, help="Nombre de seeds (default 5, reproduit exactement figures/fss_lz_sweep_raw.csv et claims C19/C22)")
     args = parser.parse_args()
 
     # === CONFIGURATION ===

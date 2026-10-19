@@ -42,25 +42,18 @@
    silence. Le code est sur GitHub ; ce qui n'est **nulle part ailleurs** que sur le disque de
    l'auteur, c'est `.brain`, les contextes, les témoignages et le Café.
 
-**Mesuré le 04/09/2026** : Guardian **22/22**, Tex Guardian **15/15 ancres · 0 valeur morte ·
-14/14 sources · N4 13/13**, tests **153 collectés, 0 échec** (151 + 2 xfail), dépôt **synchro**.
+**Mesuré le 19/10/2026** : Guardian **22/22**, Tex Guardian **15/15 ancres · 0 valeur morte ·
+14/14 sources · N4 13/13** (étendue aux guides `REPRODUCE_RESULTS.md`, `REPRODUCE_IN_5_MINUTES.md`, `CONTEXT.md`), tests **169 collectés, 0 échec** (167 + 2 xfail), dépôt **synchro**.
 
 ## 0ter. CE QU'UN TIERS NE PEUT PAS REJOUER, nommément
 
-- 🔴 **`C05`** (la frontière λ₂ = 2,31, citée dans l'abstract) : son producteur s'arrête sur
-  un `FileNotFoundError` — il lit `figures/p2_stochastic_resonance_topology.csv`, **non
-  versionné**, dont le producteur l'est. Rien n'indique qu'il faut lancer un autre script
-  d'abord. *Ce que ça révèle du garde-fou : `N4` vérifie qu'un producteur existe et est
-  versionné, pas que ses propres ENTRÉES existent.*
+- ✅ **`C05` [RÉSOLU le 19/10/2026]** (la frontière λ₂ = 2,31, citée dans l'abstract) : son producteur s'arrêtait sur
+  un `FileNotFoundError` — il lisait `figures/p2_stochastic_resonance_topology.csv`, déplacé dans `figures/scratch/` le 13/07 (`2e1b8f2`) sans y avoir été ramené le 14/07 (`4f053b6`). `figures/p2_stochastic_resonance_topology.csv` est restauré dans `figures/` et `experiments/lambda2_crit_regression.py` gère désormais l'absence éventuelle de la source tertiaire sans bloquer le calcul primaire EBC (`C05`, `2.314928170150475`).
 - ⚠️ **`C12`** : `v6_binder_cumulant_u4.py` tourne (26 min) mais rend une grille différente du
   CSV publié (4 bins / 9 simulations). Reste à établir si les valeurs coïncident sur les bins
   communs.
-- ⚠️ **`C19`/`C22`** : reproduits **exactement**, mais seulement avec `--nseeds 5` — paramètre
-  d'exécution documenté nulle part. Sans lui : 300 lignes au lieu des 120 publiées.
-- ⚠️ **`run_heroic_800.py` / `run_heroic_1600.py`** : calculent **40 minutes** puis perdent tout
-  à l'écriture (`'../figures'`, relatif au répertoire courant, alors qu'ils utilisent
-  correctement `__file__` pour leurs imports). Même défaut que le `parent.parent` corrigé le
-  31/07 ; il en restait deux.
+- ✅ **`C19`/`C22` [RÉSOLU le 19/10/2026]** : reproduits **exactement** ; le défaut de `--nseeds` dans `experiments/fss_lz_sweep.py` a été aligné sur `5` (au lieu de `10`), de sorte qu'une exécution sans argument reproduit directement les 120 lignes publiées.
+- ✅ **`run_heroic_800.py` / `run_heroic_1600.py` [RÉSOLU le 19/10/2026]** : les chemins d'écriture `'../figures'` (relatifs au répertoire courant) ont été remplacés par des chemins résolus via `os.path.dirname(__file__)`.
 - ⚠️ **Les deux figures `[3]` et `[4]`** du compendium (LZ par nœud, chimères) : scripts et CSV
   présents dans `scratch/`, **gitignorés**. Le chiffre de [3] est retrouvé (**r = −0,7156**)
   mais **sa description publiée est fausse** : N = 100 nœuds et 5 graines, pas « N = 400 », et
@@ -431,15 +424,12 @@ de bruit fort) et `::test_euler_drift_torture` (instabilité numérique à dt > 
 
 ### Compte réel de la suite
 
-**151 passed + 2 xfail = 153 collectés**, mesuré le 2026-08-05 :
-`python -m pytest --tb=no -q --ignore=tests/results` (l'option `--ignore` est obligatoire :
-`tests/results` contient des dumps UTF-16 qui cassent la collecte).
+**167 passed + 2 xfail = 169 collectés**, mesuré le 2026-10-19 :
+`python -m pytest` (`pytest.ini` configure `testpaths = tests` et ignore `tests/results` par défaut).
 
-> ⚠️ **Lire le total, pas seulement le premier nombre.** La formulation « 153 (+2 xfail) »,
-> employée ailleurs, se lit à tort comme 155 : les 2 xfail sont **dans** les 153. L'écart avec
-> le 130 du 26/07 vient des 12 tests de `test_version_consistency.py` (02/08) et des ajouts
-> antérieurs. Ce chiffre est daté parce qu'il se périme à chaque test ajouté — un audit externe
-> l'a d'ailleurs relevé le 05/08, à raison.
+> ⚠️ **Lire le total, pas seulement le premier nombre.** La formulation « 169 (+2 xfail) »,
+> employée ailleurs, se lit à tort comme 171 : les 2 xfail sont **dans** les 169. L'écart avec
+> le 153 du 05/08 vient des 16 tests de `test_complex_doubt_p10.py`.
 >
 > 🔁 **CE COMPTE VIT À DEUX ENDROITS DE CE FICHIER** : ici et dans l'arborescence du §5
 > (`tests/`). Ils ont divergé le 26/07 (note ci-dessus), et **de nouveau le 05/08** — corrigé
@@ -487,7 +477,7 @@ mem4ristor-v2-main/
 ├── experimental/              # MODULES NON PRODUCTION
 │   └── mem4ristor_king.py     # "Philosopher King"
 │
-├── tests/                     # SUITE DE TESTS (151 passed + 2 xfail = 153, mesuré le 05/08/2026 — voir §4)
+├── tests/                     # SUITE DE TESTS (167 passed + 2 xfail = 169, mesuré le 19/10/2026 — voir §4)
 │
 ├── experiments/               # SCRIPTS D'EXPÉRIENCE (b1_*, b2_*, b4_*, b5_*, p2_*, ...)
 │

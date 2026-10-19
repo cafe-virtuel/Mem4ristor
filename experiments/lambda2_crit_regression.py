@@ -82,17 +82,24 @@ for lbl in common:
 # Les topos ici sont ba_m2/m3/m5/m8, lattice, er_p0.05/0.10 -- toutes claires.
 # "lattice" est uniform_wins mais PAS en dead zone (uniform H>0).
 
-df_sr = pd.read_csv(FIG_DIR / "p2_stochastic_resonance_topology.csv")
-sigma_max = df_sr["sigma"].max()
-df_sr_max = df_sr[df_sr["sigma"] == sigma_max].copy()
-for _, row in df_sr_max.iterrows():
-    dead = int(row["h_cog_mean"] < H_DEAD_THRESHOLD)
-    records.append({
-        "lambda2": row["lambda2"],
-        "dead_zone": dead,
-        "source": "sr",
-        "label": row["topo"],
-    })
+sr_csv = FIG_DIR / "p2_stochastic_resonance_topology.csv"
+if not sr_csv.exists():
+    sr_csv = FIG_DIR / "scratch" / "p2_stochastic_resonance_topology.csv"
+
+if sr_csv.exists():
+    df_sr = pd.read_csv(sr_csv)
+    sigma_max = df_sr["sigma"].max()
+    df_sr_max = df_sr[df_sr["sigma"] == sigma_max].copy()
+    for _, row in df_sr_max.iterrows():
+        dead = int(row["h_cog_mean"] < H_DEAD_THRESHOLD)
+        records.append({
+            "lambda2": row["lambda2"],
+            "dead_zone": dead,
+            "source": "sr",
+            "label": row["topo"],
+        })
+else:
+    print(f"Note: source tertiaire {sr_csv.name} absente (optionnelle pour C05 / EBC primaire).")
 
 df = pd.DataFrame(records)
 

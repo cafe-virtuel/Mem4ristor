@@ -30,15 +30,16 @@ The script generates `demo_chimera_output.png` which contains 3 plots:
 
 ## Why this matters?
 
-This model demonstrates that **"heretic" nodes (forced with an inverted stimulus) act as causal structural walls**. The surrounding network bombards them with information, forcing them to resist, which shatters the dead-zone consensus and maintains continuous diversity. The full scientific claims and known limitations are documented in `docs/limitations.md`.
+This model demonstrates that **"heretic" nodes (forced with an inverted stimulus) act as causal structural walls**, while the dynamic doubt variable $u$ acts as an active anti-synchronization filter (`FULL` vs `FROZEN_U`, complete separation across 30 seeds, `Cohen's d = 9.43`). The full scientific claims, automated verification rules, and known limitations are documented in [`docs/CLAIMS_REGISTER.md`](docs/CLAIMS_REGISTER.md) and [`docs/BILAN_FORCES_FAIBLESSES.md`](docs/BILAN_FORCES_FAIBLESSES.md) (superseding the earlier `docs/limitations.md`).
 
 ## Scientific integrity note
 
-This repository is actively maintained and includes an honest **limitations register** (`docs/limitations.md`). Several early claims have been revised:
+This repository is actively maintained and includes an automated **22-claim verification suite** (`python tools/preprint_guardian.py` and `python tools/tex_guardian.py`) alongside an honest **claims and limitations register** (`docs/CLAIMS_REGISTER.md`, `docs/BILAN_FORCES_FAIBLESSES.md`). Several early claims have been revised or refuted by our own controls:
 
+* The dead-zone boundary on dense networks is governed by the harmonic coupling degree ($k_{\text{harm}} \approx 6$, mean-field averaging), not by the spectral gap $\lambda_2$ ($\lambda_2 \approx 2.31$ is a correlational proxy on BA/ER graphs).
 * The 15% heretic threshold is not universal — it requires degree-linear coupling normalization on scale-free networks.
-* The isolated-node stability claim in the original preprint was corrected: the fixed point is a stable spiral at default parameters.
-* Noise is required to sustain diversity under cold-start conditions (I_stimulus=0).
+* The isolated-node stability claim in the original preprint was corrected: the fixed point is a stable spiral at default parameters ($\alpha_{\text{crit}} = 0.2955$).
+* Noise is required to sustain diversity under cold-start conditions ($I_{\text{stimulus}}=0$).
 
 The `PROJECT_STATUS.md` file maintains a full register of all scientific investigations, confirmed findings, and revised claims.
 

@@ -73,8 +73,11 @@ def main():
         
     df_new = pd.DataFrame(results)
     
+    fig_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../figures'))
+    os.makedirs(fig_dir, exist_ok=True)
+
     # Charger l'ancien raw data et concaténer
-    raw_file = '../figures/v6_binder_cumulant_raw.csv'
+    raw_file = os.path.join(fig_dir, 'v6_binder_cumulant_raw.csv')
     if os.path.exists(raw_file):
         df_old = pd.read_csv(raw_file)
         df_old = df_old[df_old['N'] != N_HEROIC] # remove old N=1600 if any
@@ -108,7 +111,7 @@ def main():
         })
         
     df_u4 = pd.DataFrame(u4_results).dropna()
-    df_u4.to_csv('../figures/v6_binder_cumulant_U4.csv', index=False)
+    df_u4.to_csv(os.path.join(fig_dir, 'v6_binder_cumulant_U4.csv'), index=False)
     print("Données N=1600 ajoutées aux CSV.")
 
 if __name__ == "__main__":

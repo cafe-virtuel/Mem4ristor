@@ -60,9 +60,9 @@ les commits, toutes les erreurs, tous les revirements sont publics.
 | | |
 |--|--|
 | ⏱ Durée | 13 mois de travail actif (août 2025 → septembre 2026) |
-| ✅ Tests automatisés | **153 collectés, 0 échec** (151 passés + 2 `xfail` documentés) |
+| ✅ Tests automatisés | **169 collectés, 0 échec** (167 passés + 2 `xfail` documentés) |
 | 🔒 Valeurs publiées sous garde-fou | **22 claims, 22/22 vérifiées** à chaque commit *et* en CI publique |
-| 🔁 Rejouables depuis un clone neuf | **20 des 22**, écart relatif `0.000e+00` (campagne du 4 septembre, §9) |
+| 🔁 Rejouables depuis un clone neuf | **21 des 22**, écart relatif `0.000e+00` (campagne du 4 septembre + correctifs du 19 octobre, §9) |
 | 📄 Papiers | 1 preprint **ni soumis ni déposé en V6** · paper_2 en préparation · paper_B hardware |
 | 🔖 DOI Zenodo | [10.5281/zenodo.18620596](https://doi.org/10.5281/zenodo.18620596) *(dernier dépôt : V4.0.0)* |
 | 💰 Financement | 0 € institutionnel |
@@ -288,18 +288,14 @@ pandas 3.0.5 — changement de version majeure) :
 > **20 des 22 claims se rejouent, avec un écart relatif de `0.000e+00`** — identiques, pas
 > « proches ».
 
-**Ce qui ne se rejoue pas, nommément :**
+**Ce qui ne se rejouait pas au 4 septembre (et état après correctifs du 19 octobre) :**
 
-- 🔴 **`C05`** (la frontière λ₂ = 2,31, citée dans l'abstract) : son producteur s'arrête sur un
-  `FileNotFoundError` — il lit un CSV non versionné dont le producteur, lui, l'est. Il faut lancer
-  un autre script d'abord, et rien ne le dit.
+- ✅ **`C05` [RÉSOLU le 19/10/2026]** (la frontière λ₂ = 2,31, citée dans l'abstract) : son producteur s'arrêtait sur un
+  `FileNotFoundError` car `figures/p2_stochastic_resonance_topology.csv` était resté dans `figures/scratch/`. Le CSV est désormais versionné dans `figures/` et le script est résilient à l'absence de la source tertiaire.
 - ⚠️ **`C12`** (cumulant de Binder) : le script tourne (26 min) mais rend une grille différente du
   CSV publié. Reste à établir si les valeurs coïncident sur les bins communs.
-- ⚠️ **`C19`/`C22`** : reproduits **exactement**, mais seulement avec `--nseeds 5` — un paramètre
-  d'exécution qui n'est documenté nulle part.
-- ⚠️ **Deux runs héroïques** (`run_heroic_800/1600`) calculent 40 minutes puis **perdent tout** à
-  l'écriture : ils écrivent dans `'../figures'`, relatif au répertoire courant, alors qu'ils
-  utilisent correctement `__file__` pour leurs imports.
+- ✅ **`C19`/`C22` [RÉSOLU le 19/10/2026]** : reproduits **exactement** sans argument supplémentaire (`--nseeds` fixé à `5` par défaut dans `experiments/fss_lz_sweep.py`).
+- ✅ **Deux runs héroïques (`run_heroic_800/1600`) [RÉSOLU le 19/10/2026]** : écrivaient dans `'../figures'` relatif au répertoire courant ; corrigés pour résoudre `figures/` via `__file__`.
 
 ---
 
