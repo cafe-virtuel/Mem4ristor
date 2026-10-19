@@ -25,14 +25,15 @@
    **intégration continue publique** (`.github/workflows/guardian.yml`, vert au premier run).
    Avant le 03/09, personne qui clonait ne pouvait vérifier un seul des 22 claims.
 2. ✅ **Campagne de rejeu depuis un clone GitHub neuf** (bibliothèques plus récentes que les
-   locales : numpy 2.5.2, pandas 3.0.5) : **20 des 22 claims se rejouent, écart relatif
-   `0.000e+00`**. Ce qui ne se rejoue pas est nommé au §0ter.
+   locales : numpy 2.5.2, pandas 3.0.5) : **20 des 22 claims se rejouaient au 04/09, et 22 des 22
+   se rejouent depuis le 19/10/2026 (écart relatif `0.000e+00`)**. Ce qui bloquait au 04/09 et sa
+   résolution sont détaillés au §0ter.
 3. ✅ **Deux précédents ajoutés au preprint** après recherche bibliographique : Zanette &
    Mikhailov (Physica D 194:203-218, 2004) — le plus proche du principe, dont la différence est
    que leurs variables internes sont *autonomes* quand `u` est *rétroactif* — et Hong &
    Strogatz (PRL 106:054102, 2011). PDF recompilé : **28 pages**.
 4. ✅ **Compendium réécrit** (`docs/compendium/COMPENDIUM.md`, désormais la source) : la
-   colonne B y est versée, l'énergie recadrée, les deux figures non rejouables signalées.
+   colonne B y est versée, l'énergie recadrée, et les deux figures `[3]`/`[4]` sorties de `scratch/` et rejouées le 19/10.
    ⚠️ `COMPENDIUM.tex` **n'est pas encore son rendu** et porte un avertissement de péremption.
 5. ✅ **Le « push intermittent » n'existait pas.** Deux helpers d'identifiants empilés, GCM
    appelé en premier, qui attend une **fenêtre graphique** quand personne n'est devant l'écran.
@@ -42,22 +43,19 @@
    silence. Le code est sur GitHub ; ce qui n'est **nulle part ailleurs** que sur le disque de
    l'auteur, c'est `.brain`, les contextes, les témoignages et le Café.
 
-**Mesuré le 19/10/2026** : Guardian **22/22**, Tex Guardian **15/15 ancres · 0 valeur morte ·
+**Mesuré le 19/10/2026** : Guardian **22/22** (22/22 rejouables depuis un clone neuf), Tex Guardian **15/15 ancres · 0 valeur morte ·
 14/14 sources · N4 13/13** (étendue aux guides `REPRODUCE_RESULTS.md`, `REPRODUCE_IN_5_MINUTES.md`, `CONTEXT.md`), tests **169 collectés, 0 échec** (167 + 2 xfail), dépôt **synchro**.
 
-## 0ter. CE QU'UN TIERS NE PEUT PAS REJOUER, nommément
+## 0ter. CE QU'UN TIERS NE POUVAIT PAS REJOUER AU 04/09 (ET RÉSOLUTION DU 19/10/2026)
 
 - ✅ **`C05` [RÉSOLU le 19/10/2026]** (la frontière λ₂ = 2,31, citée dans l'abstract) : son producteur s'arrêtait sur
   un `FileNotFoundError` — il lisait `figures/p2_stochastic_resonance_topology.csv`, déplacé dans `figures/scratch/` le 13/07 (`2e1b8f2`) sans y avoir été ramené le 14/07 (`4f053b6`). `figures/p2_stochastic_resonance_topology.csv` est restauré dans `figures/` et `experiments/lambda2_crit_regression.py` gère désormais l'absence éventuelle de la source tertiaire sans bloquer le calcul primaire EBC (`C05`, `2.314928170150475`).
-- ⚠️ **`C12`** : `v6_binder_cumulant_u4.py` tourne (26 min) mais rend une grille différente du
-  CSV publié (4 bins / 9 simulations). Reste à établir si les valeurs coïncident sur les bins
-  communs.
+- ✅ **`C12` [RÉSOLU le 19/10/2026]** : le CSV publié (`figures/v6_binder_cumulant_U4.csv`, 4 bins / 9 observations issues de 15 simulations) avait été produit avec le mode `--dry-run` (`N=[100]`, 3 graines, 500 pas, `min_group_size=2`), tandis que l'exécution sans argument lançait la grille lourde de 1 800 simulations (26 min). Le mode rapide reproduisant `C12` au bit près (en 6,5 s, avec tri déterministe post-multiprocessus) est désormais le comportement par défaut de `experiments/v6_binder_cumulant_u4.py` (la grille lourde reste accessible via `--full-campaign`).
 - ✅ **`C19`/`C22` [RÉSOLU le 19/10/2026]** : reproduits **exactement** ; le défaut de `--nseeds` dans `experiments/fss_lz_sweep.py` a été aligné sur `5` (au lieu de `10`), de sorte qu'une exécution sans argument reproduit directement les 120 lignes publiées.
 - ✅ **`run_heroic_800.py` / `run_heroic_1600.py` [RÉSOLU le 19/10/2026]** : les chemins d'écriture `'../figures'` (relatifs au répertoire courant) ont été remplacés par des chemins résolus via `os.path.dirname(__file__)`.
-- ⚠️ **Les deux figures `[3]` et `[4]`** du compendium (LZ par nœud, chimères) : scripts et CSV
-  présents dans `scratch/`, **gitignorés**. Le chiffre de [3] est retrouvé (**r = −0,7156**)
-  mais **sa description publiée est fausse** : N = 100 nœuds et 5 graines, pas « N = 400 », et
-  uniquement sous `I_stim = 0,3` (à 0, r = −0,63).
+- ✅ **Les deux figures `[3]` et `[4]` du compendium (`lz_per_node.py`, `reviewer2_chimera_comparison.py`) [RÉSOLU le 19/10/2026]** :
+  - **Figure `[4]` / `[B]` (`experiments/reviewer2_chimera_comparison.py`, `figures/reviewer2_chimera_comparison.csv`)** : sortie de `scratch/`, chemins corrigés via `__file__`, et rejouée en 11,2 s — reproduit **au bit près (`0.000e+00`)** `R = 0,141` (`0.141328`) vs `R = 0,766` (`0.765621`, Abrams-Strogatz 2004).
+  - **Figure `[3]` / `[A]` (`experiments/lz_per_node.py`, `figures/lz_per_node.csv`, `figures/lz_per_node_summary.csv`)** : sortie de `scratch/` et rejouée en 29,5 s. **L'énigme de l'horodatage du 1er mai est tranchée** : le commit `6ae10b4` (29/04/2026) et la colonne `degree` de l'ancien CSV (`[17, 22, 14]` au lieu de `[19, 21, 18]` pour `make_ba(100, 3, 0)`) prouvent que le CSV historique (`r = −0,7156`) datait d'**avant** le commit `818cf67` (01/05/2026), lorsque `_doubt_driven_rewire()` modifiait les degrés en place dans `FULL` et que le bruit était 4,47× plus faible. Sur le moteur V6.0.0 actuel (swap préservant les degrés + bruit Euler-Maruyama), la séparation `FULL < FROZEN_U` par nœud sous forçage (`I=0,3`) est massive (`1,110 ± 0,136` vs `1,648 ± 0,183` sur BA `m=3`, `p = 3,05e-281`) et la corrélation négative degré–LZ dans `FULL` survit mais avec une amplitude réduite (`lz_full` : `r = −0,152, p = 6,34e-4` sur BA `m=5, I=0,3` et `r = −0,118, p = 8,28e-3` sur BA `m=3, I=0,0` ; régime stationnaire `lz_tail` : `r = −0,221, p = 6,15e-7` sur BA `m=3, I=0,3` et `r = −0,324, p = 1,08e-13` sur BA `m=5, I=0,0`), contre une corrélation nulle en `FROZEN_U` (`|r| ≤ 0,043, p ≥ 0,33`).
 
 ---
 

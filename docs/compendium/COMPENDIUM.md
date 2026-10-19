@@ -62,7 +62,7 @@ les commits, toutes les erreurs, tous les revirements sont publics.
 | ⏱ Durée | 13 mois de travail actif (août 2025 → septembre 2026) |
 | ✅ Tests automatisés | **169 collectés, 0 échec** (167 passés + 2 `xfail` documentés) |
 | 🔒 Valeurs publiées sous garde-fou | **22 claims, 22/22 vérifiées** à chaque commit *et* en CI publique |
-| 🔁 Rejouables depuis un clone neuf | **21 des 22**, écart relatif `0.000e+00` (campagne du 4 septembre + correctifs du 19 octobre, §9) |
+| 🔁 Rejouables depuis un clone neuf | **22 des 22**, écart relatif `0.000e+00` (campagne du 4 septembre + correctifs du 19 octobre, §9) |
 | 📄 Papiers | 1 preprint **ni soumis ni déposé en V6** · paper_2 en préparation · paper_B hardware |
 | 🔖 DOI Zenodo | [10.5281/zenodo.18620596](https://doi.org/10.5281/zenodo.18620596) *(dernier dépôt : V4.0.0)* |
 | 💰 Financement | 0 € institutionnel |
@@ -288,40 +288,49 @@ pandas 3.0.5 — changement de version majeure) :
 > **20 des 22 claims se rejouent, avec un écart relatif de `0.000e+00`** — identiques, pas
 > « proches ».
 
-**Ce qui ne se rejouait pas au 4 septembre (et état après correctifs du 19 octobre) :**
+**Ce qui ne se rejouait pas au 4 septembre (tous résolus le 19 octobre 2026 — 22/22 rejouables) :**
 
 - ✅ **`C05` [RÉSOLU le 19/10/2026]** (la frontière λ₂ = 2,31, citée dans l'abstract) : son producteur s'arrêtait sur un
   `FileNotFoundError` car `figures/p2_stochastic_resonance_topology.csv` était resté dans `figures/scratch/`. Le CSV est désormais versionné dans `figures/` et le script est résilient à l'absence de la source tertiaire.
-- ⚠️ **`C12`** (cumulant de Binder) : le script tourne (26 min) mais rend une grille différente du
-  CSV publié. Reste à établir si les valeurs coïncident sur les bins communs.
+- ✅ **`C12` [RÉSOLU le 19/10/2026]** (cumulant de Binder) : le CSV publié (`figures/v6_binder_cumulant_U4.csv`, 4 bins / 9 observations issues de 15 simulations) avait été produit avec le mode rapide `--dry-run` (`N=100`, 3 graines, 500 pas, `min_group_size=2`), alors que l'exécution par défaut lançait la grille lourde de 1 800 simulations (26 min). Le mode canonique reproduisant `C12` au bit près en 6,5 s est désormais le mode par défaut de `experiments/v6_binder_cumulant_u4.py` (grille lourde via `--full-campaign`).
 - ✅ **`C19`/`C22` [RÉSOLU le 19/10/2026]** : reproduits **exactement** sans argument supplémentaire (`--nseeds` fixé à `5` par défaut dans `experiments/fss_lz_sweep.py`).
 - ✅ **Deux runs héroïques (`run_heroic_800/1600`) [RÉSOLU le 19/10/2026]** : écrivaient dans `'../figures'` relatif au répertoire courant ; corrigés pour résoudre `figures/` via `__file__`.
 
 ---
 
-## 10. Deux figures que nous ne pouvons pas encore prouver
+## 10. Deux figures hors preprint désormais versionnées et rejouées (19 octobre 2026)
 
-Ces deux résultats sont présentés dans les versions antérieures de ce document comme des
-découvertes. Ils ne sont couverts par **aucun** garde-fou et **ne sont pas rejouables par un
-clone** : leur script et leurs données vivent hors du dépôt. Ils sont conservés ici avec leur
-statut exact, et leur reconstruction est un chantier ouvert.
+Ces deux résultats, présentés dans les versions antérieures de ce document, vivaient dans `scratch/`
+(gitignoré). Leurs scripts et leurs CSV ont été sortis dans `experiments/` et `figures/` et rejoués
+le 19 octobre 2026 avec le moteur V6.0.0 :
 
-**[A] Intelligence topologique — LZ par nœud.** Dans un réseau fonctionnel, les hubs ont des
-trajectoires *plus structurées* que les nœuds périphériques ; en FROZEN_U, la corrélation
-disparaît (r ≈ 0,015). L'affirmation qualitative tient sur les données d'origine.
-⚠️ **Mais sa description publiée est fausse** : re-calculée depuis le CSV de mai, la corrélation
-vaut **r = −0,7156** pour **N = 100 nœuds et 5 graines** — et non « N = 400 » comme annoncé — et
-uniquement **sous stimulus `I_stim = 0,3`** ; à `I_stim = 0`, elle vaut −0,63.
-⚠️ Son CSV a été écrit **2 min 16 s après** le commit qui a changé le modèle de bruit : impossible
-de savoir, sans relancer, de quel côté il tombe.
+**[A] Intelligence topologique — LZ par nœud (`experiments/lz_per_node.py`).**
+- **L'énigme de l'horodatage du 1er mai est tranchée** : le commit d'origine (`6ae10b4`, 29 avril
+  2026) et la colonne `degree` de l'ancien CSV (`[17, 22, 14]` au lieu de `[19, 21, 18]` pour
+  `make_ba(100, 3, 0)`) prouvent que le CSV historique (**r = −0,7156** pour **N = 100, 5 graines,
+  `I_stim = 0,3`**) avait été généré **avant** le commit `818cf67` du 1er mai 2026. À cette date,
+  `_doubt_driven_rewire()` modifiait les degrés en place dans `FULL` (sans préserver les degrés) et
+  le bruit était 4,47× plus faible (pré-Euler-Maruyama).
+- **Mesure sur le moteur V6.0.0 actuel** (swap préservant les degrés + bruit Euler-Maruyama, 29,5 s) :
+  1. La séparation par nœud **`FULL < FROZEN_U`** sous forçage (`I_stim = 0,3`) est **massive** :
+     `LZ_full = 1,110 ± 0,136` (`FULL`) contre `1,648 ± 0,183` (`FROZEN_U`, Welch `p = 3,05e-281`)
+     sur BA `m=3`, et `1,038 ± 0,152` contre `1,695 ± 0,073` sur BA `m=5` (`p < 1e-300`).
+  2. La corrélation négative degré ↔ complexité LZ dans `FULL` (les hubs ont des trajectoires plus
+     structurées que la périphérie) survit qualitativement mais avec une **amplitude nettement plus
+     modeste** que le −0,72 pré-mai : sur `lz_full`, **r = −0,152** (`p = 6,34e-4`, BA `m=5,
+     I_stim = 0,3`) et **r = −0,118** (`p = 8,28e-3`, BA `m=3, I_stim = 0,0`) ; sur le régime
+     stationnaire `lz_tail` (derniers 25 % des pas), **r = −0,221** (`p = 6,15e-7`, BA `m=3,
+     I_stim = 0,3`) et **r = −0,324** (`p = 1,08e-13`, BA `m=5, I_stim = 0,0`). En `FROZEN_U`, la
+     corrélation reste nulle dans toutes les conditions (`|r| ≤ 0,043, p ≥ 0,33`).
 
-**[B] Chimères — une classe mécanistiquement distincte.** Abrams-Strogatz (2004) : chimère par
-couplage non-local fixe. Mem4ristor : chimère par modulation dynamique de polarité, sur un réseau
-sans symétrie imposée. **R = 0,141** contre **R = 0,766**. Chiffres retrouvés dans leur CSV
-d'origine (2 mai 2026), postérieur au changement de bruit.
+**[B] Chimères — une classe mécanistiquement distincte (`experiments/reviewer2_chimera_comparison.py`).**
+Abrams-Strogatz (2004) : chimère par couplage non-local fixe. Mem4ristor : chimère par modulation
+dynamique de polarité, sur un réseau sans symétrie imposée. Rejoué en 11,2 s sur le code V6.0.0 :
+reproduit **au bit près (`0.000e+00`)** les valeurs d'origine du 2 mai 2026 — **R = 0,141**
+(`0.141328`) contre **R = 0,766** (`0.765621`).
 
-*Figures : `figures/lz_per_node.png`, `figures/reviewer2_chimera_comparison.png` — seuls éléments
-versionnés de ces deux résultats.*
+📁 `experiments/lz_per_node.py` · `figures/lz_per_node.csv` · `figures/lz_per_node_summary.csv` ·
+`experiments/reviewer2_chimera_comparison.py` · `figures/reviewer2_chimera_comparison.csv`
 
 ---
 

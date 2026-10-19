@@ -81,22 +81,23 @@ def run_single_sim(args):
     return {'N': N, 'c': c, 'seed': seed, 'lambda2': l2, 'H_stable': H_stable}
 
 def main():
-    parser = argparse.ArgumentParser(description="Campagne lourde pour le Cumulant de Binder U4")
-    parser.add_argument('--dry-run', action='store_true', help="Lancer un test rapide à petite échelle")
+    parser = argparse.ArgumentParser(description="Campagne Cumulant de Binder U4 (C12)")
+    parser.add_argument('--dry-run', action='store_true', help="Alias du mode canonique C12 (test rapide, défaut)")
+    parser.add_argument('--full-campaign', action='store_true', help="Lancer la grille lourde complète (N=100/200/400, 40 seeds, 2500 steps)")
     args = parser.parse_args()
     
-    if args.dry_run:
-        print(">>> MODE DRY-RUN ACTIF (test rapide) <<<")
-        N_SIZES = [100]
-        N_SEEDS = 3
-        STEPS = 500
-        c_vals = np.linspace(0.0, 8.0, 5)
-    else:
-        print(">>> MODE CAMPAGNE COMPLÈTE ACTIF <<<")
+    if args.full_campaign:
+        print(">>> MODE CAMPAGNE LOURDE ACTIF (N=100/200/400, 40 seeds) <<<")
         N_SIZES = DEFAULT_N_SIZES
         N_SEEDS = DEFAULT_N_SEEDS
         STEPS = DEFAULT_STEPS
         c_vals = np.linspace(0.0, DEFAULT_C_MAX, DEFAULT_C_STEPS)
+    else:
+        print(">>> MODE CANONIQUE C12 ACTIF (reproduit figures/v6_binder_cumulant_U4.csv) <<<")
+        N_SIZES = [100]
+        N_SEEDS = 3
+        STEPS = 500
+        c_vals = np.linspace(0.0, 8.0, 5)
         
     m_base = 3
     
@@ -134,7 +135,8 @@ def main():
         print("Erreur: Aucun résultat valide généré.")
         return
         
-    df = pd.DataFrame(results)
+    # Tri déterministe (indépendant de l'ordre de complétion multiprocessus)
+    df = pd.DataFrame(results).sort_values(['N', 'c', 'seed']).reset_index(drop=True)
     
     # S'assurer que le dossier figures existe
     figures_dir = os.path.join(PROJECT_ROOT, 'figures')
@@ -151,7 +153,7 @@ def main():
     grouped = df.groupby(['N', 'lambda2_bin'])
     
     u4_results = []
-    min_group_size = 2 if args.dry_run else 4
+    min_group_size = 4 if args.full_campaign else 2
     for (N, l2_bin), group in grouped:
         H_vals = group['H_stable'].values
         if len(H_vals) < min_group_size:

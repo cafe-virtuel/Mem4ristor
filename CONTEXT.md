@@ -35,9 +35,9 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 | # | Finding | Chiffre clé | Script |
 |---|---------|-------------|--------|
 | 1 | **Dead zone** — un seuil de **degré de couplage** sépare réseaux fonctionnels et morts (k_harm ≈ 6) ; la séparation en λ₂ ≈ 2.31 du jeu initial est **corrélationnelle**, pas causale | à degré fixé, λ₂ varie ×27 sans changer le régime | `experiments/lambda2_foundation_20260701/` (versionné le 05/08) |
-| 2 | **Intelligence topologique** — dans FULL, les hubs ont des trajectoires plus structurées (u couple complexité ↔ connectivité) | r=−0.716, p=1.29e-79 (BA m=5) | `lz_per_node.py` |
+| 2 | **Intelligence topologique** — dans FULL, les hubs ont des trajectoires plus structurées que la périphérie (`FROZEN_U` : corrélation nulle, \|r\| ≤ 0.04) | V6.0.0 : r=−0.221 (p=6.2e-7, `lz_tail` BA m=3 I=0.3) et r=−0.324 (p=1.1e-13, BA m=5 I=0) ; r=−0.716 pré-01/05 (amplifié par l'ancien rewiring non conservatif) | `experiments/lz_per_node.py` (versionné le 19/10) |
 | 3 | ⚫ **RÉFUTÉ — Transition événementielle** (voir la note sous ce tableau) | 0/9 configurations positives au rejeu | `experiments/event_phase_transition_rerun_20260711.py` (versionné le 05/08) |
-| 4 | **Chimère — classe distincte** — R=0.141 (Mem4ristor) vs R=0.766 (Abrams-Strogatz 2004) | Deux mécanismes séparables | `reviewer2_chimera_comparison.py` |
+| 4 | **Chimère — classe distincte** — R=0.141 (Mem4ristor) vs R=0.766 (Abrams-Strogatz 2004), rejoué au bit près | Deux mécanismes séparables | `experiments/reviewer2_chimera_comparison.py` (versionné le 19/10) |
 | 5 | **u = filtre anti-synchronisation** — bloquer u transforme le réseau en meute synchronisée | corrélation 0.007 → 0.658, séparation complète (Cohen d ≈ 9, 30 graines) | `p2_sigma_social_ablation.py` |
 
 > ⚫ **Finding 3 — RÉFUTÉ le 11/07/2026.** Le résultat d'avril — *« forcer un nœud périphérique
