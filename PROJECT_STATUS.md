@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor V6.0.0 (preprint reformulé, non soumis)
-**Dernière mise à jour : 2026-07-31 (Claude Code/Opus 5 — collisions d'étiquettes tranchées, `tex_guardian` bloquant, synchronie de Table 1 réalignée sur le protocole publié : voir §3)**
+**Dernière mise à jour : 2026-10-19 (Gemini 4 Argon — Chantiers 1 & 2 clos : 22/22 claims rejouables au bit près, guides alignés V6.0.0, figures [A]/[B] du Compendium sorties de scratch et rejouées, feuille de route §0quater inscrite)**
 **Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -56,6 +56,27 @@
 - ✅ **Les deux figures `[3]` et `[4]` du compendium (`lz_per_node.py`, `reviewer2_chimera_comparison.py`) [RÉSOLU le 19/10/2026]** :
   - **Figure `[4]` / `[B]` (`experiments/reviewer2_chimera_comparison.py`, `figures/reviewer2_chimera_comparison.csv`)** : sortie de `scratch/`, chemins corrigés via `__file__`, et rejouée en 11,2 s — reproduit **au bit près (`0.000e+00`)** `R = 0,141` (`0.141328`) vs `R = 0,766` (`0.765621`, Abrams-Strogatz 2004).
   - **Figure `[3]` / `[A]` (`experiments/lz_per_node.py`, `figures/lz_per_node.csv`, `figures/lz_per_node_summary.csv`)** : sortie de `scratch/` et rejouée en 29,5 s. **L'énigme de l'horodatage du 1er mai est tranchée** : le commit `6ae10b4` (29/04/2026) et la colonne `degree` de l'ancien CSV (`[17, 22, 14]` au lieu de `[19, 21, 18]` pour `make_ba(100, 3, 0)`) prouvent que le CSV historique (`r = −0,7156`) datait d'**avant** le commit `818cf67` (01/05/2026), lorsque `_doubt_driven_rewire()` modifiait les degrés en place dans `FULL` et que le bruit était 4,47× plus faible. Sur le moteur V6.0.0 actuel (swap préservant les degrés + bruit Euler-Maruyama), la séparation `FULL < FROZEN_U` par nœud sous forçage (`I=0,3`) est massive (`1,110 ± 0,136` vs `1,648 ± 0,183` sur BA `m=3`, `p = 3,05e-281`) et la corrélation négative degré–LZ dans `FULL` survit mais avec une amplitude réduite (`lz_full` : `r = −0,152, p = 6,34e-4` sur BA `m=5, I=0,3` et `r = −0,118, p = 8,28e-3` sur BA `m=3, I=0,0` ; régime stationnaire `lz_tail` : `r = −0,221, p = 6,15e-7` sur BA `m=3, I=0,3` et `r = −0,324, p = 1,08e-13` sur BA `m=5, I=0,0`), contre une corrélation nulle en `FROZEN_U` (`|r| ≤ 0,043, p ≥ 0,33`).
+
+## 0quater. FEUILLE DE ROUTE POUR LES PROCHAINES SESSIONS (inscrite le 19/10/2026)
+
+> Après les Chantiers 1 (`054e873`) et 2 (`992fc30`) du 19/10/2026, voici par ordre de priorité
+> le travail restant à accomplir lors des prochaines sessions :
+
+1. **Chantier 3 — Compendium LaTeX, dettes mineures du Preprint & Release V6.0.0** :
+   - **Synchroniser `docs/compendium/COMPENDIUM.tex` sur `docs/compendium/COMPENDIUM.md`** : retirer le bandeau de péremption, reporter le nouveau texte et les nouvelles tables V6.0.0 (dont les résultats rejoués de `[A]` `lz_per_node.py` et `[B]` `reviewer2_chimera_comparison.py`), et recompiler `COMPENDIUM.pdf`.
+   - **Clore les dettes ouvertes de `tools/tex_anchors.json`** :
+     - Clarifier dans `docs/papers/preprint/preprint.tex` (Table `tab:ablation_summary` vs texte p.16) la distinction entre les deux harnais d'ablation de la coordination (`experiments/ablation_coordination.py` : 3 000 pas, seeds 0–9 → `0,002` à `0,697` vs `experiments/p2_sigma_social_ablation.py` : 5 000 pas, seeds canoniques → `0,007` à `0,658`).
+     - Retrouver ou régénérer le script/CSV de `tab:adaptive_D_sweep` (Table 5 de `preprint.tex`, listée dans `non_ancres_connus` de `tools/tex_anchors.json`) afin de l'ancrer dans `tex_guardian.py`.
+     - Ajouter une note sur le bin `m=6` adaptatif (`count = 1`) dans la légende de `tab:lz_regime`.
+   - **Fusionner la branche et préparer le dépôt Zenodo V6.0.0** : fusionner `fix/ngspice-locator-silencieux` dans `main`, pousser sur GitHub, et préparer l'archive V6.0.0 pour Zenodo (qui sert encore la V4.0.0 `10.5281/zenodo.19986042` au cadrage spectral réfuté), puis mettre à jour `CITATION.cff`.
+
+2. **Chantier 4 — Sauvegarde automatique & Infrastructure locale** :
+   - **Réparer la tâche planifiée de sauvegarde automatique (6 h)** (cf. §0bis point 6, cassée depuis le rangement du 14/07/2026) afin de sécuriser hors du disque unique les dossiers non poussés sur GitHub (`.brain`, contextes, témoignages, archives Café).
+
+3. **Chantier 5 — Pistes scientifiques ouvertes (Théorie & Expérience)** :
+   - **Dérivation analytique du seuil de degré harmonique $k_{\text{harm}} \approx 6$** : formaliser par champ moyen le rapport signal-sur-bruit de la variance hérétique ($\sigma_{\text{social}} \propto 1/\sqrt{k}$) face au seuil de bascule $u = 0,5$ pour transformer le constat empirique en théorème analytique dans le preprint.
+   - **Modélisation du couplage électrique spintronique (Romera et al., *Nature* 2018)** : tester dans `docs/hardware/SPINTRONIC_PATHWAY.md` la géométrie de verrouillage en phase vs anti-phase sur le canal électrique (où l'inversion de signe de couplage est nativement réalisable, contrairement au couplage dipolaire fixe).
+   - **Exploration du doute complexe `P10` ($u_c = u_r + i\,u_m$)** : évaluer le mode opt-in `use_complex_doubt=True` (déjà implémenté dans `src/mem4ristor/dynamics.py` et testé dans `tests/test_complex_doubt_p10.py`) sur des tâches trompeuses non stationnaires à échelles de temps multiples.
 
 ---
 
