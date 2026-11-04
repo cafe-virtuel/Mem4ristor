@@ -40,7 +40,7 @@
 *   **Sparse CSR Backend:** Automatic `scipy.sparse` conversion for $N > 1000$, yielding massive memory reductions.
 *   **ART (Adaptive Reset Threshold):** Per-node reset threshold modulated by doubt history, preventing fatigue collapse.
 *   **Metacognitive Plasticity:** Per-node learning rate modulated by local doubt, enabling adaptive memory consolidation.
-*   **Compartimentalised Dynamics:** Multiple sub-personalities coexisting within the same network.
+*   **Compartmentalised Dynamics:** Multiple sub-personalities coexisting within the same network.
 *   **Non-Local Coupling by Doubt Similarity:** Coupling between topologically distant nodes when their doubt states are correlated.
 
 ## :rocket: Installation
@@ -179,7 +179,7 @@ pytest tests/test_scientific_regression.py
 | `test_kernel.py` | Levitating Sigmoid kernel, polarity switching |
 | `test_v5_hysteresis.py` | Schmitt-trigger hysteresis and fatigue mechanism |
 | `test_v5_art.py` | ART adaptive reset threshold (V6 core feature) |
-| `test_v5_compartments.py` | Compartimentalised dynamics |
+| `test_v5_compartments.py` | Compartmentalised dynamics |
 | `test_v5_metacognitive.py` | Metacognitive plasticity |
 | `test_v5_nonlocal_coupling.py` | Non-local coupling by doubt similarity |
 | `test_coordination_metrics.py` | Pairwise synchrony, mutual information metrics |
@@ -210,7 +210,7 @@ material remains in `experiments/scratch/` and is *not* part of the repository.
 | `experiments/p2_doubt_community_detection.py` | `p2_doubt_community_detection.*` | NMI between structural and u-functional partitions |
 | `experiments/p2_art_benchmark.py` | `p2_art_benchmark.*` | ART benchmark under sustained cognitive load |
 | `experiments/p2_v5_combination.py` | `p2_v5_combination.*` | Metacognitive plasticity + compartments combined |
-| `experiments/p2_compartments.py` | `p2_compartments.*` | Compartimentalised dynamics exploration |
+| `experiments/p2_compartments.py` | `p2_compartments.*` | Compartmentalised dynamics exploration |
 | `experiments/p2_nonlocal_coupling.py` | `p2_nonlocal_coupling.*` | Non-local coupling by doubt similarity |
 
 **SPICE validation** (Paper B) — these require **ngspice** on the `PATH`, which
