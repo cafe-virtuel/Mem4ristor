@@ -37,7 +37,10 @@
   que sur les nœuds (E1, 2 760 runs). Le cœur échoue à la tâche ; la variante sur les liens
   répare l'échec sans battre un couplage fixe bien réglé.
 - 🔴 **État git** : branche `audit/fable-2026-11-11`, par-dessus `fix/ngspice-locator-silencieux`.
-  **Rien n'est poussé depuis le 04/09.**
+  **Poussée sur GitHub le 11/11** (`origin/audit/fable-2026-11-11`, décision de Julien) et
+  **non fusionnée dans `main`**. `origin/main` a reçu entre-temps un correctif de README
+  (PR #13, 04/11) : la branche est en avance de 8 et en retard de 2. `main` local porte un
+  commit du 02/10 jamais poussé ; `audit/hygiene-2026-10-03` n'existe qu'en local.
 
 ## 0bis. SESSION DU 3-4 SEPTEMBRE 2026 — ce qui a changé pour un lecteur extérieur
 
