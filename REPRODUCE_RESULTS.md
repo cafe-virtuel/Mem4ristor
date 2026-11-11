@@ -284,8 +284,10 @@ up-to-date register of verified claims, limitations, and negative results.
    5-state cognitive entropy (`H_cog`). Continuous entropy (`H_stable`, 100 bins) and
    binning-independent pairwise Pearson synchrony (`r_bar`) are used as the primary metrics.
 
-2. **Coupling-degree dead zone vs. spectral gap:** Degree-controlled rewiring experiments
-   (`experiments/lambda2_foundation_20260701/`) show that the dead zone on dense graphs is
+2. **Coupling-degree dead zone vs. spectral gap:** Degree-controlled experiments on static graphs
+   (`experiments/fable_audit_20261111/`, scripts `d2` and `d5`; the earlier runs in
+   `experiments/lambda2_foundation_20260701/` had the model's rewiring active and did not
+   control `lambda_2`) show that the dead zone on dense graphs is
    caused by mean-field averaging above harmonic degree `k_harm ~ 6`, not by the algebraic
    connectivity `lambda_2` itself.
 

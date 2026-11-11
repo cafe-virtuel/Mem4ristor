@@ -8,7 +8,7 @@
 
 ## Le modèle en 3 phrases
 
-Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœud possède une variable de **doute u ∈ [0,1]** qui module dynamiquement la polarité de son couplage avec ses voisins. Quand u ≈ 0 ou u ≈ 1, le nœud est "hérétique" — il pousse activement contre le consensus, empêchant l'effondrement synchrone. La connectivité du réseau détermine si ce mécanisme peut fonctionner : au-delà d'un certain **degré de couplage** (degré harmonique k_harm ≈ 6), le réseau entre dans une **dead zone** où aucune entrée ne réactive la diversité. Le phénomène est réel ; sa cause n'est **pas** spectrale — à degré fixé, faire varier λ₂ d'un facteur ~27 ne change pas le régime. La séparation en λ₂ ≈ 2.31 observée sur le jeu initial (BA/ER) est une frontière **corrélationnelle** : λ₂ y covarie avec le degré.
+Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœud possède une variable de **doute u ∈ [0,1]** qui module dynamiquement la polarité de son couplage avec ses voisins. Quand u ≈ 0 ou u ≈ 1, le nœud est "hérétique" — il pousse activement contre le consensus, empêchant l'effondrement synchrone. La connectivité du réseau détermine si ce mécanisme peut fonctionner : au-delà d'un certain **degré de couplage** (degré harmonique k_harm ≈ 6), le réseau entre dans une **dead zone** où aucune entrée ne réactive la diversité. Le phénomène est réel ; sa cause n'est **pas** spectrale — sur graphes figés, un anneau à 8 voisins meurt de plus en plus quand on l'agrandit alors que son λ₂ s'effondre (preuve refaite le 11/11/2026 ; l'ancienne tournait sur un graphe recâblé). La séparation en λ₂ ≈ 2.31 observée sur le jeu initial (BA/ER) est une frontière **corrélationnelle** : λ₂ y covarie avec le degré.
 
 ---
 
@@ -34,7 +34,7 @@ Mem4ristor simule des réseaux de neurones FitzHugh-Nagumo (FHN) où chaque nœu
 
 | # | Finding | Chiffre clé | Script |
 |---|---------|-------------|--------|
-| 1 | **Dead zone** — un seuil de **degré de couplage** sépare réseaux fonctionnels et morts (k_harm ≈ 6) ; la séparation en λ₂ ≈ 2.31 du jeu initial est **corrélationnelle**, pas causale | à degré fixé, λ₂ varie ×27 sans changer le régime | `experiments/lambda2_foundation_20260701/` (versionné le 05/08) |
+| 1 | **Dead zone** — un seuil de **degré de couplage** sépare réseaux fonctionnels et morts (k_harm ≈ 6) ; la séparation en λ₂ ≈ 2.31 du jeu initial est **corrélationnelle**, pas causale | graphes figés : anneau k=8 mort à 3 % → 97 % (N=100→400) pendant que λ₂ s'effondre ; k=6 : 0 % ; k=10 : 97-100 % | `experiments/fable_audit_20261111/` (11/11 — l'ancienne preuve tournait sur graphe recâblé) |
 | 2 | **Intelligence topologique** — dans FULL, les hubs ont des trajectoires plus structurées que la périphérie (`FROZEN_U` : corrélation nulle, \|r\| ≤ 0.04) | V6.0.0 : r=−0.221 (p=6.2e-7, `lz_tail` BA m=3 I=0.3) et r=−0.324 (p=1.1e-13, BA m=5 I=0) ; r=−0.716 pré-01/05 (amplifié par l'ancien rewiring non conservatif) | `experiments/lz_per_node.py` (versionné le 19/10) |
 | 3 | ⚫ **RÉFUTÉ — Transition événementielle** (voir la note sous ce tableau) | 0/9 configurations positives au rejeu | `experiments/event_phase_transition_rerun_20260711.py` (versionné le 05/08) |
 | 4 | **Chimère — classe distincte** — R=0.141 (Mem4ristor) vs R=0.766 (Abrams-Strogatz 2004), rejoué au bit près | Deux mécanismes séparables | `experiments/reviewer2_chimera_comparison.py` (versionné le 19/10) |

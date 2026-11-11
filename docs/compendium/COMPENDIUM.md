@@ -94,8 +94,12 @@ connectivité tue la diversité.
 
 **La cause n'est pas spectrale.** L'hypothèse d'origine du projet voulait que la frontière soit
 gouvernée par λ₂ (une propriété mathématique du graphe) autour de **2,31**. Mesuré : **faux**. À
-degré fixé, faire varier λ₂ d'un facteur ~27 laisse le régime **inchangé** ; un anneau k=10 à
-λ₂ = 0,22 meurt dans 100 % des runs, exactement comme un graphe régulier de même degré à λ₂ = 4,5.
+degré fixé et sur graphes **figés**, le nombre de voisins décide d'abord (6 voisins : 0 % de morts ;
+10 voisins : 97 à 100 %, même en anneau à λ₂ = 0,22) ; et un anneau à 8 voisins meurt de plus en
+plus quand on l'agrandit (3 % → 53 % → 97 %) alors que son λ₂ s'effondre — l'inverse d'un seuil
+spectral. *(Preuve refaite le 11/11/2026 : l'ancienne tournait sur un graphe que le cœur recâblait
+en cours de simulation — `experiments/fable_audit_20261111/RAPPORT.md`. À 8 voisins le régime n'est
+pas « plat » : il dépend aussi du câblage et de la taille du réseau.)*
 La cause réelle est le **degré de couplage** (degré harmonique ≈ 6), via un mécanisme
 d'échantillonnage en champ moyen.
 

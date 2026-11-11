@@ -62,7 +62,8 @@ Companion machine-readable. Chaque expérience : question, protocole 2 lignes, r
    [1] La Dead Zone — un seuil de degré de couplage (k_harm ≈ 6)
        "La connectivité dicte le destin cognitif. Au-delà d'un certain nombre de voisins
         couplés, aucune entrée ne réactive le réseau. La connexion tue la diversité."
-       Chiffre clé : à degré fixé, balayer λ₂ sur une plage ×27 laisse le régime PLAT.
+       Chiffre clé (refait le 11/11/2026 sur graphes FIGÉS) : un anneau à 8 voisins passe de
+       3 % à 97 % de morts quand N va de 100 à 400, alors que son λ₂ s'effondre.
        La séparation en λ₂ ≈ 2.31 du jeu initial (BA/ER) est CORRÉLATIONNELLE :
        λ₂ y covarie avec le degré. Bon classifieur sur ce jeu, pas la cause.
        RÉSERVE sur le "n=36" : les labels y sont recopiés à la main par TYPE de

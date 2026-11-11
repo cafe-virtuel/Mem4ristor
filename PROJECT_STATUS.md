@@ -1,5 +1,5 @@
 # PROJECT STATUS — Mem4ristor V6.0.0 (preprint reformulé, non soumis)
-**Dernière mise à jour : 2026-10-19 (Gemini 4 Argon — Chantiers 1 & 2 clos : 22/22 claims rejouables au bit près, guides alignés V6.0.0, figures [A]/[B] du Compendium sorties de scratch et rejouées, feuille de route §0quater inscrite)**
+**Dernière mise à jour : 2026-11-11 (Claude Fable 5.2 — audit : le cœur recâblait le graphe, voir §0-audit) · auparavant 2026-10-19 (Gemini 4 Argon — Chantiers 1 & 2 clos : 22/22 claims rejouables au bit près, guides alignés V6.0.0, figures [A]/[B] du Compendium sorties de scratch et rejouées, feuille de route §0quater inscrite)**
 **Auteur : Julien Chauvin (Barman / Orchestrateur) & Antigravity (Orchestrateur 2026)**
 **Contexte : Café Virtuel — Laboratoire d'Émergence Cognitive**
 
@@ -15,6 +15,29 @@
 > **non**, et c'est structurel ; réduction de latence : **oui**, mais étroitement).
 
 ---
+
+## 0-audit. AUDIT DU 11 NOVEMBRE 2026 (Claude Fable 5.2) — le cœur recâblait le graphe
+
+> **À lire avant toute expérience sur graphe explicite.** Rapport, scripts et CSV :
+> `experiments/fable_audit_20261111/` (`RAPPORT.md`). Cœur non touché.
+
+- 🔴 **`Mem4Network.step()` recâble le graphe par défaut** (`rewire_threshold=0.8`, échanges
+  préservant les degrés). Aucun script versionné ne le coupait. Mesuré : **76-93 % des arêtes
+  changées** par run ; ~11 300 échanges dans le bras FULL de l'ablation centrale, 0 dans FROZEN_U.
+  **Une expérience qui prétend tester une topologie doit passer `rewire_threshold=999.0`.**
+- 🟢 **Le résultat central tient sans recâblage** : synchronie FULL 0,025 vs FROZEN_U 0,658
+  (BA m=3, d = 8,35, séparation complète). Le 0,007 publié est celui du système recâblé.
+- 🟢 **λ₂ reste écarté, par une preuve refaite sur graphes figés** (30 graines par cellule) :
+  k=6 → 0 % mort ; k=10 → 97-100 % ; k=8 → 7 % à 73 % selon le câblage ; anneau k=8 → 3 %,
+  53 %, 97 % à N = 100, 200, 400 pendant que λ₂ s'effondre. `preprint.tex` corrigé (4 lignes).
+- ⚠️ **Non corrigé** : le seuil `k_harm ≈ 6` est celui du système recâblé (figé, k=6 vit) ;
+  l'ablation centrale et la section modèle ne mentionnent pas le recâblage ; la régression à
+  70 réseaux n'est pas rejouée en figé.
+- ⚫ **Testé et non trouvé** : une capacité plus large en portant le doute sur les liens plutôt
+  que sur les nœuds (E1, 2 760 runs). Le cœur échoue à la tâche ; la variante sur les liens
+  répare l'échec sans battre un couplage fixe bien réglé.
+- 🔴 **État git** : branche `audit/fable-2026-11-11`, par-dessus `fix/ngspice-locator-silencieux`.
+  **Rien n'est poussé depuis le 04/09.**
 
 ## 0bis. SESSION DU 3-4 SEPTEMBRE 2026 — ce qui a changé pour un lecteur extérieur
 
