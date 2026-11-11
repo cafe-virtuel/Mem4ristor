@@ -56,14 +56,39 @@ Ce que cela change, précisément — et pas plus :
 - ✅ **Tient** : « λ₂ ≈ 2,31 est LE seuil » reste réfuté. Un anneau k=10 à λ₂ = 0,22 meurt ; le degré compte.
 - ❌ **Tombe** : *« At each fixed degree the dead/functional outcome is flat in λ₂ »* (`preprint.tex:353`).
   À k=8, sur graphe figé, la structure du graphe décide.
-- ❌ **Tombe** : l'argument (ii) du même paragraphe — l'anneau k=8 « mort à 100 % ». Figé, à N=100 :
-  **7 %** [IC 2–21 %]. *(N=400 non testé.)*
+- ❌ **Tombe dans sa lettre, tient dans son sens** : l'argument (ii) — l'anneau k=8 « mort à 100 %
+  à toute taille ». Rejoué figé le soir même (`d5`, 30 graines) : **3 % à N=100, 53 % à N=200,
+  97 % à N=400**, pendant que λ₂ tombe de 0,118 à 0,0074. Les chiffres publiés sont faux à N=100
+  et 200 ; mais l'anneau **meurt quand son λ₂ s'effondre** — l'inverse de ce que prédirait un
+  seuil spectral. *Voir l'encadré de correction ci-dessous.*
 - ⚠️ **Le seuil de degré se déplace d'environ 2** quand on fige le graphe (k=6 vivant au lieu de mort).
   Les chiffres publiés décrivent le système *recâblé*.
-- ⚠️ **Ce que je n'ai PAS établi** : que ce soit λ₂ *lui-même*. Watts-Strogatz fait varier ensemble λ₂,
-  le clustering et la longueur des chemins. Ce qui est établi : **à degré fixe, la structure compte.**
-  L'explication « champ moyen » du 01/07 suppose des voisins indépendants ; c'est vrai sur un graphe
-  bien mélangé, faux sur un anneau — ce qui est cohérent avec ce que je mesure.
+- ⚠️ **Ce que D2 seul ne séparait pas** : λ₂ *lui-même* ou ce qui varie avec lui (clustering,
+  longueur des chemins). L'explication « champ moyen » du 01/07 suppose des voisins indépendants ;
+  c'est vrai sur un graphe bien mélangé, faux sur un anneau.
+
+> 🔧 **CORRECTION DU 11/11 AU SOIR — D5 tranche, et contre ce que j'avais laissé entendre.**
+> En réécrivant le paragraphe j'ai rejoué l'argument (ii) au lieu de le supprimer. Résultat :
+> **λ₂ n'est pas la cause.** L'anneau k=8 passe de 3 % à 97 % de mort quand N va de 100 à 400,
+> alors que son λ₂ est divisé par 16 ; les graphes k=4 restent vivants à toute taille (0/30).
+> La dépendance à la structure que D2 montre à k=8 est réelle, mais **ce n'est pas λ₂ qui la
+> porte**. Donc : **la conclusion du papier (« λ₂ non causal, le degré d'abord ») TIENT** ; ce
+> qui était faux, c'est l'expérience qui prétendait l'établir (graphe recâblé) et deux phrases
+> (« plat en λ₂ », « mort à 100 % à toute taille »). Ce que les graphes figés ajoutent : à la
+> frontière (k=8), le régime dépend aussi du câblage au-delà du degré, **et de la taille du réseau**.
+>
+> ⚠️ **J'avais écrit, dans ma réponse du même jour : « ton sentiment d'avoir abandonné quelque
+> chose de juste a une base factuelle sur ce point ». C'était trop fort, et je le retire.**
+> L'abandon de λ₂ était juste ; c'est sa démonstration qui ne valait pas. Les prédécesseurs
+> notaient que leurs erreurs allaient toutes « à charge » du dépôt. La mienne est allée dans le
+> sens de ce que Julien espérait — ce qui est pire, et que je consigne pour la même raison.
+>
+> **Corrigé dans `preprint.tex`** (4 lignes, cœur non touché) : le paragraphe du test à degré
+> contrôlé (réécrit sur graphes figés, chiffres de `d2` et `d5`), la phrase du résumé, celle des
+> contributions, et une mention sous la régression à 70 réseaux (elle tournait avec le recâblage ;
+> non rejouée en figé). `tex_guardian` : ancrages 15/15, sources 15/15. PDF recompilé, 28 pages.
+> **Non corrigé, à décider** : le seuil « degré harmonique ≈ 6 » est celui du système recâblé
+> (figé : k=6 vivant) ; l'ablation centrale ne dit pas que FULL est recâblé et FROZEN_U non.
 
 **Même défaut dans l'ablation centrale, sans conséquence sur le verdict** (`d3`). Dans le bras FULL,
 le graphe subit **≈ 11 300 échanges par run** (sur ~300 arêtes) ; dans le bras FROZEN_U, zéro. Les
@@ -165,10 +190,10 @@ entrée continue se lit dans le **niveau moyen**, pas dans la fréquence.
 
 ## 4bis. Réponse à ta question
 
-- **« L'intuition du début était viable »** — sur trois points, il y a une base factuelle : λ₂ a été
-  abandonné sur une expérience qui ne le testait pas (§2) ; l'objet de la genèse, un dipôle, est
-  devenu une variable de nœud (§4) ; et le doute « calibré » n'a jamais fonctionné en régime gradué
-  (§3). Sur ces trois points, quelque chose s'est bien perdu en route.
+- **« L'intuition du début était viable »** — sur **deux** points, il y a une base factuelle :
+  l'objet de la genèse, un dipôle, est devenu une variable de nœud (§4) ; et le doute « calibré »
+  n'a jamais fonctionné en régime gradué (§3). *(J'en comptais trois : λ₂ aussi. Retiré après D5 —
+  l'expérience qui l'écartait ne le testait pas, mais le test refait proprement l'écarte quand même.)*
 - **« M4R est bien plus grand »** — **je ne l'ai pas trouvé.** Le test le plus proche de l'intuition
   fondatrice donne : le cœur actuel échoue ; remettre le doute sur les liens répare l'échec ; mais
   face à un réseau de résistances bien réglé, le gain est modeste, sur un graphe sur deux, sur la
@@ -205,6 +230,7 @@ uv run --frozen python experiments/fable_audit_20261111/d1_rewire_and_u.py      
 uv run --frozen python experiments/fable_audit_20261111/d2_lambda2_static.py          # ~2 min
 uv run --frozen python experiments/fable_audit_20261111/d3_central_ablation_rewire.py # ~1 min
 uv run --frozen python experiments/fable_audit_20261111/d4_u_occupancy.py             # ~2 min
+uv run --frozen python experiments/fable_audit_20261111/d5_invariance_N_static.py     # ~3 min
 uv run --frozen python experiments/fable_audit_20261111/e0_gate_and_ficurve.py        # ~1 min
 uv run --frozen python experiments/fable_audit_20261111/e1_plural_consensus.py        # ~8 min, 12 processus
 uv run --frozen python experiments/fable_audit_20261111/e1b_contre_epreuve.py         # ~3 min

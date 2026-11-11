@@ -72,6 +72,27 @@ frontière **corrélationnelle**, pas causale.
 *Pourquoi c'est une force et non une faiblesse* : un projet qui publie la réfutation de sa propre
 hypothèse initiale est plus crédible qu'un projet qui n'en trouve jamais.
 
+> 🔄 **MISE À JOUR DU 11/11/2026 — la conclusion tient, la preuve a été refaite.**
+> L'expérience qui établissait cette réfutation tournait avec le **recâblage du graphe** que le
+> cœur active par défaut : en fin de simulation, **76 à 93 % des liens avaient changé** et tous les
+> graphes se ressemblaient. Elle ne faisait donc pas varier λ₂ — elle ne pouvait rien en dire.
+> Refaite sur **graphes figés**, 30 tirages par cas :
+>
+> | nombre de voisins | part de réseaux « morts » |
+> |---|---|
+> | 4 ou 6 | **0 %**, quelle que soit la forme du graphe |
+> | 10 | **97 à 100 %**, même en anneau |
+> | 8 *(la frontière)* | dépend de la forme (anneau **7 %**, aléatoire **73 %**) **et de la taille** |
+>
+> **Ce qui tranche** : un anneau à 8 voisins meurt de plus en plus quand on l'agrandit (**3 % →
+> 53 % → 97 %** de 100 à 400 nœuds) alors que son λ₂ s'effondre. Si λ₂ était la cause, ce serait
+> l'inverse. **λ₂ n'est pas la cause ; le nombre de voisins vient d'abord** — mais pas seul : à la
+> frontière, la forme du graphe et sa taille comptent aussi.
+> ⚠️ **Le seuil « ≈ 6 voisins » est celui du système qui se recâble.** Figé, un réseau à 6 voisins
+> reste vivant (publié : mort dans 60 à 80 % des cas). Non corrigé dans le papier à ce jour.
+>
+> 📁 `experiments/fable_audit_20261111/` (`d1`, `d2`, `d5`, `RAPPORT.md`) · `preprint.tex` §sec:lambda2
+
 ### 1.4 La prédiction falsifiable — la force la plus sous-estimée du projet
 
 C'est **la seule chose qui sort de l'ordinateur**. Tout le reste est auto-référentiel (on mesure

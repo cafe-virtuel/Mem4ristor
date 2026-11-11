@@ -2,6 +2,17 @@
 
 **Session** : 1er juillet 2026 · Claude Code (Opus 4.8), L'Ingénieur · avec Julien
 **Statut** : ABOUTI — branche « prouver qu'on ne peut pas » + mécanisme réel trouvé
+
+> ⚠️ **Annotation du 11/11/2026 (audit Fable) — document annoté, non réécrit.**
+> Les scripts de ce dossier tournent avec le **recâblage piloté par le doute** que
+> `Mem4Network` active par défaut (`rewire_threshold=0.8`) : 76-93 % des arêtes changées en fin
+> de run, λ₂ final ≈ régulier aléatoire quel que soit le graphe de départ. Les étapes 3
+> (crucial experiment) et 4 (invariance en N) **n'ont donc pas fait varier λ₂**. Leurs CSV restent
+> reproductibles au chiffre près, mais ne démontrent pas ce que le texte ci-dessous en tire.
+> **Refait sur graphes figés, la conclusion tient** (λ₂ non causal, le degré d'abord), avec deux
+> corrections : à k=8 le résultat n'est **pas** plat (anneau 7 % mort, aléatoire 73 %), et
+> l'anneau k=8 n'est pas « mort à 100 % à toute taille » mais **3 % → 53 % → 97 %** de N=100 à 400.
+> Scripts et rapport : `experiments/fable_audit_20261111/` (`d1`, `d2`, `d5`, `RAPPORT.md`).
 **Nature** : recherche (compréhension), pas livrable. Aucun fichier public/preprint touché.
 
 ---
